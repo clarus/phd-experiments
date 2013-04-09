@@ -84,3 +84,53 @@ Definition identity {M} {monad : Monad M} A (x : A) : M A := ret x.
 Definition iapp (f : nat -> option nat) : option nat := f 12.
 
 Definition test4 := app (M1 := id) (M2 := id) iapp (identity (A := _)).
+
+(** We experiment a general method to go from a function
+    of type (A -> B) -> C to a function of type (A -> M B) -> M C *)
+
+(** The continuation monad *)
+Definition C (o : Type) := fun A => (A -> o) -> o.
+
+Instance Continuation (o : Type) : Monad (C o) := {
+  ret A x := fun k => k x;
+  bind A B x f := fun k => x (fun x => f x k)}.
+
+Definition callcc o A (f : (A -> o) -> o) : C o A :=
+  f.
+
+Definition run {M} {monad : Monad M} A (x : C (M A) A) : M A :=
+  x (fun x => ret x).
+
+Definition generalize {M} {monad : Monad M} T1 T2 T3
+  (f : forall o, (T1 -> C o T2) -> C o T3)
+  : (T1 -> M T2) -> M T3 :=
+  fun g =>
+    let g' := fun x => callcc (fun k => bind T3 (g x) k) in
+    run (f _ g').
+
+(** An example *)
+Definition test5 (f : nat -> bool) : comparison :=
+  if f 23 then
+    Eq
+  else
+    Lt.
+
+(** We do a monadic transform to the continuation monad *)
+Definition monadic_test5 o (f : nat -> C o bool) : C o comparison :=
+  bind _ (f 23) (fun b =>
+  if b then
+    ret Eq
+  else
+    ret Lt).
+
+(** We get our generalized example *)
+Definition test5' {M} {monad : Monad M} : (nat -> M bool) -> M comparison :=
+  generalize monadic_test5.
+
+Compute test5 (fun _ => true).
+Compute test5 (fun _ => false).
+Compute test5' (fun _ => Some true).
+Compute test5' (fun _ => Some false).
+Compute test5' (fun _ => None).
+
+
