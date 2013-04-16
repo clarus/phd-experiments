@@ -1,4 +1,5 @@
-(** Monads with stronger hypothesis to simplify composition *)
+(** Monads with stronger hypothesis to simplify composition.
+    See OpenMonads.v for a better system. *)
 Require Import String.
 
 Set Implicit Arguments.
@@ -41,6 +42,9 @@ Definition sum (m1 m2 : Monad) : Monad := {|
 
 Infix "++" := sum.
 
+Class Le (m1 m2 : Monad) : Type := {
+  lift : forall A, @M m1 A -> @M m2 A}.
+
 Definition gret (m m' : Monad) A (x : @M m' A) : @M (m ++ m') A :=
   fun i =>
     let (i1, i2) := i in
@@ -51,9 +55,13 @@ Definition gret (m m' : Monad) A (x : @M m' A) : @M (m ++ m') A :=
     end.
 
 (*Definition gbind (m m' : Monad) A B
-  (x : @M (m ++ m') A) (f : @M m' A -> @M (m ++ m') B)
-  : @M (m ++ m') B :=
+  (x : @M (m ++ m') A) (f : @M m' A -> @M m B)
+  : @M m B :=
   fun i =>
+    f (fun i' =>
+      match x (i, i') with
+      | 
+      end)
     match x i with
     | (inl x', (o1, o2)) => (fun i2 => )
     end
@@ -109,6 +117,15 @@ Instance Option : Monad := {
   strong_ret := fun _ => tt;
   strong_bind := fun _ => tt}.
 
+Definition option_none A : @M Option A :=
+  fun _ => (inr tt, tt).
+
+Definition option_run A (x : @M Option A) : option A :=
+  match x tt with
+  | (inl x', _) => Some x'
+  | _ => None
+  end.
+
 Instance Error (E : Type) : Monad := {
   I := unit;
   E := E;
@@ -137,11 +154,107 @@ Instance Loop : Monad := {
   strong_ret := fun i => i;
   strong_bind := fun o => o}.
 
-Definition app {M1 M2 M3 M4 : Type -> Type}
-  {monad1 : Monad M1} {monad2 : Monad M2} {monad3 : Monad M3} {monad4 : Monad M4}
-  {f14 : Morphism M1 M4} {f24 : Morphism M2 M4} {f34 : Morphism M3 M4}
-  (T1 T2 : Type) (e1 : M1 (T2 -> M3 T1)) (e2 : M2 T2)
-  : M4 T1 :=
-  bind _ (lift _ e1) (fun f =>
-  bind _ (lift _ e2) (fun x =>
-    lift _ (f x))).
+Definition app {m1 m2 m3 m4 : Monad}
+  {f14 : Le m1 m4} {f24 : Le m2 m4} {f34 : Le m3 m4}
+  (T1 T2 : Type) (e1 : @M m1 (T2 -> @M m3 T1)) (e2 : @M m2 T2)
+  : @M m4 T1 :=
+  bind (lift e1) (fun f =>
+  bind (lift e2) (fun x =>
+    lift (f x))).
+
+Instance AnyOfId {m : Monad} : Le Id m := {
+  lift A x :=
+    match x tt with
+    | (inl x', _) => ret x'
+    | (inr e, _) => match e with end
+    end}.
+
+Instance AnyOfAny {m : Monad} : Le m m := {
+  lift A x := x}.
+
+(** Examples *)
+Definition test0 := fun n => ret (Monad := Option) (n + 1).
+Compute option_run (test0 12).
+
+Definition test1 (m : Monad) := app (ret (fun n => ret (n + 1))) (ret 23).
+Compute option_run (test1 _).
+
+Definition decr (n : nat) : @M Option nat :=
+  match n with
+  | 0 => option_none _
+  | S n' => ret n'
+  end.
+
+Definition test2 := fun n => app (ret decr) (app (ret decr) (ret n)).
+
+Compute option_run (test2 12).
+Compute option_run (test2 1).
+
+Definition compose A B C (f : B -> C) (g : A -> B) x := f (g x).
+
+Definition compose' {m : Monad}
+  (A B C : Type) (f : B -> M C) (g : A -> M B) (x : A) : M C :=
+  app (ret f) (app (ret g) (ret x)).
+
+Definition test3 {m : Monad} :=
+  app (app (ret (compose' (m := _) (C := _))) (ret decr)) (ret decr).
+
+Compute test3 12.
+Compute test3 1.
+
+Definition identity {M} {monad : Monad M} A (x : A) : M A := ret x.
+
+Definition iapp (f : nat -> option nat) : option nat := f 12.
+
+Definition test4 := app (M1 := id) (M2 := id) iapp (identity (A := _)).
+
+(** We experiment a general method to go from a function
+    of type (A -> B) -> C to a function of type (A -> M B) -> M C *)
+
+(** The continuation monad *)
+Definition C (o : Type) := fun A => (A -> o) -> o.
+
+Instance Continuation (o : Type) : Monad (C o) := {
+  ret A x := fun k => k x;
+  bind A B x f := fun k => x (fun x => f x k)}.
+
+Definition callcc o A (f : (A -> o) -> o) : C o A :=
+  f.
+
+Definition run {M} {monad : Monad M} A (x : C (M A) A) : M A :=
+  x (fun x => ret x).
+
+Definition generalize {M} {monad : Monad M} T1 T2 T3
+  (f : forall o, (T1 -> C o T2) -> C o T3)
+  : (T1 -> M T2) -> M T3 :=
+  fun g =>
+    let g' := fun x => callcc (fun k => bind T3 (g x) k) in
+    run (f _ g').
+
+(** An example *)
+Definition test5 (f : nat -> bool) : comparison :=
+  if f 23 then
+    Eq
+  else
+    Lt.
+
+(** We do a monadic transform to the continuation monad *)
+Definition monadic_test5 o (f : nat -> C o bool) : C o comparison :=
+  bind _ (f 23) (fun b =>
+  if b then
+    ret Eq
+  else
+    ret Lt).
+
+(** We get our generalized example *)
+Definition test5' {M} {monad : Monad M} : (nat -> M bool) -> M comparison :=
+  generalize monadic_test5.
+
+Compute test5 (fun _ => true).
+Compute test5 (fun _ => false).
+Compute test5' (fun _ => Some true).
+Compute test5' (fun _ => Some false).
+Compute test5' (fun _ => None).
+
+
+

@@ -1,4 +1,4 @@
-Require Import Classes.SetoidDec.
+(** Monads inference formalized using typeclasses *)
 
 Set Implicit Arguments.
 
@@ -132,5 +132,26 @@ Compute test5 (fun _ => false).
 Compute test5' (fun _ => Some true).
 Compute test5' (fun _ => Some false).
 Compute test5' (fun _ => None).
+
+Definition generalize' {M} {monad : Monad M} T1 T2 T3
+  (f : forall o o', (T1 o' -> C o (T2 o')) -> C o (T3 o'))
+  : (T1 _ -> M (T2 _)) -> M (T3 _) :=
+  fun g =>
+    let g' := fun x => callcc (fun k => bind (T3 _) (g x) k) in
+    run (f _ g').
+
+Definition generalize' {M} {monad : Monad M} (T1 T2 : Type -> Type)
+  (f : forall o, T1 o -> C o (T2 o))
+  : T1 _ -> T2 _ :=
+  fun g =>
+    let g' := fun x => callcc (fun k => bind T3 (g x) k) in
+    run (f _ g').
+
+Definition gre {M} {monad : Monad M} (A B1 B2 R : Type)
+  (f : forall o, (A -> C o (B1 -> C o B2)) -> C o R)
+  (g : forall o, ) :=
+  generalize (T2 := B1 -> C o B2) f.
+
+
 
 
