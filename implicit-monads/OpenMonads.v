@@ -42,7 +42,7 @@ Fixpoint bind {m : Monad} A B (x : M.t A) (f : A -> M.t B) : M.t B :=
     | (inr x, o) => (inr (bind x f), o)
     end).
 
-Definition seq {m : Monad} A (x : M.t unit) (f : M.t A) : M.t A :=
+Definition seq {m : Monad} A B (x : M.t A) (f : M.t B) : M.t B :=
   bind x (fun _ => f).
 
 Fixpoint run {m : Monad} A (x : M.t A) (I_of_O : O -> I) (i : I) : (A + E) * O :=
@@ -103,11 +103,15 @@ Instance Error (E : Type) : Monad := {
   O := unit;
   O_of_I := fun _ => tt}.
 
-Instance Print : Monad := {
-  I := list string;
+Instance Print (A : Type) : Monad := {
+  I := list A;
   E := Empty_set;
-  O := list string;
+  O := list A;
   O_of_I := fun i => i}.
+
+Definition print A (x : A) : @M.t (Print A) unit :=
+  M.new (m := Print A) (fun i =>
+    (inl (inl tt), x :: i)).
 
 Instance State (S : Type) : Monad := {
   I := S;
@@ -130,9 +134,6 @@ Instance Waiter (m : Monad) (A B : Type) : Monad := {
 
 Module Coroutine.
   Definition t {m : Monad} (A B T : Type) := @M.t (Waiter m A B ++ m) T.
-  
-  (*Definition new {m : Monad} A B (x : @M.t (Waiter A ++ m) B) : t A B :=
-    x.*)
   
   Definition forget {m : Monad} A B : t A B unit :=
     M.new (m := Waiter m A B ++ m) (fun i =>
@@ -161,6 +162,16 @@ Module Coroutine.
       | (inr x', (None, o_m)) => (inl (inl (inr x')), o_m)
       end).
   
+  Fixpoint force_n {m : Monad} A B T (x : t A B T) (n : nat) (f : A -> M.t B) : M.t (T + t A B T) :=
+    match n with
+    | 0 => ret (inr x)
+    | S n' => bind (force x f) (fun x' =>
+      match x' with
+      | inl r => ret (inl r)
+      | inr x' => force_n x' n' f
+      end)
+    end.
+  
   Fixpoint terminate {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t T :=
     M.new (fun i_m =>
       match (M.open x) (f, i_m) with
@@ -176,6 +187,18 @@ Fixpoint iter_list {m : Monad} A (l : list A) : Coroutine.t A unit unit :=
   | nil => ret tt
   | x :: l' => seq (Coroutine.yield _ x) (iter_list l')
   end.
+
+Definition test_it {m : Monad} := iter_list [1; 5; 7; 2].
+
+Definition test1 := Coroutine.terminate test_it (fun x => print x).
+Compute run test1 (fun o => o) nil.
+
+Definition test2 := seq
+  (Coroutine.force_n test_it 3 (fun x => print x))
+  (ret unit).
+Compute run test2 (fun o => o) nil.
+
+
 
 
 
