@@ -60,7 +60,7 @@ Definition gret (m m' : Monad) A (x : @M m' A) : @M (m ++ m') A :=
   fun i =>
     f (fun i' =>
       match x (i, i') with
-      | 
+      |
       end)
     match x i with
     | (inl x', (o1, o2)) => (fun i2 => )
