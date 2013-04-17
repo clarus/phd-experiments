@@ -273,19 +273,6 @@ Definition break : @M.t Breaker unit :=
   M.new (fun s =>
     (inl (inl tt), (Streams.tl s, Streams.hd s))).
 
-(** Run a breaker without taking care of the breaks *)
-Fixpoint terminate_breaker {m : Monad} A (x : @M.t (Breaker ++ m) A) : @M.t m A :=
-  M.new (fun i =>
-    match M.open x (Streams.const false, i) with
-    | (inl xe, (_, o)) =>
-      match xe with
-      | inl x => (inl (inl x), o)
-      | inr (inl e) => match e with end
-      | inr (inr e) => (inl (inr e), o)
-      end
-    | (inr x, (_, o)) => (inr (terminate_breaker x), o)
-    end).
-
 Fixpoint join_aux {m : Monad} A B (x : @M.t (Breaker ++ m) A) :=
   fix aux (y : @M.t (Breaker ++ m) B) (left_first : bool) : @M.t (Breaker ++ m) (A * B):=
     if left_first then
@@ -320,4 +307,21 @@ Fixpoint join_aux {m : Monad} A B (x : @M.t (Breaker ++ m) A) :=
 Definition join {m : Monad} A B (x : @M.t (Breaker ++ m) A) (y : @M.t (Breaker ++ m) B)
   : @M.t (Breaker ++ m) (A * B) :=
   join_aux x y true.
+
+(* join (print 12; break; print 13) (print 23; break; print 0) *)
+Definition test4 := join
+  (seq (gret (print 12)) (seq (combine_commut (gret break)) (gret (print 13))))
+  (seq (gret (print 23)) (seq (combine_commut (gret break)) (gret (print 0)))).
+
+Definition test4_run s :=
+  run test4 (fun o => let (sb, o) := o in (fst sb, o)) (s, nil).
+
+Compute test4_run (Streams.const false).
+Compute test4_run (Streams.const true).
+
+
+
+
+
+
 
