@@ -1,9 +1,11 @@
 (** Monads with an open structure to give more freedom to the run operations *)
 Require Import Arith.
 Require Import List.
+Require Import Streams.
 Require Import String.
 
 Import ListNotations.
+Local Open Scope string_scope.
 
 Set Implicit Arguments.
 
@@ -51,17 +53,6 @@ Fixpoint run {m : Monad} A (x : M.t A) (I_of_O : O -> I) (i : I) : (A + E) * O :
   | (inl xe, o) => (xe, o)
   | (inr x, o) => run x I_of_O (I_of_O o)
   end.
-
-(*Fixpoint run_with_break {m : Monad} A (x : M.t A) (I_of_O : O -> option I) : M.t A :=
-  M.new (fun i =>
-    match (M.open x) i with
-    | (inl xe, o) => (inl xe, o)
-    | (inr x, o) =>
-      match I_of_O o with
-      | Some i' => (M.open (run_with_break x I_of_O)) i'
-      | None => (inr x, o)
-      end
-    end).*)
 
 Definition combine (m1 m2 : Monad) : Monad := {|
   I := @I m1 * @I m2;
@@ -189,6 +180,9 @@ Instance Error (E : Type) : Monad := {
   O := unit;
   O_of_I := fun _ => tt}.
 
+Definition raise E A (e : E) : @M.t (Error E) A :=
+  M.new (m := Error E) (fun _ => (inl (inr e), tt)).
+
 Instance Print (A : Type) : Monad := {
   I := list A;
   E := Empty_set;
@@ -262,12 +256,68 @@ Compute run test2 (fun o => o) nil.
 
 Definition test3 := Coroutine.terminate test_it (fun x =>
   if eq_nat_dec x 7 then
-    gret (m := Print nat) (option_none _)
+    gret (m := Print nat) (raise _ "x is equal to 7")
   else
-    combine_commut (gret (m := Option) (print x))).
+    combine_commut (gret (m := Error string) (print x))).
 
 Compute run test3 (fun o => o) (nil, tt).
 
+(** Cooperative threads *)
+Instance Breaker : Monad := {
+  I := Stream bool;
+  E := Empty_set;
+  O := Stream bool * bool; (* if we did a break *)
+  O_of_I := fun s => (s, false)}.
 
+Definition break : @M.t Breaker unit :=
+  M.new (fun s =>
+    (inl (inl tt), (Streams.tl s, Streams.hd s))).
 
+(** Run a breaker without taking care of the breaks *)
+Fixpoint terminate_breaker {m : Monad} A (x : @M.t (Breaker ++ m) A) : @M.t m A :=
+  M.new (fun i =>
+    match M.open x (Streams.const false, i) with
+    | (inl xe, (_, o)) =>
+      match xe with
+      | inl x => (inl (inl x), o)
+      | inr (inl e) => match e with end
+      | inr (inr e) => (inl (inr e), o)
+      end
+    | (inr x, (_, o)) => (inr (terminate_breaker x), o)
+    end).
+
+Fixpoint join_aux {m : Monad} A B (x : @M.t (Breaker ++ m) A) :=
+  fix aux (y : @M.t (Breaker ++ m) B) (left_first : bool) : @M.t (Breaker ++ m) (A * B):=
+    if left_first then
+      M.new (fun i =>
+        match (M.open x) i with
+        | (inl xe, o) =>
+          match xe with
+          | inl x => (inr (bind y (fun y => ret (x, y))), o)
+          | inr e => (inl (inr e), o)
+          end
+        | (inr x, ((s, breaking), o)) =>
+          if breaking then
+            (inr (join_aux _ x y false), ((s, false), o))
+          else
+            (inr (join_aux _ x y true), ((s, false), o))
+        end)
+    else
+      M.new (fun i =>
+        match (M.open y) i with
+        | (inl ye, o) =>
+          match ye with
+          | inl y => (inr (bind x (fun x => ret (x, y))), o)
+          | inr e => (inl (inr e), o)
+          end
+        | (inr y, ((s, breaking), o)) =>
+          if breaking then
+            (inr (aux y true), ((s, false), o))
+          else
+            (inr (aux y false), ((s, false), o))
+        end).
+
+Definition join {m : Monad} A B (x : @M.t (Breaker ++ m) A) (y : @M.t (Breaker ++ m) B)
+  : @M.t (Breaker ++ m) (A * B) :=
+  join_aux x y true.
 
