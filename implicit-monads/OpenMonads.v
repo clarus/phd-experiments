@@ -64,13 +64,14 @@ Definition combine (m1 m2 : Monad) : Monad := {|
 
 Infix "++" := combine.
 
-(*Definition sum_id (m : Monad) A (x : @M (Id ++ m) A) : @M m A :=
-  fun i =>
-    match x (tt, i) with
-    | (inl x', (_, o)) => (inl x', o)
-    | (inr (inr e), (_, o)) => (inr e, o)
-    | (inr (inl e), _) => match e with end
-    end.*)
+Fixpoint sum_id (m : Monad) A (x : @M.t (Id ++ m) A) : @M.t m A :=
+  M.new (fun i =>
+    match M.open x (tt, i) with
+    | (inl (inl x'), (_, o)) => (inl (inl x'), o)
+    | (inl (inr (inr e)), (_, o)) => (inl (inr e), o)
+    | (inl (inr (inl e)), _) => match e with end
+    | (inr x, (_, o)) => (inr (sum_id x), o)
+    end).
 
 Fixpoint combine_commut (m1 m2 : Monad) A (x : @M.t (m1 ++ m2) A)
   : @M.t (m2 ++ m1) A :=
@@ -112,52 +113,6 @@ Fixpoint gret {m m' : Monad} A (x : @M.t m' A) : @M.t (m ++ m') A :=
     | (inl (inr e), o2) => (inl (inr (inr e)), (o1, o2))
     | (inr x', o2) => (inr (gret x'), (o1, o2))
     end).
-
-Fixpoint run_with_break {m m' : Monad} A
-  (x : @M.t (m ++ m') A) (I_of_O : @O m -> @I m) (i_m : @I m)
-  : @M.t m' (A + @M.t (m ++ m') A) :=
-  M.new (fun i_m' =>
-    match (M.open x) (i_m, i_m') with
-    | (inl (inl x'), (_, o_m')) => (inl (inl (inl x')), o_m')
-    | (inl (inr (inr e_m')), (_, o_m')) => (inl (inr e_m'), o_m')
-    | (inl (inr (inl _)), (_, o_m')) => (inl (inl (inr x)), o_m')
-    | (inr x', (o_m, o_m')) => (inr (run_with_break x' I_of_O (I_of_O o_m)), o_m')
-    end).
-
-Fixpoint run_with_break_n {m m' : Monad} A
-  (x : @M.t (m ++ m') A) (I_of_O : @O m -> @I m) (i_m : @I m) (n : nat)
-  : @M.t m' (A + @M.t (m ++ m') A) :=
-  match n with
-  | 0 => ret (inr x)
-  | S n' => bind (run_with_break x I_of_O i_m) (fun x' =>
-    match x' with
-    | inl r => ret (inl r)
-    | inr x' => run_with_break_n x' I_of_O i_m n'
-    end)
-  end.
-
-Definition run_with_break_terminate {m m' : Monad} A
-  (x : @M.t (m ++ m') A) (I_of_O : @O m -> @I m) (i_m : @I m)
-  : @M.t m' (option A) :=
-  let fix aux (x : @M.t (m ++ m') A) (i'_m : @I m) : @M.t m' (option A) :=
-    M.new (fun i_m' =>
-      match (M.open x) (i'_m, i_m') with
-      | (inl (inl x'), (_, o_m')) => (inl (inl (Some x')), o_m')
-      | (inl (inr (inr e_m')), (_, o_m')) => (inl (inr e_m'), o_m')
-      | (inr x', (o_m, o_m')) => (inr (aux x' (I_of_O o_m)), o_m')
-      | (inl (inr (inl _)), (_, o_m')) =>
-        (* if the computation fails with restart with [i_m] instead of [i'_m] *)
-        (inr (M.new (fun i_m' =>
-          match (M.open x) (i_m, i_m') with
-          | (inl (inl x'), (_, o_m')) => (inl (inl (Some x')), o_m')
-          | (inl (inr (inr e_m')), (_, o_m')) => (inl (inr e_m'), o_m')
-          | (inr x', (o_m, o_m')) => (inr (aux x' (I_of_O o_m)), o_m')
-          | (inl (inr (inl _)), (_, o_m')) =>
-            (* if the computation fails even with [i_m] we stop *)
-            (inl (inl (None)), o_m')
-          end)), o_m')
-      end) in
-  aux x i_m.
 
 Instance Option : Monad := {
   I := unit;
@@ -205,37 +160,126 @@ Instance Loop : Monad := {
   O := nat;
   O_of_I := fun i => i}.
 
+Fixpoint local_run {m m' : Monad} A
+  (x : @M.t (m ++ m') A) (I_of_O : @O m -> @I m) (i_m : @I m)
+  : @M.t (Error (@E m) ++ m') A :=
+  M.new (m := Error (@E m) ++ m') (fun i =>
+    let (_, i_m') := i in
+    match M.open x (i_m, i_m') with
+    | (inl xe, (o_m, o_m')) =>
+      let o := (tt, o_m') in
+      match xe with
+      | inl x => (inl (inl x), o)
+      | inr (inl e_m) => (inl (inr (inl e_m)), o)
+      | inr (inr e_m') => (inl (inr (inr e_m')), o)
+      end
+    | (inr x, (o_m, o_m')) => (inr (local_run x I_of_O (I_of_O o_m)), (tt, o_m'))
+    end).
+
+Fixpoint local_run_with_break {m m' : Monad} A
+  (x : @M.t (m ++ m') A) (I_of_O : @O m -> option (@I m)) (i_m : @I m)
+  : @M.t (Error (@E m) ++ m') (A + @M.t (m ++ m') A) :=
+  M.new (m := Error (@E m) ++ m') (fun i =>
+    let (_, i_m') := i in
+    match M.open x (i_m, i_m') with
+    | (inl xe, (o_m, o_m')) =>
+      let o := (tt, o_m') in
+      match xe with
+      | inl x => (inl (inl (inl x)), o)
+      | inr (inl e_m) => (inl (inr (inl e_m)), o)
+      | inr (inr e_m') => (inl (inr (inr e_m')), o)
+      end
+    | (inr x, (o_m, o_m')) =>
+      let o := (tt, o_m') in
+      match I_of_O o_m with
+      | Some i'_m => (inr (local_run_with_break x I_of_O i'_m), o)
+      | None => (inl (inl (inr x)), o)
+      end
+    end).
+
+Fixpoint local_run_with_break_n {m m' : Monad} A
+  (x : @M.t (m ++ m') A) (I_of_O : @O m -> option (@I m)) (i_m : @I m) (n : nat)
+  : @M.t (Error (@E m) ++ m') (A + @M.t (m ++ m') A) :=
+  match n with
+  | 0 => ret (inr x)
+  | S n' => bind (local_run_with_break x I_of_O i_m) (fun x =>
+    match x with
+    | inl r => ret (inl r)
+    | inr x => local_run_with_break_n x I_of_O i_m n'
+    end)
+  end.
+
+Definition local_run_with_break_terminate {m m' : Monad} A
+  (x : @M.t (m ++ m') A) (I_of_O : @O m -> option (@I m)) (i_m : @I m)
+  : @M.t (Error (@E m) ++ m') A :=
+  let fix aux (x : @M.t (m ++ m') A) (i'_m : @I m) : @M.t (Error (@E m) ++ m') A :=
+    M.new (m := Error (@E m) ++ m') (fun i =>
+      let (_, i_m') := i in
+      match (M.open x) (i'_m, i_m') with
+      | (inl xe, (o_m, o_m')) =>
+        let o := (tt, o_m') in
+        match xe with
+        | inl x => (inl (inl x), o)
+        | inr (inl e_m) => (inl (inr (inl e_m)), o)
+        | inr (inr e_m') => (inl (inr (inr e_m')), o)
+        end
+      | (inr x, (o_m, o_m')) =>
+        let o := (tt, o_m') in
+        match I_of_O o_m with
+        | Some i'_m => (inr (aux x i'_m), o)
+        | None => (inr (aux x i_m), o)
+        end
+      end) in
+  aux x i_m.
+
 (** Coroutines *)
 Instance Waiter (m : Monad) (A B : Type) : Monad := {
-  I := option (A -> @M.t m B);
-  E := unit;
-  O := option (A -> @M.t m B);
-  O_of_I := fun i => i}.
+  I := (A -> @M.t m B) * bool; (* the expected value and if it is fresh *)
+  E := Empty_set;
+  O := (A -> @M.t m B) * bool * bool; (* the last boolean is for breaking *)
+  O_of_I := fun i => (i, false)}.
 
 Module Coroutine.
   Definition t {m : Monad} (A B T : Type) := @M.t (Waiter m A B ++ m) T.
   
-  Definition yield {m : Monad} A B (a : A) : t A B B :=
-    M.new (m := Waiter m A B ++ m) (fun i =>
-      let (f, i_m) := i in
-      match f with
-      | Some f' =>
-        match (M.open (f' a)) i_m with
-        | (inl (inl y), o_m) => (inl (inl y), (None, o_m))
-        | (inl (inr e_m), o_m) => (inl (inr (inr e_m)), (None, o_m))
-        | (inr y, o_m) => (inr (gret y), (None, o_m))
-        end
-      | None => (inl (inr (inl tt)), O_of_I i)
+  Definition break_if_not_fresh {m : Monad} A B : t A B unit :=
+     M.new (m := Waiter m A B ++ m) (fun i =>
+      match i with
+      | ((f, fresh), i_m) => (inl (inl tt), (((f, fresh), negb fresh), O_of_I i_m))
       end).
   
+  Definition use_and_consume {m : Monad} A B (a : A) : t A B B :=
+    M.new (m := Waiter m A B ++ m) (fun i =>
+      match i with
+      | ((f, fresh), i_m) =>
+        let o_w := ((f, false), false) in
+        match M.open (f a) i_m with
+        | (inl (inl y), o_m) => (inl (inl y), (o_w, o_m))
+        | (inl (inr e_m), o_m) => (inl (inr (inr e_m)), (o_w, o_m))
+        | (inr y, o_m) => (inr (gret y), (o_w, o_m))
+        end
+      end).
+  
+  Definition yield {m : Monad} A B (a : A) : t A B B :=
+    seq (break_if_not_fresh _ _) (use_and_consume _ a).
+  
+  Definition I_of_O {m : Monad} A B (o : @O (Waiter m A B)) : option (@I (Waiter m A B)) :=
+    match o with
+    | ((f, fresh), break) =>
+      if break then
+        None
+      else
+        Some (f, fresh)
+    end.
+  
   Definition force {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t (T + t A B T) :=
-    run_with_break x (fun o => o) (Some f).
+    sum_id (local_run_with_break x (I_of_O (B := _)) (f, true)).
   
   Definition force_n {m : Monad} A B T (x : t A B T) (n : nat) (f : A -> M.t B) : M.t (T + t A B T) :=
-    run_with_break_n x (fun o => o) (Some f) n.
+    sum_id (local_run_with_break_n x (I_of_O (B := _)) (f, true) n).
   
-  Definition terminate {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t (option T) :=
-    run_with_break_terminate x (fun o => o) (Some f).
+  Definition terminate {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t T :=
+    sum_id (local_run_with_break_terminate x (I_of_O (B := _)) (f, true)).
 End Coroutine.
 
 Fixpoint iter_list {m : Monad} A (l : list A) : Coroutine.t A unit unit :=
@@ -249,10 +293,16 @@ Definition test_it {m : Monad} := iter_list [1; 5; 7; 2].
 Definition test1 := Coroutine.terminate test_it (fun x => print x).
 Compute run test1 (fun o => o) nil.
 
-Definition test2 := seq
-  (Coroutine.force_n test_it 2 (fun x => print x))
+Definition test2 n := seq
+  (Coroutine.force_n test_it n (fun x => print x))
   (ret tt).
-Compute run test2 (fun o => o) nil.
+Definition test2_run n := run (test2 n) (fun o => o) nil.
+Compute test2_run 0.
+Compute test2_run 1.
+Compute test2_run 2.
+Compute test2_run 3.
+Compute test2_run 4.
+Compute test2_run 5.
 
 Definition test3 := Coroutine.terminate test_it (fun x =>
   if eq_nat_dec x 7 then
