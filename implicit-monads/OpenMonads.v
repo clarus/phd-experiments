@@ -352,12 +352,11 @@ Module Coroutine.
         Some (f, fresh)
     end.*)
   
-  Definition inject_new_f {m : Monad} A B (f : A -> M.t B) : @M.t (State ((A -> @M.t m B) * bool)) unit :=
-    write (f, true).
+  (*Definition inject_new_f {m : Monad} A B (f : A -> M.t B) : @M.t (State ((A -> @M.t m B) * bool)) unit :=
+    write (f, true).*)
   
-  Definition force {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t (T + t A B T) :=
-    local_run_with_break (combine_assoc_left (
-      seq (combine_commut (ret (ret (inject_new_f f)))) x)).
+  (*Definition force {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t (T + t A B T) :=
+    local_run (m' := m) (local_run_with_break x) (fun o => o) (f, true).
   
   Definition force {m : Monad} A B T (x : t A B T) (f : A -> M.t B) : M.t (T + t A B T) :=
     sum_id (local_run_with_break x (I_of_O (B := _)) (f, true)).
@@ -454,11 +453,4 @@ Definition test4_run s :=
   run test4 (fun o => let (sb, o) := o in (fst sb, o)) (s, nil).
 
 Compute test4_run (Streams.const false).
-Compute test4_run (Streams.const true).
-
-
-
-
-
-
-
+Compute test4_run (Streams.const true).*)
