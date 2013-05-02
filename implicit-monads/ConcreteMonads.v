@@ -32,6 +32,19 @@ Definition bind {m : Monad} A B (x : M A) (f : A -> M B) : M B :=
     | (o, Err e) => (o, Err e)
     end.
 
+Lemma monad_law1 {m : Monad} A B (x : A) (f : A -> M B)
+  : bind (ret x) f = f x.
+trivial.
+Qed.
+
+Lemma monad_law2 {m : Monad} A (x : M A)
+  : forall i, bind x (ret (A := _)) i = x i.
+  intro i.
+  unfold bind, ret.
+  destruct (x i).
+  tauto.
+Qed.
+
 Instance Id : Monad := {
   S := unit;
   E := Empty_set}.
@@ -94,14 +107,6 @@ Definition combine_assoc_right (m1 m2 m3 : Monad) A (x : @M (m1 ++ (m2 ++ m3)) A
       end
     end.
 
-Definition gret {m m' : Monad} A (x : @M m' A) : @M (m ++ m') A :=
-  fun i =>
-    let (i1, i2) := i in
-    match x i2 with
-    | (o2, Val x) => ((i1, o2), Val x)
-    | (o2, Err e) => ((i1, o2), Err (inr e))
-    end.
-
 Instance Option : Monad := {
   S := unit;
   E := unit}.
@@ -149,4 +154,12 @@ Definition partial_run {m m' : Monad} A (x : @M (m ++ m') A) (i_m : @S m)
     let (_, i_m') := i in
     match x (i_m, i_m') with
     | ((_, o_2), r) => ((tt, o_2), r)
+    end.
+
+Definition lift {m m' : Monad} A (x : @M m' A) : @M (m ++ m') A :=
+  fun i =>
+    let (i1, i2) := i in
+    match x i2 with
+    | (o2, Val x) => ((i1, o2), Val x)
+    | (o2, Err e) => ((i1, o2), Err (inr e))
     end.
