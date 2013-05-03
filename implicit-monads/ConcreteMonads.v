@@ -188,23 +188,21 @@ Fixpoint is_le (l1 l2 : list bool) : bool :=
 
 Parameters T1 T2 : list bool -> Type.
 
-Definition C1 l := is_le l1 l.
-Definition C2 l := is_le l2 l.
+Parameter e1 : forall l, is_le l1 l = true -> T1 l -> I l (T2 l).
+Parameter e2 : forall l, is_le l2 l = true -> I l (T1 l).
 
-Parameter e1 : forall l, C1 l = true -> T1 l -> I l (T2 l).
-Parameter e2 : forall l, C2 l = true -> I l (T1 l).
-
-Definition inter C1 C2 (l : list bool) : bool :=
-  andb (C1 l) (C2 l).
-
-Parameter phi1 : forall l C1 C2, inter C1 C2 l = true -> C1 l = true.
-Parameter phi2 : forall l C1 C2, inter C1 C2 l = true -> C2 l = true.
+Parameter phi1 : forall l l1 l2, is_le (union l1 l2) l = true -> is_le l1 l = true.
+Parameter phi2 : forall l l1 l2, is_le (union l1 l2) l = true -> is_le l2 l = true.
 
 Parameter bind' : forall l A B, I l A -> (A -> I l B) -> I l B.
 
 Definition app_e1_e2 := fun l p => bind' (@e2 l (phi2 l _ _ p)) (@e1 l (phi1 l _ _ p)).
 
-Check app_e1_e2 l3 eq_refl.
+Definition l' :=
+  let l' := _ in (fun (_ : forall l, is_le l' l = true -> _) => l') app_e1_e2.
+Compute l'.
+
+Check app_e1_e2 l' eq_refl.
 
 (** Inference (old) *)
 Definition nb_monads : nat := 5.
