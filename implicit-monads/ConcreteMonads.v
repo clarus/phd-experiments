@@ -163,3 +163,84 @@ Definition lift {m m' : Monad} A (x : @M m' A) : @M (m ++ m') A :=
     | (o2, Val x) => ((i1, o2), Val x)
     | (o2, Err e) => ((i1, o2), Err (inr e))
     end.
+
+(** Inference *)
+(*Parameter nb_monads : nat.
+
+Definition flags := { l : list bool | length l = nb_monads}. *)
+
+Parameter I : list bool -> Monad.
+
+Fixpoint union (f1 f2 : list bool) : list bool :=
+  match (f1, f2) with
+  | ([], []) => []
+  | (b1 :: f1, b2 :: f2) => orb b1 b2 :: union f1 f2
+  | _ => []
+  end.
+
+(** Tests *)
+Definition f0 := [false; false; false; false; false].
+Definition f1 := [false; false; true; false; true].
+Definition f2 := [true; false; true; true; false].
+Definition f3 := [true; false; true; true; true].
+
+Definition f1f2 := union f1 f2.
+Compute f1f2.
+
+Definition f1' := fun b1 b2 => [false; b1; b2; false; true].
+Compute fun b1 b2 => union (f1' b1 b2) f2.
+Compute fun b1 b2 => union f2 (f1' b1 b2).
+
+Check (fun _ : @M (I [false; false; true; false; true]) nat => tt)
+  (ret (m := I (f1' _ _)) 0).
+
+Fixpoint is_le (f1 f2 : list bool) : bool :=
+  match (f1, f2) with
+  | ([], []) => true
+  | (b1 :: f1, b2 :: f2) => andb (implb b1 b2) (is_le f1 f2)
+  | _ => false
+  end.
+
+Parameter lift' : forall (f1 f2 : list bool) A,
+  is_le f1 f2 = true -> @M (I f1) A -> @M (I f2) A.
+
+Check fun A (x : @M (I f1) A) =>
+  lift' (f1 := f1) f3 eq_refl x.
+
+Definition force_same_type A (_ _ : A) : unit := tt.
+
+Check fun A =>
+  fun x1 : forall f, @M (I (union f1 f)) A =>
+  fun x2 : forall f, @M (I (union f2 f)) A =>
+    force_same_type (x1 [_; _; _; _; _]) (x2 [_; _; _; _; _]).
+
+Check fun A =>
+  fun x1 : forall f, @M (I (union f1 f)) A =>
+  fun x2 : @M (I f3) A =>
+    force_same_type (x1 [_; _; _; _; _]) x2.
+
+Parameter test_map : forall f, forall A B,
+  (A -> @M (I (union f1 f)) B) ->
+  @M (I (union f0 f)) (list B).
+
+Parameter test_fun : forall f,
+  nat -> @M (I (union f2 f)) bool.
+
+Check test_map [_; _; _; _; _] (test_fun [_; _; _; _; _]).
+
+Definition app (f1 f2 f3 : list bool) A B
+  (e1 : @M (I f1) ())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
