@@ -165,9 +165,51 @@ Definition lift {m m' : Monad} A (x : @M m' A) : @M (m ++ m') A :=
     end.
 
 (** Inference *)
-(*Parameter nb_monads : nat.
+Parameter I : list bool -> Type -> Type.
 
-Definition flags := { l : list bool | length l = nb_monads}. *)
+Definition l0 := [false; false; false; false; false].
+Definition l1 := [false; false; true; false; true].
+Definition l2 := [true; false; true; true; false].
+Definition l3 := [true; false; true; true; true].
+
+Fixpoint union (l1 l2 : list bool) : list bool :=
+  match (l1, l2) with
+  | ([], []) => []
+  | (b1 :: l1, b2 :: l2) => orb b1 b2 :: union l1 l2
+  | _ => []
+  end.
+
+Fixpoint is_le (l1 l2 : list bool) : bool :=
+  match (l1, l2) with
+  | ([], []) => true
+  | (b1 :: l1, b2 :: l2) => andb (implb b1 b2) (is_le l1 l2)
+  | _ => false
+  end.
+
+Parameters T1 T2 : list bool -> Type.
+
+Definition C1 l := is_le l1 l.
+Definition C2 l := is_le l2 l.
+
+Parameter e1 : forall l, C1 l = true -> T1 l -> I l (T2 l).
+Parameter e2 : forall l, C2 l = true -> I l (T1 l).
+
+Definition inter C1 C2 (l : list bool) : bool :=
+  andb (C1 l) (C2 l).
+
+Parameter phi1 : forall l C1 C2, inter C1 C2 l = true -> C1 l = true.
+Parameter phi2 : forall l C1 C2, inter C1 C2 l = true -> C2 l = true.
+
+Parameter bind' : forall l A B, I l A -> (A -> I l B) -> I l B.
+
+Definition app_e1_e2 := fun l p => bind' (@e2 l (phi2 l _ _ p)) (@e1 l (phi1 l _ _ p)).
+
+Check app_e1_e2 l3 eq_refl.
+
+(** Inference (old) *)
+Definition nb_monads : nat := 5.
+
+(*Definition flags := { l : list bool | length l = nb_monads}. *)
 
 Parameter I : list bool -> Monad.
 
@@ -228,14 +270,56 @@ Parameter test_fun : forall f,
 
 Check test_map [_; _; _; _; _] (test_fun [_; _; _; _; _]).
 
-Definition app (f1 f2 f3 : list bool) A B
-  (e1 : @M (I f1) ())
+Check fun A =>
+  fun x1 : @M (I (union f1 [_; _; _; _; _])) A =>
+  fun x2 : @M (I f3) A =>
+    force_same_type x1 x2.
 
+Check fun A =>
+  let f := [_; _; _; _; _] in
+  fun x1 : @M (I (union f1 f)) A =>
+  fun x2 : @M (I f3) A =>
+    force_same_type x1 x2.
 
+Parameter F : list bool -> Type.
 
+Check fun (x1 : F f1) (x2 : F (_ :: _)) => force_same_type x1 x2.
 
+Parameter e1 : forall f, F (union f1 f).
+Parameter e2 : F f2.
+Parameter e3 : F f3.
 
+Parameter liftF : forall f1 f2, is_le f1 f2 = true -> F f1 -> F (union f2.
 
+Check let f := _ in liftF (f1 := f1) f eq_refl (e1 ) : F f3.
+
+Class ListUnion (l1 l2 : list bool) := Union : list bool.
+
+Instance UnionNil : ListUnion [] [] :=
+  [].
+
+Instance UnionCons b1 b2 l1 l2 : ListUnion (b1 :: l1) (b2 :: l2) :=
+  (orb b1 b2) :: Union.
+
+Check fun A =>
+  let f := [_; _; _; _; _] in
+  fun x1 : @M (I (Union (l1 := f1) (l2 := f))) A =>
+  fun x2 : @M (I f2) A =>
+    force_same_type x1 x2.
+
+Require Import Vector.
+
+Definition union' n := Vector.map2 (n := n) orb.
+
+Parameter I' : Vector.t bool nb_monads -> Monad.
+
+Definition f1v := Vector.of_list f1.
+Definition f3v := Vector.of_list f3.
+
+Check fun A =>
+  fun x1 : @M (I' (union' f1v _)) A =>
+  fun x2 : @M (I' f3v) A =>
+    force_same_type x1 x2.
 
 
 
