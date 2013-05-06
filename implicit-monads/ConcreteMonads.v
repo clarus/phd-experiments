@@ -186,23 +186,33 @@ Fixpoint is_le (l1 l2 : list bool) : bool :=
   | _ => false
   end.
 
-Parameters T1 T2 : list bool -> Type.
+Definition L := list bool.
 
-Parameter e1 : forall l, is_le l1 l = true -> T1 l -> I l (T2 l).
-Parameter e2 : forall l, is_le l2 l = true -> I l (T1 l).
+Definition Constraint := L -> bool.
 
-Parameter phi1 : forall l l1 l2, is_le (union l1 l2) l = true -> is_le l1 l = true.
-Parameter phi2 : forall l l1 l2, is_le (union l1 l2) l = true -> is_le l2 l = true.
+Parameters C1 C2 : Constraint.
+Parameter Cand : Constraint -> Constraint -> Constraint.
+
+Parameters T1 T2 : L -> Type.
+
+Parameter e1 : forall l, C1 l = true -> T1 l -> I l (T2 l).
+Parameter e2 : forall l, C2 l = true -> I l (T1 l).
+
+Parameter pi1 : forall l C1 C2, Cand C1 C2 l = true -> C1 l = true.
+Parameter pi2 : forall l C1 C2, Cand C1 C2 l = true -> C2 l = true.
 
 Parameter bind' : forall l A B, I l A -> (A -> I l B) -> I l B.
 
-Definition app_e1_e2 := fun l p => bind' (@e2 l (phi2 l _ _ p)) (@e1 l (phi1 l _ _ p)).
+Definition app_e1_e2 := fun l c => bind' (@e2 l (pi2 c)) (@e1 l (pi1 c)).
 
 Definition l' :=
   let l' := _ in (fun (_ : forall l, is_le l' l = true -> _) => l') app_e1_e2.
 Compute l'.
 
 Check app_e1_e2 l' eq_refl.
+
+Check let n := 12 in let m := 12 in eq_refl : n = m.
+Fail Check fun n => let m := 12 in eq_refl : n = m.
 
 (** Inference (old) *)
 Definition nb_monads : nat := 5.
