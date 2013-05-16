@@ -1,10 +1,10 @@
-Require Import List.
-
-Import ListNotations.
-
+(** A first attempt to make a typed assembly language. Only calls to inlined
+   functions and conditional jumps to following intructions. Termination of the
+   evaluation is trivial. *)
 Set Implicit Arguments.
 
 Module Asm.
+  (** [S] is the memory, [L] is the logical state. *)
   Inductive t (S : Set) (L : S -> Type) : Type :=
   | op :
     forall (f : S -> S), (forall s, L s -> L (f s)) ->
@@ -49,12 +49,31 @@ End Asm.
 Import Asm.
 Require Import Arith.Compare_dec.
 
+(** A program where the state is a single natural number, and the logical world
+    a proof that it is greater or equal to three. *)
 Definition test1 : t (fun n => 3 <= n).
   refine (
-    op (fun _ => 12) (fun n _ => _) (
-    op (fun n => n + 1) (fun n h => _) (
+    op (fun _ => 12) _ (
+    op (fun n => n + 1) _ (
     ret _)));
   auto with *.
 Defined.
 
 Compute eval test1 3 (leb_complete 3 3 eq_refl).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
