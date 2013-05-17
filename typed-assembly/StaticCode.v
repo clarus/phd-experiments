@@ -67,3 +67,28 @@ Module Program.
           now apply le_Sn_le.
   Defined.
 End Program.
+
+Module Test1.
+  Import Instr.
+  
+  Definition S := nat.
+  Definition L := fun n => prod (3 <= n) nat.
+  
+  Definition measure (x : {n : S & L n}) : nat :=
+    match x with
+    | existT _ _ (_, counter) => counter
+    end.
+  
+  Definition lt (x y : sigT L) : Prop :=
+    
+  
+  (** A program where the state is a single natural number, and the logical world
+      a proof that it is greater or equal to three. *)
+  Definition test1 : Program.t (fun n => 3 <= n).
+    refine (
+      op (fun _ => 12) _ (
+      op (fun n => n + 1) _ (
+      ret _)));
+    auto with *.
+  Defined.
+End Test1.
