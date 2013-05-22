@@ -74,19 +74,13 @@ End Program.
 Module Test1.
   Import Instr.
   
-  Definition S := prod nat nat.
+  Definition S := nat.
   
-  Definition L : S -> Prop := fun s =>
-    let (n, ip) := s in
-    3 <= n /\ ip <> 0.
+  Definition L (n : S) : Prop :=
+    3 <= n.
   
-  Definition measure (x : {s : S & L s}) : nat :=
-    match x with
-    | existT _ (_, ip) _ => ip
-    end.
-  
-  Definition lt (x y : sigT L) : Prop :=
-    measure x < measure y.
+  Definition lt (x y : nat * sigT L) : Prop :=
+    fst x < fst y.
   
   Lemma lt_wf : well_founded lt.
     apply well_founded_ltof.
@@ -94,18 +88,26 @@ Module Test1.
   
   Definition size := 2.
   
-  Definition dec_ip (f : nat -> nat) (s : S) : S :=
-    let (n, ip) := s in
-    (f n, pred ip).
-  
   (** A program where the state is a single natural number, and the logical world
       a proof that it is greater or equal to three. *)
   Definition test1 : Program.t lt_wf size.
     refine [
-      op lt_wf size (dec_ip (fun n => n + 1)) _;
-      op lt_wf size (dec_ip (fun _ => 12)) _]; intros s l.
-      
-      eapply exist.
-    auto with *.
+      op lt_wf size (fun n => existT _ (n + 1) _);
+      op lt_wf size (fun _ => existT _ 12 _)];
+      unfold S, L, lt; intro l;
+      [assert (H : L (n + 1)) | assert (H : 3 <= 12)]; unfold L; auto with *;
+      apply exist with (x := H);
+      intro ip; simpl; auto.
   Defined.
+  
+  Definition input : nat * {s : S & L s}.
+    refine (2, existT _ 23 _).
+    unfold L; auto with *.
+  Defined.
+  
+  Lemma input_is_valid : fst input <= size.
+    trivial.
+  Qed.
+  
+  Check eq_refl : 13 = projT1 (Program.eval test1 eq_refl input input_is_valid).
 End Test1.
