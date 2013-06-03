@@ -23,11 +23,22 @@ Module Instr.
     (lt : (nat * sigT L) -> (nat * sigT L) -> Prop) (Hwf : well_founded lt)
     (size : nat) : Type :=
   | op :
-    (forall s, {s' : S & forall (l : L s), {l' : L s' |
-      forall ip, lt (ip, existT _ _ l') (Datatypes.S ip, existT _ _ l) }}) -> t Hwf size
-  | jcc :
-    (forall s, {next_ip : nat & forall (l : L s), (next_ip <= size) * {l' : L s |
-      forall ip, lt (next_ip, existT _ _ l') (ip, existT _ _ l) }}) -> t Hwf size.
+    (forall s ip, {s'_next_ip : S * nat &
+      let (s', next_ip) := s'_next_ip in
+      forall (l : L s), Datatypes.S ip <= size -> (next_ip <= size) * {l' : L s' |
+      lt (next_ip, existT _ _ l') (Datatypes.S ip, existT _ _ l) }}) ->
+      t Hwf size.
+  
+  Definition eval (S : Set) (L : S -> Type)
+    (lt : (nat * sigT L) -> (nat * sigT L) -> Prop) (Hwf : well_founded lt)
+    (size : nat) (i : t Hwf size)
+    (ip : nat) (s : S) (l : L s) (Hip_valid : Datatypes.S ip <= size)
+    : {next_ip : nat | next_ip <= size} * {s' : S & L s'}.
+    destruct i as [i].
+    destruct (i s ip) as ((s', next_ip), fl).
+    destruct (fl l Hip_valid) as (Hnext_ip_valid, (l', _)).
+    exact (exist _ next_ip Hnext_ip_valid, existT _ s' l').
+  Defined.
 End Instr.
 
 Module Program.
@@ -54,20 +65,10 @@ Module Program.
         rewrite Hp_valid in Hip_valid.
         apply lt_S_n.
         now apply le_lt_n_Sm.
-      destruct i as [f | f].
-        (* The current instruction is an [op]. *)
-        refine (
-          let (s', fl) := f s in
-          let (l', Hl'_lt_l) := fl l in
-          eval (ip, existT _ _ l') (Hl'_lt_l _) _).
-          now apply le_Sn_le.
-        
-        (* The current instruction is a [jcc]. *)
-          exact (
-            let (next_ip, fl) := f s in
-            let (Hnext_ip, l'_Hl'_lt_l) := fl l in
-            let (l', Hl'_lt_l) := l'_Hl'_lt_l in
-            eval (next_ip, existT _ _ l') (Hl'_lt_l _) Hnext_ip).
+      destruct i as [i].
+      destruct (i s ip) as ((s', next_ip), fl).
+      destruct (fl l Hip_valid) as (Hnext_ip_valid, (l', Hl'_lt_l)).
+      exact (eval (next_ip, existT _ _ l') Hl'_lt_l Hnext_ip_valid).
   Defined.
 End Program.
 
@@ -82,22 +83,23 @@ Module Test1.
   Definition lt (x y : nat * sigT L) : Prop :=
     fst x < fst y.
   
+  (** Has to be transparent to reduce the well-founded recursion. *)
   Lemma lt_wf : well_founded lt.
     apply well_founded_ltof.
-  Qed.
+  Defined.
   
   Definition size := 2.
   
   (** A program where the state is a single natural number, and the logical world
       a proof that it is greater or equal to three. *)
-  Definition test1 : Program.t lt_wf size.
+  Definition progr : Program.t lt_wf size.
     refine [
-      op lt_wf size (fun n => existT _ (n + 1) _);
-      op lt_wf size (fun _ => existT _ 12 _)];
-      unfold S, L, lt; intro l;
-      [assert (H : L (n + 1)) | assert (H : 3 <= 12)]; unfold L; auto with *;
-      apply exist with (x := H);
-      intro ip; simpl; auto.
+      op lt_wf size (fun n ip => existT _ (n + 1, ip) _);
+      op lt_wf size (fun _ ip => existT _ (12, ip) _)];
+      unfold S, L, lt; intros l Hip_valid;
+      (split; [now apply le_Sn_le |]);
+      [assert (H : L (n + 1)) | assert (H : 3 <= 12)]; unfold L; auto with arith;
+      apply exist with (x := H); auto.
   Defined.
   
   Definition input : nat * {s : S & L s}.
@@ -109,5 +111,28 @@ Module Test1.
     trivial.
   Qed.
   
-  Check eq_refl : 13 = projT1 (Program.eval test1 eq_refl input input_is_valid).
+  Definition first_op : Instr.t lt_wf size.
+    refine (op lt_wf size (fun n ip => existT _ (n + 1, ip) _)).
+    unfold S, L, lt; intros l Hip_valid.
+    split; [now apply le_Sn_le |].
+    assert (H : L (n + 1)); unfold L; auto with arith.
+    apply exist with (x := H); auto.
+  Defined.
+  
+  Compute Instr.eval first_op (ip := 1) 23
+    (leb_complete 3 23 eq_refl) (leb_complete 2 2 eq_refl).
+  
+  Definition progr_small : Program.t lt_wf 1.
+    refine [
+      op lt_wf 1 (fun n ip => existT _ (n + 1, ip) _)];
+      unfold S, L, lt; intros l Hip_valid;
+      (split; [now apply le_Sn_le |]);
+      [assert (H : L (n + 1))]; unfold L; auto with arith;
+      apply exist with (x := H); auto.
+  Defined.
+  
+  Compute projT1 (Program.eval progr_small eq_refl
+    (1, existT _ 23 (leb_complete 3 23 eq_refl)) (leb_complete 1 1 eq_refl)).
+  
+  Compute projT1 (Program.eval progr eq_refl input input_is_valid).
 End Test1.
