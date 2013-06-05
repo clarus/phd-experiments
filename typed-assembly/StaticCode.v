@@ -106,72 +106,131 @@ Module Test1.
   Compute projT1 (projT2 (eval progr 1 23 (leb_complete 3 23 eq_refl))).
 End Test1.
 
-(** A language with arithmetic expressions and assertions *)
+(** A language with arithmetic expressions and assertions. *)
 Module ArithLang.
   Require Import ZArith.
   
   Local Open Scope Z_scope.
   
-  Inductive t : (Z -> Prop) -> Type :=
-  | const : forall (P : Z -> Prop) z, P z -> t P
-  | uminus : forall (P1 P : Z -> Prop), t P1 ->
-    (forall z, P1 z -> P (- z)) -> t P
-  | plus : forall (P1 P2 P : Z -> Prop), t P1 -> t P2 ->
-    (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 + z2)) -> t P
-  | times : forall (P1 P2 P : Z -> Prop), t P1 -> t P2 ->
-    (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 * z2)) -> t P.
-  
-  Fixpoint eval P (e : t P) {struct e} : {z : Z | P z}.
-    destruct e as [P z H | P1 P e1 Hcast | P1 P2 P e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
-    - exists z; trivial.
+  Module Source.
+    Inductive t : (Z -> Prop) -> Type :=
+    | const : forall (P : Z -> Prop) z, P z -> t P
+    | uminus : forall (P1 P : Z -> Prop), t P1 ->
+      (forall z1, P1 z1 -> P (- z1)) -> t P
+    | plus : forall (P1 P2 P : Z -> Prop), t P1 -> t P2 ->
+      (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 + z2)) -> t P
+    | times : forall (P1 P2 P : Z -> Prop), t P1 -> t P2 ->
+      (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 * z2)) -> t P.
     
-    - destruct (eval _ e1) as (z1, H1).
-      exists (- z1); auto.
-    
-    - destruct (eval _ e1) as (z1, H1).
-      destruct (eval _ e2) as (z2, H2).
-      exists (z1 + z2); auto.
-    
-    - destruct (eval _ e1) as (z1, H1).
-      destruct (eval _ e2) as (z2, H2).
-      exists (z1 * z2); auto.
-  Defined.
-  
-  Module Test.
-    Definition example (x : Z) (H : x >= 10) : {y : Z | y >= 20}.
-      refine (
-        let y := x + 12 in
-        existT _ y _).
-      abstract (unfold y; omega).
+    Fixpoint eval P (e : t P) {struct e} : {z : Z | P z}.
+      destruct e as [P z H | P1 P e1 Hcast | P1 P2 P e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
+      - exists z; trivial.
+      
+      - destruct (eval _ e1) as (z1, H1).
+        exists (- z1); auto.
+      
+      - destruct (eval _ e1) as (z1, H1).
+        destruct (eval _ e2) as (z2, H2).
+        exists (z1 + z2); auto.
+      
+      - destruct (eval _ e1) as (z1, H1).
+        destruct (eval _ e2) as (z2, H2).
+        exists (z1 * z2); auto.
     Defined.
     
-    Definition e (x : Z) (H : x >= 10) : t (fun y => y >= 20).
-      refine (
-        plus _ (const (fun x => x >= 10) x H) (const _ 12 eq_refl) _).
-      abstract (intros; omega).
-    Defined.
+    Module Test.
+      Definition example (x : Z) (H : x >= 10) : {y : Z | y >= 20}.
+        refine (
+          let y := x + 12 in
+          existT _ y _).
+        abstract (unfold y; omega).
+      Defined.
+      
+      Definition e (x : Z) (H : x >= 10) : t (fun y => y >= 20).
+        refine (
+          plus _ (const (fun x => x >= 10) x H) (const _ 12 eq_refl) _).
+        abstract (intros; omega).
+      Defined.
+      
+      Lemma ge15 : 15 >= 10.
+        omega.
+      Qed.
+      
+      Compute projT1 (eval (e ge15)).
+    End Test.
+  End Source.
+  
+  Module MacroAsm.
+    Module Sig.
+      Definition t := list (Z -> Prop).
+    End Sig.
     
-    Lemma ge15 : 15 >= 10.
-      omega.
-    Qed.
+    Module Stack.
+      Inductive t : Sig.t -> Type :=
+      | nil : t nil
+      | cons : forall P, {z : Z | P z} -> forall sig, t sig -> t (P :: sig).
+    End Stack.
     
-    Compute projT1 (eval (e ge15)).
-  End Test.
-End ArithLang.
-
-Module ArithAsm.
-  Require Import ZArith.
+    Module Instr.
+      Inductive t : Type :=
+      | const : forall (P : Z -> Prop), {z : Z | P z} -> t
+      | uminus : forall (P1 P : Z -> Prop), (forall z1, P1 z1 -> P (- z1)) -> t
+      | plus : forall (P1 P2 P : Z -> Prop), (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 + z2)) -> t
+      (*| times : forall (P1 P2 P : Z -> Prop), (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 * z2)) -> t*).
+      
+      Definition input_sig (i : t) (context : Sig.t) : Sig.t :=
+        match i with
+        | const _ _ => context
+        | uminus P1 _ _ => P1 :: context
+        | plus P1 P2 _ _ => P1 :: P2 :: context
+        end.
+      
+      Definition output_sig (i : t) (context : Sig.t) : Sig.t :=
+        match i with
+        | const P _ | uminus _ P _ | plus _ _ P _ => P :: context
+        end.
+      
+      Definition eval (i : t) (context : Sig.t) (s : Stack.t (input_sig i context))
+        : Stack.t (output_sig i context).
+        destruct i as [P z | P1 P Hcast | P1 P2 P Hcast]; simpl in *.
+        - exact (Stack.cons P z s).
+        
+        - inversion_clear s as [|P' z1 sig s'].
+          destruct z1 as (z1, H1).
+          exact (Stack.cons P (existT _ (- z1) (Hcast z1 H1)) s').
+        
+        - inversion_clear s as [|P' z1 sig s']; inversion_clear s' as [|P' z2 sig s''].
+          destruct z1 as (z1, H1); destruct z2 as (z2, H2).
+          exact (Stack.cons P (existT _ (z1 + z2) (Hcast z1 z2 H1 H2)) s'').
+      Defined.
+    End Instr.
+    
+    Module Program.
+      Inductive t (P : Z -> Prop) : Sig.t -> Type :=
+      | nil : t P [P]
+      | cons : forall (i : Instr.t) context,
+        t P (Instr.output_sig i context) -> t P (Instr.input_sig i context).
+      
+      Fixpoint eval_aux P input_sig (p : t P input_sig) (s : Stack.t input_sig)
+        : {z : Z | P z}.
+        destruct p as [|i context p].
+        - inversion_clear s as [|P' z sig s'].
+          exact z.
+        
+        - exact (
+          let s := Instr.eval i context s in
+          eval_aux _ _ p s).
+      Defined.
+      
+      Definition eval P (p : t P []) : {z : Z | P z} :=
+        eval_aux p Stack.nil.
+    End Program.
+  End MacroAsm.
   
-  Local Open Scope Z_scope.
+  Module ConcreteAsm.
+  End ConcreteAsm.
   
-  Definition S := list Z.
-  
-  Definition lt (L : S -> Type) (x y : nat * sigT L) : Prop :=
-    Peano.lt (fst x) (fst y).
-  
-  Lemma lt_wf : forall L, well_founded (@lt L).
-    intro; apply well_founded_ltof.
-  Defined.
+  (*Definition compile_aux (p : list t) : Program.t lt_wf (length p) :=
   
   Definition instr_of_state_update L size
     (f : S -> S) (fl : forall s, L s -> L (f s))
@@ -233,8 +292,8 @@ Module ArithAsm.
     Compute eval p1.
     Compute eval p2.
     Compute eval p3.
-  End Test.
-End ArithAsm.
+  End Test.*)
+End ArithLang.
 
 
 
