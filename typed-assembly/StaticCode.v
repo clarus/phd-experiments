@@ -14,7 +14,7 @@ Module Instr.
   Definition lt_type (S : Set) (L : nat -> S -> Type) :=
     {ip : nat & {s : S & L ip s}} -> {ip : nat & {s : S & L ip s}} -> Prop.
   
-  Definition t (S : Set) (L : nat -> S -> Type) (lt : lt_type L) (Hwf : well_founded lt)
+  Definition t (S : Set) (L : nat -> S -> Type) (lt : lt_type L)
     (ip : nat) : Type :=
     forall s, {ip' : nat & {s' : S &
       forall (l : L ip s), {l' : L ip' s' |
@@ -22,14 +22,14 @@ Module Instr.
 End Instr.
 
 Module Program.
-  Inductive t (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
+  Inductive t (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L)
     (ip0 : nat) :=
   | nil
-  | cons (i : Instr.t Hwf ip0) (p : t Hwf (Datatypes.S ip0)).
+  | cons (i : Instr.t lt ip0) (p : t lt (Datatypes.S ip0)).
   
   (** Sub-proofs are made transparent to allow reductions. *)
-  Fixpoint nth (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (ip0 : nat) (p : t Hwf ip0) (n : nat) : option (Instr.t Hwf (ip0 + n)).
+  Fixpoint nth (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L)
+    (ip0 : nat) (p : t lt ip0) (n : nat) : option (Instr.t lt (ip0 + n)).
     destruct p as [|i p].
       exact None.
       
@@ -44,11 +44,11 @@ Module Program.
           intros a b; induction a; simpl; trivial.
           simpl; now rewrite IHa.
         rewrite Haux.
-        exact (nth _ _ _ _ _ p _).
+        exact (nth _ _ _ _ p _).
   Defined.
   
   Definition eval (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (p : t Hwf 0) (ip : nat) (s : S) (l : L ip s)
+    (p : t lt 0) (ip : nat) (s : S) (l : L ip s)
     : {ip' : nat & {s' : S & L ip' s'}}.
     refine (let aux : {ip' : nat & {s' : S & L ip' s'}} -> _ := _ in
       aux (existT _ _ (existT _ _ l))).
@@ -93,7 +93,7 @@ Module Test1.
   
   (** A program where the state is a single natural number, and the logical world
       a proof that it is greater or equal to three. *)
-  Definition progr : Program.t lt_wf 0.
+  Definition progr : Program.t lt 0.
     refine (
       cons (fun n => existT _ size (existT _ (n + 1) _)) ( (* n := n + 1 *)
       cons (fun n => existT _ 0 (existT _ 12 _)) ( (* n := 12 *)
@@ -103,7 +103,7 @@ Module Test1.
       exists H; auto.
   Defined.
   
-  Compute projT1 (projT2 (eval progr 1 23 (leb_complete 3 23 eq_refl))).
+  Compute projT1 (projT2 (eval lt_wf progr 1 23 (leb_complete 3 23 eq_refl))).
 End Test1.
 
 (** A language with arithmetic expressions and assertions. *)
@@ -289,11 +289,85 @@ Module ArithLang.
       Definition p4 := Compile.compile (Source.Test.e
         (Source.Test.geb_complete 15 10 eq_refl)).
       
-      Compute projT1 (eval p4).
+      Check eq_refl : 27 = projT1 (eval p4).
     End Test.
   End MacroAsm.
   
   Module ConcreteAsm.
+    Module Stack.
+      Definition t : Set := list Z.
+    End Stack.
+    
+    Module RawInstr.
+      Inductive t : Set :=
+      | const (z : Z) | uminus | plus | times.
+      
+      Definition eval (i : t) (s : Stack.t) : Stack.t :=
+        match i with
+        | const z => z :: s
+        | uminus =>
+          match s with
+          | z1 :: s => (- z1) :: s
+          | _ => s
+          end
+        | plus =>
+          match s with
+          | z1 :: z2 :: s => (z1 + z2) :: s
+          | _ => s
+          end
+        | times =>
+          match s with
+          | z1 :: z2 :: s => (z1 * z2) :: s
+          | _ => s
+          end
+        end.
+    End RawInstr.
+    
+    Module AnnotedInstr.
+      Definition f_lt T size (x : {ip : nat & T ip}) : nat :=
+        if leb size (projT1 x) then
+          0
+        else
+          (projT1 x) + 1.
+      
+      Definition lt (L : nat -> Stack.t -> Prop) size : Instr.lt_type L := fun x y =>
+        (f_lt _ size x < f_lt _ size y) % nat.
+      
+      Lemma lt_wf L size : well_founded (lt L size).
+        apply well_founded_ltof.
+      Defined.
+      
+      Definition t (L : nat -> Stack.t -> Prop) (size ip : nat) : Type :=
+        Instr.t (lt L size) ip.
+      
+      Definition decr_ip (size ip : nat) : nat :=
+        match ip with
+        | O => size
+        | S ip => ip
+        end.
+      
+      Definition lift (L : nat -> Stack.t -> Prop) (size : nat)
+        (i : RawInstr.t) (ip : nat) (Hip : (ip < size) % nat)
+        (fl : forall s, L ip s -> L (decr_ip size ip) (RawInstr.eval i s))
+        : t L size ip.
+        unfold t, Instr.t.
+        intro s.
+        exists (decr_ip size ip).
+        exists (RawInstr.eval i s).
+        intro l.
+        exists (fl s l).
+        unfold lt, f_lt.
+        destruct ip as [|ip]; simpl.
+        - rewrite (leb_correct size size (le_refl _)).
+          rewrite (leb_correct_conv 0 size Hip).
+          now apply lt_n_Sn.
+        
+        - assert (H : (ip < size) % nat); [omega |].
+          rewrite (leb_correct_conv ip size H).
+          rewrite (leb_correct_conv (S ip) size Hip).
+          now apply lt_n_Sn.
+      Defined.
+    End AnnotedInstr.
   End ConcreteAsm.
   
   (*Definition compile_aux (p : list t) : Program.t lt_wf (length p) :=
