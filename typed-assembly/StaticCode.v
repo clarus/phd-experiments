@@ -8,28 +8,6 @@ Import ListNotations.
 
 Set Implicit Arguments.
 
-(** A complete version of [nth] for lists given the right pre-condition. *)
-Fixpoint valid_nth A (l : list A) (n : nat) (H : n < length l) : A.
-  destruct n as [|n]; destruct l as [| x l];
-    try destruct (lt_n_0 _ H).
-    exact x.
-    
-    refine (valid_nth _ l n _).
-    now apply lt_S_n.
-Defined.
-
-(*Module Ip.
-  Definition t : Set := nat.
-  
-  Definition tl (size : nat) : Set := {ip : nat | ip < size}.
-  
-  (*Definition is_valid (ip : t) (size : nat) :=
-    match ip with
-    | None => True
-    | Some ip => ip < size
-    end.*)
-End Ip.*)
-
 Module Instr.
   Open Local Scope type.
   
@@ -41,15 +19,6 @@ Module Instr.
     forall s, {ip' : nat & {s' : S &
       forall (l : L ip s), {l' : L ip' s' |
         lt (existT _ _ (existT _ _ l')) (existT _ _ (existT _ _ l)) }}}.
-  
-  (** Simple eval of just one instruction (for tests) *)
-  Definition eval (S : Set) (L : nat -> S -> Type) (lt : lt_type L) (Hwf : well_founded lt)
-    (ip : nat) (i : t Hwf ip) (s : S) (l : L ip s)
-    : {ip' : nat & {s' : S & L ip' s'}}.
-    destruct (i s) as (ip', (s', fl)).
-    destruct (fl l) as (l', _).
-    now exists ip'; exists s'.
-  Defined.
 End Instr.
 
 Module Program.
@@ -58,6 +27,7 @@ Module Program.
   | nil
   | cons (i : Instr.t Hwf ip0) (p : t Hwf (Datatypes.S ip0)).
   
+  (** Sub-proofs are made transparent to allow reductions. *)
   Fixpoint nth (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
     (ip0 : nat) (p : t Hwf ip0) (n : nat) : option (Instr.t Hwf (ip0 + n)).
     destruct p as [|i p].
@@ -76,74 +46,6 @@ Module Program.
         rewrite Haux.
         exact (nth _ _ _ _ _ p _).
   Defined.
-  
-  (*Definition is_valid (S : Set) (L : nat -> S -> Type)
-    (lt : {ip : nat & {s : S & L ip s}} -> {ip : nat & {s : S & L ip s}} -> Prop) (Hwf : well_founded lt)
-    (p : t L Hwf) : Prop :=
-    let fix aux p (ip : nat) : Prop :=
-      match p with
-      | nil => True
-      | existT _ ip' _ :: p => ip' = ip /\ aux p (Datatypes.S ip)
-      end in
-    aux p 0.
-  
-  Lemma is_valid_nth (S : Set) (L : nat -> S -> Type)
-    (lt : {ip : nat & {s : S & L ip s}} -> {ip : nat & {s : S & L ip s}} -> Prop) (Hwf : well_founded lt)
-    (p : t L Hwf) (H : is_valid p)
-    : forall (ip : nat) (Hip : ip < length p), projT1 (valid_nth p Hip) = ip.
-    induction p; intros ip Hip; simpl in H.
-      admit.
-      
-      destruct ip as [|ip]; simpl.
-        unfold is_valid in H.
-        destruct a as (ip', f); simpl in *.
-        tauto.
-        
-        unfold is_valid in H.
-        simpl.
-        unfold is_valid in H; simpl in H.
-  Admitted.*)
-  
-  (*Definition is_valid (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (p : t Hwf) : Prop :=
-    forall (ip : nat) (H : ip < length p), projT1 (valid_nth p H) = ip.
-  
-  Definition is_valid_aux (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (p : t Hwf) (ip0 : nat) : Prop :=
-    forall (ip : nat) (H : ip < length p), projT1 (valid_nth p H) = ip0 + ip.
-  
-  (** All sub-proofs are made transparent for reduction. *)
-  Fixpoint decide_is_valid_aux (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (p : t Hwf) (ip0 : nat) : option (is_valid_aux p ip0).
-    destruct p as [|i p].
-      refine (Some _); unfold is_valid; intros ip H.
-      unfold Peano.lt in H.
-      simpl in H.
-      inversion H.
-      
-      destruct i as (ip', f).
-      destruct (eq_nat_dec ip0 ip') as [Hip0_ip' | _]; [| exact None].
-      destruct (decide_is_valid_aux _ _ _ _ p (1 + ip0)) as [Hp |]; [| exact None].
-      refine (Some _); unfold is_valid; intros ip H.
-      destruct ip as [|ip]; simpl in *.
-        now rewrite Hip0_ip'.
-        
-        unfold is_valid_aux in Hp.
-        assert (Haux : forall n m, n + Datatypes.S m = Datatypes.S n + m).
-          intros n m; induction n; trivial.
-          simpl; now rewrite IHn.
-        rewrite Haux.
-        apply Hp.
-  Defined.
-  
-  Definition decide_is_valid (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (p : t Hwf) : option (is_valid p) :=
-    decide_is_valid_aux p 0.
-  
-  Definition reflexive_is_valid (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
-    (p : t Hwf) (H : (if decide_is_valid p then true else false) = true) : is_valid p.
-    now destruct (decide_is_valid p) as [Hvalid |].
-  Defined.*)
   
   Definition eval (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (Hwf : well_founded lt)
     (p : t Hwf 0) (ip : nat) (s : S) (l : L ip s)
@@ -201,55 +103,14 @@ Module Test1.
       exists H; auto.
   Defined.
   
-  (*Definition progr_is_valid : Program.is_valid progr :=
-    Program.reflexive_is_valid progr eq_refl.
-  
-  Definition progr_is_valid' : Program.is_valid progr.
-  Admitted.*)
-  
   Compute projT1 (projT2 (eval progr 1 23 (leb_complete 3 23 eq_refl))).
-  
-  (*Definition input : nat * {s : S & L s}.
-    refine (2, existT _ 23 _).
-    unfold L; auto with *.
-  Defined.
-  
-  Lemma input_is_valid : fst input <= size.
-    trivial.
-  Qed.
-  
-  Definition first_op : Instr.t lt_wf size.
-    unfold t.
-    refine (fun n ip => existT _ (n + 1, ip) _).
-    unfold S, L, lt; intros l Hip_valid.
-    split; [now apply le_Sn_le |].
-    assert (H : L (n + 1)); unfold L; auto with arith.
-    apply exist with (x := H); auto.
-  Defined.
-  
-  Compute Instr.eval first_op (ip := 1) 23
-    (leb_complete 3 23 eq_refl) (leb_complete 2 2 eq_refl).
-  
-  Definition progr_small : Program.t lt_wf 1.
-    refine [
-      fun n ip => existT _ (n + 1, ip) _];
-      unfold S, L, lt; intros l Hip_valid;
-      (split; [now apply le_Sn_le |]);
-      [assert (H : L (n + 1))]; unfold L; auto with arith;
-      apply exist with (x := H); auto.
-  Defined.
-  
-  Compute projT1 (Program.eval progr_small eq_refl
-    (1, existT _ 23 (leb_complete 3 23 eq_refl)) (leb_complete 1 1 eq_refl)).*)
 End Test1.
 
 (** A language with arithmetic expressions and assertions *)
-Module Arith.
+Module ArithLang.
   Require Import ZArith.
   
   Local Open Scope Z_scope.
-  
-(*   Definition subZ P := {z : Z | P z}. *)
   
   Inductive t : (Z -> Prop) -> Type :=
   | const : forall (P : Z -> Prop) z, P z -> t P
@@ -296,7 +157,7 @@ Module Arith.
     
     Compute projT1 (eval (e ge15)).
   End Test.
-End Arith.
+End ArithLang.
 
 Module ArithAsm.
   Require Import ZArith.
