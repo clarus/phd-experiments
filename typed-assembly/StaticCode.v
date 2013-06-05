@@ -225,6 +225,34 @@ Module ArithLang.
       Definition eval P (p : t P []) : {z : Z | P z} :=
         eval_aux p Stack.nil.
     End Program.
+    
+    Module Test.
+      Import Instr Program.
+      
+      Definition P (z : Z) := True.
+      
+      (** const 12 *)
+      Definition p1 :=
+        cons (const P (existT _ 12 I)) _ (
+        nil P).
+      
+      (** const 12; uminus *)
+      Definition p2 :=
+        cons (const P (existT _ 12 I)) _ (
+        cons (uminus _ _ (fun _ _ => I)) _ (
+        nil P)).
+      
+      (** const 12; const 5; plus *)
+      Definition p3 :=
+        cons (const P (existT _ 12 I)) _ (
+        cons (const P (existT _ 5 I)) _ (
+        cons (plus _ _ _ (fun _ _ _ _ => I)) _ (
+        nil P))).
+      
+      Compute projT1 (eval p1).
+      Compute projT1 (eval p2).
+      Compute projT1 (eval p3).
+    End Test.
   End MacroAsm.
   
   Module ConcreteAsm.
