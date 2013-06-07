@@ -8,22 +8,30 @@ Import ListNotations.
 
 Set Implicit Arguments.
 
+(** A complete version of [nth] for lists given the right pre-condition. *)
+Fixpoint valid_nth A (l : list A) (n : nat) (H : n < length l) : A.
+  destruct n as [|n]; destruct l as [| x l];
+    try destruct (lt_n_0 _ H).
+    exact x.
+    
+    refine (valid_nth _ l n _).
+    now apply lt_S_n.
+Defined.
+
 Module Instr.
   Open Local Scope type.
   
   Definition lt_type (S : Set) (L : nat -> S -> Type) :=
     {ip : nat & {s : S & L ip s}} -> {ip : nat & {s : S & L ip s}} -> Prop.
   
-  Definition t (S : Set) (L : nat -> S -> Type) (lt : lt_type L)
-    (ip : nat) : Type :=
+  Definition t (S : Set) (L : nat -> S -> Type) (lt : lt_type L) (ip : nat) : Type :=
     forall s, {ip' : nat & {s' : S &
       forall (l : L ip s), {l' : L ip' s' |
         lt (existT _ _ (existT _ _ l')) (existT _ _ (existT _ _ l)) }}}.
 End Instr.
 
 Module Program.
-  Inductive t (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L)
-    (ip0 : nat) :=
+  Inductive t (S : Set) (L : nat -> S -> Type) (lt : Instr.lt_type L) (ip0 : nat) :=
   | nil
   | cons (i : Instr.t lt ip0) (p : t lt (Datatypes.S ip0)).
   
@@ -217,6 +225,12 @@ Module ArithLang.
       | cons : forall (i : Instr.t) context,
         t P (Instr.output_sig i context) -> t P (Instr.input_sig i context).
       
+      Fixpoint length P input_sig (p : t P input_sig) : nat :=
+        match p with
+        | nil _ => 0
+        | cons _ _ p => S (length p)
+        end.
+      
       Fixpoint eval_aux P input_sig (p : t P input_sig) (s : Stack.t input_sig)
         : {z : Z | P z}.
         destruct p as [|i context p].
@@ -296,6 +310,11 @@ Module ArithLang.
   Module ConcreteAsm.
     Module Stack.
       Definition t : Set := list Z.
+      
+      Inductive is_extraction : forall (sig : MacroAsm.Sig.t), t -> MacroAsm.Stack.t sig -> Prop :=
+      | nil : is_extraction [] MacroAsm.Stack.nil
+      | cons : forall z (P : Z -> Prop) sig s (s' : MacroAsm.Stack.t sig) (H : P z),
+        is_extraction s s' -> is_extraction (z :: s) (MacroAsm.Stack.cons P (existT _ z H) s').
     End Stack.
     
     Module RawInstr.
@@ -325,49 +344,68 @@ Module ArithLang.
     
     Module AnnotedInstr.
       Definition f_lt T size (x : {ip : nat & T ip}) : nat :=
-        if leb size (projT1 x) then
-          0
-        else
-          (projT1 x) + 1.
+        size - projT1 x.
       
-      Definition lt (L : nat -> Stack.t -> Prop) size : Instr.lt_type L := fun x y =>
+      Definition lt (L : nat -> Stack.t -> Type) size : Instr.lt_type L := fun x y =>
         (f_lt _ size x < f_lt _ size y) % nat.
       
       Lemma lt_wf L size : well_founded (lt L size).
         apply well_founded_ltof.
       Defined.
       
-      Definition t (L : nat -> Stack.t -> Prop) (size ip : nat) : Type :=
+      Definition t (L : nat -> Stack.t -> Type) (size ip : nat) : Type :=
         Instr.t (lt L size) ip.
       
-      Definition decr_ip (size ip : nat) : nat :=
-        match ip with
-        | O => size
-        | S ip => ip
-        end.
-      
-      Definition lift (L : nat -> Stack.t -> Prop) (size : nat)
+      Definition lift (L : nat -> Stack.t -> Type) (size : nat)
         (i : RawInstr.t) (ip : nat) (Hip : (ip < size) % nat)
-        (fl : forall s, L ip s -> L (decr_ip size ip) (RawInstr.eval i s))
+        (fl : forall s, L ip s -> L (S ip) (RawInstr.eval i s))
         : t L size ip.
         unfold t, Instr.t.
         intro s.
-        exists (decr_ip size ip).
+        exists (S ip).
         exists (RawInstr.eval i s).
         intro l.
         exists (fl s l).
         unfold lt, f_lt.
-        destruct ip as [|ip]; simpl.
-        - rewrite (leb_correct size size (le_refl _)).
-          rewrite (leb_correct_conv 0 size Hip).
-          now apply lt_n_Sn.
-        
-        - assert (H : (ip < size) % nat); [omega |].
-          rewrite (leb_correct_conv ip size H).
-          rewrite (leb_correct_conv (S ip) size Hip).
-          now apply lt_n_Sn.
+        simpl; omega.
       Defined.
     End AnnotedInstr.
+    
+    Module Program.
+      Fixpoint sigs_of_program (P : Z -> Prop) (sig : MacroAsm.Sig.t) (p : MacroAsm.Program.t P sig)
+        : list MacroAsm.Sig.t :=
+        match p with
+        | MacroAsm.Program.nil _ => []
+        | MacroAsm.Program.cons _ sig p => sig :: sigs_of_program p
+        end.
+      
+      Definition L P input_sig (p : MacroAsm.Program.t P input_sig) (context : list MacroAsm.Sig.t)
+        (ip : nat) (s : Stack.t) : Type :=
+        let sigs := context ++ sigs_of_program p in
+        let size := length sigs in
+        let sig :=
+          match le_lt_dec size ip with
+          | left _ => [P]
+          | right Hlt => valid_nth sigs Hlt
+          end in
+        {s' : MacroAsm.Stack.t sig | Stack.is_extraction s s'}.
+      
+      Definition lt P input_sig (p : MacroAsm.Program.t P input_sig) (context : list MacroAsm.Sig.t)
+        : Instr.lt_type (L p context) :=
+        AnnotedInstr.lt _ 
+      
+      Fixpoint compile_aux P input_sig (p : MacroAsm.Program.t P input_sig) (context : list MacroAsm.Sig.t)
+        : {L : nat -> Stack.t -> Type & {lt : Instr.lt_type L & Program.t lt ip0}}.
+        destruct p as [|i p].
+        - exists (fun _ s => ).
+      
+      Definition compile_aux (P : Z -> Prop) (sig : MacroAsm.Sig.t) (p : MacroAsm.Program.t P sig) (ip0 : nat)
+        : Program.t (S := Stack.t) (L := L p) (AnnotedInstr.lt _ (MacroAsm.Program.length p)) ip0.
+      
+      Fixpoint extract_sig_aux (sigs : list MacroAsm.Sig.t) (ip0 : nat)
+        : nat -> Stack.t -> Type :=
+        .
+    End Program.
   End ConcreteAsm.
   
   (*Definition compile_aux (p : list t) : Program.t lt_wf (length p) :=
