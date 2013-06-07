@@ -1,4 +1,4 @@
-(** Experiments to find a nice representation of an annoted control-flow graph *)
+(** Experiments to find a nice representation of an annoted control-flow graph. *)
 Require Import Wellfounded.
 
 Set Implicit Arguments.

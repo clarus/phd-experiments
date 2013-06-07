@@ -8,3 +8,7 @@
 *.cmx
 *.cmxs
 *.cmxa
+*.vo
+*.v.d
+*.glob
+typed-assembly/Compiler/Makefile
