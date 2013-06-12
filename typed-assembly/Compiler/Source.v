@@ -1,6 +1,9 @@
 Require Import ZArith.
+Require Import List.
+Require Import Compiler.MacroAsm.
 
 Set Implicit Arguments.
+Import ListNotations.
 Local Open Scope Z_scope.
 
 Module Source.
@@ -28,6 +31,29 @@ Module Source.
       destruct (eval _ e2) as (z2, H2).
       exists (z1 * z2); auto.
   Defined.
+  
+  Fixpoint compile_aux context P P' (e : t P) (k : Program.t P' (P :: context))
+    : Program.t P' context.
+    destruct e as [P z H | P1 P e1 Hcast | P1 P2 P e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
+    - exact (Program.cons (Instr.const P (existT _ z H)) context k).
+    
+    - exact (
+      compile_aux _ P1 P' e1 (
+      Program.cons (Instr.uminus P1 P Hcast) _ k)).
+    
+    - exact (
+      compile_aux _ P2 P' e2 (
+      compile_aux _ P1 P' e1 (
+      Program.cons (Instr.plus P1 P2 P Hcast) _ k))).
+    
+    - exact (
+      compile_aux _ P2 P' e2 (
+      compile_aux _ P1 P' e1 (
+      Program.cons (Instr.times P1 P2 P Hcast) _ k))).
+  Defined.
+  
+  Definition compile P (e : Source.t P) : Program.t P [] :=
+    compile_aux e (Program.nil _).
   
   Module Test.
     Definition example (x : Z) (H : x >= 10) : {y : Z | y >= 20}.

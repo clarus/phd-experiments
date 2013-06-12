@@ -1,10 +1,10 @@
 Require Import ZArith.
 Require Import List.
-Require Import Compiler.Source.
+Require Import Compiler.CFGNoLoop.
 
 Set Implicit Arguments.
-Local Open Scope Z_scope.
 Import ListNotations.
+Local Open Scope Z_scope.
 
 Module Sig.
   Definition t := list (Z -> Prop).
@@ -54,6 +54,39 @@ Module Instr.
   Defined.
 End Instr.
 
+Module RawInstr.
+  Inductive t : Set :=
+  | const (z : Z) | uminus | plus | times.
+  
+  Definition eval (i : t) (s : list Z) : list Z :=
+    match i with
+    | const z => z :: s
+    | uminus =>
+      match s with
+      | z1 :: s => (- z1) :: s
+      | _ => s
+      end
+    | plus =>
+      match s with
+      | z1 :: z2 :: s => (z1 + z2) :: s
+      | _ => s
+      end
+    | times =>
+      match s with
+      | z1 :: z2 :: s => (z1 * z2) :: s
+      | _ => s
+      end
+    end.
+  
+  Definition compile (i : Instr.t) : t :=
+    match i with
+    | Instr.const _ (exist _ z _) => const z
+    | Instr.uminus _ _ _ => uminus
+    | Instr.plus _ _ _ _ => plus
+    | Instr.times _ _ _ _ => times
+    end.
+End RawInstr.
+
 Module Program.
   Inductive t (P : Z -> Prop) : Sig.t -> Type :=
   | nil : t P [P]
@@ -80,29 +113,6 @@ Module Program.
   Definition eval P (p : t P []) : {z : Z | P z} :=
     eval_aux p Stack.nil.
   
-  Fixpoint compile_aux context P P' (e : Source.t P) (k : Program.t P' (P :: context))
-    : Program.t P' context.
-    destruct e as [P z H | P1 P e1 Hcast | P1 P2 P e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
-    - exact (cons (Instr.const P (existT _ z H)) context k).
-    
-    - exact (
-      compile_aux _ P1 P' e1 (
-      cons (Instr.uminus P1 P Hcast) _ k)).
-    
-    - exact (
-      compile_aux _ P2 P' e2 (
-      compile_aux _ P1 P' e1 (
-      cons (Instr.plus P1 P2 P Hcast) _ k))).
-    
-    - exact (
-      compile_aux _ P2 P' e2 (
-      compile_aux _ P1 P' e1 (
-      cons (Instr.times P1 P2 P Hcast) _ k))).
-  Defined.
-  
-  Definition compile P (e : Source.t P) : Program.t P [] :=
-    compile_aux e (Program.nil _).
-  
   Module Test.
     Definition P (z : Z) := True.
     
@@ -124,13 +134,57 @@ Module Program.
       cons (Instr.plus _ _ _ (fun _ _ _ _ => I)) _ (
       nil P))).
     
-    Compute projT1 (eval p1).
-    Compute projT1 (eval p2).
-    Compute projT1 (eval p3).
-    
-    Definition p4 := compile (Source.Test.e
-      (Source.Test.geb_complete 15 10 eq_refl)).
-    
-    Check eq_refl : 27 = projT1 (eval p4).
+    Check eq_refl : 12 = projT1 (eval p1).
+    Check eq_refl : - 12 =  projT1 (eval p2).
+    Check eq_refl : 17 =  projT1 (eval p3).
   End Test.
 End Program.
+
+Module Compile.
+  Import CFG.
+  
+  Definition S := list Z.
+  
+  Module L.
+    Inductive t : Sig.t -> S -> Type :=
+    | nil : t [] []
+    | cons : forall sig s z (P : Z -> Prop), P z -> t sig s -> t (P :: sig) (z :: s).
+    
+    Fixpoint extract_stack sig (stack : Stack.t sig) : {s : S & t sig s}.
+      destruct stack as [| P (z, H) sig stack].
+      - exact (existT _ [] nil).
+      
+      - refine (let (s, l) := extract_stack _ stack in _).
+        exact (existT _ (z :: s) (cons z P H l)).
+    Defined.
+    
+    Fixpoint make_stack sig (s : S) (l : t sig s) : Stack.t sig.
+      destruct l as [| sig s z P H l].
+      - exact Stack.nil.
+      
+      - exact (Stack.cons P (existT _ z H) (make_stack _ _ l)).
+    Defined.
+  End L.
+  
+  Fixpoint compile (P : Z -> Prop) (sig : Sig.t) (p : Program.t P sig)
+    : CFG.t (L.t sig) (L.t [P]).
+    destruct p as [|i context p].
+    - exact (@nop _ _).
+    
+    - refine (op _ (fun s => existT _ (RawInstr.eval (RawInstr.compile i) s) (fun l => _)) (compile _ _ p)).
+      destruct i as [P' z | P1 P' Hcast | P1 P2 P' Hcast | P1 P2 P' Hcast]; simpl in *.
+      + destruct z as (z, H).
+        now apply L.cons.
+      
+      + inversion_clear l.
+        apply L.cons; auto.
+      
+      + inversion_clear l as [|sig s' z1 Pz1 Hz1 l'].
+        inversion_clear l' as [|sig s'' z2 Pz2 Hz2 l''].
+        apply L.cons; auto.
+      
+      + inversion_clear l as [|sig s' z1 Pz1 Hz1 l'].
+        inversion_clear l' as [|sig s'' z2 Pz2 Hz2 l''].
+        apply L.cons; auto.
+  Defined.
+End Compile.
