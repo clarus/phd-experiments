@@ -49,6 +49,8 @@ Module Source.
       now destruct (Z_ge_dec m n).
     Qed.
     
-    Compute projT1 (eval (e (geb_complete 15 10 eq_refl))).
+    Definition e_15 := e (geb_complete 15 10 eq_refl).
+    
+    Check eq_refl : 27 = projT1 (eval e_15).
   End Test.
 End Source.
