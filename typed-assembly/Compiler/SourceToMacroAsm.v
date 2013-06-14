@@ -9,7 +9,7 @@ Local Open Scope Z_scope.
 
 Fixpoint compile_aux context P P' (e : Source.t P) (k : Program.t P' (P :: context))
   : Program.t P' context.
-  destruct e as [P z H | P1 P op e1 Hcast | P1 P2 P op e1 e2 Hcast].
+  destruct e as [P z H | P1 P op e1 Hcast | P1 P2 P op e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
   - exact (Program.cons (Instr.const P (existT _ z H)) context k).
   
   - exact (

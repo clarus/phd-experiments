@@ -1,4 +1,9 @@
 (** The source language. *)
+(** TODO:
+    - let
+    - if
+    - ref
+    - loop *)
 Require Import ZArith.
 Require Import List.
 
@@ -36,10 +41,13 @@ Module Source.
   | unop : forall (P1 P : Z -> Prop) (op : UnOp.t), t P1 ->
     (forall z1, P1 z1 -> P (UnOp.eval op z1)) -> t P
   | binop : forall (P1 P2 P : Z -> Prop) (op : BinOp.t), t P1 -> t P2 ->
-    (forall z1 z2, P1 z1 -> P2 z2 -> P (BinOp.eval op z1 z2)) -> t P.
+    (forall z1 z2, P1 z1 -> P2 z2 -> P (BinOp.eval op z1 z2)) -> t P
+  | _let : forall (P1 : Z -> Prop) (P2 : Z -> Z -> Prop) (P : Z -> Prop), t P1 -> (forall z1, t (P2 z1)) ->
+    (forall z1 z2, P1 z1 -> P2 z1 z2 -> P z2) ->
+    t P.
   
   Fixpoint eval P (e : t P) {struct e} : {z : Z | P z}.
-    destruct e as [P z H | P1 P op e1 Hcast | P1 P2 P op e1 e2 Hcast].
+    destruct e as [P z H | P1 P op e1 Hcast | P1 P2 P op e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
     - exists z; trivial.
     
     - destruct (eval _ e1) as (z1, H1).
@@ -48,6 +56,11 @@ Module Source.
     - destruct (eval _ e1) as (z1, H1).
       destruct (eval _ e2) as (z2, H2).
       exists (BinOp.eval op z1 z2); auto.
+    
+    - destruct (eval _ e1) as (z1, H1).
+      destruct (eval _ (e2 z1)) as (z2, H2).
+      exists z2.
+      now apply Hcast with (z1 := z1).
   Defined.
   
   Module Test.
