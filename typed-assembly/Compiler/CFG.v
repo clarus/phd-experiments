@@ -1,4 +1,4 @@
-(** Control flow graphs without loops. *)
+(** Control flow graph without loops. *)
 Require Import List.
 Require Import Compiler.Linear.
 

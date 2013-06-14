@@ -1,59 +1,54 @@
+(** The source language. *)
 Require Import ZArith.
 Require Import List.
-Require Import Compiler.MacroAsm.
 
 Set Implicit Arguments.
 Import ListNotations.
 Local Open Scope Z_scope.
 
+Module UnOp.
+  Inductive t : Set :=
+  | uminus.
+  
+  Definition eval (op : t) (z1 : Z) : Z :=
+    match op with
+    | uminus => - z1
+    end.
+End UnOp.
+
+Module BinOp.
+  Inductive t : Set :=
+  | plus
+  | minus
+  | times.
+  
+  Definition eval (op : t) (z1 z2 : Z) : Z :=
+    match op with
+    | plus => z1 + z2
+    | minus => z1 - z2
+    | times => z1 * z2
+    end.
+End BinOp.
+
 Module Source.
   Inductive t : (Z -> Prop) -> Type :=
   | const : forall (P : Z -> Prop) z, P z -> t P
-  | uminus : forall (P1 P : Z -> Prop), t P1 ->
-    (forall z1, P1 z1 -> P (- z1)) -> t P
-  | plus : forall (P1 P2 P : Z -> Prop), t P1 -> t P2 ->
-    (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 + z2)) -> t P
-  | times : forall (P1 P2 P : Z -> Prop), t P1 -> t P2 ->
-    (forall z1 z2, P1 z1 -> P2 z2 -> P (z1 * z2)) -> t P.
+  | unop : forall (P1 P : Z -> Prop) (op : UnOp.t), t P1 ->
+    (forall z1, P1 z1 -> P (UnOp.eval op z1)) -> t P
+  | binop : forall (P1 P2 P : Z -> Prop) (op : BinOp.t), t P1 -> t P2 ->
+    (forall z1 z2, P1 z1 -> P2 z2 -> P (BinOp.eval op z1 z2)) -> t P.
   
   Fixpoint eval P (e : t P) {struct e} : {z : Z | P z}.
-    destruct e as [P z H | P1 P e1 Hcast | P1 P2 P e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
+    destruct e as [P z H | P1 P op e1 Hcast | P1 P2 P op e1 e2 Hcast].
     - exists z; trivial.
     
     - destruct (eval _ e1) as (z1, H1).
-      exists (- z1); auto.
+      exists (UnOp.eval op z1); auto.
     
     - destruct (eval _ e1) as (z1, H1).
       destruct (eval _ e2) as (z2, H2).
-      exists (z1 + z2); auto.
-    
-    - destruct (eval _ e1) as (z1, H1).
-      destruct (eval _ e2) as (z2, H2).
-      exists (z1 * z2); auto.
+      exists (BinOp.eval op z1 z2); auto.
   Defined.
-  
-  Fixpoint compile_aux context P P' (e : t P) (k : Program.t P' (P :: context))
-    : Program.t P' context.
-    destruct e as [P z H | P1 P e1 Hcast | P1 P2 P e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
-    - exact (Program.cons (Instr.const P (existT _ z H)) context k).
-    
-    - exact (
-      compile_aux _ P1 P' e1 (
-      Program.cons (Instr.uminus P1 P Hcast) _ k)).
-    
-    - exact (
-      compile_aux _ P2 P' e2 (
-      compile_aux _ P1 P' e1 (
-      Program.cons (Instr.plus P1 P2 P Hcast) _ k))).
-    
-    - exact (
-      compile_aux _ P2 P' e2 (
-      compile_aux _ P1 P' e1 (
-      Program.cons (Instr.times P1 P2 P Hcast) _ k))).
-  Defined.
-  
-  Definition compile P (e : Source.t P) : Program.t P [] :=
-    compile_aux e (Program.nil _).
   
   Module Test.
     Definition example (x : Z) (H : x >= 10) : {y : Z | y >= 20}.
@@ -66,8 +61,8 @@ Module Source.
     (** For x >= 10, (x {>= 10} + 12 {= 12}) {>= 20}  *)
     Definition e (x : Z) (H : x >= 10) : t (fun y => y >= 20).
       refine (
-        plus _ (const (fun x => x >= 10) x H) (const _ 12 eq_refl) _).
-      abstract (intros; omega).
+        binop _ BinOp.plus (const (fun x => x >= 10) x H) (const _ 12 eq_refl) _).
+      abstract (intros; simpl; omega).
     Defined.
     
     Lemma geb_complete (m n : Z) :

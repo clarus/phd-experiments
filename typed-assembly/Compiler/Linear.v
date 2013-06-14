@@ -1,3 +1,4 @@
+(** The low-level assember. *)
 Require Import Arith.
 
 Set Implicit Arguments.
