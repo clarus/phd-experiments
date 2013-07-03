@@ -19,9 +19,12 @@ End Stack.
 
 Module Instr.
   Inductive t : Type :=
-  | const : forall (P : Z -> Prop), {z : Z | P z} -> t
-  | unop : forall (P1 P : Z -> Prop) (op : UnOp.t), (forall z1, P1 z1 -> P (UnOp.eval op z1)) -> t
-  | binop : forall (P1 P2 P : Z -> Prop) (op : BinOp.t), (forall z1 z2, P1 z1 -> P2 z2 -> P (BinOp.eval op z1 z2)) -> t.
+  | const : forall (P : Z -> Prop),
+    {z : Z | P z} -> t
+  | unop : forall (P1 P : Z -> Prop) (op : UnOp.t),
+    (forall z1, P1 z1 -> P (UnOp.eval op z1)) -> t
+  | binop : forall (P1 P2 P : Z -> Prop) (op : BinOp.t),
+    (forall z1 z2, P1 z1 -> P2 z2 -> P (BinOp.eval op z1 z2)) -> t.
   
   Definition input_sig (i : t) (context : Sig.t) : Sig.t :=
     match i with

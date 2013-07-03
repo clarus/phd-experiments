@@ -20,6 +20,8 @@ Fixpoint compile_aux context P P' (e : Source.t P) (k : Program.t P' (P :: conte
     compile_aux _ P2 P' e2 (
     compile_aux _ P1 P' e1 (
     Program.cons (Instr.binop P1 P2 P op Hcast) _ k))).
+  
+  - 
 Defined.
 
 Definition compile P (e : Source.t P) : Program.t P [] :=
