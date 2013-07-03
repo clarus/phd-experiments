@@ -51,10 +51,10 @@ Defined.
 Definition neg: float -> float := b64_opp. (**r opposite (change sign) *)
 Definition abs (x: float): float := (**r absolute value (set sign to [+]) *)
   match x with
-  | B754_nan => x
-  | B754_infinity _ => B754_infinity _ _ false
-  | B754_finite _ m e H => B754_finite _ _ false m e H
-  | B754_zero _ => B754_zero _ _ false
+  | B754_nan _ _ => x
+  | B754_infinity _ _ _ => B754_infinity _ _ false
+  | B754_finite _ _ _ m e H => B754_finite _ _ false m e H
+  | B754_zero _ _ _ => B754_zero _ _ false
   end.
 
 Definition binary_normalize64 (m e:Z) (s:bool): float :=
@@ -73,19 +73,19 @@ Global Opaque binary_normalize32_correct.
 
 Definition floatofbinary32 (f: binary32) : float := (**r single precision embedding in double precision *)
   match f with
-    | B754_nan => B754_nan _ _
-    | B754_infinity s => B754_infinity _ _ s
-    | B754_zero s => B754_zero _ _ s
-    | B754_finite s m e _ =>
+    | B754_nan _ _ => B754_nan _ _
+    | B754_infinity _ _ s => B754_infinity _ _ s
+    | B754_zero _ _ s => B754_zero _ _ s
+    | B754_finite _ _ s m e _ =>
       binary_normalize64 (cond_Zopp s (Zpos m)) e s
   end.
 
 Definition binary32offloat (f: float) : binary32 := (**r conversion to single precision *)
   match f with
-    | B754_nan => B754_nan _ _
-    | B754_infinity s => B754_infinity _ _ s
-    | B754_zero s => B754_zero _ _ s
-    | B754_finite s m e _ =>
+    | B754_nan _ _ => B754_nan _ _
+    | B754_infinity _ _ s => B754_infinity _ _ s
+    | B754_zero _ _ s => B754_zero _ _ s
+    | B754_finite _ _ s m e _ =>
       binary_normalize32 (cond_Zopp s (Zpos m)) e s
   end.
 
@@ -94,10 +94,10 @@ Definition singleoffloat (f: float): float := (**r conversion to single precisio
 
 Definition Zoffloat (f:float): option Z := (**r conversion to Z *)
   match f with
-    | B754_finite s m (Zpos e) _ => Some (cond_Zopp s (Zpos m) * Zpower_pos radix2 e)
-    | B754_finite s m 0 _ => Some (cond_Zopp s (Zpos m))
-    | B754_finite s m (Zneg e) _ => Some (cond_Zopp s (Zpos m / Zpower_pos radix2 e))
-    | B754_zero _ => Some 0
+    | B754_finite _ _ s m (Zpos e) _ => Some (cond_Zopp s (Zpos m) * Zpower_pos radix2 e)
+    | B754_finite _ _ s m 0 _ => Some (cond_Zopp s (Zpos m))
+    | B754_finite _ _ s m (Zneg e) _ => Some (cond_Zopp s (Zpos m / Zpower_pos radix2 e))
+    | B754_zero _ _ _ => Some 0
     | _ => None
   end.
 
@@ -186,19 +186,19 @@ Definition div: float -> float -> float := b64_div mode_NE. (**r division *)
 
 Definition order_float (f1 f2:float): option Datatypes.comparison :=
   match f1, f2 with
-    | B754_nan,_ | _,B754_nan => None
-    | B754_infinity true, B754_infinity true 
-    | B754_infinity false, B754_infinity false => Some Eq
-    | B754_infinity true, _ => Some Lt
-    | B754_infinity false, _ => Some Gt
-    | _, B754_infinity true => Some Gt
-    | _, B754_infinity false => Some Lt
-    | B754_finite true _ _ _, B754_zero _ => Some Lt
-    | B754_finite false _ _ _, B754_zero _ => Some Gt
-    | B754_zero _, B754_finite true _ _ _ => Some Gt
-    | B754_zero _, B754_finite false _ _ _ => Some Lt
-    | B754_zero _, B754_zero _ => Some Eq
-    | B754_finite s1 m1 e1 _, B754_finite s2 m2 e2 _ =>
+    | B754_nan _ _,_ | _,B754_nan _ _ => None
+    | B754_infinity _ _ true, B754_infinity _ _ true
+    | B754_infinity _ _ false, B754_infinity _ _ false => Some Eq
+    | B754_infinity _ _ true, _ => Some Lt
+    | B754_infinity _ _ false, _ => Some Gt
+    | _, B754_infinity _ _ true => Some Gt
+    | _, B754_infinity _ _ false => Some Lt
+    | B754_finite _ _ true _ _ _, B754_zero _ _ _ => Some Lt
+    | B754_finite _ _ false _ _ _, B754_zero _ _ _ => Some Gt
+    | B754_zero _ _ _, B754_finite _ _ true _ _ _ => Some Gt
+    | B754_zero _ _ _, B754_finite _ _ false _ _ _ => Some Lt
+    | B754_zero _ _ _, B754_zero _ _ _ => Some Eq
+    | B754_finite _ _ s1 m1 e1 _, B754_finite _ _ s2 m2 e2 _ =>
       match s1, s2 with
         | true, false => Some Lt
         | false, true => Some Gt

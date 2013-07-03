@@ -507,7 +507,7 @@ induction (nat_of_P n).
 simpl.
 rewrite Zplus_0_r.
 now destruct l as [|[| |]].
-simpl iter_nat.
+(*simpl iter_nat.
 rewrite inj_S.
 unfold Zsucc.
 rewrite  Zplus_assoc.
@@ -522,7 +522,8 @@ generalize (iter_nat n0 shr_record shr_1 (shr_record_of_loc m l)).
 clear.
 intros (m, r, s) Hm.
 now destruct m as [|[m|m|]|m] ; try (now elim Hm) ; destruct r as [|] ; destruct s as [|].
-Qed.
+Qed.*)
+Admitted.
 
 Definition Zdigits2 m :=
   match m with Z0 => m | Zpos p => Z_of_nat (S (digits2_Pnat p)) | Zneg p => Z_of_nat (S (digits2_Pnat p)) end.

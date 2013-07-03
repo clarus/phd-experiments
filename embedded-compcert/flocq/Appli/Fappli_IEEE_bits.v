@@ -170,10 +170,10 @@ Qed.
 
 Definition bits_of_binary_float (x : binary_float) :=
   match x with
-  | B754_zero sx => join_bits sx 0 0
-  | B754_infinity sx => join_bits sx 0 (Zpower 2 ew - 1)
-  | B754_nan => join_bits false (Zpower 2 mw - 1) (Zpower 2 ew - 1)
-  | B754_finite sx mx ex _ =>
+  | B754_zero _ _ sx => join_bits sx 0 0
+  | B754_infinity _ _ sx => join_bits sx 0 (Zpower 2 ew - 1)
+  | B754_nan _ _ => join_bits false (Zpower 2 mw - 1) (Zpower 2 ew - 1)
+  | B754_finite _ _ sx mx ex _ =>
     if Zle_bool (Zpower 2 mw) (Zpos mx) then
       join_bits sx (Zpos mx - Zpower 2 mw) (ex - emin + 1)
     else
@@ -182,10 +182,10 @@ Definition bits_of_binary_float (x : binary_float) :=
 
 Definition split_bits_of_binary_float (x : binary_float) :=
   match x with
-  | B754_zero sx => (sx, 0, 0)%Z
-  | B754_infinity sx => (sx, 0, Zpower 2 ew - 1)%Z
-  | B754_nan => (false, Zpower 2 mw - 1, Zpower 2 ew - 1)%Z
-  | B754_finite sx mx ex _ =>
+  | B754_zero _ _ sx => (sx, 0, 0)%Z
+  | B754_infinity _ _ sx => (sx, 0, Zpower 2 ew - 1)%Z
+  | B754_nan _ _ => (false, Zpower 2 mw - 1, Zpower 2 ew - 1)%Z
+  | B754_finite _ _ sx mx ex _ =>
     if Zle_bool (Zpower 2 mw) (Zpos mx) then
       (sx, Zpos mx - Zpower 2 mw, ex - emin + 1)%Z
     else

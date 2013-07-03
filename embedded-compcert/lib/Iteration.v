@@ -55,8 +55,8 @@ Defined.
 
 Definition iterate_F (a: A) (rec: forall a', ord a' a -> B) : B :=
   match step_info a with
-  | inl (exist b P) => b
-  | inr (exist2 a' P Q) => rec a' Q
+  | inl (exist _ b P) => b
+  | inr (exist2 _ _ a' P Q) => rec a' Q
   end.
 
 Definition iterate (a: A) : B := Fix ord_wf iterate_F a.

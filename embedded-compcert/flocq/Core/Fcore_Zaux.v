@@ -18,7 +18,8 @@ COPYING file for more details.
 *)
 
 Require Import ZArith.
-Require Import ZOdiv.
+Require Import Zdiv.
+Require Import Zquot.
 
 Section Zmissing.
 
@@ -385,26 +386,26 @@ Qed.
 
 Theorem ZOmod_eq :
   forall a b,
-  ZOmod a b = (a - ZOdiv a b * b)%Z.
+  Z.rem a b = (a - Z.quot a b * b)%Z.
 Proof.
 intros a b.
-rewrite (ZO_div_mod_eq a b) at 2.
+rewrite (Z.quot_rem' a b) at 2.
 ring.
 Qed.
 
 Theorem ZOmod_mod_mult :
   forall n a b,
-  ZOmod (ZOmod n (a * b)) b = ZOmod n b.
+  Z.rem (Z.rem n (a * b)) b = Z.rem n b.
 Proof.
 intros n a b.
-assert (ZOmod n (a * b) = n + - (ZOdiv n (a * b) * a) * b)%Z.
+assert (Z.rem n (a * b) = n + - (Z.quot n (a * b) * a) * b)%Z.
 rewrite <- Zopp_mult_distr_l.
 rewrite <- Zmult_assoc.
 apply ZOmod_eq.
 rewrite H.
-apply ZO_mod_plus.
+apply Z_rem_plus.
 rewrite <- H.
-apply ZOmod_sgn2.
+apply Zrem_sgn2.
 Qed.
 
 Theorem Zdiv_mod_mult :
@@ -434,73 +435,73 @@ Qed.
 
 Theorem ZOdiv_mod_mult :
   forall n a b,
-  (ZOdiv (ZOmod n (a * b)) a) = ZOmod (ZOdiv n a) b.
+  (Z.quot (Z.rem n (a * b)) a) = Z.rem (Z.quot n a) b.
 Proof.
 intros n a b.
 destruct (Z_eq_dec a 0) as [Za|Za].
 rewrite Za.
-now rewrite 2!ZOdiv_0_r, ZOmod_0_l.
-assert (ZOmod n (a * b) = n + - (ZOdiv (ZOdiv n a) b * b) * a)%Z.
+now rewrite 2!Zquot_0_r, Zrem_0_l.
+assert (Z.rem n (a * b) = n + - (Z.quot (Z.quot n a) b * b) * a)%Z.
 rewrite (ZOmod_eq n (a * b)) at 1.
-rewrite ZOdiv_ZOdiv.
+rewrite Zquot_Zquot.
 ring.
 rewrite H.
-rewrite ZO_div_plus with (2 := Za).
+rewrite Z_quot_plus with (2 := Za).
 apply sym_eq.
 apply ZOmod_eq.
 rewrite <- H.
-apply ZOmod_sgn2.
+apply Zrem_sgn2.
 Qed.
 
 Theorem ZOdiv_small_abs :
   forall a b,
-  (Zabs a < b)%Z -> ZOdiv a b = Z0.
+  (Zabs a < b)%Z -> Z.quot a b = Z0.
 Proof.
 intros a b Ha.
 destruct (Zle_or_lt 0 a) as [H|H].
-apply ZOdiv_small.
+apply Zquot_small.
 split.
 exact H.
 now rewrite Zabs_eq in Ha.
 apply Zopp_inj.
-rewrite <- ZOdiv_opp_l, Zopp_0.
-apply ZOdiv_small.
+rewrite <- Zquot_opp_l, Zopp_0.
+apply Zquot_small.
 generalize (Zabs_non_eq a).
 omega.
 Qed.
 
 Theorem ZOmod_small_abs :
   forall a b,
-  (Zabs a < b)%Z -> ZOmod a b = a.
+  (Zabs a < b)%Z -> Z.rem a b = a.
 Proof.
 intros a b Ha.
 destruct (Zle_or_lt 0 a) as [H|H].
-apply ZOmod_small.
+apply Zrem_small.
 split.
 exact H.
 now rewrite Zabs_eq in Ha.
 apply Zopp_inj.
-rewrite <- ZOmod_opp_l.
-apply ZOmod_small.
+rewrite <- Zrem_opp_l.
+apply Zrem_small.
 generalize (Zabs_non_eq a).
 omega.
 Qed.
 
 Theorem ZOdiv_plus :
   forall a b c, (0 <= a * b)%Z ->
-  (ZOdiv (a + b) c = ZOdiv a c + ZOdiv b c + ZOdiv (ZOmod a c + ZOmod b c) c)%Z.
+  (Z.quot (a + b) c = Z.quot a c + Z.quot b c + Z.quot (Z.rem a c + Z.rem b c) c)%Z.
 Proof.
 intros a b c Hab.
 destruct (Z_eq_dec c 0) as [Zc|Zc].
-now rewrite Zc, 4!ZOdiv_0_r.
+now rewrite Zc, 4!Zquot_0_r.
 apply Zmult_reg_r with (1 := Zc).
 rewrite 2!Zmult_plus_distr_l.
-assert (forall d, ZOdiv d c * c = d - ZOmod d c)%Z.
+assert (forall d, Z.quot d c * c = d - Z.rem d c)%Z.
 intros d.
 rewrite ZOmod_eq.
 ring.
 rewrite 4!H.
-rewrite <- ZOplus_mod with (1 := Hab).
+rewrite <- Zplus_rem  with (1 := Hab).
 ring.
 Qed.
 
@@ -543,14 +544,14 @@ Qed.
 
 Theorem Zsame_sign_odiv :
   forall u v, (0 <= v)%Z ->
-  (0 <= u * ZOdiv u v)%Z.
+  (0 <= u * Z.quot u v)%Z.
 Proof.
 intros u v Hv.
 apply Zsame_sign_imp ; intros Hu.
-apply ZO_div_pos with (2 := Hv).
+apply Z_quot_pos with (2 := Hv).
 now apply Zlt_le_weak.
-rewrite <- ZOdiv_opp_l.
-apply ZO_div_pos with (2 := Hv).
+rewrite <- Zquot_opp_l.
+apply Z_quot_pos with (2 := Hv).
 now apply Zlt_le_weak.
 Qed.
 

@@ -29,8 +29,8 @@ Variable beta : radix.
 Notation bpow e := (bpow beta e).
 
 Definition Falign (f1 f2 : float beta) :=
-  let '(Float m1 e1) := f1 in
-  let '(Float m2 e2) := f2 in
+  let '(Float _ m1 e1) := f1 in
+  let '(Float _ m2 e2) := f2 in
   if Zle_bool e1 e2
   then (m1, (m2 * Zpower beta (e2 - e1))%Z, e1)
   else ((m1 * Zpower beta (e1 - e2))%Z, m2, e2).
@@ -62,7 +62,7 @@ case (Zmin_spec e1 e2); intros (H1,H2); easy.
 Qed.
 
 Definition Fopp (f1: float beta) :=
-  let '(Float m1 e1) := f1 in
+  let '(Float _ m1 e1) := f1 in
   Float beta (-m1)%Z e1.
 
 Theorem F2R_opp :
@@ -73,7 +73,7 @@ apply F2R_Zopp.
 Qed.
 
 Definition Fabs (f1: float beta) :=
-  let '(Float m1 e1) := f1 in
+  let '(Float _ m1 e1) := f1 in
   Float beta (Zabs m1)%Z e1.
 
 Theorem F2R_abs :
@@ -144,8 +144,8 @@ apply Fplus_same_exp.
 Qed.
 
 Definition Fmult (f1 f2 : float beta) :=
-  let '(Float m1 e1) := f1 in
-  let '(Float m2 e2) := f2 in
+  let '(Float _ m1 e1) := f1 in
+  let '(Float _ m2 e2) := f2 in
   Float beta (m1 * m2) (e1 + e2).
 
 Theorem F2R_mult :
