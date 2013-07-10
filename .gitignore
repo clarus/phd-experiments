@@ -12,3 +12,8 @@
 *.v.d
 *.glob
 typed-assembly/Compiler/Makefile
+typed-assembly/Source/Makefile
+embedded-compcert/Makefile.config
+embedded-compcert/backend/SelectLong.v
+embedded-compcert/ia32/ConstpropOp.v
+embedded-compcert/ia32/SelectOp.v
