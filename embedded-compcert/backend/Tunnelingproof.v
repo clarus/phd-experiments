@@ -31,29 +31,29 @@ Require Import Tunneling.
 (** A variant of [record_goto] that also incrementally computes a measure [f: node -> nat]
   counting the number of [Lnop] instructions starting at a given [pc] that were eliminated. *)
 
-Definition measure_edge (u: U.t) (pc s: node) (f: node -> nat) : node -> nat :=
-  fun x => if peq (U.repr u s) pc then f x
-           else if peq (U.repr u x) pc then (f x + f s + 1)%nat
+Definition measure_edge (u: Tunneling.U.t) (pc s: node) (f: node -> nat) : node -> nat :=
+  fun x => if peq (Tunneling.U.repr u s) pc then f x
+           else if peq (Tunneling.U.repr u x) pc then (f x + f s + 1)%nat
            else f x.
 
-Definition record_goto' (uf: U.t * (node -> nat)) (pc: node) (b: bblock) : U.t * (node -> nat) :=
+Definition record_goto' (uf: Tunneling.U.t * (node -> nat)) (pc: node) (b: bblock) : Tunneling.U.t * (node -> nat) :=
   match b with
-  | Lbranch s :: b' => let (u, f) := uf in (U.union u pc s, measure_edge u pc s f)
+  | Lbranch s :: b' => let (u, f) := uf in (Tunneling.U.union u pc s, measure_edge u pc s f)
   | _ => uf
   end.
 
-Definition branch_map_correct (c: code) (uf: U.t * (node -> nat)): Prop :=
+Definition branch_map_correct (c: code) (uf: Tunneling.U.t * (node -> nat)): Prop :=
   forall pc,
   match c!pc with
   | Some(Lbranch s :: b) =>
-      U.repr (fst uf) pc = pc \/ (U.repr (fst uf) pc = U.repr (fst uf) s /\ snd uf s < snd uf pc)%nat
+      Tunneling.U.repr (fst uf) pc = pc \/ (Tunneling.U.repr (fst uf) pc = Tunneling.U.repr (fst uf) s /\ snd uf s < snd uf pc)%nat
   | _ =>
-      U.repr (fst uf) pc = pc
+      Tunneling.U.repr (fst uf) pc = pc
   end.
 
 Lemma record_gotos'_correct:
   forall c,
-  branch_map_correct c (PTree.fold record_goto' c (U.empty, fun (x: node) => O)).
+  branch_map_correct c (PTree.fold record_goto' c (Tunneling.U.empty, fun (x: node) => O)).
 Proof.
   intros.
   apply PTree_Properties.fold_rec with (P := fun c uf => branch_map_correct c uf).
@@ -62,14 +62,14 @@ Proof.
   intros. red; intros. rewrite <- H. apply H0.
 
 (* base case *)
-  red; intros; simpl. rewrite PTree.gempty. apply U.repr_empty.
+  red; intros; simpl. rewrite PTree.gempty. apply Tunneling.U.repr_empty.
 
 (* inductive case *)
   intros m uf pc bb; intros. destruct uf as [u f]. 
-  assert (PC: U.repr u pc = pc). 
+  assert (PC: Tunneling.U.repr u pc = pc). 
     generalize (H1 pc). rewrite H. auto.
   assert (record_goto' (u, f) pc bb = (u, f)
-          \/ exists s, exists bb', bb = Lbranch s :: bb' /\ record_goto' (u, f) pc bb = (U.union u pc s, measure_edge u pc s f)).
+          \/ exists s, exists bb', bb = Lbranch s :: bb' /\ record_goto' (u, f) pc bb = (Tunneling.U.union u pc s, measure_edge u pc s f)).
     unfold record_goto'; simpl. destruct bb; auto. destruct i; auto. right. exists s; exists bb; auto.
   destruct H2 as [B | [s [bb' [EQ B]]]].
 
@@ -84,29 +84,29 @@ Proof.
   red. intro pc'. simpl. rewrite PTree.gsspec. destruct (peq pc' pc). subst pc'. rewrite EQ.
 
 (* The new instruction *)
-  rewrite (U.repr_union_2 u pc s); auto. rewrite U.repr_union_3. 
-  unfold measure_edge. destruct (peq (U.repr u s) pc). auto. right. split. auto.
+  rewrite (Tunneling.U.repr_union_2 u pc s); auto. rewrite Tunneling.U.repr_union_3. 
+  unfold measure_edge. destruct (peq (Tunneling.U.repr u s) pc). auto. right. split. auto.
   rewrite PC. rewrite peq_true. omega.
 
 (* An old instruction *)
-  assert (U.repr u pc' = pc' -> U.repr (U.union u pc s) pc' = pc').
-    intro. rewrite <- H2 at 2. apply U.repr_union_1. congruence. 
+  assert (Tunneling.U.repr u pc' = pc' -> Tunneling.U.repr (Tunneling.U.union u pc s) pc' = pc').
+    intro. rewrite <- H2 at 2. apply Tunneling.U.repr_union_1. congruence. 
   generalize (H1 pc'). simpl. destruct (m!pc'); auto. destruct b; auto. destruct i; auto.
   intros [P | [P Q]]. left; auto. right.
-  split. apply U.sameclass_union_2. auto.
-  unfold measure_edge. destruct (peq (U.repr u s) pc). auto.
-  rewrite P. destruct (peq (U.repr u s0) pc). omega. auto. 
+  split. apply Tunneling.U.sameclass_union_2. auto.
+  unfold measure_edge. destruct (peq (Tunneling.U.repr u s) pc). auto.
+  rewrite P. destruct (peq (Tunneling.U.repr u s0) pc). omega. auto. 
 Qed.
 
 Definition record_gotos' (f: function) :=
-  PTree.fold record_goto' f.(fn_code) (U.empty, fun (x: node) => O).
+  PTree.fold record_goto' f.(fn_code) (Tunneling.U.empty, fun (x: node) => O).
 
 Lemma record_gotos_gotos':
   forall f, fst (record_gotos' f) = record_gotos f.
 Proof.
   intros. unfold record_gotos', record_gotos. 
   repeat rewrite PTree.fold_spec.
-  generalize (PTree.elements (fn_code f)) (U.empty) (fun _ : node => O).
+  generalize (PTree.elements (fn_code f)) (Tunneling.U.empty) (fun _ : node => O).
   induction l; intros; simpl.
   auto.
   unfold record_goto' at 2. unfold record_goto at 2. 
@@ -114,7 +114,7 @@ Proof.
 Qed.
 
 Definition branch_target (f: function) (pc: node) : node :=
-  U.repr (record_gotos f) pc.
+  Tunneling.U.repr (record_gotos f) pc.
 
 Definition count_gotos (f: function) (pc: node) : nat :=
   snd (record_gotos' f) pc.
@@ -358,7 +358,7 @@ Proof.
   (* Ljumptable *)
   left; simpl; econstructor; split.
   eapply exec_Ljumptable. 
-  eauto. rewrite list_nth_z_map. change U.elt with node. rewrite H0. reflexivity. eauto.
+  eauto. rewrite list_nth_z_map. change Tunneling.U.elt with node. rewrite H0. reflexivity. eauto.
   econstructor; eauto. 
   (* Lreturn *)
   left; simpl; econstructor; split.

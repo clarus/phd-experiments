@@ -318,7 +318,7 @@ Theorem wf_analyze:
   forall f approx pc, analyze f = Some approx -> wf_numbering approx!!pc.
 Proof.
   unfold analyze; intros.
-  eapply Solver.fixpoint_invariant with (P := wf_numbering); eauto.
+  eapply CSE.Solver.fixpoint_invariant with (P := wf_numbering); eauto.
   exact wf_empty_numbering.   
   exact (wf_transfer f).
 Qed.
@@ -817,7 +817,7 @@ Theorem analysis_correct_1:
 Proof.
   intros.
   assert (Numbering.ge approx!!pc' (transfer f pc approx!!pc)).
-    eapply Solver.fixpoint_solution; eauto.
+    eapply CSE.Solver.fixpoint_solution; eauto.
     unfold successors_list, successors. rewrite PTree.gmap1.
     rewrite H0. auto.
   apply H3. auto.
@@ -829,9 +829,9 @@ Theorem analysis_correct_entry:
   numbering_satisfiable ge sp rs m approx!!(f.(fn_entrypoint)).
 Proof.
   intros. 
-  replace (approx!!(f.(fn_entrypoint))) with Solver.L.top.
+  replace (approx!!(f.(fn_entrypoint))) with CSE.Solver.L.top.
   apply empty_numbering_satisfiable.
-  symmetry. eapply Solver.fixpoint_entry; eauto.
+  symmetry. eapply CSE.Solver.fixpoint_entry; eauto.
 Qed.
 
 (** * Semantic preservation *)
