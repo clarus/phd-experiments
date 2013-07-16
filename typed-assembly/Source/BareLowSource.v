@@ -23,16 +23,16 @@ Module Source.
   | final : Operand.t -> t
   | binop : BinOp.t -> Operand.t -> Operand.t -> t -> t.
   
-  Definition of_phoas (s : LowSource.Source.t nat) : t :=
+  (*Definition of_phoas (s : LowSource.Source.t nat) : t :=
     let fix aux s i :=
       match s with
       | LowSource.Source.final x => final (Operand.of_phoas x)
       | LowSource.Source.binop o x y s => binop o (Operand.of_phoas x) (Operand.of_phoas y) (aux (s i) (S i))
       end in
-    aux s 0.
+    aux s 0.*)
 End Source.
 
-Module Example.
+(*Module Example.
   Module OfPhoas.
     Import LowSource.Operand.
     Import LowSource.Source.
@@ -48,4 +48,4 @@ Module Example.
     Compute Source.of_phoas (ex1 nat).
     Compute Source.of_phoas (ex2 nat).
   End OfPhoas.
-End Example.
+End Example.*)

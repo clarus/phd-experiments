@@ -29,8 +29,10 @@ End Operand.
 
 Module Source.
   Inductive t (T : Type) : Type :=
-  | final : Operand.t T -> t T
-  | binop : BinOp.t -> Operand.t T -> Operand.t T -> (T -> t T) -> t T.
+  | final (x : Operand.t T)
+  | binop (op : BinOp.t) (x : Operand.t T) (y : Operand.t T) (s_next : T -> t T)
+  | jcc (c : Operand.t T) (s_true : t T) (s_false : t T) (s_next : T -> t T)
+  | iter (x : Operand.t T) (s_c : T -> t T) (s_f : T -> t T) (s_next : T -> t T).
   
   Module BigStep.
     Inductive t : t Value.t -> Value.t -> Type :=
@@ -38,6 +40,22 @@ Module Source.
     | binop : forall op x y s v_x v_y v_z v,
       Operand.BigStep.t x v_x -> Operand.BigStep.t y v_y ->
       BinOp.BigStep.t op v_x v_y v_z ->
-      t (s v_z) v -> t (binop op x y s) v.
+      t (s v_z) v -> t (binop op x y s) v
+    | jcc_true : forall c s_true s_false s_next v_true v,
+      Operand.BigStep.t c (Value.bits 1) ->
+      t s_true v_true -> t (s_next v_true) v ->
+      t (jcc c s_true s_false s_next) v
+    | jcc_false : forall c s_true s_false s_next v_false v,
+      Operand.BigStep.t c (Value.bits 0) ->
+      t s_false v_false -> t (s_next v_false) v ->
+      t (jcc c s_true s_false s_next) v
+    | iter_false : forall x s_c s_f s_next v_x v,
+      Operand.BigStep.t x v_x ->
+      t (s_c v_x) (Value.bits 0) -> t (s_next v_x) v ->
+      t (iter x s_c s_f s_next) v
+    | iter_true : forall x s_c s_f s_next v_x v_x' v,
+      Operand.BigStep.t x v_x ->
+      t (s_c v_x) (Value.bits 1) -> t (s_f v_x) v_x' -> t (iter (Operand.imm _ v_x') s_c s_f s_next) v ->
+      t (iter x s_c s_f s_next) v.
   End BigStep.
 End Source.
