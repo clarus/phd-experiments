@@ -28,4 +28,9 @@ Module Shape.
       t s v ->
       t (union ss) (Value.union i v).
   End Check.
+  
+  Module IsBits.
+    Inductive t : Value.t -> Set :=
+    | intro : forall bs, t (Value.bits bs).
+  End IsBits.
 End Shape.

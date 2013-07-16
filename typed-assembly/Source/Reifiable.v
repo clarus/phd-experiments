@@ -2,6 +2,7 @@
 Require Import PArith.
 Require Import List.
 Require Import Memory.
+Require Import Shape.
 
 Set Implicit Arguments.
 Import ListNotations.
@@ -15,9 +16,9 @@ Module Reifiable.
   Definition involutive T (R : t T) : Prop :=
     forall (v : T), import R (export R v) = v.
   
-  (** We are little-endian. *)
-  Definition r_positive : t positive := {|
-    invariant := fun _ => True;
+  Definition r_positive : t positive.
+    refine {|
+    invariant := Shape.IsBits.t;
     export := fun p =>
       let fix export p :=
         match p with
@@ -25,9 +26,19 @@ Module Reifiable.
         | xO p => false :: export p
         | xI p => true :: export p
         end in
-      exist _ (Value.bits (export p)) I
+      exist _ (Value.bits (export p)) _;
     import := fun v =>
-      |}.
+      let fix import bs :=
+        match bs with
+        | nil => xH
+        | false :: bs => xO (import bs)
+        | true :: bs => xI (import bs)
+        end in
+      let (v, P) := v in
+      _ |}.
+    - constructor.
+    
+    - inversion P.
   
   Definition r_nat : t nat := {|
     invariant := fun _ => True;
