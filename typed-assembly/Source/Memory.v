@@ -1,3 +1,5 @@
+Set Implicit Arguments.
+
 Module BlockId.
   Definition t := nat.
 End BlockId.
@@ -15,12 +17,11 @@ End Path.
 
 Module Value.
   Inductive t : Set :=
-(*   | bits (bs : list bool) *)
-  | bits (bs : nat) (* for now, simply [nat] *)
+  | bits (bs : list bool)
   | array (vs : list t)
   | struct (fields : list t)
   | union (field : nat) (v : t)
-  | pointer (bl : BlockId.t) (p : Path.t).
+  (*| pointer (bl : BlockId.t) (p : Path.t)*).
 End Value.
 
 Module Memory.

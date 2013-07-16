@@ -42,20 +42,20 @@ Module Source.
       BinOp.BigStep.t op v_x v_y v_z ->
       t (s v_z) v -> t (binop op x y s) v
     | jcc_true : forall c s_true s_false s_next v_true v,
-      Operand.BigStep.t c (Value.bits 1) ->
+      Operand.BigStep.t c (Value.bits [true]) ->
       t s_true v_true -> t (s_next v_true) v ->
       t (jcc c s_true s_false s_next) v
     | jcc_false : forall c s_true s_false s_next v_false v,
-      Operand.BigStep.t c (Value.bits 0) ->
+      Operand.BigStep.t c (Value.bits [false]) ->
       t s_false v_false -> t (s_next v_false) v ->
       t (jcc c s_true s_false s_next) v
     | iter_false : forall x s_c s_f s_next v_x v,
       Operand.BigStep.t x v_x ->
-      t (s_c v_x) (Value.bits 0) -> t (s_next v_x) v ->
+      t (s_c v_x) (Value.bits [false]) -> t (s_next v_x) v ->
       t (iter x s_c s_f s_next) v
     | iter_true : forall x s_c s_f s_next v_x v_x' v,
       Operand.BigStep.t x v_x ->
-      t (s_c v_x) (Value.bits 1) -> t (s_f v_x) v_x' -> t (iter (Operand.imm _ v_x') s_c s_f s_next) v ->
+      t (s_c v_x) (Value.bits [true]) -> t (s_f v_x) v_x' -> t (iter (Operand.imm _ v_x') s_c s_f s_next) v ->
       t (iter x s_c s_f s_next) v.
   End BigStep.
 End Source.
