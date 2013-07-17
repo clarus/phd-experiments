@@ -34,43 +34,77 @@ Module Reifiable.
     exists (proj2_sig (export R x)).
     now rewrite (Hinvolutive x (proj2_sig (export R x))).
   Defined.
+  
+  Definition morphism T T' (R' : t T')
+    (export' : T -> T') (import' : T' -> T) : t T := {|
+    invariant := invariant R';
+    export := fun x => export R' (export' x);
+    import := fun vH => import' (import R' vH) |}.
+  
+  Lemma morphism_is_involutive T T' (R' : t T')
+    (export' : T -> T') (import' : T' -> T)
+    (Hinv' : is_involutive R') (Hinv : forall x, import' (export' x) = x)
+    : is_involutive (morphism R' export' import').
+    unfold is_involutive, morphism in *; simpl in *.
+    intros; congruence.
+  Qed.
+  
+  Module Positive.
+    Fixpoint export_aux p :=
+      match p with
+      | xH => []
+      | xO p => false :: export_aux p
+      | xI p => true :: export_aux p
+      end.
+    
+    Fixpoint import_aux bs :=
+      match bs with
+      | nil => xH
+      | false :: bs => xO (import_aux bs)
+      | true :: bs => xI (import_aux bs)
+      end.
+    
+    Definition R : t positive.
+      refine {|
+        invariant := Shape.IsBits.t;
+        export := fun p => exist _
+          (Value.bits (export_aux p)) (Shape.IsBits.intro _);
+        import := fun vH =>
+          let (v, H) := vH in
+          import_aux _ |}.
+      destruct v; try exact bs;
+        abstract (exfalso; inversion H).
+    Defined.
+    
+    Lemma aux_is_involutive : forall p, import_aux (export_aux p) = p.
+      induction p; simpl; congruence.
+    Qed.
+    
+    Lemma R_is_involutive : is_involutive R.
+      unfold is_involutive; simpl.
+      intros; apply aux_is_involutive.
+    Qed.
+  End Positive.
+
+  Module Nat.
+    Definition R : t nat :=
+      morphism Positive.R
+        (fun n => Pos.of_nat (S n))
+        (fun p => pred (Pos.to_nat p)).
+    
+    Lemma R_is_involutive : is_involutive R.
+      apply morphism_is_involutive.
+      - apply Positive.R_is_involutive.
+      
+      - intro x.
+        now rewrite Nat2Pos.id_max.
+    Qed.
+  End Nat.
 End Reifiable.
 
-Module Positive.
-  Import Reifiable.
-  
-  Fixpoint export_aux p :=
-    match p with
-    | xH => []
-    | xO p => false :: export_aux p
-    | xI p => true :: export_aux p
-    end.
-  
-  Fixpoint import_aux bs :=
-    match bs with
-    | nil => xH
-    | false :: bs => xO (import_aux bs)
-    | true :: bs => xI (import_aux bs)
-    end.
-  
-  Definition r_positive : t positive.
-    refine {|
-      invariant := Shape.IsBits.t;
-      export := fun p => exist _
-        (Value.bits (export_aux p)) (Shape.IsBits.intro _);
-      import := fun vH =>
-        let (v, H) := vH in
-        import_aux _ |}.
-    destruct v; try exact bs;
-      abstract (exfalso; inversion H).
-  Defined.
-  
-  Lemma aux_is_involutive : forall p, import_aux (export_aux p) = p.
-    induction p; simpl; congruence.
-  Qed.
-  
-  Lemma r_positive_is_involutive : is_involutive r_positive.
-    unfold is_involutive; simpl.
-    intros; apply aux_is_involutive.
-  Qed.
-End Positive.
+
+
+
+
+
+
