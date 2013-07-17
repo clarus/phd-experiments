@@ -10,11 +10,30 @@ Import ListNotations.
 Module Reifiable.
   Record t (T : Type) : Type := new {
     invariant : Value.t -> Prop;
-    export : T -> {v : Value.t & invariant v};
-    import : {v : Value.t & invariant v} -> T}.
+    export : T -> {v : Value.t | invariant v};
+    import : {v : Value.t | invariant v} -> T}.
   
-  Definition involutive T (R : t T) : Prop :=
-    forall (v : T), import R (export R v) = v.
+  Definition is_involutive T (R : t T) : Prop :=
+    forall (x : T),
+    let v := proj1_sig (export R x) in
+    forall (H : invariant R v),
+      import R (exist _ v H) = x.
+  
+  Definition subset_lift T (R : t T) (P : T -> Prop) (Hinvolutive : is_involutive R)
+    : t {x : T | P x}.
+    refine {|
+      invariant := fun v =>
+        {H : invariant R v | P (import R (exist _ v H))};
+      export := fun (xP : {x : T | P x}) =>
+        let (x, P) := xP in
+        exist _ (proj1_sig (export R x)) _;
+      import := fun vH =>
+        let (v, H) := vH in
+        let (Hinv, HP) := H in
+        exist _ (import R (exist _ v Hinv)) HP |}.
+    exists (proj2_sig (export R x)).
+    now rewrite (Hinvolutive x (proj2_sig (export R x))).
+  Defined.
 End Reifiable.
 
 Module Positive.
@@ -36,22 +55,22 @@ Module Positive.
   
   Definition r_positive : t positive.
     refine {|
-    invariant := Shape.IsBits.t;
-    export := fun p => existT _
-      (Value.bits (export_aux p)) (Shape.IsBits.intro _);
-    import := fun vP =>
-      let (v, P) := vP in
-      import_aux _ |}.
+      invariant := Shape.IsBits.t;
+      export := fun p => exist _
+        (Value.bits (export_aux p)) (Shape.IsBits.intro _);
+      import := fun vH =>
+        let (v, H) := vH in
+        import_aux _ |}.
     destruct v; try exact bs;
-      abstract (exfalso; inversion P).
+      abstract (exfalso; inversion H).
   Defined.
   
   Lemma aux_is_involutive : forall p, import_aux (export_aux p) = p.
     induction p; simpl; congruence.
   Qed.
   
-  Lemma r_positive_is_involutive : involutive r_positive.
-    unfold involutive; simpl.
-    exact aux_is_involutive.
+  Lemma r_positive_is_involutive : is_involutive r_positive.
+    unfold is_involutive; simpl.
+    intros; apply aux_is_involutive.
   Qed.
 End Positive.
