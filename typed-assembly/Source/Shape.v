@@ -1,5 +1,6 @@
 (** Intermediate memory model. *)
 Require Import List.
+Require Import Lib.
 Require Import Memory.
 
 Set Implicit Arguments.
@@ -12,6 +13,16 @@ Module Shape.
   | struct (fields : list t)
   | union (fields : list t)
   (*| pointer (target : t)*).
+  
+(*  Fixpoint check (s : t) (v : Value.t) : Prop :=
+    match (s, v) with
+    | (bits n, Value.bits bs) => length bs = n
+    | (array n s, Value.array vs) => length vs = n /\ Forall (check s) vs
+    | (struct ss, Value.struct vs) => Forall2 check ss vs
+    | (union ss, Value.union i v) => exists s,
+      nth_error ss i = Some s /\ check s v
+    | _ => False
+    end.*)
   
   Module Check.
     Inductive t : t -> Value.t -> Prop :=
@@ -30,7 +41,7 @@ Module Shape.
   End Check.
   
   Module IsBits.
-    Inductive t : Value.t -> Set :=
+    Inductive t : Value.t -> Prop :=
     | intro : forall bs, t (Value.bits bs).
   End IsBits.
 End Shape.
