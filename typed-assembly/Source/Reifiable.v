@@ -49,6 +49,17 @@ Module Reifiable.
     intros; congruence.
   Qed.
   
+  Module Value.
+    Definition R : t Value.t := {|
+      invariant := fun _ => True;
+      export := fun v => exist _ v I;
+      import := fun vH => proj1_sig vH |}.
+    
+    Lemma R_is_involutive : is_involutive R.
+      now unfold is_involutive.
+    Qed.
+  End Value.
+  
   Module Positive.
     Fixpoint export_aux p :=
       match p with
