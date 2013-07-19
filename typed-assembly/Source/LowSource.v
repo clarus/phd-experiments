@@ -21,7 +21,7 @@ Module Operand.
   | var : T -> t T.
   
   Module BigStep.
-    Inductive t : t Value.t -> Value.t -> Type :=
+    Inductive t : t Value.t -> Value.t -> Prop :=
     | imm : forall (v : Value.t), t (imm _ v) v
     | var : forall (v : Value.t), t (var v) v.
   End BigStep.
@@ -35,7 +35,7 @@ Module Source.
   | iter (x : Operand.t T) (s_c : T -> t T) (s_f : T -> t T) (s_next : T -> t T).
   
   Module BigStep.
-    Inductive t : t Value.t -> Value.t -> Type :=
+    Inductive t : t Value.t -> Value.t -> Prop :=
     | final : forall x v, Operand.BigStep.t x v -> t (final x) v
     | binop : forall op x y s v_x v_y v_z v,
       Operand.BigStep.t x v_x -> Operand.BigStep.t y v_y ->
