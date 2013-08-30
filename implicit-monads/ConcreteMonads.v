@@ -1,4 +1,4 @@
-(** Something incomplete but simple to get a first concrete result *)
+(** Something incomplete but simple to get a first concrete result.*)
 Require Import List.
 
 Import ListNotations.

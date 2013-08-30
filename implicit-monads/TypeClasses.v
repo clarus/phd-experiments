@@ -1,5 +1,4 @@
 (** Monads inference formalized using typeclasses *)
-
 Set Implicit Arguments.
 
 Class Monad (M : Type -> Type) : Type := {

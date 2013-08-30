@@ -1,4 +1,4 @@
-(** Not working for now *)
+(** Not working for now. *)
 Set Implicit Arguments.
 
 Record Monad (M : Type -> Type) : Type := {

@@ -1,6 +1,6 @@
 (** Monads with an open structure to give more freedom to the run operations
     The last state of this file was frozen during a refactoring, but cooperative
-    threads and coroutines are working  *)
+    threads and coroutines are working. *)
 Require Import Arith.
 Require Import List.
 Require Import Streams.
