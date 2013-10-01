@@ -9,8 +9,10 @@
 *.cmxs
 *.cmxa
 *.vo
-*.v.d
+*.d
 *.glob
+*.bak
+effects-plugin/Makefile
 typed-assembly/Compiler/Makefile
 typed-assembly/Source/Makefile
 embedded-compcert/Makefile.config

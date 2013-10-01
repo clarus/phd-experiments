@@ -1,0 +1,11 @@
+# Includes
+##########
+-I src
+-R . Effects
+
+# Compilation units
+###################
+src/effects.ml4
+src/effectsPluginModule.ml
+src/effectsPlugin.mllib
+Effects.v
