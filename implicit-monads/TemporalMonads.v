@@ -3,13 +3,26 @@ Require Import List.
 
 Import ListNotations.
 
+Set Implicit Arguments.
+
+Module Effect.
+  Definition t := Type.
+End Effect.
+
+Module Property.
+  Definition t (e : Effect.t) (A : Type) :=
+    option A -> list e -> Prop.
+  
+  Inductive seq e A B (PA : t e A) (PB : t e B) : t e B :=
+  | seq_intro : forall x y s tx ty,
+    PA x (s :: tx) -> PB y (last tx s :: ty) -> seq PA PB y (s :: tx ++ ty).
+End Property.
+
 Module M.
   Definition t (S : Type) (A : Type) (P : option A -> list S -> Prop) : Type :=
     forall (s : S),
       {x : option A & {t : list S | P x (s :: t)}}.
 End M.
-
-Set Implicit Arguments.
 
 Definition ret S A (x : A) : M.t S A (fun _ _ => True) :=
   fun _ => existT _ (Some x) (exist _ [] I).
@@ -33,23 +46,7 @@ Definition bind S A B (PA PB : _ -> _ -> Prop)
     exists tx.
     now apply Hnone.
 Defined.
-intuition.
-    
-  unfold M.t.
-  
-  refine (
-  fun s =>
-    let (x, txHx) := x s in
-    let (tx, Hx) := txHx in
-    match x with
-    | None => existT _ None (exist _ tx _)
-    | Some x' =>
-      let s' := last tx s in
-      let (y, tyHy) := f x' s' in
-      let (ty, Hy) := tyHy in
-      existT _ y (exist _ (tx ++ ty) (Hsome x' y s tx ty Hx))
-    end).
-    apply Hsome with (x := x1).
-    match x s t with
-    | existT 
-    end.
+
+Definition combine S1 S2 A P1 P2 
+
+Infix "++" := combine.
