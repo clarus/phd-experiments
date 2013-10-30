@@ -46,6 +46,12 @@ Module Array.
       refine (List.Index.new l (i := i) _).
       abstract (destruct a; simpl; omega).
     Defined.
+    
+    Definition from_modified_array A (l l' : list A) n
+      (a : Array.t l n) (a' : Array.t l' n) (i : t a) : t a'.
+      destruct i as [i Hi].
+      refine (new a' Hi).
+    Defined.
   End Index.
   
   Definition read A (l: list A) n
@@ -62,9 +68,11 @@ Module Array.
       omega).
   Defined.
   
-  (*Definition swap A (n i j : nat) (x y : A) (a : t A)
-    (Hn : has_length a n) (Hi : i < n) (Hj : j < n)
-    (Hx : nth Hn Hi = x) (Hy : nth Hn Hj = y)
-    : {a : A | nth Hn Hi = y /\ nth Hn Hj = x}.
-    let *)
+  Definition swap A (l : list A) n
+    (a : t l n) (i j : Index.t a) : t _ n :=
+    let x := read i in
+    let y := read j in
+    let a := write i y in
+    let j := Index.from_modified_array a j in
+    write j x.
 End Array.
