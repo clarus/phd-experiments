@@ -4,30 +4,67 @@ Require Import Omega.
 
 Set Implicit Arguments.
 
-Module SafeList.
-  Fixpoint nth A (l : list A) (i : nat) (Hi : i < length l) : A.
+Module List.
+  Module Index.
+    Record t A (l : list A) : Set := new {
+      i : nat;
+      spec : i < length l}.
+  End Index.
+  
+  Fixpoint read A (l : list A) (i : Index.t l) : A.
+    destruct i as [i Hi].
     destruct l as [|x l].
     - simpl in Hi.
-      omega.
+      clear read; abstract omega.
     - destruct i as [|i].
       + exact x.
-      + refine (nth _ l i _).
+      + refine (read _ l (Index.new l (i := i) _)).
         simpl in Hi.
-        omega.
+        clear read; abstract omega.
   Defined.
-End SafeList.
+  
+  Fixpoint write A (l : list A) (i : Index.t l) (x : A) {struct l} : list A.
+    admit.
+  Defined.
+  
+  Axiom write_keeps_length : forall A (l : list A) (i : Index.t l) (x : A),
+    length (write i x) = length l.
+End List.
 
 Module Array.
-  Definition t := list.
+  Record t A (l : list A) (n : nat) : Type := new {
+    spec : n = length l}.
   
-  Definition has_length A (a : t A) (n : nat) : Prop :=
-    length a = n.
+  Module Index.
+    Record t A (l : list A) n (a : t l n) : Set := new {
+      i : nat;
+      spec : i < n}.
+    
+    Definition to_list_index A (l : list A) n
+      (a : Array.t l n) (i : t a) : List.Index.t l.
+      destruct i as [i Hi].
+      refine (List.Index.new l (i := i) _).
+      abstract (destruct a; simpl; omega).
+    Defined.
+  End Index.
   
-  Definition nth A (n : nat) (a : t A) (Hn : has_length a n)
-    (i : nat) (Hi : i < n) : A.
-    refine (SafeList.nth a (i := i) _).
-    abstract congruence.
+  Definition read A (l: list A) n
+    (a : t l n) (i : Index.t a) : A :=
+    List.read (Index.to_list_index i).
+  
+  Definition write A (l : list A) n
+    (a : t l n) (i : Index.t a) (x : A)
+    : t (List.write (Index.to_list_index i) x) n.
+    apply new.
+    abstract (
+      assert (H := List.write_keeps_length (Index.to_list_index i) x);
+      destruct a;
+      omega).
   Defined.
   
-(*   Definition swap A (x y : A) (a : t A) (Hx : ) :  *)
+  (*Definition swap A (n i j : nat) (x y : A) (a : t A)
+    (Hn : has_length a n) (Hi : i < n) (Hj : j < n)
+    (Hx : nth Hn Hi = x) (Hy : nth Hn Hj = y)
+    : {a : A | nth Hn Hi = y /\ nth Hn Hj = x}.
+    let *)
 End Array.
