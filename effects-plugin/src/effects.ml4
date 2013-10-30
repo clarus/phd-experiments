@@ -52,12 +52,12 @@ module Effect = struct
       discharge_function = (fun (_, e) -> Table.remove e; None)*) }
 end
 
-(** Syntax extension do add an "Effect" command to register a new effect. *)
+(** Syntax extension to add an "Effect" command to register a new effect. *)
 VERNAC COMMAND EXTEND Effect CLASSIFIED AS SIDEFF
 | [ "Effect" ident(name) constr(typ) ] -> [ Lib.add_anonymous_leaf (Effect.to_object (Effect.of_syntax name typ)) ]
 END
 
-(*(** Syntax extension do add an "EDefinition" command to define a new expression with effects. *)
+(*(** Syntax extension to add an "EDefinition" command to define a new expression with effects. *)
 VERNAC COMMAND EXTEND EDefinition CLASSIFIED AS SIDEFF
 | [ "EDefinition" ident(name) constr(value) ] -> [ () ]
 END*)
