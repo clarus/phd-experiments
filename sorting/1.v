@@ -4,11 +4,27 @@ Require Import Omega.
 
 Set Implicit Arguments.
 
+Module Sig.
+  Definition val := proj1_sig.
+  Definition spec := proj1_sig.
+End Sig.
+
 Module List.
   Module Index.
     Record t A (l : list A) : Set := new {
       i : nat;
       spec : i < length l}.
+    
+    Definition from_new_list A (l l' : list A)
+      (i : t l) (H : length l = length l') : t l'.
+      refine (new l' (i := Index.i i) _).
+      destruct i.
+      abstract (simpl; omega).
+    Defined.
+    
+    Definition dup A (l : list A) (i : t l)
+      B (l' : list B) H : t l':=
+      new l' (i := Index.i i) H.
   End Index.
   
   Fixpoint read A (l : list A) (i : Index.t l) : A.
@@ -29,6 +45,13 @@ Module List.
   
   Axiom write_keeps_length : forall A (l : list A) (i : Index.t l) (x : A),
     length (write i x) = length l.
+  
+  Definition write_modifies_lemma : Prop.
+    refine (forall A (l : list A) (i : Index.t l) (x : A),
+      read (Index.dup i (write i x) _) = x).
+  
+  Axiom write_modifies : forall A (l : list A) (i : Index.t l) (x : A),
+    read (from_new_list
 End List.
 
 Module Array.
@@ -47,7 +70,7 @@ Module Array.
       abstract (destruct a; simpl; omega).
     Defined.
     
-    Definition from_modified_array A (l l' : list A) n
+    Definition from_new_array A (l l' : list A) n
       (a : Array.t l n) (a' : Array.t l' n) (i : t a) : t a'.
       destruct i as [i Hi].
       refine (new a' Hi).
