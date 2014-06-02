@@ -1,6 +1,4 @@
-(** Monads with an open structure to give more freedom to the run operations
-    The last state of this file was frozen during a refactoring, but cooperative
-    threads and coroutines are working. *)
+(** Experiments for the "composable monads" project. *)
 Require Import Arith.
 Require Import List.
 Require Import Streams.
@@ -25,14 +23,12 @@ End Result.
 Import Result.
 
 Class Monad : Type := {
-  I : Type;
-  E : Type;
-  O : Type;
-  O_of_I : I -> O}.
+  S : Type;
+  E : Type }.
 
 Module M.
   Inductive t {m : Monad} (A : Type) : Type :=
-  | new : (I -> Result.t A E (t A) * O) -> t A.
+  | new : (S -> Result.t A E (t A) * S) -> t A.
   
   Definition open {m : Monad} A (x : t A) :=
     match x with
@@ -41,150 +37,135 @@ Module M.
 End M.
 
 Instance Id : Monad := {
-  I := unit;
-  E := Empty_set;
-  O := unit;
-  O_of_I := fun _ => tt}.
+  S := unit;
+  E := Empty_set }.
 
 Definition ret {m : Monad} A (x : A) : M.t A :=
-  M.new (fun i => (Val x, O_of_I i)).
+  M.new (fun s => (Val x, s)).
 
 Fixpoint bind {m : Monad} A B (x : M.t A) (f : A -> M.t B) : M.t B :=
-  M.new (fun i =>
-    match M.open x i with
-    | (Val x, o) => (Mon (f x), o)
-    | (Err e, o) => (Err e, o)
-    | (Mon x, o) => (Mon (bind x f), o)
+  M.new (fun s =>
+    match M.open x s with
+    | (Val x, s) => (Mon (f x), s)
+    | (Err e, s) => (Err e, s)
+    | (Mon x, s) => (Mon (bind x f), s)
     end).
 
 Definition seq {m : Monad} A B (x : M.t A) (f : M.t B) : M.t B :=
   bind x (fun _ => f).
 
-Fixpoint run {m : Monad} A (x : M.t A) (I_of_O : O -> I) (i : I) : (A + E) * O :=
-  match M.open x i with
-  | (Val x, o) => (inl x, o)
-  | (Err e, o) => (inr e, o)
-  | (Mon x, o) => run x I_of_O (I_of_O o)
+Fixpoint run {m : Monad} A (x : M.t A) (s : S) : (A + E) * S :=
+  match M.open x s with
+  | (Val x, s) => (inl x, s)
+  | (Err e, s) => (inr e, s)
+  | (Mon x, s) => run x s
   end.
 
 Definition combine (m1 m2 : Monad) : Monad := {|
-  I := @I m1 * @I m2;
-  E := @E m1 + @E m2;
-  O := @O m1 * @O m2;
-  O_of_I := fun i =>
-    let (i1, i2) := i in
-    (O_of_I i1, O_of_I i2)|}.
+  S := @S m1 * @S m2;
+  E := @E m1 + @E m2 |}.
 
 Infix "++" := combine.
 
 Fixpoint combine_id (m : Monad) A (x : @M.t (Id ++ m) A) : @M.t m A :=
-  M.new (fun i =>
-    match M.open x (tt, i) with
-    | (Val x, (_, o)) => (Val x, o)
-    | (Err (inr e), (_, o)) => (Err e, o)
+  M.new (fun s =>
+    match M.open x (tt, s) with
+    | (Val x, (_, s)) => (Val x, s)
+    | (Err (inr e), (_, s)) => (Err e, s)
     | (Err (inl e), _) => match e with end
-    | (Mon x, (_, o)) => (Mon (combine_id x), o)
+    | (Mon x, (_, s)) => (Mon (combine_id x), s)
     end).
 
 Fixpoint combine_commut (m1 m2 : Monad) A (x : @M.t (m1 ++ m2) A)
   : @M.t (m2 ++ m1) A :=
-  M.new (m := m2 ++ m1) (fun i =>
-    let (i2, i1) := i in
-    match M.open x (i1, i2) with
-    | (Val x, (o1, o2)) => (Val x, (o2, o1))
-    | (Err e, (o1, o2)) =>
+  M.new (m := m2 ++ m1) (fun s =>
+    let (s2, s1) := s in
+    match M.open x (s1, s2) with
+    | (Val x, (s1, s2)) => (Val x, (s2, s1))
+    | (Err e, (s1, s2)) =>
       (Err (match e with
       | inl e1 => inr e1
       | inr e2 => inl e2
-      end), (o2, o1))
-    | (Mon x', (o1, o2)) => (Mon (combine_commut x'), (o2, o1))
+      end), (s2, s1))
+    | (Mon x', (s1, s2)) => (Mon (combine_commut x'), (s2, s1))
     end).
 
 Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @M.t ((m1 ++ m2) ++ m3) A)
   : @M.t (m1 ++ (m2 ++ m3)) A :=
-  M.new (m := m1 ++ (m2 ++ m3)) (fun i =>
-    match i with
-    | (i1, (i2, i3)) =>
-      match M.open x ((i1, i2), i3) with
-      | (Val x, ((o1, o2), o3)) => (Val x, (o1, (o2, o3)))
-      | (Err e, ((o1, o2), o3)) =>
+  M.new (m := m1 ++ (m2 ++ m3)) (fun s =>
+    match s with
+    | (s1, (s2, s3)) =>
+      match M.open x ((s1, s2), s3) with
+      | (Val x, ((s1, s2), s3)) => (Val x, (s1, (s2, s3)))
+      | (Err e, ((s1, s2), s3)) =>
         let e := match e with
           | inl (inl e1) => inl e1
           | inl (inr e2) => inr (inl e2)
           | inr e3 => inr (inr e3)
           end in
-        (Err e, (o1, (o2, o3)))
-      | (Mon x, ((o1, o2), o3)) => (Mon (combine_assoc_left x), (o1, (o2, o3)))
+        (Err e, (s1, (s2, s3)))
+      | (Mon x, ((s1, s2), s3)) => (Mon (combine_assoc_left x), (s1, (s2, s3)))
       end
     end).
 
 Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ (m2 ++ m3)) A)
   : @M.t ((m1 ++ m2) ++ m3) A :=
-  M.new (m := (m1 ++ m2) ++ m3) (fun i =>
-    match i with
-    | ((i1, i2), i3) =>
-      match M.open x (i1, (i2, i3)) with
-      | (Val x, (o1, (o2, o3))) => (Val x, ((o1, o2), o3))
-      | (Err e, (o1, (o2, o3))) =>
+  M.new (m := (m1 ++ m2) ++ m3) (fun s =>
+    match s with
+    | ((s1, s2), s3) =>
+      match M.open x (s1, (s2, s3)) with
+      | (Val x, (s1, (s2, s3))) => (Val x, ((s1, s2), s3))
+      | (Err e, (s1, (s2, s3))) =>
         let e := match e with
           | inl e1 => inl (inl e1)
           | inr (inl e2) => inl (inr e2)
           | inr (inr e3) => inr e3
           end in
-        (Err e, ((o1, o2), o3))
-      | (Mon x, (o1, (o2, o3))) => (Mon (combine_assoc_right x), ((o1, o2), o3))
+        (Err e, ((s1, s2), s3))
+      | (Mon x, (s1, (s2, s3))) => (Mon (combine_assoc_right x), ((s1, s2), s3))
       end
     end).
 
-Fixpoint gret {m m' : Monad} A (x : @M.t m' A) : @M.t (m ++ m') A :=
-  M.new (m := m ++ m') (fun i =>
-    let (i1, i2) := i in
-    let o1 := O_of_I i1 in
-    match M.open x i2 with
-    | (Val x, o2) => (Val x, (o1, o2))
-    | (Err e, o2) => (Err (inr e), (o1, o2))
-    | (Mon x, o2) => (Mon (gret x), (o1, o2))
+Fixpoint lift {m m' : Monad} A (x : @M.t m' A) : @M.t (m ++ m') A :=
+  M.new (m := m ++ m') (fun s =>
+    let (s1, s2) := s in
+    match M.open x s2 with
+    | (Val x, s2) => (Val x, (s1, s2))
+    | (Err e, s2) => (Err (inr e), (s1, s2))
+    | (Mon x, s2) => (Mon (lift x), (s1, s2))
     end).
 
 Instance Option : Monad := {
-  I := unit;
-  E := unit;
-  O := unit;
-  O_of_I := fun _ => tt}.
+  S := unit;
+  E := unit }.
 
 Definition option_none A : @M.t Option A :=
   M.new (fun _ => (Err tt, tt)).
 
 Definition option_run A (x : @M.t Option A) : option A :=
-  match run x (fun _ => tt) tt with
-  | (inl x', _) => Some x'
+  match run x tt with
+  | (inl x, _) => Some x
   | _ => None
   end.
 
 Instance Error (E : Type) : Monad := {
-  I := unit;
-  E := E;
-  O := unit;
-  O_of_I := fun _ => tt}.
+  S := unit;
+  E := E }.
 
 Definition raise E A (e : E) : @M.t (Error E) A :=
   M.new (m := Error E) (fun _ => (Err e, tt)).
 
 Instance Print (A : Type) : Monad := {
-  I := list A;
-  E := Empty_set;
-  O := list A;
-  O_of_I := fun i => i}.
+  S := list A;
+  E := Empty_set }.
 
 Definition print A (x : A) : @M.t (Print A) unit :=
-  M.new (m := Print A) (fun i =>
-    (Val tt, x :: i)).
+  M.new (m := Print A) (fun s =>
+    (Val tt, x :: s)).
 
 Instance State (S : Type) : Monad := {
-  I := S;
-  E := Empty_set;
-  O := S;
-  O_of_I := fun i => i}.
+  S := S;
+  E := Empty_set }.
 
 Definition read (S : Type) : @M.t (State S) S :=
   M.new (m := State S) (fun s => (Val s, s)).
@@ -193,24 +174,21 @@ Definition write (S : Type) (x : S) : @M.t (State S) unit :=
   M.new (m := State S) (fun _ => (Val tt, x)).
 
 Instance Loop : Monad := {
-  I := nat;
-  E := unit;
-  O := nat;
-  O_of_I := fun i => i}.
+  S := nat;
+  E := unit }.
 
-Fixpoint local_run {m m' : Monad} A
-  (x : @M.t (m ++ m') A) (I_of_O : @O m -> @I m) (i_m : @I m)
+Fixpoint local_run {m m' : Monad} A (x : @M.t (m ++ m') A) (s_m : @S m)
   : @M.t (Error (@E m) ++ m') A :=
-  M.new (m := Error (@E m) ++ m') (fun i =>
-    let (_, i_m') := i in
-    match M.open x (i_m, i_m') with
-    | (r, (o_m, o_m')) =>
+  M.new (m := Error (@E m) ++ m') (fun s =>
+    let (_, s_m') := s in
+    match M.open x (s_m, s_m') with
+    | (r, (s_m, s_m')) =>
       let r := match r with
         | Val x => Val x
         | Err e => Err e
-        | Mon x => Mon (local_run x I_of_O (I_of_O o_m))
+        | Mon x => Mon (local_run x s_m)
         end in
-      (r, (tt, o_m'))
+      (r, (tt, s_m'))
     end).
 
 (*Fixpoint local_run_with_break {m m' : Monad} A
@@ -271,28 +249,26 @@ Definition local_run_with_break_terminate {m m' : Monad} A
 
 (** Breaks *)
 Instance Breaker : Monad := {
-  I := unit;
-  E := Empty_set;
-  O := bool; (* if we do a break *)
-  O_of_I := fun _ => false}.
+  S := bool;
+  E := Empty_set }.
 
 Definition break : @M.t Breaker unit :=
   M.new (fun _ => (Val tt, true)).
 
 Fixpoint local_run_with_break {m : Monad} A (x : @M.t (Breaker ++ m) A)
   : @M.t m (A + @M.t (Breaker ++ m) A) :=
-  M.new (m := m) (fun i =>
-    match M.open x (tt, i) with
-    | (r, (true, o)) =>
+  M.new (m := m) (fun s =>
+    match M.open x (false, s) with
+    | (r, (true, s)) =>
       (Val (inr (M.new (m := Breaker ++ m) (fun i =>
-        (r, (false, O_of_I (snd i)))))), o)
-    | (Val x, (false, o)) => (Val (inl x), o)
-    | (Err e, (false, o)) =>
+        (r, (false, snd i))))), o)
+    | (Val x, (false, s)) => (Val (inl x), s)
+    | (Err e, (false, s)) =>
       match e with
       | inl e_break => match e_break with end
-      | inr e_m => (Err e_m, o)
+      | inr e_m => (Err e_m, s)
       end
-    | (Mon x, (false, o)) => (Mon (local_run_with_break x), o)
+    | (Mon x, (false, s)) => (Mon (local_run_with_break x), s)
     end).
 
 Fixpoint local_run_with_break_n {m : Monad} A (x : @M.t (Breaker ++ m) A) (a : @M.t m unit) (n : nat)
