@@ -28,11 +28,11 @@ Class Monad : Type := {
 
 Module M.
   Inductive t {m : Monad} (A : Type) : Type :=
-  | new : (S -> Result.t A E (t A) * S) -> t A.
+  | make : (S -> Result.t A E (t A) * S) -> t A.
   
   Definition open {m : Monad} A (x : t A) :=
     match x with
-    | new x' => x'
+    | make x' => x'
     end.
 End M.
 
@@ -41,10 +41,10 @@ Instance Id : Monad := {
   E := Empty_set }.
 
 Definition ret {m : Monad} A (x : A) : M.t A :=
-  M.new (fun s => (Val x, s)).
+  M.make (fun s => (Val x, s)).
 
 Fixpoint bind {m : Monad} A B (x : M.t A) (f : A -> M.t B) : M.t B :=
-  M.new (fun s =>
+  M.make (fun s =>
     match M.open x s with
     | (Val x, s) => (Mon (f x), s)
     | (Err e, s) => (Err e, s)
@@ -68,7 +68,7 @@ Definition combine (m1 m2 : Monad) : Monad := {|
 Infix "++" := combine.
 
 Fixpoint combine_id (m : Monad) A (x : @M.t (Id ++ m) A) : @M.t m A :=
-  M.new (fun s =>
+  M.make (fun s =>
     match M.open x (tt, s) with
     | (Val x, (_, s)) => (Val x, s)
     | (Err (inr e), (_, s)) => (Err e, s)
@@ -78,7 +78,7 @@ Fixpoint combine_id (m : Monad) A (x : @M.t (Id ++ m) A) : @M.t m A :=
 
 Fixpoint combine_commut (m1 m2 : Monad) A (x : @M.t (m1 ++ m2) A)
   : @M.t (m2 ++ m1) A :=
-  M.new (m := m2 ++ m1) (fun s =>
+  M.make (m := m2 ++ m1) (fun s =>
     let (s2, s1) := s in
     match M.open x (s1, s2) with
     | (Val x, (s1, s2)) => (Val x, (s2, s1))
@@ -92,7 +92,7 @@ Fixpoint combine_commut (m1 m2 : Monad) A (x : @M.t (m1 ++ m2) A)
 
 Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @M.t ((m1 ++ m2) ++ m3) A)
   : @M.t (m1 ++ (m2 ++ m3)) A :=
-  M.new (m := m1 ++ (m2 ++ m3)) (fun s =>
+  M.make (m := m1 ++ (m2 ++ m3)) (fun s =>
     match s with
     | (s1, (s2, s3)) =>
       match M.open x ((s1, s2), s3) with
@@ -110,7 +110,7 @@ Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @M.t ((m1 ++ m2) ++ m3) A)
 
 Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ (m2 ++ m3)) A)
   : @M.t ((m1 ++ m2) ++ m3) A :=
-  M.new (m := (m1 ++ m2) ++ m3) (fun s =>
+  M.make (m := (m1 ++ m2) ++ m3) (fun s =>
     match s with
     | ((s1, s2), s3) =>
       match M.open x (s1, (s2, s3)) with
@@ -127,7 +127,7 @@ Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ (m2 ++ m3)) A
     end).
 
 Fixpoint lift {m m' : Monad} A (x : @M.t m' A) : @M.t (m ++ m') A :=
-  M.new (m := m ++ m') (fun s =>
+  M.make (m := m ++ m') (fun s =>
     let (s1, s2) := s in
     match M.open x s2 with
     | (Val x, s2) => (Val x, (s1, s2))
@@ -140,7 +140,7 @@ Instance Option : Monad := {
   E := unit }.
 
 Definition option_none A : @M.t Option A :=
-  M.new (fun _ => (Err tt, tt)).
+  M.make (fun _ => (Err tt, tt)).
 
 Definition option_run A (x : @M.t Option A) : option A :=
   match run x tt with
@@ -153,14 +153,14 @@ Instance Error (E : Type) : Monad := {
   E := E }.
 
 Definition raise E A (e : E) : @M.t (Error E) A :=
-  M.new (m := Error E) (fun _ => (Err e, tt)).
+  M.make (m := Error E) (fun _ => (Err e, tt)).
 
 Instance Print (A : Type) : Monad := {
   S := list A;
   E := Empty_set }.
 
 Definition print A (x : A) : @M.t (Print A) unit :=
-  M.new (m := Print A) (fun s =>
+  M.make (m := Print A) (fun s =>
     (Val tt, x :: s)).
 
 Instance State (S : Type) : Monad := {
@@ -168,10 +168,10 @@ Instance State (S : Type) : Monad := {
   E := Empty_set }.
 
 Definition read (S : Type) : @M.t (State S) S :=
-  M.new (m := State S) (fun s => (Val s, s)).
+  M.make (m := State S) (fun s => (Val s, s)).
 
 Definition write (S : Type) (x : S) : @M.t (State S) unit :=
-  M.new (m := State S) (fun _ => (Val tt, x)).
+  M.make (m := State S) (fun _ => (Val tt, x)).
 
 Instance Loop : Monad := {
   S := nat;
@@ -179,7 +179,7 @@ Instance Loop : Monad := {
 
 Fixpoint local_run {m m' : Monad} A (x : @M.t (m ++ m') A) (s_m : @S m)
   : @M.t (Error (@E m) ++ m') A :=
-  M.new (m := Error (@E m) ++ m') (fun s =>
+  M.make (m := Error (@E m) ++ m') (fun s =>
     let (_, s_m') := s in
     match M.open x (s_m, s_m') with
     | (r, (s_m, s_m')) =>
@@ -253,14 +253,14 @@ Instance Breaker : Monad := {
   E := Empty_set }.
 
 Definition break : @M.t Breaker unit :=
-  M.new (fun _ => (Val tt, true)).
+  M.make (fun _ => (Val tt, true)).
 
 Fixpoint local_run_with_break {m : Monad} A (x : @M.t (Breaker ++ m) A)
   : @M.t m (A + @M.t (Breaker ++ m) A) :=
-  M.new (m := m) (fun s =>
+  M.make (m := m) (fun s =>
     match M.open x (false, s) with
     | (r, (true, s)) =>
-      (Val (inr (M.new (m := Breaker ++ m) (fun i =>
+      (Val (inr (M.make (m := Breaker ++ m) (fun i =>
         (r, (false, snd i))))), o)
     | (Val x, (false, s)) => (Val (inl x), s)
     | (Err e, (false, s)) =>
@@ -284,7 +284,7 @@ Fixpoint local_run_with_break_n {m : Monad} A (x : @M.t (Breaker ++ m) A) (a : @
 
 Fixpoint local_run_with_break_terminate {m : Monad} A (x : @M.t (Breaker ++ m) A) (a : @M.t m unit)
   : @M.t m A :=
-  M.new (m := m) (fun i =>
+  M.make (m := m) (fun i =>
     match M.open x (tt, i) with
     | (Val x, (_, o)) => (Val x, o)
     | (Err e, (_, o)) =>
@@ -384,13 +384,13 @@ Instance Breaker : Monad := {
   O_of_I := fun s => (s, false)}.
 
 Definition break : @M.t Breaker unit :=
-  M.new (fun s =>
+  M.make (fun s =>
     (inl (inl tt), (Streams.tl s, Streams.hd s))).
 
 Fixpoint join_aux {m : Monad} A B (x : @M.t (Breaker ++ m) A) :=
   fix aux (y : @M.t (Breaker ++ m) B) (left_first : bool) : @M.t (Breaker ++ m) (A * B):=
     if left_first then
-      M.new (fun i =>
+      M.make (fun i =>
         match (M.open x) i with
         | (inl xe, o) =>
           match xe with
@@ -404,7 +404,7 @@ Fixpoint join_aux {m : Monad} A B (x : @M.t (Breaker ++ m) A) :=
             (inr (join_aux _ x y true), ((s, false), o))
         end)
     else
-      M.new (fun i =>
+      M.make (fun i =>
         match (M.open y) i with
         | (inl ye, o) =>
           match ye with
