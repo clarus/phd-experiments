@@ -51,8 +51,8 @@ Fixpoint bind {m : Monad} A B (x : M.t A) (f : A -> M.t B) : M.t B :=
     | (Mon x, s) => (Mon (bind x f), s)
     end).
 
-Definition seq {m : Monad} A B (x : M.t A) (f : M.t B) : M.t B :=
-  bind x (fun _ => f).
+Notation "'let!' X ':=' A 'in' B" := (bind A (fun X => B))
+  (at level 200, X ident, A at level 100, B at level 200).
 
 Fixpoint run {m : Monad} A (x : M.t A) (s : S) : (A + E) * S :=
   match M.open x s with
@@ -90,8 +90,9 @@ Fixpoint combine_commut (m1 m2 : Monad) A (x : @M.t (m1 ++ m2) A)
     | (Mon x', (s1, s2)) => (Mon (combine_commut x'), (s2, s1))
     end).
 
+(** The canonical form of a list of additions should always be with right associativity. *)
 Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @M.t ((m1 ++ m2) ++ m3) A)
-  : @M.t (m1 ++ (m2 ++ m3)) A :=
+  : @M.t (m1 ++ m2 ++ m3) A :=
   M.make (m := m1 ++ (m2 ++ m3)) (fun s =>
     match s with
     | (s1, (s2, s3)) =>
@@ -108,7 +109,8 @@ Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @M.t ((m1 ++ m2) ++ m3) A)
       end
     end).
 
-Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ (m2 ++ m3)) A)
+(** Should not be used. *)
+Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ m2 ++ m3) A)
   : @M.t ((m1 ++ m2) ++ m3) A :=
   M.make (m := (m1 ++ m2) ++ m3) (fun s =>
     match s with
@@ -126,13 +128,13 @@ Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ (m2 ++ m3)) A
       end
     end).
 
-Fixpoint lift {m m' : Monad} A (x : @M.t m' A) : @M.t (m ++ m') A :=
+Fixpoint lift {m m' : Monad} A (x : @M.t m A) : @M.t (m ++ m') A :=
   M.make (m := m ++ m') (fun s =>
     let (s1, s2) := s in
-    match M.open x s2 with
-    | (Val x, s2) => (Val x, (s1, s2))
-    | (Err e, s2) => (Err (inr e), (s1, s2))
-    | (Mon x, s2) => (Mon (lift x), (s1, s2))
+    match M.open x s1 with
+    | (Val x, s1) => (Val x, (s1, s2))
+    | (Err e, s1) => (Err (inl e), (s1, s2))
+    | (Mon x, s1) => (Mon (lift x), (s1, s2))
     end).
 
 Instance Option : Monad := {
@@ -173,10 +175,7 @@ Definition read (S : Type) : @M.t (State S) S :=
 Definition write (S : Type) (x : S) : @M.t (State S) unit :=
   M.make (m := State S) (fun _ => (Val tt, x)).
 
-Instance Loop : Monad := {
-  S := nat;
-  E := unit }.
-
+(* Useful? *)
 Fixpoint local_run {m m' : Monad} A (x : @M.t (m ++ m') A) (s_m : @S m)
   : @M.t (Error (@E m) ++ m') A :=
   M.make (m := Error (@E m) ++ m') (fun s =>
