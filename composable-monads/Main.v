@@ -22,28 +22,20 @@ End Result.
 
 Import Result.
 
-Class Monad : Type := {
-  S : Type;
-  E : Type }.
-
 Module M.
-  Inductive t {m : Monad} (A : Type) : Type :=
-  | make : (S -> Result.t A E (t A) * S) -> t A.
+  Inductive t (S : Type) (E : Type) (A : Type) : Type :=
+  | make : (S -> Result.t A E (t S E A) * S) -> t S E A.
   
-  Definition open {m : Monad} A (x : t A) :=
+  Definition open S E A (x : t S E A) :=
     match x with
     | make x' => x'
     end.
 End M.
 
-Instance Id : Monad := {
-  S := unit;
-  E := Empty_set }.
-
-Definition ret {m : Monad} A (x : A) : M.t A :=
+Definition ret S E A (x : A) : M.t S E A :=
   M.make (fun s => (Val x, s)).
 
-Fixpoint bind {m : Monad} A B (x : M.t A) (f : A -> M.t B) : M.t B :=
+Fixpoint bind S E A B (x : M.t S E A) (f : A -> M.t S E B) : M.t S E B :=
   M.make (fun s =>
     match M.open x s with
     | (Val x, s) => (Mon (f x), s)
@@ -54,20 +46,14 @@ Fixpoint bind {m : Monad} A B (x : M.t A) (f : A -> M.t B) : M.t B :=
 Notation "'let!' X ':=' A 'in' B" := (bind A (fun X => B))
   (at level 200, X ident, A at level 100, B at level 200).
 
-Fixpoint run {m : Monad} A (x : M.t A) (s : S) : (A + E) * S :=
+Fixpoint run_seq S E A (x : M.t S E A) (s : S) : (A + E) * S :=
   match M.open x s with
   | (Val x, s) => (inl x, s)
   | (Err e, s) => (inr e, s)
-  | (Mon x, s) => run x s
+  | (Mon x, s) => run_seq x s
   end.
 
-Definition combine (m1 m2 : Monad) : Monad := {|
-  S := @S m1 * @S m2;
-  E := @E m1 + @E m2 |}.
-
-Infix "++" := combine.
-
-Fixpoint combine_id (m : Monad) A (x : @M.t (Id ++ m) A) : @M.t m A :=
+(*Fixpoint combine_id (m : Monad) A (x : @M.t (Id ++ m) A) : @M.t m A :=
   M.make (fun s =>
     match M.open x (tt, s) with
     | (Val x, (_, s)) => (Val x, s)
@@ -126,56 +112,55 @@ Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @M.t (m1 ++ m2 ++ m3) A)
         (Err e, ((s1, s2), s3))
       | (Mon x, (s1, (s2, s3))) => (Mon (combine_assoc_right x), ((s1, s2), s3))
       end
-    end).
+    end).*)
 
-Fixpoint lift {m m' : Monad} A (x : @M.t m A) : @M.t (m ++ m') A :=
-  M.make (m := m ++ m') (fun s =>
+Fixpoint lift_state S S' E A (x : M.t S E A) : @M.t (S * S') E A :=
+  M.make (fun (s : S * S') =>
     let (s1, s2) := s in
     match M.open x s1 with
     | (Val x, s1) => (Val x, (s1, s2))
-    | (Err e, s1) => (Err (inl e), (s1, s2))
-    | (Mon x, s1) => (Mon (lift x), (s1, s2))
+    | (Err e, s1) => (Err e, (s1, s2))
+    | (Mon x, s1) => (Mon (lift_state _ x), (s1, s2))
     end).
 
-Instance Option : Monad := {
-  S := unit;
-  E := unit }.
+Fixpoint lift_error S E E' A (x : M.t S E A) : @M.t S (E + E') A :=
+  M.make (fun s =>
+    match M.open x s with
+    | (Val x, s) => (Val x, s)
+    | (Err e, s) => (Err (inl e), s)
+    | (Mon x, s) => (Mon (lift_error _ x), s)
+    end).
 
-Definition option_none A : @M.t Option A :=
-  M.make (fun _ => (Err tt, tt)).
+Module Option.
+  Definition none A : M.t unit unit A :=
+    M.make (fun _ => (Err tt, tt)).
 
-Definition option_run A (x : @M.t Option A) : option A :=
-  match run x tt with
-  | (inl x, _) => Some x
-  | _ => None
-  end.
+  Definition run_seq A (x : M.t unit unit A) : option A :=
+    match run_seq x tt with
+    | (inl x, _) => Some x
+    | _ => None
+    end.
+End Option.
 
-Instance Error (E : Type) : Monad := {
-  S := unit;
-  E := E }.
+Module Error.
+  Definition raise E A (e : E) : M.t unit E A :=
+    M.make (fun _ => (Err e, tt)).
+End Error.
 
-Definition raise E A (e : E) : @M.t (Error E) A :=
-  M.make (m := Error E) (fun _ => (Err e, tt)).
+Module Print.
+  Definition print A (x : A) : M.t (list A) Empty_set unit :=
+    M.make (fun s => (Val tt, x :: s)).
+End Print.
 
-Instance Print (A : Type) : Monad := {
-  S := list A;
-  E := Empty_set }.
+Module State.
+  Definition read (S : Type) : M.t S Empty_set S :=
+    M.make (fun s => (Val s, s)).
 
-Definition print A (x : A) : @M.t (Print A) unit :=
-  M.make (m := Print A) (fun s =>
-    (Val tt, x :: s)).
+  Definition write (S : Type) (x : S) : M.t S Empty_set unit :=
+    M.make (fun _ => (Val tt, x)).
+End State.
 
-Instance State (S : Type) : Monad := {
-  S := S;
-  E := Empty_set }.
-
-Definition read (S : Type) : @M.t (State S) S :=
-  M.make (m := State S) (fun s => (Val s, s)).
-
-Definition write (S : Type) (x : S) : @M.t (State S) unit :=
-  M.make (m := State S) (fun _ => (Val tt, x)).
-
-(* Useful? *)
+(*(* Useful? *)
 Fixpoint local_run {m m' : Monad} A (x : @M.t (m ++ m') A) (s_m : @S m)
   : @M.t (Error (@E m) ++ m') A :=
   M.make (m := Error (@E m) ++ m') (fun s =>
@@ -188,7 +173,7 @@ Fixpoint local_run {m m' : Monad} A (x : @M.t (m ++ m') A) (s_m : @S m)
         | Mon x => Mon (local_run x s_m)
         end in
       (r, (tt, s_m'))
-    end).
+    end).*)
 
 (*Fixpoint local_run_with_break {m m' : Monad} A
   (x : @M.t (m ++ m') A) (I_of_O : @O m -> option (@I m)) (i_m : @I m)
