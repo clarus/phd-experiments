@@ -37,7 +37,7 @@ Definition ret S E A (x : A) : C.t S E A :=
 
 Fixpoint bind S E A B (x : C.t S E A) (f : A -> C.t S E B) : C.t S E B :=
   C.make (fun s =>
-    match M.open x s with
+    match C.open x s with
     | (Val x, s) => (Mon (f x), s)
     | (Err e, s) => (Err e, s)
     | (Mon x, s) => (Mon (bind x f), s)
@@ -47,7 +47,7 @@ Notation "'let!' X ':=' A 'in' B" := (bind A (fun X => B))
   (at level 200, X ident, A at level 100, B at level 200).
 
 Fixpoint run_seq S E A (x : C.t S E A) (s : S) : (A + E) * S :=
-  match M.open x s with
+  match C.open x s with
   | (Val x, s) => (inl x, s)
   | (Err e, s) => (inr e, s)
   | (Mon x, s) => run_seq x s
@@ -55,7 +55,7 @@ Fixpoint run_seq S E A (x : C.t S E A) (s : S) : (A + E) * S :=
 
 (*Fixpoint combine_id (m : Monad) A (x : @C.t (Id ++ m) A) : @C.t m A :=
   C.make (fun s =>
-    match M.open x (tt, s) with
+    match C.open x (tt, s) with
     | (Val x, (_, s)) => (Val x, s)
     | (Err (inr e), (_, s)) => (Err e, s)
     | (Err (inl e), _) => match e with end
@@ -66,7 +66,7 @@ Fixpoint combine_commut (m1 m2 : Monad) A (x : @C.t (m1 ++ m2) A)
   : @C.t (m2 ++ m1) A :=
   C.make (m := m2 ++ m1) (fun s =>
     let (s2, s1) := s in
-    match M.open x (s1, s2) with
+    match C.open x (s1, s2) with
     | (Val x, (s1, s2)) => (Val x, (s2, s1))
     | (Err e, (s1, s2)) =>
       (Err (match e with
@@ -82,7 +82,7 @@ Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @C.t ((m1 ++ m2) ++ m3) A)
   C.make (m := m1 ++ (m2 ++ m3)) (fun s =>
     match s with
     | (s1, (s2, s3)) =>
-      match M.open x ((s1, s2), s3) with
+      match C.open x ((s1, s2), s3) with
       | (Val x, ((s1, s2), s3)) => (Val x, (s1, (s2, s3)))
       | (Err e, ((s1, s2), s3)) =>
         let e := match e with
@@ -101,7 +101,7 @@ Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @C.t (m1 ++ m2 ++ m3) A)
   C.make (m := (m1 ++ m2) ++ m3) (fun s =>
     match s with
     | ((s1, s2), s3) =>
-      match M.open x (s1, (s2, s3)) with
+      match C.open x (s1, (s2, s3)) with
       | (Val x, (s1, (s2, s3))) => (Val x, ((s1, s2), s3))
       | (Err e, (s1, (s2, s3))) =>
         let e := match e with
@@ -117,7 +117,7 @@ Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @C.t (m1 ++ m2 ++ m3) A)
 Fixpoint lift_state S S' E A (x : C.t S E A) : @C.t (S * S') E A :=
   C.make (fun (s : S * S') =>
     let (s1, s2) := s in
-    match M.open x s1 with
+    match C.open x s1 with
     | (Val x, s1) => (Val x, (s1, s2))
     | (Err e, s1) => (Err e, (s1, s2))
     | (Mon x, s1) => (Mon (lift_state _ x), (s1, s2))
@@ -125,7 +125,7 @@ Fixpoint lift_state S S' E A (x : C.t S E A) : @C.t (S * S') E A :=
 
 Fixpoint lift_error S E E' A (x : C.t S E A) : @C.t S (E + E') A :=
   C.make (fun s =>
-    match M.open x s with
+    match C.open x s with
     | (Val x, s) => (Val x, s)
     | (Err e, s) => (Err (inl e), s)
     | (Mon x, s) => (Mon (lift_error _ x), s)
@@ -159,3 +159,4 @@ Module State.
   Definition write (S : Type) (x : S) : C.t S Empty_set unit :=
     C.make (fun _ => (Val tt, x)).
 End State.
+
