@@ -245,38 +245,71 @@ Module Concurrency.
       end).
 End Concurrency.
 
-Module Example.
-  Fixpoint print_before (n : nat) : C.t (list nat) Empty_set unit :=
-    match n with
-    | O => ret tt
-    | S n =>
-      let! _ := Print.print n in
-      print_before n
-    end.
-  
-  Definition two_prints_seq (n : nat) : C.t (list nat) Empty_set unit :=
-    let! _ := print_before n in
-    print_before (2 * n).
-  
-  Definition print_before_par (n : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
-    lift_state (Entropy.t) (print_before n).
-  
-  Definition two_prints_par (n : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
-    let! _ := Concurrency.par (print_before_par n) (print_before_par (2 * n)) in
-    ret tt.
-  
+Module Test.
   Definition eval_seq (x : C.t (list nat) Empty_set unit) :=
     snd (eval x []).
   
   Definition eval_par (x : C.t (Entropy.t * list nat) Empty_set unit) (e : Entropy.t) :=
     snd (snd (eval x (e, []))).
   
-  Compute eval_seq (print_before 12).
-  Compute eval_seq (two_prints_seq 12).
+  Module PrintList.
+    Fixpoint print_before (n : nat) : C.t (list nat) Empty_set unit :=
+      match n with
+      | O => ret tt
+      | S n =>
+        let! _ := Print.print n in
+        print_before n
+      end.
+    
+    Definition two_prints_seq (n : nat) : C.t (list nat) Empty_set unit :=
+      let! _ := print_before n in
+      print_before (2 * n).
+    
+    Definition print_before_par (n : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
+      lift_state (Entropy.t) (print_before n).
+    
+    Definition two_prints_par (n : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
+      let! _ := Concurrency.par (print_before_par n) (print_before_par (2 * n)) in
+      ret tt.
+    
+    Compute eval_seq (print_before 12).
+    Compute eval_seq (two_prints_seq 12).
+    
+    Compute eval_par (print_before_par 12) Entropy.half.
+    Compute eval_par (two_prints_par 12) Entropy.left.
+    Compute eval_par (two_prints_par 12) Entropy.right.
+    Compute eval_par (two_prints_par 12) Entropy.half.
+    Compute eval_par (two_prints_par 12) (Entropy.random 0).
+  End PrintList.
   
-  Compute eval_par (print_before_par 12) Entropy.half.
-  Compute eval_par (two_prints_par 12) Entropy.left.
-  Compute eval_par (two_prints_par 12) Entropy.right.
-  Compute eval_par (two_prints_par 12) Entropy.half.
-  Compute eval_par (two_prints_par 12) (Entropy.random 0).
-End Example.
+  Module ListOfPrints.
+    Fixpoint iter_seq S E A (f : A -> C.t S E unit) (l : list A)
+      : C.t S E unit :=
+      match l with
+      | [] => ret tt
+      | x :: l =>
+        let! _ := f x in
+        iter_seq f l
+      end.
+    
+    Fixpoint iter_par S E A (f : A -> C.t (Entropy.t * S) E unit) (l : list A)
+      : C.t (Entropy.t * S) E unit :=
+      match l with
+      | [] => ret tt
+      | x :: l =>
+        let! _ := Concurrency.par (f x) (iter_par f l) in
+        ret tt
+      end.
+    
+    Definition print_seq_seq (n k : nat) : C.t (list nat) Empty_set unit :=
+      iter_seq (Print.print (A := nat)) (List.seq n k).
+    
+    Definition print_seq_par (n k : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
+      iter_par (fun n => lift_state _ (Print.print n)) (List.seq n k).
+    
+    Compute eval_seq (print_seq_seq 10 10).
+    Compute eval_par (print_seq_par 10 10) Entropy.left.
+    Compute eval_par (print_seq_par 10 10) Entropy.right.
+    Compute eval_par (print_seq_par 10 10) (Entropy.random 12).
+  End ListOfPrints.
+End Test.
