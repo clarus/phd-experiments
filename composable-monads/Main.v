@@ -161,46 +161,44 @@ Module State.
 End State.
 
 Module Concurrency.
-  Fixpoint par S A B (x : C.t S unit A) (y : C.t S unit B) {struct x} : C.t (Stream bool * S) unit (A * B) :=
-    let fix par_aux y {struct y} : C.t (Stream bool * S) unit (A * B) :=
+  Fixpoint par S E A B
+    (x : C.t (Stream bool * S) E A) (y : C.t (Stream bool * S) E B) {struct x}
+    : C.t (Stream bool * S) E (A * B) :=
+    let fix par_aux y {struct y} : C.t (Stream bool * S) E (A * B) :=
       C.make (fun (s : Stream bool * S) =>
         match s with
         | (Streams.Cons b bs, s) =>
           if b then
-            let (r, s) := C.open x s in
+            let (r, ss) := C.open x (bs, s) in
             (match r with
-            | Val x =>
-              Mon (let! y := lift_state (Stream bool) y in ret (x, y))
+            | Val x => Mon (let! y := y in ret (x, y))
             | Err e => Err e
             | Mon x => Mon (par x y)
-            end, (bs, s))
+            end, ss)
           else
-            let (r, s) := C.open y s in
+            let (r, ss) := C.open y (bs, s) in
             (match r with
-            | Val y =>
-              Mon (let! x := lift_state (Stream bool) x in ret (x, y))
+            | Val y => Mon (let! x := x in ret (x, y))
             | Err e => Err e
             | Mon y => Mon (par_aux y)
-            end, (bs, s))
+            end, ss)
         end) in
     C.make (fun (s : Stream bool * S) =>
       match s with
       | (Streams.Cons b bs, s) =>
         if b then
-          let (r, s) := C.open x s in
+          let (r, ss) := C.open x (bs, s) in
           (match r with
-          | Val x =>
-            Mon (let! y := lift_state (Stream bool) y in ret (x, y))
+          | Val x => Mon (let! y := y in ret (x, y))
           | Err e => Err e
           | Mon x => Mon (par x y)
-          end, (bs, s))
+          end, ss)
         else
-          let (r, s) := C.open y s in
+          let (r, ss) := C.open y (bs, s) in
           (match r with
-          | Val y =>
-            Mon (let! x := lift_state (Stream bool) x in ret (x, y))
+          | Val y => Mon (let! x := x in ret (x, y))
           | Err e => Err e
           | Mon y => Mon (par_aux y)
-          end, (bs, s))
+          end, ss)
       end).
 End Concurrency.
