@@ -154,13 +154,30 @@ Module State.
     C.make (fun _ => (Val tt, x)).
 End State.
 
+(** A source of information for the concurrent scheduler. *)
+Module Entropy.
+  Definition t := Stream bool.
+  
+  Definition left : t := Streams.const true.
+  
+  Definition right : t := Streams.const false.
+  
+  Definition inverse (e : t) : t :=
+    Streams.map negb e.
+  
+  Definition half : t :=
+    let cofix aux b :=
+      Streams.Cons b (aux (negb b)) in
+    aux true.
+End Entropy.
+
 Module Concurrency.
   (** Executes [x] and [y] concurrently, using a boolean stream as source of entropy. *)
   Fixpoint par S E A B
-    (x : C.t (Stream bool * S) E A) (y : C.t (Stream bool * S) E B) {struct x}
-    : C.t (Stream bool * S) E (A * B) :=
-    let fix par_aux y {struct y} : C.t (Stream bool * S) E (A * B) :=
-      C.make (fun (s : Stream bool * S) =>
+    (x : C.t (Entropy.t * S) E A) (y : C.t (Entropy.t * S) E B) {struct x}
+    : C.t (Entropy.t * S) E (A * B) :=
+    let fix par_aux y {struct y} : C.t (Entropy.t * S) E (A * B) :=
+      C.make (fun (s : Entropy.t * S) =>
         match s with
         | (Streams.Cons b bs, s) =>
           if b then
@@ -178,7 +195,7 @@ Module Concurrency.
             | Mon y => Mon (par_aux y)
             end, ss)
         end) in
-    C.make (fun (s : Stream bool * S) =>
+    C.make (fun (s : Entropy.t * S) =>
       match s with
       | (Streams.Cons b bs, s) =>
         if b then
@@ -219,13 +236,24 @@ Module Example.
     let! _ := print_before n in
     print_before (2 * n).
   
-  Definition print_before_par (n : nat) : C.t (Stream bool * list nat) Empty_set unit :=
-    lift_state (Stream bool) (print_before n).
+  Definition print_before_par (n : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
+    lift_state (Entropy.t) (print_before n).
   
-  Definition two_prints_par (n : nat) : C.t (Stream bool * list nat) Empty_set unit :=
+  Definition two_prints_par (n : nat) : C.t (Entropy.t * list nat) Empty_set unit :=
     let! _ := Concurrency.par (print_before_par n) (print_before_par (2 * n)) in
     ret tt.
   
-  Compute eval (print_before 12) [].
-  Compute eval (two_prints_seq 12) [].
+  Definition eval_seq (x : C.t (list nat) Empty_set unit) :=
+    snd (eval x []).
+  
+  Definition eval_par (x : C.t (Entropy.t * list nat) Empty_set unit) (e : Entropy.t) :=
+    snd (snd (eval x (e, []))).
+  
+  Compute eval_seq (print_before 12).
+  Compute eval_seq (two_prints_seq 12).
+  
+  Compute eval_par (print_before_par 12) Entropy.half.
+  Compute eval_par (two_prints_par 12) Entropy.left.
+  Compute eval_par (two_prints_par 12) Entropy.right.
+  Compute eval_par (two_prints_par 12) Entropy.half.
 End Example.
