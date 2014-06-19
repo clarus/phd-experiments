@@ -154,8 +154,10 @@ Module State.
     C.make (fun _ => (Val tt, x)).
 End State.
 
-(** A source of information for the concurrent scheduler. *)
+(** A source of information for a concurrent scheduler. *)
 Module Entropy.
+  Require Import BinNat.
+  
   Definition t := Stream bool.
   
   Definition left : t := Streams.const true.
@@ -169,6 +171,26 @@ Module Entropy.
     let cofix aux b :=
       Streams.Cons b (aux (negb b)) in
     aux true.
+
+  CoFixpoint random_naturals (n : N) : Stream N :=
+    let n' := N.modulo (137 * n + 187) 256 in
+    Streams.Cons n (random_naturals n').
+  
+  Definition random (seed : N) : t :=
+    Streams.map (fun n => N.even (N.div n 64)) (random_naturals seed).
+  
+  Module Test.
+    Fixpoint hds A (n : nat) (e : Stream A) : list A :=
+      match n with
+      | O => []
+      | S n => Streams.hd e :: hds n (Streams.tl e)
+      end.
+    
+    Compute hds 20 (random_naturals 0).
+    Compute hds 20 (random 0).
+    Compute hds 20 (random 12).
+    Compute hds 20 (random 23).
+  End Test.
 End Entropy.
 
 Module Concurrency.
@@ -256,4 +278,5 @@ Module Example.
   Compute eval_par (two_prints_par 12) Entropy.left.
   Compute eval_par (two_prints_par 12) Entropy.right.
   Compute eval_par (two_prints_par 12) Entropy.half.
+  Compute eval_par (two_prints_par 12) (Entropy.random 0).
 End Example.
