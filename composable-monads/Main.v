@@ -46,11 +46,11 @@ Fixpoint bind S E A B (x : C.t S E A) (f : A -> C.t S E B) : C.t S E B :=
 Notation "'let!' X ':=' A 'in' B" := (bind A (fun X => B))
   (at level 200, X ident, A at level 100, B at level 200).
 
-Fixpoint run_seq S E A (x : C.t S E A) (s : S) : (A + E) * S :=
+Fixpoint eval S E A (x : C.t S E A) (s : S) : (A + E) * S :=
   match C.open x s with
   | (Val x, s) => (inl x, s)
   | (Err e, s) => (inr e, s)
-  | (Mon x, s) => run_seq x s
+  | (Mon x, s) => eval x s
   end.
 
 (*Fixpoint combine_id (m : Monad) A (x : @C.t (Id ++ m) A) : @C.t m A :=
@@ -134,12 +134,6 @@ Fixpoint lift_error S E E' A (x : C.t S E A) : @C.t S (E + E') A :=
 Module Option.
   Definition none A : C.t unit unit A :=
     C.make (fun _ => (Err tt, tt)).
-
-  Definition run_seq A (x : C.t unit unit A) : option A :=
-    match run_seq x tt with
-    | (inl x, _) => Some x
-    | _ => None
-    end.
 End Option.
 
 Module Error.
@@ -161,6 +155,7 @@ Module State.
 End State.
 
 Module Concurrency.
+  (** Executes [x] and [y] concurrently, using a boolean stream as source of entropy. *)
   Fixpoint par S E A B
     (x : C.t (Stream bool * S) E A) (y : C.t (Stream bool * S) E B) {struct x}
     : C.t (Stream bool * S) E (A * B) :=
@@ -201,4 +196,36 @@ Module Concurrency.
           | Mon y => Mon (par_aux y)
           end, ss)
       end).
+  
+  (** Make [x] atomic. *)
+  Fixpoint atomic S E A (x : C.t S E A) : C.t S E A :=
+    C.make (fun (s : S) =>
+      match C.open x s with
+      | (Val _, _) as y | (Err _, _) as y => y
+      | (Mon x, s) => C.open (atomic x) s
+      end).
 End Concurrency.
+
+Module Example.
+  Fixpoint print_before (n : nat) : C.t (list nat) Empty_set unit :=
+    match n with
+    | O => ret tt
+    | S n =>
+      let! _ := Print.print n in
+      print_before n
+    end.
+  
+  Definition two_prints_seq (n : nat) : C.t (list nat) Empty_set unit :=
+    let! _ := print_before n in
+    print_before (2 * n).
+  
+  Definition print_before_par (n : nat) : C.t (Stream bool * list nat) Empty_set unit :=
+    lift_state (Stream bool) (print_before n).
+  
+  Definition two_prints_par (n : nat) : C.t (Stream bool * list nat) Empty_set unit :=
+    let! _ := Concurrency.par (print_before_par n) (print_before_par (2 * n)) in
+    ret tt.
+  
+  Compute eval (print_before 12) [].
+  Compute eval (two_prints_seq 12) [].
+End Example.
