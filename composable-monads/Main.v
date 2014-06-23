@@ -131,6 +131,16 @@ Fixpoint lift_state S1 S2 E A (x : C.t S1 E A) : @C.t (S1 * S2) E A :=
     | (Mon x, s) => (Mon (lift_error _ x), s)
     end).*)
 
+Fixpoint map_state S1 S2 E A (f : S1 -> S2) (g : S2 -> S1) (x : C.t S1 E A) : C.t S2 E A :=
+  C.make (fun (s2 : S2) =>
+    let s1 := g s2 in
+    let (r, s1) := C.open x s1 in
+    (match r with
+    | Val x => Val x
+    | Err e => Err e
+    | Mon x => Mon (map_state f g x)
+    end, f s1)).
+
 Module Option.
   Definition none A : C.t unit unit A :=
     C.make (fun _ => (Err tt, tt)).
@@ -275,10 +285,18 @@ Module Event.
       (Mon (lift_state (t A) (List.iter_seq f events)), (s, []))).
   
   Definition loop_par S E A (f : A -> C.t (S * Entropy.t) E unit)
-    : C.t (S * Entropy.t * t A) E unit :=
-    C.make (fun (s : S * Entropy.t * t A) =>
-      let (s, events) := s in
-      (Mon (lift_state (t A) (List.iter_par f events)), (s, []))).
+    : C.t (S * t A * Entropy.t) E unit :=
+    C.make (fun (s : S * t A * Entropy.t) =>
+      match s with
+      | (s, events, entropy) =>
+        let c := List.iter_par f events in
+        let c := lift_state (t A) c in
+        let c := map_state
+          (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+          (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+          c in
+          (Mon c, (s, [], entropy))
+      end).
 End Event.
 
 Module Test.
@@ -350,17 +368,53 @@ Module Test.
     
     Module ServerOutput.
       Definition t := list string.
-    Module ServerOutput.
+    End ServerOutput.
     
     Module Model.
       Definition t := list string.
     End Model.
     
-    Parameter handle_ui : UiInput.t -> C.t (Log.t UiOutput.t * Model.t) Empty_set unit.
-    Parameter handle_server : ServerInput.t -> C.t (Log.t ServerOutput.t * Model.t) Empty_set unit.
+    Parameter handle_ui : UiInput.t -> C.t (Model.t * Log.t UiOutput.t) Empty_set unit.
+    Parameter handle_server : ServerInput.t -> C.t (Model.t * Log.t ServerOutput.t) Empty_set unit.
     
-    (*Definition todo :=
-      let! _ := Concurrency.par (Event.loop_par (fun  => )) in
-      ret tt.*)
+    Definition lifted_handle_ui (event : UiInput.t)
+      : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
+      let c := handle_ui event in
+      let c := lift_state Entropy.t c in
+      let c := lift_state (Log.t ServerOutput.t) c in
+      map_state
+        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+        c.
+    
+    Definition lifted_handle_server (event : ServerInput.t)
+      : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
+      let c := handle_server event in
+      let c := lift_state Entropy.t c in
+      let c := lift_state (Log.t UiOutput.t) c in
+      map_state
+        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+        c.
+    
+    Definition todo :=
+      let State : Type :=
+        (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Event.t UiInput.t * Event.t ServerInput.t * Entropy.t)%type in
+      let c_ui : C.t State Empty_set unit :=
+        let c := Event.loop_par lifted_handle_ui in
+        let c := lift_state (Event.t ServerInput.t) c in
+        map_state
+          (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+          (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
+          c in
+      let c_server : C.t State Empty_set unit :=
+        let c := Event.loop_par lifted_handle_server in
+        let c := lift_state (Event.t UiInput.t) c in
+        map_state
+          (fun ss => match ss with (s1, s2, s3, s4) => (s1, s4, s2, s3) end)
+          (fun ss => match ss with (s1, s2, s3, s4) => (s1, s3, s4, s2) end)
+          c in
+      let! _ := Concurrency.par c_ui c_server in
+      ret tt.
   End Events.
 End Test.
