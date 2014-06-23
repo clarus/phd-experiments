@@ -395,12 +395,15 @@ Module Test.
           | Model.Make tasks => State.write (Model.Make tasks) (* TODO *)
           end).
       
+      Definition get (_ : unit) : C.t Model.t Empty_set Model.t :=
+        State.read Model.t tt.
+      
       Definition set (model : t) : C.t Model.t Empty_set unit :=
         State.write model.
     End Model.
     
     Definition push_ui (_ : unit) : C.t (Model.t * Log.t UiOutput.t) Empty_set unit :=
-      let! model := lift_state (Log.t UiOutput.t) (State.read Model.t tt) in
+      let! model := lift_state (Log.t UiOutput.t) (Model.get tt) in
       match model with
       | Model.Make tasks =>
         map_state
@@ -410,7 +413,7 @@ Module Test.
       end.
     
     Definition push_server (_ : unit) : C.t (Model.t * Log.t ServerOutput.t) Empty_set unit :=
-      let! model := lift_state (Log.t ServerOutput.t) (State.read Model.t tt) in
+      let! model := lift_state (Log.t ServerOutput.t) (Model.get tt) in
       match model with
       | Model.Make tasks =>
         map_state
@@ -425,24 +428,7 @@ Module Test.
       let c_server := lift_state Entropy.t (map_state
         (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
         (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
-        (lift_state (Log.t UiOutput.t) (push_server tt)) in
-    
-    Definition broadcast_model (_ : unit)
-      : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
-      let c_model := State.read Model.t tt in
-      let! model := lift_state Entropy.t (lift_state (Log.t ServerOutput.t) (lift_state (Log.t ServerOutput.t) c_model)) in
-      let c_ui := Log.log model in
-      let c_ui := map_state
-        (fun ss => match ss with (s1, s2) => (s2, s1) end)
-        (fun ss => match ss with (s1, s2) => (s2, s1) end)
-        (lift_state Model.t c_ui) in
-      let c_ui := lift_state Entropy.t (lift_state (Log.t ServerOutput.t) c_ui) in
-      let c_server := Log.log model in
-      let c_server := map_state
-        (fun ss => match ss with (s1, s2) => (s2, s1) end)
-        (fun ss => match ss with (s1, s2) => (s2, s1) end)
-        (lift_state (Model.t * Log.t UiOutput.t) c_server) in
-      let c_server := lift_state Entropy.t c_server in
+        (lift_state (Log.t UiOutput.t) (push_server tt))) in
       Concurrency.par_unit c_ui c_server.
     
     Definition handle_ui (event : UiInput.t)
@@ -458,33 +444,23 @@ Module Test.
         broadcast_model tt
       end.
     
-    Parameter handle_server : ServerInput.t -> C.t (Model.t * Log.t ServerOutput.t) Empty_set unit.
-    
-    Definition lifted_handle_ui (event : UiInput.t)
-      : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
-      let c := handle_ui event in
-      let c := lift_state Entropy.t c in
-      let c := lift_state (Log.t ServerOutput.t) c in
-      map_state
-        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
-        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
-        c.
+    Definition handle_server (event : ServerInput.t)
+      : C.t (Model.t * Log.t UiOutput.t) Empty_set unit :=
+      match event with
+      | ServerInput.Make tasks =>
+        let! _ := lift_state (Log.t UiOutput.t) (Model.set (Model.Make tasks)) in
+        push_ui tt
+      end.
     
     Definition lifted_handle_server (event : ServerInput.t)
       : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
-      let c := handle_server event in
-      let c := lift_state Entropy.t c in
-      let c := lift_state (Log.t UiOutput.t) c in
-      map_state
-        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
-        (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
-        c.
+      lift_state Entropy.t (lift_state (Log.t ServerOutput.t) (handle_server event)).
     
     Definition todo :=
       let State : Type :=
         (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Event.t UiInput.t * Event.t ServerInput.t * Entropy.t)%type in
       let c_ui : C.t State Empty_set unit :=
-        let c := Event.loop_par lifted_handle_ui in
+        let c := Event.loop_par handle_ui in
         let c := lift_state (Event.t ServerInput.t) c in
         map_state
           (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
