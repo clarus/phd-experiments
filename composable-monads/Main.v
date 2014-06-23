@@ -275,9 +275,7 @@ Module List.
     : C.t (S * Entropy.t) E unit :=
     match l with
     | [] => ret tt
-    | x :: l =>
-      let! _ := Concurrency.par (f x) (iter_par f l) in
-      ret tt
+    | x :: l => Concurrency.par_unit (f x) (iter_par f l)
     end.
 End List.
 
@@ -300,16 +298,16 @@ Module Event.
           (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
           (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
           c in
-          (Mon c, (s, [], entropy))
+        (Mon c, (s, [], entropy))
       end).
 End Event.
 
 Module Test.
-  Definition eval_seq (x : C.t (list nat) Empty_set unit) :=
+  Definition eval_seq (x : C.t (list nat) Empty_set unit) : list nat :=
     snd (eval x []).
   
-  Definition eval_par (x : C.t (list nat * Entropy.t) Empty_set unit) (e : Entropy.t) :=
-    snd (snd (eval x ([], e))).
+  Definition eval_par (x : C.t (list nat * Entropy.t) Empty_set unit) (e : Entropy.t) : list nat :=
+    fst (snd (eval x ([], e))).
   
   (** Two threads are printing concurrently two lists of numbers. *)
   Module PrintList.
@@ -456,9 +454,10 @@ Module Test.
       : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
       lift_state Entropy.t (lift_state (Log.t ServerOutput.t) (handle_server event)).
     
-    Definition todo :=
-      let State : Type :=
-        (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Event.t UiInput.t * Event.t ServerInput.t * Entropy.t)%type in
+    Definition State : Type :=
+      (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Event.t UiInput.t * Event.t ServerInput.t * Entropy.t)%type.
+    
+    Definition todo : C.t State Empty_set unit :=
       let c_ui : C.t State Empty_set unit :=
         let c := Event.loop_par handle_ui in
         let c := lift_state (Event.t ServerInput.t) c in
@@ -474,5 +473,19 @@ Module Test.
           (fun ss => match ss with (s1, s2, s3, s4) => (s1, s3, s4, s2) end)
           c in
       Concurrency.par_unit c_ui c_server.
+    
+    Definition eval (ui_inputs : list UiInput.t) (server_inputs : list ServerInput.t) (entropy : Entropy.t)
+      : list UiOutput.t * list ServerOutput.t :=
+      match snd (eval todo (Model.Make [], [], [], ui_inputs, server_inputs, Entropy.left)) with
+      | (_, ui_outputs, server_outputs, _, _, _) => (ui_outputs, server_outputs)
+      end.
+    
+    Compute eval [] [] (Entropy.random 12).
+    Compute eval [UiInput.Add "task1"] [] (Entropy.random 12).
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"] [] Entropy.left.
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"] [] Entropy.right.
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] Entropy.left.
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] Entropy.right.
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] (Entropy.random 12).
   End TodoManager.
 End Test.
