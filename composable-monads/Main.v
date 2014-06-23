@@ -300,6 +300,21 @@ Module Event.
           c in
         (Mon c, (s, [], entropy))
       end).
+  
+  Module Test.
+    Definition log_all (_ : unit) : C.t (Log.t nat * t nat * Entropy.t) Empty_set unit :=
+      loop_par (fun n =>
+        lift_state _ (Log.log n)).
+    
+    Definition eval (inputs : list nat) (entropy : Entropy.t) : list nat :=
+      match snd (eval (log_all tt) ([], inputs, entropy)) with
+      | (output, _, _) => output
+      end.
+    
+    Compute eval [] Entropy.left.
+    Compute eval [1; 2; 3] Entropy.left.
+    Compute eval [1; 2; 3] Entropy.right.
+  End Test.
 End Event.
 
 Module Test.
@@ -442,6 +457,16 @@ Module Test.
         broadcast_model tt
       end.
     
+    Definition eval_handle_ui (inputs : list UiInput.t) (entropy : Entropy.t)
+      : list UiOutput.t * list ServerOutput.t :=
+      match snd (eval (Event.loop_par handle_ui) (Model.Make [], [], [], inputs, entropy)) with
+      | (_, ui_outputs, server_outputs, _, _) => (ui_outputs, server_outputs)
+      end.
+    
+    Compute eval_handle_ui [] Entropy.left.
+    Compute eval_handle_ui [UiInput.Add "task1"; UiInput.Add "task2"] Entropy.left.
+    Compute eval_handle_ui [UiInput.Add "task1"; UiInput.Add "task2"] Entropy.right.
+    
     Definition handle_server (event : ServerInput.t)
       : C.t (Model.t * Log.t UiOutput.t) Empty_set unit :=
       match event with
@@ -450,6 +475,16 @@ Module Test.
         push_ui tt
       end.
     
+    Definition eval_handle_server (inputs : list ServerInput.t) (entropy : Entropy.t) : list UiOutput.t :=
+      let c := Event.loop_par (fun event => lift_state Entropy.t (handle_server event)) in
+      match snd (eval c (Model.Make [], [], inputs, entropy)) with
+      | (_, outputs, _, _) => outputs
+      end.
+    
+    Compute eval_handle_server [] Entropy.left.
+    Compute eval_handle_server [ServerInput.Make ["task1"]; ServerInput.Make ["task2"]] Entropy.left.
+    Compute eval_handle_server [ServerInput.Make ["task1"]; ServerInput.Make ["task2"]] Entropy.right.
+    
     Definition lifted_handle_server (event : ServerInput.t)
       : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
       lift_state Entropy.t (lift_state (Log.t ServerOutput.t) (handle_server event)).
@@ -457,7 +492,7 @@ Module Test.
     Definition State : Type :=
       (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Event.t UiInput.t * Event.t ServerInput.t * Entropy.t)%type.
     
-    Definition todo : C.t State Empty_set unit :=
+    Definition todo (_ : unit) : C.t State Empty_set unit :=
       let c_ui : C.t State Empty_set unit :=
         let c := Event.loop_par handle_ui in
         let c := lift_state (Event.t ServerInput.t) c in
@@ -476,7 +511,7 @@ Module Test.
     
     Definition eval (ui_inputs : list UiInput.t) (server_inputs : list ServerInput.t) (entropy : Entropy.t)
       : list UiOutput.t * list ServerOutput.t :=
-      match snd (eval todo (Model.Make [], [], [], ui_inputs, server_inputs, Entropy.left)) with
+      match snd (eval (todo tt) (Model.Make [], [], [], ui_inputs, server_inputs, entropy)) with
       | (_, ui_outputs, server_outputs, _, _, _) => (ui_outputs, server_outputs)
       end.
     
@@ -486,6 +521,9 @@ Module Test.
     Compute eval [UiInput.Add "task1"; UiInput.Add "task2"] [] Entropy.right.
     Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] Entropy.left.
     Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] Entropy.right.
-    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] (Entropy.random 12).
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"; UiInput.Add "task3"] [] (Entropy.random 10).
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"] [ServerInput.Make ["task3"]] Entropy.left.
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"] [ServerInput.Make ["task3"]] Entropy.right.
+    Compute eval [UiInput.Add "task1"; UiInput.Add "task2"] [ServerInput.Make ["task3"]] (Entropy.random 10).
   End TodoManager.
 End Test.
