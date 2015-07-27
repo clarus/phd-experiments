@@ -1,4 +1,4 @@
-(** Experiments for the "composable monads" project. *)
+(** Experiments on encoding concurrency in Coq. *)
 Require Import Arith.
 Require Import List.
 Require Import Streams.
@@ -22,6 +22,7 @@ End Result.
 
 Import Result.
 
+(** Definition of a computation. *)
 Module C.
   Inductive t (S : Type) (E : Type) (A : Type) : Type :=
   | make : (S -> Result.t A E (t S E A) * S) -> t S E A.
@@ -32,9 +33,11 @@ Module C.
     end.
 End C.
 
+(** Monadic return. *)
 Definition ret {S E A} (x : A) : C.t S E A :=
   C.make (fun s => (Val x, s)).
 
+(** Monadic bind. *)
 Fixpoint bind S E A B (x : C.t S E A) (f : A -> C.t S E B) : C.t S E B :=
   C.make (fun s =>
     match C.open x s with
@@ -46,6 +49,7 @@ Fixpoint bind S E A B (x : C.t S E A) (f : A -> C.t S E B) : C.t S E B :=
 Notation "'let!' X ':=' A 'in' B" := (bind A (fun X => B))
   (at level 200, X ident, A at level 100, B at level 200).
 
+(** Raw evaluation. *)
 Fixpoint eval S E A (x : C.t S E A) (s : S) : (A + E) * S :=
   match C.open x s with
   | (Val x, s) => (inl x, s)
@@ -53,67 +57,7 @@ Fixpoint eval S E A (x : C.t S E A) (s : S) : (A + E) * S :=
   | (Mon x, s) => eval x s
   end.
 
-(*Fixpoint combine_id (m : Monad) A (x : @C.t (Id ++ m) A) : @C.t m A :=
-  C.make (fun s =>
-    match C.open x (tt, s) with
-    | (Val x, (_, s)) => (Val x, s)
-    | (Err (inr e), (_, s)) => (Err e, s)
-    | (Err (inl e), _) => match e with end
-    | (Mon x, (_, s)) => (Mon (combine_id x), s)
-    end).
-
-Fixpoint combine_commut (m1 m2 : Monad) A (x : @C.t (m1 ++ m2) A)
-  : @C.t (m2 ++ m1) A :=
-  C.make (m := m2 ++ m1) (fun s =>
-    let (s2, s1) := s in
-    match C.open x (s1, s2) with
-    | (Val x, (s1, s2)) => (Val x, (s2, s1))
-    | (Err e, (s1, s2)) =>
-      (Err (match e with
-      | inl e1 => inr e1
-      | inr e2 => inl e2
-      end), (s2, s1))
-    | (Mon x', (s1, s2)) => (Mon (combine_commut x'), (s2, s1))
-    end).
-
-(** The canonical form of a list of additions should always be with right associativity. *)
-Fixpoint combine_assoc_left (m1 m2 m3 : Monad) A (x : @C.t ((m1 ++ m2) ++ m3) A)
-  : @C.t (m1 ++ m2 ++ m3) A :=
-  C.make (m := m1 ++ (m2 ++ m3)) (fun s =>
-    match s with
-    | (s1, (s2, s3)) =>
-      match C.open x ((s1, s2), s3) with
-      | (Val x, ((s1, s2), s3)) => (Val x, (s1, (s2, s3)))
-      | (Err e, ((s1, s2), s3)) =>
-        let e := match e with
-          | inl (inl e1) => inl e1
-          | inl (inr e2) => inr (inl e2)
-          | inr e3 => inr (inr e3)
-          end in
-        (Err e, (s1, (s2, s3)))
-      | (Mon x, ((s1, s2), s3)) => (Mon (combine_assoc_left x), (s1, (s2, s3)))
-      end
-    end).
-
-(** Should not be used. *)
-Fixpoint combine_assoc_right (m1 m2 m3 : Monad) A (x : @C.t (m1 ++ m2 ++ m3) A)
-  : @C.t ((m1 ++ m2) ++ m3) A :=
-  C.make (m := (m1 ++ m2) ++ m3) (fun s =>
-    match s with
-    | ((s1, s2), s3) =>
-      match C.open x (s1, (s2, s3)) with
-      | (Val x, (s1, (s2, s3))) => (Val x, ((s1, s2), s3))
-      | (Err e, (s1, (s2, s3))) =>
-        let e := match e with
-          | inl e1 => inl (inl e1)
-          | inr (inl e2) => inl (inr e2)
-          | inr (inr e3) => inr e3
-          end in
-        (Err e, ((s1, s2), s3))
-      | (Mon x, (s1, (s2, s3))) => (Mon (combine_assoc_right x), ((s1, s2), s3))
-      end
-    end).*)
-
+(** Augment the state. *)
 Fixpoint lift_state S1 S2 E A (x : C.t S1 E A) : @C.t (S1 * S2) E A :=
   C.make (fun (s : S1 * S2) =>
     let (s1, s2) := s in
@@ -123,15 +67,9 @@ Fixpoint lift_state S1 S2 E A (x : C.t S1 E A) : @C.t (S1 * S2) E A :=
     | (Mon x, s1) => (Mon (lift_state _ x), (s1, s2))
     end).
 
-(*Fixpoint lift_error S E E' A (x : C.t S E A) : @C.t S (E + E') A :=
-  C.make (fun s =>
-    match C.open x s with
-    | (Val x, s) => (Val x, s)
-    | (Err e, s) => (Err (inl e), s)
-    | (Mon x, s) => (Mon (lift_error _ x), s)
-    end).*)
-
-Fixpoint map_state S1 S2 E A (f : S1 -> S2) (g : S2 -> S1) (x : C.t S1 E A) : C.t S2 E A :=
+(** Apply an isomorphism to the state. *)
+Fixpoint map_state S1 S2 E A (f : S1 -> S2) (g : S2 -> S1) (x : C.t S1 E A)
+  : C.t S2 E A :=
   C.make (fun (s2 : S2) =>
     let s1 := g s2 in
     let (r, s1) := C.open x s1 in
@@ -368,29 +306,35 @@ Module Test.
     Compute eval_par (print_seq_par 10 20) (Entropy.random 12).
   End ListOfPrints.
   
+  (** Simple manager for a list of things to do, with a UI saving data on a server. *)
   Module TodoManager.
+    (** Event from the UI. *)
     Module UiInput.
       Inductive t : Set :=
       | Add : string -> t
       | Remove : nat -> t.
     End UiInput.
     
+    (** Message to the UI. *)
     Module UiOutput.
       Inductive t :=
       | Make : list string -> t.
     End UiOutput.
     
+    (** Event from the server. *)
     Module ServerInput.
       Inductive t :=
       | Make : list string -> t.
     End ServerInput.
     
+    (** Message to the server. *)
     Module ServerOutput.
       Inductive t :=
       | Make : list string -> t.
     End ServerOutput.
     
     Module Model.
+      (** The model is a list of tasks. *)
       Inductive t :=
       | Make : list string -> t.
       
@@ -415,6 +359,7 @@ Module Test.
         State.write model.
     End Model.
     
+    (** Send an update to the UI system. *)
     Definition push_ui (_ : unit) : C.t (Model.t * Log.t UiOutput.t) Empty_set unit :=
       let! model := lift_state (Log.t UiOutput.t) (Model.get tt) in
       match model with
@@ -425,6 +370,7 @@ Module Test.
           (lift_state Model.t (Log.log (UiOutput.Make tasks)))
       end.
     
+    (** Send an update to the server. *)
     Definition push_server (_ : unit) : C.t (Model.t * Log.t ServerOutput.t) Empty_set unit :=
       let! model := lift_state (Log.t ServerOutput.t) (Model.get tt) in
       match model with
@@ -435,6 +381,7 @@ Module Test.
           (lift_state Model.t (Log.log (ServerOutput.Make tasks)))
       end.
     
+    (** Update the UI and the server. *)
     Definition broadcast_model (_ : unit)
       : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
       let c_ui := lift_state Entropy.t (lift_state (Log.t ServerOutput.t) (push_ui tt)) in
@@ -444,6 +391,7 @@ Module Test.
         (lift_state (Log.t UiOutput.t) (push_server tt))) in
       Concurrency.par_unit c_ui c_server.
     
+    (** Handle an event from the UI. *)
     Definition handle_ui (event : UiInput.t)
       : C.t (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Entropy.t) Empty_set unit :=
       let lift c :=
@@ -467,6 +415,7 @@ Module Test.
     Compute eval_handle_ui [UiInput.Add "task1"; UiInput.Add "task2"] Entropy.left.
     Compute eval_handle_ui [UiInput.Add "task1"; UiInput.Add "task2"] Entropy.right.
     
+    (** Handle an event from the server. *)
     Definition handle_server (event : ServerInput.t)
       : C.t (Model.t * Log.t UiOutput.t) Empty_set unit :=
       match event with
@@ -492,8 +441,10 @@ Module Test.
     Definition State : Type :=
       (Model.t * Log.t UiOutput.t * Log.t ServerOutput.t * Event.t UiInput.t * Event.t ServerInput.t * Entropy.t)%type.
     
+    (** The TODO manager client. *)
     Definition todo (_ : unit) : C.t State Empty_set unit :=
       let c_ui : C.t State Empty_set unit :=
+        (* Handle events concurrently. *)
         let c := Event.loop_par handle_ui in
         let c := lift_state (Event.t ServerInput.t) c in
         map_state
@@ -501,6 +452,7 @@ Module Test.
           (fun ss => match ss with (s1, s2, s3) => (s1, s3, s2) end)
           c in
       let c_server : C.t State Empty_set unit :=
+        (* Handle events concurrently. *)
         let c := Event.loop_par lifted_handle_server in
         let c := lift_state (Event.t UiInput.t) c in
         map_state
