@@ -12,7 +12,7 @@ End Effect.
 Module Property.
   Definition t (e : Effect.t) (A : Type) :=
     option A -> list e -> Prop.
-  
+
   Inductive seq e A B (PA : t e A) (PB : t e B) : t e B :=
   | seq_intro : forall x y s tx ty,
     PA x (s :: tx) -> PB y (last tx s :: ty) -> seq PA PB y (s :: tx ++ ty).
@@ -41,12 +41,12 @@ Definition bind S A B (PA PB : _ -> _ -> Prop)
     exists y.
     exists (tx ++ ty).
     now apply Hsome with (x := x').
-  
+
   - exists None.
     exists tx.
     now apply Hnone.
 Defined.
 
-Definition combine S1 S2 A P1 P2 
+Definition combine S1 S2 A P1 P2
 
 Infix "++" := combine.

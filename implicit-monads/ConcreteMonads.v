@@ -9,7 +9,7 @@ Module Result.
   Inductive t (A B : Type) : Type :=
   | Val : A -> t A B
   | Err : B -> t A B.
-  
+
   Arguments Val [A] [B] _.
   Arguments Err [A] [B] _.
 End Result.
@@ -328,11 +328,3 @@ Check fun A =>
   fun x1 : @M (I' (union' f1v _)) A =>
   fun x2 : @M (I' f3v) A =>
     force_same_type x1 x2.
-
-
-
-
-
-
-
-

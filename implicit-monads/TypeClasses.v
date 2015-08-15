@@ -150,7 +150,3 @@ Definition gre {M} {monad : Monad M} (A B1 B2 R : Type)
   (f : forall o, (A -> C o (B1 -> C o B2)) -> C o R)
   (g : forall o, ) :=
   generalize (T2 := B1 -> C o B2) f.
-
-
-
-

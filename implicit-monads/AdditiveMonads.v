@@ -27,7 +27,7 @@ Definition monadic_sum {m1 m2 : Monad} : Monad := {|
   bind := fun _ _ x f i =>
      match x i with
      | (inl x', (o1, o2)) =>
-      let x1 := fun i1 => 
+      let x1 := fun i1 =>
       end
      | (inr e, (o1, o2) => (inr e, (o1, o2))
      end |}.

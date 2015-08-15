@@ -255,6 +255,3 @@ Compute test5 (fun _ => false).
 Compute test5' (fun _ => Some true).
 Compute test5' (fun _ => Some false).
 Compute test5' (fun _ => None).
-
-
-

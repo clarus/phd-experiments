@@ -12,7 +12,7 @@ Module Env.
   Inductive t : Gamma.t -> Type :=
   | nil : t nil
   | cons : forall T G, T -> t G -> t (T :: G).
-  
+
   Fixpoint get G (e : t G) (n : nat) : List.nth n G unit :=
     match e with
     | nil =>
@@ -74,10 +74,3 @@ Definition test2' : M [] nat :=
   next ((fun n => new (fun (e : Env.t [nat : Type]) =>
     inl 0)) : nat -> M [nat : Type] nat) (new (fun (e : Env.t [nat -> M [nat : Type] nat]) =>
   inl 0)))).
-
-
-
-
-
-
-

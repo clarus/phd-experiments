@@ -5,13 +5,13 @@ Module Trace.
   Inductive t (A : Type) : Type :=
   | one : A -> t A
   | next : A -> t A -> t A.
-  
+
   Definition head A (tr : t A) : A :=
     match tr with
     | one s => s
     | next s _ => s
     end.
-  
+
   Fixpoint append A (tr1 : list A) (tr2 : t A) : t A :=
     match tr1 with
     | nil => tr2
@@ -24,7 +24,7 @@ Infix "++" := Trace.append.
 
 Module Spec.
   Definition t S A := Trace.t S -> A -> Prop.
-  
+
   Definition true S A : t S A := fun _ _ => True.
 End Spec.
 
@@ -34,7 +34,7 @@ Module M.
     ((exists tr' x, P (tr' ++ tr) x) ->
       {s : S & (({x : A | P (s :: tr) x} + (forall tr', t P (tr' ++ s :: tr))) % type)})
     -> t P tr.
-  
+
   Definition open S A (P : Spec.t S A) tr (x : t P tr) :=
     match x with
     | new _ x => x
