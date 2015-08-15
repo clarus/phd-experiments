@@ -42,13 +42,11 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "cnf.h"
 #include "rules-inf.h"
 #include "rules-red.h"
-
 
 static TERM   cnf_AntiPrenexPath(TERM, TERM);
 static TERM   cnf_ApplyDefinitionInternOnce(TERM, TERM, TERM, TERM, BOOL*);
@@ -77,7 +75,6 @@ static PROOFSEARCH cnf_SEARCHCOPY;
 /* to reduce the number of term stamps required. */
 static PROOFSEARCH cnf_HAVEPROOFPS;
 
-
 void cnf_Init(FLAGSTORE Flags)
 /***************************************************************
   INPUT:   A flag store.
@@ -95,7 +92,6 @@ void cnf_Init(FLAGSTORE Flags)
   cnf_SEARCHCOPY  = prfs_Create();
   cnf_HAVEPROOFPS = prfs_Create();
 }
-
 
 void cnf_Free(FLAGSTORE Flags)
 /**************************************************************
@@ -115,17 +111,16 @@ void cnf_Free(FLAGSTORE Flags)
   cnf_HAVEPROOFPS = NULL;
 }
 
-
 static int cnf_GetFormulaPolarity(TERM term, TERM subterm)
 /**********************************************************
   INPUT:   Two terms term and subterm where subterm is a
            subterm of term.
   RETURNS: The polarity of subterm in term.
 ********************************************************/
-{  
+{
   LIST   scan;
   TERM   term1;
-  int    polterm1,bottom; 
+  int    polterm1,bottom;
 
   bottom = vec_ActMax();
   vec_Push((POINTER) 1);
@@ -179,7 +174,6 @@ static int cnf_GetFormulaPolarity(TERM term, TERM subterm)
   return -2;
 }
 
-
 static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
 					 TERM* FoundPred)
 /**********************************************************
@@ -211,11 +205,11 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
   /* Quantifiers */
   if (fol_IsQuantifier(term_TopSymbol(Def)))
     return cnf_ContainsDefinitionIntern(TopDef, term_SecondArgument(Def), Polarity, FoundPred);
-  
+
   /* Negation */
   if (symbol_Equal(term_TopSymbol(Def),fol_Not()))
     return cnf_ContainsDefinitionIntern(TopDef, term_FirstArgument(Def), -Polarity, FoundPred);
-  
+
   /* Implication */
   if (symbol_Equal(term_TopSymbol(Def),fol_Implies())) {
     if (Polarity==1) {
@@ -225,7 +219,7 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
     }
     return FALSE;
   }
-  
+
   /* Equivalence */
   if (symbol_Equal(term_TopSymbol(Def),fol_Equiv()) && (Polarity==1)) {
     /* Check if equivalence itself is in correct form */
@@ -242,7 +236,6 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
 	 puts("\n Predicate occurs more than once.");
 	 return FALSE; */
 
-
       /* Now make sure that the variables of the predicate are       */
       /* all--quantified and not in the scope of an exist quantifier */
       /*      predicate_vars = list_Copy(term_ArgumentList(defpredicate)); */
@@ -252,7 +245,7 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
       /* So far (going bottom--up) no all-quantifier was found for */
       /* a variable of the predicates' arguments */
       allquantifierfound = FALSE;
-      
+
       /* Build defpath here by going bottom up */
       /* At first, list of superterms on path is top down */
       defpath = list_Nil();
@@ -271,7 +264,7 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
 	  if (symbol_Equal(term_TopSymbol((TERM) list_Car(l)), fol_Implies()) &&
 	      (term_FirstArgument((TERM) list_Car(l)) == (TERM) list_Car(list_Cdr(l))))
 	    pol = -pol;
-	  else 
+	  else
 	    if (symbol_Equal(term_TopSymbol((TERM) list_Car(l)), fol_Equiv()))
 	      pol = 0;
 	}
@@ -287,7 +280,7 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
 	p = (int) list_PairSecond(pair);
 
 	if (fol_IsQuantifier(term_TopSymbol(t))) {
-	  
+
 	  /* Variables of the predicate that are universally quantified are no problem */
 	  if ((symbol_Equal(term_TopSymbol(t), fol_All()) && (p==1)) ||
 	      (symbol_Equal(term_TopSymbol(t), fol_Exist()) && (p==-1))) {
@@ -319,7 +312,7 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
 	  }
 	}
       }
-      
+
 #ifdef CHECK
       if (!list_Empty(predicate_vars)) {
 	list_Delete(predicate_vars);
@@ -333,10 +326,9 @@ static BOOL cnf_ContainsDefinitionIntern(TERM TopDef, TERM Def, int Polarity,
       return TRUE;
     }
   }
-  
+
   return FALSE;
 }
-
 
 BOOL cnf_ContainsDefinition(TERM Def, TERM* FoundPred)
 /**********************************************************
@@ -357,7 +349,6 @@ BOOL cnf_ContainsDefinition(TERM Def, TERM* FoundPred)
 #endif
   return result;
 }
-
 
 static TERM cnf_IsDefinition(TERM Def)
 /**********************************************************
@@ -380,7 +371,7 @@ static TERM cnf_IsDefinition(TERM Def)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   /* If the predicate is the second argument of the equivalence, exchange them */
   if (!symbol_IsPredicate(term_TopSymbol(term_FirstArgument(Def)))) {
     TERM arg1;
@@ -389,9 +380,8 @@ static TERM cnf_IsDefinition(TERM Def)
     term_RplacSecondArgument(Def, arg1);
   }
 
-
   /* Check if the first argument is a predicate */
-  if (!symbol_IsPredicate(term_TopSymbol(term_FirstArgument(Def)))) 
+  if (!symbol_IsPredicate(term_TopSymbol(term_FirstArgument(Def))))
     return NULL;
 
   /* Check if first argument is a predicate and not fol_Equality */
@@ -400,9 +390,8 @@ static TERM cnf_IsDefinition(TERM Def)
       return NULL;
       }*/
 
-
   /* The free variables of the non-predicate term must occur in the predicate term */
-  
+
   freevars = fol_FreeVariables(term_SecondArgument(Def));
   freevars = term_DeleteDuplicatesFromList(freevars);
   predicatevars = term_ListOfVariables(term_FirstArgument(Def));
@@ -422,8 +411,7 @@ static TERM cnf_IsDefinition(TERM Def)
   return term_FirstArgument(Def);
 }
 
-
-static BOOL cnf_ContainsPredicateIntern(TERM Target, SYMBOL Predicate, 
+static BOOL cnf_ContainsPredicateIntern(TERM Target, SYMBOL Predicate,
 					int Polarity, TERM* TargetPredicate,
 					TERM* ToTopLevel, LIST* TargetVars,
 					LIST* VarsForTopLevel)
@@ -455,7 +443,7 @@ static BOOL cnf_ContainsPredicateIntern(TERM Target, SYMBOL Predicate,
     s = term_FindSubterm(Target, Predicate);
     if (s == NULL)
       return FALSE;
-    
+
     /* Store variables found in the predicates arguments */
     for (l=term_ArgumentList(s); !list_Empty(l); l = list_Cdr(l))
       *TargetVars = list_Nconc(fol_FreeVariables((TERM) list_Car(l)), *TargetVars);
@@ -465,7 +453,7 @@ static BOOL cnf_ContainsPredicateIntern(TERM Target, SYMBOL Predicate,
     *ToTopLevel = Target;
     return TRUE;
   }
-  
+
   /* AND / OR continued */
   if (symbol_Equal(term_TopSymbol(Target),fol_And()) || symbol_Equal(term_TopSymbol(Target),fol_Or())) {
     /* The polarity is ok here */
@@ -522,17 +510,16 @@ static BOOL cnf_ContainsPredicateIntern(TERM Target, SYMBOL Predicate,
     for (l = term_ArgumentList(Target); !list_Empty(l); l = list_Cdr(l))
       *TargetVars = list_Nconc(fol_FreeVariables((TERM) list_Car(l)), *TargetVars);
     *TargetVars = term_DeleteDuplicatesFromList(*TargetVars);
-    
+
     *TargetPredicate = Target;
     *ToTopLevel      = Target;
     return TRUE;
   }
-  
+
   /* In all other cases the predicate was not found */
   return FALSE;
-}  
+}
 
-  
 BOOL cnf_ContainsPredicate(TERM Target, SYMBOL Predicate,
 			   TERM* TargetPredicate, TERM* ToTopLevel,
 			   LIST* TargetVars, LIST* VarsForTopLevel)
@@ -562,12 +549,11 @@ BOOL cnf_ContainsPredicate(TERM Target, SYMBOL Predicate,
   return result;
 }
 
-
 static int cnf_PredicateOccurrences(TERM Term, SYMBOL P)
 /****************************************************
   INPUT:   A term and a predicate symbol.
   RETURNS: The number of occurrences of the predicate symbol in Term
-**************************************************/			       
+**************************************************/
 {
   /* Quantifiers */
   if (fol_IsQuantifier(term_TopSymbol(Term)))
@@ -587,19 +573,18 @@ static int cnf_PredicateOccurrences(TERM Term, SYMBOL P)
     }
     return count;
   }
-  
+
   if (symbol_Equal(term_TopSymbol(Term), P))
     return 1;
   return 0;
-} 
-  
+}
 
 static TERM cnf_NegationNormalFormulaPath(TERM Term, TERM PredicateTerm)
 /**********************************************************
   INPUT:   A term and a predicate term which is a subterm of term
   RETURNS: The negation normal form of the term along the path.
   CAUTION: The term is destructively changed.
-           This works only if the superterm member of Term and its subterms 
+           This works only if the superterm member of Term and its subterms
 	   are set.
 ********************************************************/
 {
@@ -611,7 +596,7 @@ static TERM cnf_NegationNormalFormulaPath(TERM Term, TERM PredicateTerm)
   term1 = Term;
   while (term1 != NULL) {
     set = FALSE;
-    if (symbol_Equal(term_TopSymbol(term1),fol_Not())) {	    
+    if (symbol_Equal(term_TopSymbol(term1),fol_Not())) {
       subterm = term_FirstArgument(term1);
       if (symbol_Equal(term_TopSymbol(subterm),fol_Not())) {
 	LIST l;
@@ -645,9 +630,9 @@ static TERM cnf_NegationNormalFormulaPath(TERM Term, TERM PredicateTerm)
 	  term1 = termL;
 	  /* Next term to check is not(subterm) */
 	  set = TRUE;
-	} 
+	}
 	else {
-	  if (symbol_Equal(term_TopSymbol(subterm),fol_Or()) || 
+	  if (symbol_Equal(term_TopSymbol(subterm),fol_Or()) ||
 	      (symbol_Equal(term_TopSymbol(subterm),fol_And()))) {
 	    LIST l;
 	    symbol = (SYMBOL)cnf_GetDualSymbol(term_TopSymbol(subterm));
@@ -685,13 +670,12 @@ static TERM cnf_NegationNormalFormulaPath(TERM Term, TERM PredicateTerm)
   return Term;
 }
 
-
 TERM cnf_ApplyDefinitionOnce(TERM Predicate, TERM Formula, TERM TargetTerm,
 			     TERM TargetPredicate, FLAGSTORE Flags)
 /*********************************************************
   INPUT:   A term Predicate which is a predicate found in a definition.
            A term Formula which is a term equivalent to the predicate.
-           A term TargetTerm in which one occurrence of the predicate may be 
+           A term TargetTerm in which one occurrence of the predicate may be
            replaced by the Formula.
            A term TargetPredicate which is the subterm of the TargetTerm
            to be replaced.
@@ -702,7 +686,7 @@ TERM cnf_ApplyDefinitionOnce(TERM Predicate, TERM Formula, TERM TargetTerm,
   SYMBOL maxvar, maxvar_temp;
   LIST bound, scan;
   BOOL success;
-  
+
   /* Init varcounter */
   maxvar = term_MaxVar(TargetTerm);
   maxvar_temp = term_MaxVar(Formula);
@@ -719,7 +703,7 @@ TERM cnf_ApplyDefinitionOnce(TERM Predicate, TERM Formula, TERM TargetTerm,
 			    symbol_CreateStandardVariable());
   }
   list_Delete(bound);
-  TargetTerm = cnf_ApplyDefinitionInternOnce(Predicate, Formula, TargetTerm, 
+  TargetTerm = cnf_ApplyDefinitionInternOnce(Predicate, Formula, TargetTerm,
 					     TargetPredicate,&success);
   if (flag_GetFlagValue(Flags, flag_PAPPLYDEFS)) {
     if (success) {
@@ -728,26 +712,25 @@ TERM cnf_ApplyDefinitionOnce(TERM Predicate, TERM Formula, TERM TargetTerm,
       puts("\n");
     }
   }
-  
+
   return TargetTerm;
 }
 
-
-static TERM cnf_ApplyDefinitionInternOnce(TERM Predicate, TERM Formula, 
+static TERM cnf_ApplyDefinitionInternOnce(TERM Predicate, TERM Formula,
 					  TERM TargetTerm, TERM TargetPredicate,
 					  BOOL* Success)
 /**********************************************************
   INPUT:   A term Predicate which is equivalence to
            Formula and Term
-  RETURNS: The term in which all occurrences of P(..) are 
+  RETURNS: The term in which all occurrences of P(..) are
            replaced by Formula modulo the proper bindings
   CAUTION: Term is destructively changed!
 ***********************************************************/
 {
   /* Quantifiers */
   if (fol_IsQuantifier(term_TopSymbol(TargetTerm))) {
-    term_RplacSecondArgument(TargetTerm, 
-      cnf_ApplyDefinitionInternOnce(Predicate, Formula, 
+    term_RplacSecondArgument(TargetTerm,
+      cnf_ApplyDefinitionInternOnce(Predicate, Formula,
 				    term_SecondArgument(TargetTerm),
 				    TargetPredicate, Success));
     term_RplacSuperterm(term_SecondArgument(TargetTerm), TargetTerm);
@@ -759,19 +742,19 @@ static TERM cnf_ApplyDefinitionInternOnce(TERM Predicate, TERM Formula,
       symbol_Equal(term_TopSymbol(TargetTerm),fol_Not())) {
     LIST scan;
     for (scan=term_ArgumentList(TargetTerm); !list_Empty(scan); scan=list_Cdr(scan)) {
-      list_Rplaca(scan, cnf_ApplyDefinitionInternOnce(Predicate, Formula, 
-						      list_Car(scan), 
+      list_Rplaca(scan, cnf_ApplyDefinitionInternOnce(Predicate, Formula,
+						      list_Car(scan),
 						      TargetPredicate, Success));
       term_RplacSuperterm((TERM) list_Car(scan), TargetTerm);
     }
     return TargetTerm;
   }
-  
+
   if (symbol_Equal(term_TopSymbol(TargetTerm), term_TopSymbol(Predicate))) {
     if (TargetTerm == TargetPredicate) {
       TERM result;
       result = Formula;
-      cnf_RplacVar(result, term_ArgumentList(Predicate), 
+      cnf_RplacVar(result, term_ArgumentList(Predicate),
 		   term_ArgumentList(TargetTerm));
       term_AddFatherLinks(result);
       term_Delete(TargetTerm);
@@ -779,10 +762,9 @@ static TERM cnf_ApplyDefinitionInternOnce(TERM Predicate, TERM Formula,
       return result;
     }
   }
-  
-  return TargetTerm;
-} 
 
+  return TargetTerm;
+}
 
 static TERM cnf_RemoveEquivImplFromFormula(TERM term)
 /**********************************************************
@@ -794,7 +776,7 @@ static TERM cnf_RemoveEquivImplFromFormula(TERM term)
   TERM term1,termL,termR,termLneg,termRneg;
   LIST scan;
   int  bottom,pol;
-  
+
   bottom = vec_ActMax();
   vec_Push(term);
 
@@ -821,7 +803,7 @@ static TERM cnf_RemoveEquivImplFromFormula(TERM term)
 	    list_Rplaca(term_ArgumentList(term1), term_Create(fol_And(),list_Cons(termLneg,list_List(termRneg))));
 	    list_RplacSecond(term_ArgumentList(term1), term_Create(fol_And(),list_Cons(termL,list_List(termR))));
 	  }
-      }  
+      }
     if (!list_Empty(term_ArgumentList(term1)))
       for (scan=term_ArgumentList(term1);!list_Empty(scan);scan=list_Cdr(scan))
 	vec_Push(list_Car(scan));
@@ -830,14 +812,13 @@ static TERM cnf_RemoveEquivImplFromFormula(TERM term)
   return term;
 }
 
-
 static TERM cnf_MovePredicateVariablesUp(TERM Term, TERM TargetPredicateTerm,
 					 LIST VarsForTopLevel)
 /**********************************************************
   INPUT:   A term and a predicate term which is a subterm of term
            an equivalence.
   RETURNS: The term where the free variables of the equivalence, which
-           must be allquantified and not in the scope of an 
+           must be allquantified and not in the scope of an
 	   exist quantifier, are moved to toplevel.
   CAUTION: The term is destructively changed.
 ********************************************************/
@@ -848,7 +829,7 @@ static TERM cnf_MovePredicateVariablesUp(TERM Term, TERM TargetPredicateTerm,
 
   bottom = vec_ActMax();
   vec_Push(Term);
-  
+
   while (bottom != vec_ActMax()) {
     term1 = (TERM)vec_PopResult();
     if (!list_Empty(term_ArgumentList(term1)))
@@ -861,7 +842,7 @@ static TERM cnf_MovePredicateVariablesUp(TERM Term, TERM TargetPredicateTerm,
 	    quantifiervars = fol_QuantifierVariables(arg);
 	    for (predicatevarscan=VarsForTopLevel; !list_Empty(predicatevarscan);
 		predicatevarscan = list_Cdr(predicatevarscan))
-	      quantifiervars = list_DeleteElementFree(quantifiervars, 
+	      quantifiervars = list_DeleteElementFree(quantifiervars,
 						      (TERM) list_Car(predicatevarscan),
 						      (BOOL (*)(POINTER,POINTER))term_Equal,
 						      (void (*)(POINTER))term_Delete);
@@ -881,7 +862,7 @@ static TERM cnf_MovePredicateVariablesUp(TERM Term, TERM TargetPredicateTerm,
 	}
       }
   }
-  
+
   for (scan=VarsForTopLevel; !list_Empty(scan); scan = list_Cdr(scan))
     list_Rplaca(scan, term_Copy((TERM) list_Car(scan)));
   if (symbol_Equal(term_TopSymbol(Term), fol_All())) {
@@ -901,24 +882,23 @@ static TERM cnf_MovePredicateVariablesUp(TERM Term, TERM TargetPredicateTerm,
   return Term;
 }
 
-
 static TERM cnf_RemoveImplFromFormulaPath(TERM Term, TERM PredicateTerm)
 /**********************************************************
   INPUT:   A term and a predicate term which is a subterm of term
-  RETURNS: The term where implications along the path to PredicateTerm 
+  RETURNS: The term where implications along the path to PredicateTerm
            are replaced.
   CAUTION: The term is destructively changed.
-           This works only if the superterm member of Term and its 
+           This works only if the superterm member of Term and its
 	   subterms are set.
 ********************************************************/
 {
   TERM term1;
   LIST scan;
   int  bottom;
-  
+
   bottom = vec_ActMax();
   vec_Push(Term);
-  
+
   while (bottom != vec_ActMax()) {
     term1 = (TERM)vec_PopResult();
     if (term_HasProperSuperterm(PredicateTerm, term1)) {
@@ -929,7 +909,7 @@ static TERM cnf_RemoveImplFromFormulaPath(TERM Term, TERM PredicateTerm)
 	list_Rplaca(term_ArgumentList(term1), newterm);
 	term_RplacSuperterm(newterm, term1);
       }
-      
+
       if (!list_Empty(term_ArgumentList(term1)))
 	for (scan=term_ArgumentList(term1);!list_Empty(scan);scan=list_Cdr(scan))
 	  vec_Push(list_Car(scan));
@@ -938,7 +918,6 @@ static TERM cnf_RemoveImplFromFormulaPath(TERM Term, TERM PredicateTerm)
   vec_SetMax(bottom);
   return Term;
 }
-
 
 static SYMBOL cnf_GetDualSymbol(SYMBOL symbol)
 /********************************************************
@@ -963,7 +942,6 @@ static SYMBOL cnf_GetDualSymbol(SYMBOL symbol)
   return dual;
 }
 
-
 TERM cnf_NegationNormalFormula(TERM term)
 /********************************************************
   INPUT:   A term.
@@ -975,13 +953,13 @@ TERM cnf_NegationNormalFormula(TERM term)
   LIST   scan;
   SYMBOL symbol;
   int    bottom;
-  
+
   bottom = vec_ActMax();
   vec_Push(term);
 
   while (bottom != vec_ActMax()) {
     term1 = (TERM)vec_PopResult();
-    if (symbol_Equal(term_TopSymbol(term1),fol_Not())) {	    
+    if (symbol_Equal(term_TopSymbol(term1),fol_Not())) {
       subterm = (TERM)list_Car(term_ArgumentList(term1));
       if (symbol_Equal(term_TopSymbol(subterm),fol_Not())) {
 	term_RplacTop(term1,term_TopSymbol(term_FirstArgument(subterm)));
@@ -991,7 +969,7 @@ TERM cnf_NegationNormalFormula(TERM term)
 	list_Delete(term_ArgumentList(subterm));
 	term_Free(subterm);
 	vec_Push(term1);
-      }else 
+      }else
 	if (fol_IsQuantifier(term_TopSymbol(subterm))) {
 	  symbol = (SYMBOL)cnf_GetDualSymbol(term_TopSymbol(subterm));
 	  termL  = term_Create(fol_Not(),
@@ -1002,7 +980,7 @@ TERM cnf_NegationNormalFormula(TERM term)
 	  term_RplacArgumentList(term1,term_CopyTermList(term_ArgumentList(subterm)));
 	  term_Delete(subterm);
 	} else
-	  if (symbol_Equal(term_TopSymbol(subterm),fol_Or()) || 
+	  if (symbol_Equal(term_TopSymbol(subterm),fol_Or()) ||
 	      symbol_Equal(term_TopSymbol(subterm),fol_And())) {
 	    symbol = (SYMBOL)cnf_GetDualSymbol(term_TopSymbol(subterm));
 	    for (scan = term_ArgumentList(subterm);
@@ -1014,7 +992,7 @@ TERM cnf_NegationNormalFormula(TERM term)
 	    term_RplacTop(term1,symbol);
 	    list_Delete(term_ArgumentList(term1));
 	    term_RplacArgumentList(term1,term_CopyTermList(term_ArgumentList(subterm)));
-	    term_Delete(subterm); 
+	    term_Delete(subterm);
 	  }
     }
     if (!list_Empty(term_ArgumentList(term1)))
@@ -1024,7 +1002,6 @@ TERM cnf_NegationNormalFormula(TERM term)
   vec_SetMax(bottom);
   return term;
 }
-
 
 static TERM cnf_QuantMakeOneVar(TERM term)
 /**************************************************************
@@ -1037,9 +1014,9 @@ static TERM cnf_QuantMakeOneVar(TERM term)
   SYMBOL quantor;
   LIST   scan,varlist;
   int    bottom;
-  
+
   bottom = vec_ActMax();
-  vec_Push(term);       
+  vec_Push(term);
 
   while (bottom != vec_ActMax()) {
     term1 = (TERM)vec_PopResult();
@@ -1053,7 +1030,7 @@ static TERM cnf_QuantMakeOneVar(TERM term)
 	  term_RplacSecondArgument(term1, fol_CreateQuantifier(quantor,list_List(list_Car(scan)),list_List(termL)));
 	}
 	for (scan=varlist;!list_Empty(scan);scan=list_Cdr(scan)) {
-	  term_RplacArgumentList(term_FirstArgument(term1), 
+	  term_RplacArgumentList(term_FirstArgument(term1),
 				 list_PointerDeleteElement(term_ArgumentList(term_FirstArgument(term1)),list_Car(scan)));
 	}
 	list_Delete(varlist);
@@ -1066,7 +1043,6 @@ static TERM cnf_QuantMakeOneVar(TERM term)
   vec_SetMax(bottom);
   return term;
 }
-
 
 static LIST cnf_GetSymbolList(LIST varlist)
 /**************************************************************
@@ -1083,7 +1059,6 @@ static LIST cnf_GetSymbolList(LIST varlist)
   return result;
 }
 
-
 static BOOL cnf_TopIsAnd(LIST termlist)
 /**************************************************************
   INPUT:   A list of terms.
@@ -1097,7 +1072,6 @@ static BOOL cnf_TopIsAnd(LIST termlist)
       return TRUE;
   return FALSE;
 }
-
 
 static TERM cnf_MakeOneOr(TERM term)
 /**************************************************************
@@ -1127,15 +1101,14 @@ static TERM cnf_MakeOneOr(TERM term)
   } else if (!symbol_IsPredicate(term_TopSymbol(term)))
     for (scan=term_ArgumentList(term);!list_Empty(scan);scan=list_Cdr(scan))
       cnf_MakeOneOr(list_Car(scan));
-  
+
   return term;
 }
-
 
 static TERM cnf_MakeOneOrPredicate(TERM term)
 /**************************************************************
   INPUT:   A term.
-  RETURNS: Takes all predicates and negated predicates as arguments 
+  RETURNS: Takes all predicates and negated predicates as arguments
            of an or together.
   CAUTION: The term is destructively changed.
 ***************************************************************/
@@ -1144,7 +1117,7 @@ static TERM cnf_MakeOneOrPredicate(TERM term)
   LIST   scan,scan1,predlist;
 
   if (cnf_TopIsAnd(term_ArgumentList(term))) {
-    
+
     for (scan1=term_ArgumentList(term);
 	 !(list_Empty(scan1) || symbol_Equal(term_TopSymbol(list_Car(scan1)),fol_And()));
 	 scan1=list_Cdr(scan1));
@@ -1160,14 +1133,13 @@ static TERM cnf_MakeOneOrPredicate(TERM term)
       for (scan=predlist;!list_Empty(scan);scan=list_Cdr(scan))
 	term_RplacArgumentList(term,
 			       list_PointerDeleteElement(term_ArgumentList(term),list_Car(scan)));
-      
+
       if (!list_Empty(predlist))
 	term_RplacArgumentList(term, list_Nconc(predlist,term_ArgumentList(term)));
     }
   }
   return term;
 }
-
 
 static TERM cnf_MakeOneOrTerm(TERM term)
 /**************************************************************
@@ -1178,7 +1150,6 @@ static TERM cnf_MakeOneOrTerm(TERM term)
 {
   return cnf_MakeOneOrPredicate(cnf_MakeOneOr(term));
 }
-
 
 static TERM cnf_MakeOneAnd(TERM term)
 /**************************************************************
@@ -1211,7 +1182,6 @@ static TERM cnf_MakeOneAnd(TERM term)
   return term;
 }
 
-
 static TERM cnf_MakeOneAndPredicate(TERM term)
 /**************************************************************
   INPUT:   A term.
@@ -1220,11 +1190,11 @@ static TERM cnf_MakeOneAndPredicate(TERM term)
 ***************************************************************/
 {
   LIST   scan,scan1,predlist;
-  
+
   for (scan1=term_ArgumentList(term);
        !(list_Empty(scan1) || symbol_Equal(term_TopSymbol(list_Car(scan1)),fol_Or()));
        scan1=list_Cdr(scan1));
-  
+
   if (!list_Empty(scan1)) {
     /* The car of scan1 points to a term with topsymbol 'or' */
     predlist = list_Nil();
@@ -1236,13 +1206,12 @@ static TERM cnf_MakeOneAndPredicate(TERM term)
     }
     for (scan=predlist; !list_Empty(scan); scan=list_Cdr(scan))
       term_RplacArgumentList(term, list_PointerDeleteElement(term_ArgumentList(term),list_Car(scan)));
-    
+
     if (!list_Empty(predlist))
       term_RplacArgumentList(term, list_Nconc(predlist,term_ArgumentList(term)));
   }
   return term;
 }
-
 
 static TERM cnf_MakeOneAndTerm(TERM term)
 /**************************************************************
@@ -1253,7 +1222,6 @@ static TERM cnf_MakeOneAndTerm(TERM term)
 {
   return cnf_MakeOneAndPredicate(cnf_MakeOneAnd(term));
 }
-
 
 LIST cnf_ComputeLiteralLists(TERM Term)
 /**********************************************************
@@ -1273,13 +1241,13 @@ LIST cnf_ComputeLiteralLists(TERM Term)
     for (Scan=list_Cdr(term_ArgumentList(Term));!list_Empty(Scan);Scan=list_Cdr(Scan)) {
       Help      = cnf_ComputeLiteralLists(list_Car(Scan));
       NewResult = list_Nil();
-      for (Scan1=Help;!list_Empty(Scan1);Scan1=list_Cdr(Scan1))	    
+      for (Scan1=Help;!list_Empty(Scan1);Scan1=list_Cdr(Scan1))
 	for (Scan2=Result;!list_Empty(Scan2);Scan2=list_Cdr(Scan2)) {
 	  List1 = list_Car(Scan1);
 	  List2 = list_Car(Scan2);
 	  if (!list_Empty(list_Cdr(Scan2)))
 	    List1 = term_CopyTermList(List1);
-	  if (!list_Empty(list_Cdr(Scan1))) 
+	  if (!list_Empty(list_Cdr(Scan1)))
 	    List2 = term_CopyTermList(List2);
 	  NewResult = list_Cons(term_DestroyDuplicatesInList(list_Nconc(List1,List2)),
 				NewResult);
@@ -1298,18 +1266,16 @@ LIST cnf_ComputeLiteralLists(TERM Term)
     }
     return Result;
   }
-  
+
   if (symbol_Equal(Symbol,fol_Not()) || symbol_IsPredicate(Symbol))
     return list_List(list_List(term_Copy(Term)));
-  
-    
+
   misc_StartErrorReport();
   misc_ErrorReport("\n In cnf_ComputeLiteralLists: Unexpected junctor in input Formula!\n");
   misc_FinishErrorReport();
 
   return Result;
 }
-
 
 static TERM cnf_DistributiveFormula(TERM Formula)
 /**************************************************************
@@ -1324,7 +1290,7 @@ static TERM cnf_DistributiveFormula(TERM Formula)
   LIST Scan, Lists;
 
   Lists = cnf_ComputeLiteralLists(Formula);
-  
+
   for (Scan= Lists; !list_Empty(Scan); Scan=list_Cdr(Scan))
     list_Rplaca(Scan,term_Create(fol_Or(), list_Car(Scan)));
 
@@ -1334,8 +1300,6 @@ static TERM cnf_DistributiveFormula(TERM Formula)
   return Result;
 }
 
-
-
 void cnf_FPrintClause(TERM term, FILE* file)
 /**************************************************************
   INPUT:   A term and a file pointer.
@@ -1344,13 +1308,13 @@ void cnf_FPrintClause(TERM term, FILE* file)
            The disjunctions represent a clause.
 ***************************************************************/
 {
-    
+
   TERM   term1;
   LIST   scan;
   int    bottom;
-  
+
   bottom = vec_ActMax();
-  vec_Push(term);       
+  vec_Push(term);
 
   while (bottom != vec_ActMax()) {
     term1 = (TERM)vec_PopResult();
@@ -1364,23 +1328,22 @@ void cnf_FPrintClause(TERM term, FILE* file)
   vec_SetMax(bottom);
 }
 
-
 void cnf_FPrint(TERM term, FILE* file)
 /**************************************************************
   INPUT:   A term and a file pointer.
   RETURNS: Nothing.
   EFFECT:  Print the term (in negation normal form)
-           which contains only conjunctions of 
-	   disjunctions to file. The conjunctions are interpreted 
+           which contains only conjunctions of
+	   disjunctions to file. The conjunctions are interpreted
 	   to represent different clauses.
 ***************************************************************/
 {
   TERM   term1;
   LIST   scan;
   int    bottom;
-  
+
   bottom = vec_ActMax();
-  vec_Push(term);       
+  vec_Push(term);
 
   while (bottom != vec_ActMax()) {
     term1 = (TERM)vec_PopResult();
@@ -1396,14 +1359,13 @@ void cnf_FPrint(TERM term, FILE* file)
   vec_SetMax(bottom);
 }
 
-
 void cnf_StdoutPrint(TERM term)
 /**************************************************************
   INPUT:   A term.
   RETURNS: Nothing.
   EFFECT:  Print the term (in negation normal form)
-           which contains only conjunctions of 
-	   disjunctions to standard out. The conjunctions are interpreted 
+           which contains only conjunctions of
+	   disjunctions to standard out. The conjunctions are interpreted
 	   to represent different clauses.
 ***************************************************************/
 {
@@ -1414,7 +1376,7 @@ void cnf_StdoutPrint(TERM term)
     if (!(symbol_IsPredicate(term_TopSymbol(list_Car(scan))) ||
 	  fol_IsNegativeLiteral(list_Car(scan))))
       termlist = term_ArgumentList(list_Car(scan));
-    
+
     if (!list_Empty(termlist)) {
       for (scan1=termlist;!list_Empty(scan1);scan1=list_Cdr(scan1))
 	term_Print(list_Car(scan1));
@@ -1426,14 +1388,13 @@ void cnf_StdoutPrint(TERM term)
   }
 }
 
-
 void cnf_FilePrint(TERM term, FILE* file)
 /**************************************************************
   INPUT:   A term and a file.
   RETURNS: Nothing.
   EFFECT:  Print the term (in negation normal form)
-           which contains only conjunctions of 
-	   disjunctions to file. The conjunctions are interpreted 
+           which contains only conjunctions of
+	   disjunctions to file. The conjunctions are interpreted
 	   to represent different clauses.
 ***************************************************************/
 {
@@ -1444,7 +1405,7 @@ void cnf_FilePrint(TERM term, FILE* file)
     if (!(symbol_IsPredicate(term_TopSymbol(list_Car(scan))) ||
 	  fol_IsNegativeLiteral(list_Car(scan))))
       termlist = term_ArgumentList(list_Car(scan));
-    
+
     if (!list_Empty(termlist)) {
       for (scan1=termlist;!list_Empty(scan1);scan1=list_Cdr(scan1))
 	term_FPrint(file,list_Car(scan1));
@@ -1454,17 +1415,16 @@ void cnf_FilePrint(TERM term, FILE* file)
       fputs(".\n", file);
     }
   }
-  
-}
 
+}
 
 void cnf_FilePrintPrefix(TERM term, FILE* file)
 /**************************************************************
   INPUT:   A term and a file pointer.
   RETURNS: Nothing.
   EFFECT:  Prefix Print the term (in negation normal form)
-           which contains only conjunctions of 
-	   disjunctions to file. The conjunctions are interpreted 
+           which contains only conjunctions of
+	   disjunctions to file. The conjunctions are interpreted
 	   to represent different clauses.
 ***************************************************************/
 {
@@ -1475,7 +1435,7 @@ void cnf_FilePrintPrefix(TERM term, FILE* file)
     if (!(symbol_IsPredicate(term_TopSymbol(list_Car(scan))) ||
 	  fol_IsNegativeLiteral(list_Car(scan))))
       termlist = term_ArgumentList(list_Car(scan));
-    
+
     if (!list_Empty(termlist)) {
       for (scan1=termlist;!list_Empty(scan1);scan1=list_Cdr(scan1)) {
 	term_FPrintPrefix(file,list_Car(scan1));
@@ -1489,7 +1449,6 @@ void cnf_FilePrintPrefix(TERM term, FILE* file)
     }
   }
 }
-
 
 static LIST cnf_SubsumeClauseList(LIST clauselist)
 /**********************************************************
@@ -1527,7 +1486,6 @@ static LIST cnf_SubsumeClauseList(LIST clauselist)
   return result;
 }
 
-
 static LIST cnf_MakeClauseList(TERM term, BOOL Sorts, BOOL Conclause,
 			       FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -1535,7 +1493,7 @@ static LIST cnf_MakeClauseList(TERM term, BOOL Sorts, BOOL Conclause,
            whether sorts should be generated and whether the
 	   generated clauses are Conclauses, a flag store and
 	   a precedence.
-  RETURNS: A list of clauses with respect to term. The terms 
+  RETURNS: A list of clauses with respect to term. The terms
            in the new clauses are the copied subterms from term.
   EFFECT:  The flag store and the precedence are not changed,
            but they're needed for creating clauses.
@@ -1574,7 +1532,7 @@ static LIST cnf_MakeClauseList(TERM term, BOOL Sorts, BOOL Conclause,
 	termlist = term_DestroyDuplicatesInList(termlist);
       } else
 	termlist = list_List(term_Copy(list_Car(scan)));
-  
+
       if (!list_Empty(termlist)) {
 	clause = clause_CreateFromLiterals(termlist, Sorts, Conclause, TRUE,
 					   Flags, Precedence);
@@ -1594,7 +1552,7 @@ static LIST cnf_MakeClauseList(TERM term, BOOL Sorts, BOOL Conclause,
       termlist = term_DestroyDuplicatesInList(termlist);
     } else
       termlist = list_List(term_Copy(term));
-    
+
     if (!list_Empty(termlist)) {
       clause = clause_CreateFromLiterals(termlist, Sorts, Conclause, TRUE,
 					 Flags, Precedence);
@@ -1627,10 +1585,9 @@ static LIST cnf_MakeClauseList(TERM term, BOOL Sorts, BOOL Conclause,
   for (scan=delclauselist; !list_Empty(scan); scan=list_Cdr(scan))
     newclauselist = list_PointerDeleteElement(newclauselist,list_Car(scan));
   clause_DeleteClauseList(delclauselist);
-    
+
   return newclauselist;
 }
-
 
 TERM cnf_Flatten(TERM Term, SYMBOL Symbol)
 /**************************************************************
@@ -1661,7 +1618,6 @@ TERM cnf_Flatten(TERM Term, SYMBOL Symbol)
   return Term;
 }
 
-
 static TERM cnf_FlattenPath(TERM Term, TERM PredicateTerm)
 /**************************************************************
   INPUT:   A <Term> and <Symbol> that is assumed to be associative,
@@ -1672,7 +1628,7 @@ static TERM cnf_FlattenPath(TERM Term, TERM PredicateTerm)
 ***************************************************************/
 {
   TERM   subterm;
-  
+
   subterm = Term;
   while (symbol_Equal(term_TopSymbol(subterm), fol_All()))
     subterm = term_SecondArgument(subterm);
@@ -1703,10 +1659,9 @@ static TERM cnf_FlattenPath(TERM Term, TERM PredicateTerm)
   return Term;
 }
 
-
 static void cnf_DistrQuantorNoVarSub(TERM Term)
 /**************************************************************
-  INPUT:   A formula in negation normal form starting with a universal 
+  INPUT:   A formula in negation normal form starting with a universal
            (existential) quantifier and a disjunction (conjunction) as argument.
   EFFECT:  The Quantor is distributed if possible.
   CAUTION: The term is destructively changed.
@@ -1745,7 +1700,7 @@ static void cnf_DistrQuantorNoVarSub(TERM Term)
       term_RplacArgumentList(Subterm,list_Cons(NewForm,Subformulas));
       term_RplacArgumentList(term_FirstArgument(Term),
 			     list_PointerDeleteElement(fol_QuantifierVariables(Term),(POINTER)Var));
-    } 
+    }
   }
 
   if (list_Empty(fol_QuantifierVariables(Term))) { /* All variables moved inside */
@@ -1757,7 +1712,6 @@ static void cnf_DistrQuantorNoVarSub(TERM Term)
   }
   list_Delete(Variables);
 }
-
 
 static TERM cnf_AntiPrenex(TERM Term)
 /**************************************************************
@@ -1775,11 +1729,11 @@ static TERM cnf_AntiPrenex(TERM Term)
   if (fol_IsQuantifier(Top)) {
     TERM   Subterm,Actterm;
     SYMBOL DistrSymb,Subtop;          /* The junctor the respective quantifier distributes over */
-    
+
     Subterm = term_SecondArgument(Term);
     Subtop  = term_TopSymbol(Subterm);
 
-    if (!symbol_IsPredicate(Subtop) && 
+    if (!symbol_IsPredicate(Subtop) &&
 	!symbol_Equal(Subtop,fol_Not())) { /* Formula in NNF: No Literals or Atoms */
       if (symbol_Equal(Top,fol_All()))
 	DistrSymb = fol_And();
@@ -1790,7 +1744,7 @@ static TERM cnf_AntiPrenex(TERM Term)
 	Subtop = term_TopSymbol(Subterm);
       }
       if (symbol_Equal(Subtop,DistrSymb)) {
-	LIST Variables;	
+	LIST Variables;
 	LIST NewVars;
 	Variables = fol_QuantifierVariables(Term);
 	Subterm   = cnf_Flatten(Subterm,DistrSymb);
@@ -1812,14 +1766,14 @@ static TERM cnf_AntiPrenex(TERM Term)
 	  }
 	}
 	term_Delete(term_FirstArgument(Term));   /* Delete old variable list */
-	list_Delete(term_ArgumentList(Term)); 
+	list_Delete(term_ArgumentList(Term));
 	term_RplacTop(Term,DistrSymb);
 	term_RplacArgumentList(Term,term_ArgumentList(Subterm));
 	term_Free(Subterm);
-	for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan)) 
+	for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan))
 	  list_Rplaca(Scan,cnf_AntiPrenex(list_Car(Scan)));
       }
-      else 
+      else
 	if (!fol_IsQuantifier(Subtop)) {
 	  cnf_DistrQuantorNoVarSub(Term);
 	  for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan))
@@ -1835,10 +1789,9 @@ static TERM cnf_AntiPrenex(TERM Term)
   return Term;
 }
 
-
 static void cnf_DistrQuantorNoVarSubPath(TERM Term, TERM PredicateTerm)
 /**************************************************************
-  INPUT:   A formula in negation normal form starting with a universal 
+  INPUT:   A formula in negation normal form starting with a universal
            (existential) quantifier and a disjunction (conjunction) as argument
 	   and a predicate term which is a subterm of term.
   CAUTION: The term is destructively changed.
@@ -1892,7 +1845,7 @@ static void cnf_DistrQuantorNoVarSubPath(TERM Term, TERM PredicateTerm)
       term_RplacSuperterm(NewForm, Subterm);
       term_RplacArgumentList(term_FirstArgument(Term),
 			     list_PointerDeleteElement(fol_QuantifierVariables(Term),(POINTER)Var));
-    } 
+    }
   }
 
   if (list_Empty(fol_QuantifierVariables(Term))) { /* All variables moved inside */
@@ -1907,7 +1860,6 @@ static void cnf_DistrQuantorNoVarSubPath(TERM Term, TERM PredicateTerm)
   }
   list_Delete(Variables);
 }
-
 
 static TERM cnf_AntiPrenexPath(TERM Term, TERM PredicateTerm)
 /**************************************************************
@@ -1926,7 +1878,7 @@ static TERM cnf_AntiPrenexPath(TERM Term, TERM PredicateTerm)
   if (fol_IsQuantifier(Top)) {
     TERM   Subterm,Actterm;
     SYMBOL DistrSymb,Subtop;          /* The junctor the respective quantifier distributes over */
-    
+
     Subterm = term_SecondArgument(Term);
     Subtop  = term_TopSymbol(Subterm);
 
@@ -1940,7 +1892,7 @@ static TERM cnf_AntiPrenexPath(TERM Term, TERM PredicateTerm)
 	Subtop = term_TopSymbol(Subterm);
       }
       if (symbol_Equal(Subtop,DistrSymb)) {
-	LIST Variables;	
+	LIST Variables;
 	LIST NewVars;
 	Variables = fol_QuantifierVariables(Term);
 	Subterm   = cnf_Flatten(Subterm,DistrSymb);
@@ -1966,7 +1918,7 @@ static TERM cnf_AntiPrenexPath(TERM Term, TERM PredicateTerm)
 	  }
 	}
 	term_Delete(term_FirstArgument(Term));   /* Delete old variable list */
-	list_Delete(term_ArgumentList(Term)); 
+	list_Delete(term_ArgumentList(Term));
 	term_RplacTop(Term,DistrSymb);
 	term_RplacArgumentList(Term,term_ArgumentList(Subterm));
 	term_Free(Subterm);
@@ -1995,11 +1947,10 @@ static TERM cnf_AntiPrenexPath(TERM Term, TERM PredicateTerm)
       for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan))
 	if (term_HasProperSuperterm(PredicateTerm, (TERM) list_Car(Scan)))
 	  cnf_AntiPrenexPath(list_Car(Scan), PredicateTerm);
-  
+
   term_AddFatherLinks(Term);
   return Term;
 }
-
 
 static TERM cnf_RemoveTrivialOperators(TERM Term)
 /**************************************************************
@@ -2031,10 +1982,9 @@ static TERM cnf_RemoveTrivialOperators(TERM Term)
     list_Rplaca(Scan,cnf_RemoveTrivialOperators(list_Car(Scan)));
     term_RplacSuperterm((TERM) list_Car(Scan), Term);
   }
-  
+
   return Term;
 }
-
 
 static TERM cnf_SimplifyQuantors(TERM Term)
   /**************************************************************
@@ -2069,7 +2019,7 @@ static TERM cnf_SimplifyQuantors(TERM Term)
       list_Rplaca(list_Cdr(term_ArgumentList(Term)),Aux);
       Subterm = Aux;
     }
-    
+
     for (Scan=fol_QuantifierVariables(Term);!list_Empty(Scan);Scan=list_Cdr(Scan)) {
       Var = (TERM)list_Car(Scan);
       if (!fol_VarOccursFreely(Var,Subterm))
@@ -2088,13 +2038,12 @@ static TERM cnf_SimplifyQuantors(TERM Term)
       }
     }
   }
-  
+
   for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan))
     list_Rplaca(Scan,cnf_SimplifyQuantors(list_Car(Scan)));
-  
-  return Term; 
-}
 
+  return Term;
+}
 
 TERM cnf_RemoveTrivialAtoms(TERM Term)
 /**************************************************************
@@ -2109,10 +2058,9 @@ TERM cnf_RemoveTrivialAtoms(TERM Term)
   TERM   Result;
   BOOL   Update;
 
-
   if (!term_IsComplex(Term))
     return Term;
-  
+
   Top    = term_TopSymbol(Term);
   Update = FALSE;
 
@@ -2257,7 +2205,6 @@ TERM cnf_RemoveTrivialAtoms(TERM Term)
   return Term;
 }
 
-
 TERM cnf_ObviousSimplifications(TERM Term)
 /**************************************************************
   INPUT:   A formula.
@@ -2276,7 +2223,6 @@ TERM cnf_ObviousSimplifications(TERM Term)
   return Term;
 }
 
-
 /* EK: warum wird Term zurueckgegeben, wenn er destruktiv geaendert wird??? */
 static TERM cnf_SkolemFormula(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
 /**************************************************************
@@ -2293,7 +2239,7 @@ static TERM cnf_SkolemFormula(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
   NAT    Arity;
 
   Top = term_TopSymbol(Term);
-    
+
   if (fol_IsQuantifier(term_TopSymbol(Term))) {
     if (symbol_Equal(Top,fol_All())) {
       term_Delete(term_FirstArgument(Term));
@@ -2303,7 +2249,7 @@ static TERM cnf_SkolemFormula(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
       term_RplacArgumentList(Term,term_ArgumentList(Subterm));
       term_Free(Subterm);
       return cnf_SkolemFormula(Term, Precedence, Symblist);
-    } 
+    }
     else {  /* exist quantifier */
       Varlist = fol_FreeVariables(Term);
       Arity   = list_Length(Varlist);
@@ -2322,7 +2268,7 @@ static TERM cnf_SkolemFormula(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
       term_RplacArgumentList(Term,term_ArgumentList(Subterm));
       term_Free(Subterm);
       return cnf_SkolemFormula(Term, Precedence, Symblist);
-    } 
+    }
   }
   else
     if (symbol_Equal(Top,fol_And()) || symbol_Equal(Top,fol_Or()))
@@ -2330,7 +2276,6 @@ static TERM cnf_SkolemFormula(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
 	cnf_SkolemFormula(list_Car(Scan), Precedence, Symblist);
   return Term;
 }
-
 
 static TERM cnf_Cnf(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
 /**************************************************************
@@ -2353,12 +2298,11 @@ static TERM cnf_Cnf(TERM Term, PRECEDENCE Precedence, LIST* Symblist)
   return Term;
 }
 
-
 static LIST cnf_GetUsedTerms(CLAUSE C, PROOFSEARCH Search,
-			     HASH InputClauseToTermLabellist) 
+			     HASH InputClauseToTermLabellist)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
+  INPUT:
+  RETURNS:
 ***************************************************************/
 {
   LIST UsedTerms, Used2, Scan;
@@ -2383,13 +2327,12 @@ static LIST cnf_GetUsedTerms(CLAUSE C, PROOFSEARCH Search,
   return UsedTerms;
 }
 
-
 static BOOL cnf_HaveProofOptSkolem(PROOFSEARCH Search, TERM topterm,
 				   char* toplabel, TERM term2,
 				   LIST* UsedTerms, LIST* Symblist,
 				   HASH InputClauseToTermLabellist)
 /**************************************************************
-  INPUT:   
+  INPUT:
   RETURNS: ??? EK
 ***************************************************************/
 {
@@ -2437,7 +2380,7 @@ static BOOL cnf_HaveProofOptSkolem(PROOFSEARCH Search, TERM topterm,
     EmptyClauses = list_PointerDeleteDuplicates(EmptyClauses);
     clause_DeleteClauseList(EmptyClauses);
   }
-    
+
   /* Removing ConClauses from UsablesIndex */
   ConClauses = list_Copy(prfs_UsableClauses(Search));
   for (scan = ConClauses; !list_Empty(scan); scan = list_Cdr(scan))
@@ -2445,11 +2388,10 @@ static BOOL cnf_HaveProofOptSkolem(PROOFSEARCH Search, TERM topterm,
       prfs_MoveUsableDocProof(Search, (CLAUSE) list_Car(scan));
     else
       prfs_DeleteUsable(Search, (CLAUSE) list_Car(scan));
-  list_Delete(ConClauses); 
-	
+  list_Delete(ConClauses);
+
   return found;
 }
-
 
 BOOL cnf_HaveProof(LIST TermList, TERM ToProve, FLAGSTORE InputFlags,
 		   PRECEDENCE InputPrecedence)
@@ -2486,7 +2428,7 @@ BOOL cnf_HaveProof(LIST TermList, TERM ToProve, FLAGSTORE InputFlags,
 
     usables = list_Nconc(cnf_MakeClauseList(t,FALSE,FALSE,Flags,Precedence),
 			 usables);
-    term_Delete(t); 
+    term_Delete(t);
   }
 
   /* Build clauses from negated term to prove */
@@ -2502,7 +2444,7 @@ BOOL cnf_HaveProof(LIST TermList, TERM ToProve, FLAGSTORE InputFlags,
     clause_SetFlag(list_Car(scan), CONCLAUSE);
 
   emptyclauses = cnf_SatUnit(search, usables);
-  
+
   if (!list_Empty(emptyclauses)) {
     found = TRUE;
     emptyclauses = list_PointerDeleteDuplicates(emptyclauses);
@@ -2516,11 +2458,10 @@ BOOL cnf_HaveProof(LIST TermList, TERM ToProve, FLAGSTORE InputFlags,
   return found;
 }
 
-
 static void cnf_RplacVarsymbFunction(TERM term, SYMBOL varsymb, TERM function)
 /**********************************************************
   INPUT:   A term, a variable symbol and a function.
-  EFFECT:  The variable with the symbol  varsymb in the term 
+  EFFECT:  The variable with the symbol  varsymb in the term
            is replaced by the function function.
   CAUTION: The term is destructively changed.
 ***********************************************************/
@@ -2545,11 +2486,10 @@ static void cnf_RplacVarsymbFunction(TERM term, SYMBOL varsymb, TERM function)
   vec_SetMax(bottom);
 }
 
-
 static void cnf_RplacVar(TERM Term, LIST Varlist, LIST Termlist)
 /**********************************************************
   INPUT:   A term,a variable symbol and a function.
-  RETURNS: The variable with the symbol  varsymb in the term 
+  RETURNS: The variable with the symbol  varsymb in the term
            is replaced by the function function.
   CAUTION: The term is destructively changed.
 ***********************************************************/
@@ -2566,7 +2506,7 @@ static void cnf_RplacVar(TERM Term, LIST Varlist, LIST Termlist)
     if (symbol_IsVariable(term_TopSymbol(term1))) {
       BOOL done;
       done = FALSE;
-      for (scan=Varlist, scan2=Termlist; !list_Empty(scan) && !done; 
+      for (scan=Varlist, scan2=Termlist; !list_Empty(scan) && !done;
 	   scan = list_Cdr(scan), scan2 = list_Cdr(scan2)) {
 	if (symbol_Equal(term_TopSymbol(term1),term_TopSymbol(list_Car(scan)))) {
 	  term_RplacTop(term1,term_TopSymbol((TERM) list_Car(scan2)));
@@ -2584,23 +2524,21 @@ static void cnf_RplacVar(TERM Term, LIST Varlist, LIST Termlist)
   vec_SetMax(bottom);
 }
 
-
 static TERM cnf_MakeSkolemFunction(LIST varlist, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A list of variables and a precedence.
-  RETURNS: The new term oskf... (oskc...) which is a function 
+  RETURNS: The new term oskf... (oskc...) which is a function
            with varlist as arguments.
   EFFECT:  The precedence of the new Skolem function is set in <Precedence>.
 ***************************************************************/
 {
   TERM   term;
   SYMBOL skolem;
-  
+
   skolem = symbol_CreateSkolemFunction(list_Length(varlist), Precedence);
   term   = term_Create(skolem, term_CopyTermList(varlist));
   return term;
 }
-
 
 static void cnf_PopAllQuantifier(TERM term)
 /********************************************************
@@ -2630,7 +2568,6 @@ static void cnf_PopAllQuantifier(TERM term)
   term_Free(SubTerm);
 }
 
-
 static TERM cnf_QuantifyAndNegate(TERM term, LIST VarList, LIST FreeList)
 /****************************************************************
   INPUT:   A term, a list of variables to be exist-quantified,
@@ -2658,7 +2595,6 @@ static TERM cnf_QuantifyAndNegate(TERM term, LIST VarList, LIST FreeList)
   Result = term_Create(fol_Not(), list_List(Result));
   return Result;
 }
-
 
 static TERM cnf_MoveProvedTermToTopLevel(TERM Term, TERM Term1, TERM Proved,
 					 LIST VarList, LIST FreeList,
@@ -2696,28 +2632,27 @@ static TERM cnf_MoveProvedTermToTopLevel(TERM Term, TERM Term1, TERM Proved,
     varsymb = term_TopSymbol(list_Car(scan));
     skolemfunction = cnf_MakeSkolemFunction(FreeList, Precedence);
     cnf_RplacVarsymbFunction(termR,varsymb,skolemfunction);
-    cnf_RplacVarsymbFunction(Proved,varsymb,skolemfunction); 
-    term_Delete(skolemfunction); 
+    cnf_RplacVarsymbFunction(Proved,varsymb,skolemfunction);
+    term_Delete(skolemfunction);
   }
 
   if (!list_Empty(FreeList)) {
-    Proved = 
+    Proved =
       fol_CreateQuantifier(fol_All(), term_CopyTermList(FreeList),
 			   list_List(Proved));
     if (list_Length(FreeList) > 1)
       Proved = cnf_QuantMakeOneVar(Proved);
   }
- 
+
   term_Delete(term_FirstArgument(Term1)); /* Variables of "exists" */
   list_Delete(term_ArgumentList(Term1));
   term_RplacTop(Term1,term_TopSymbol(termR));
   term_RplacArgumentList(Term1,term_ArgumentList(termR));
   term_Free(termR);
-    
+
   term_RplacArgumentList(Term, list_Cons(Proved, term_ArgumentList(Term)));
   return Proved;
 }
-
 
 static void cnf_Skolemize(TERM Term, LIST FreeList, PRECEDENCE Precedence)
 /********************************************************
@@ -2746,11 +2681,10 @@ static void cnf_Skolemize(TERM Term, LIST FreeList, PRECEDENCE Precedence)
   list_Delete(symblist);
 }
 
-
 static LIST cnf_FreeVariablesBut(TERM Term, LIST Symbols)
 /********************************************************
   INPUT:   A term and a list of symbols
-  RETURNS: A list of all free variable terms in Term whose symbols are 
+  RETURNS: A list of all free variable terms in Term whose symbols are
            not in Symbols
 *********************************************************/
 {
@@ -2761,10 +2695,9 @@ static LIST cnf_FreeVariablesBut(TERM Term, LIST Symbols)
 		    (BOOL (*)(POINTER,POINTER))symbol_Equal))
       list_Rplaca(Scan,NULL);
   follist = list_PointerDeleteElement(follist,NULL);
-    
+
   return follist;
 }
-
 
 static void cnf_SkolemFunctionFormulaMapped(TERM term, LIST allist, LIST map)
 /**************************************************************
@@ -2783,7 +2716,7 @@ static void cnf_SkolemFunctionFormulaMapped(TERM term, LIST allist, LIST map)
   int    bottom;
 
   bottom = vec_ActMax();
-  
+
   for (scan1=map; !list_Empty(scan1); scan1=list_Cdr(scan1)) {
     vec_Push(term);
     symbol = (SYMBOL) list_PairFirst((LIST) list_Car(scan1));
@@ -2814,7 +2747,6 @@ static void cnf_SkolemFunctionFormulaMapped(TERM term, LIST allist, LIST map)
   vec_SetMax(bottom);
 }
 
-
 static BOOL cnf_HasDeeperVariable(LIST List1, LIST List2)
 /******************************************************************
    INPUT:   Two lists of variable terms
@@ -2827,7 +2759,7 @@ static BOOL cnf_HasDeeperVariable(LIST List1, LIST List2)
 {
   LIST scan;
   int  maxdepth1;
-  
+
   /* Determine maximum depth of variables in List1 */
   maxdepth1 = 0;
   for (scan=List1; !list_Empty(scan); scan=list_Cdr(scan)) {
@@ -2861,9 +2793,8 @@ static BOOL cnf_HasDeeperVariable(LIST List1, LIST List2)
   return  TRUE;
 }
 
-
 static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
-				    char* Toplabel, BOOL TopAnd, TERM Term, 
+				    char* Toplabel, BOOL TopAnd, TERM Term,
 				    LIST* UsedTerms, LIST* Symblist,
 				    BOOL Result1,
 				    HASH InputClauseToTermLabellist, int Depth)
@@ -2910,15 +2841,15 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
      are not in exlist */
   pairlist = list_Nil();
   for (scan=term_ArgumentList(Term); !list_Empty(scan); scan = list_Cdr(scan)) {
-    pair = list_PairCreate((TERM) list_Car(scan), 
+    pair = list_PairCreate((TERM) list_Car(scan),
 			   cnf_FreeVariablesBut((TERM) list_Car(scan), exlist));
-    if (list_Empty(pairlist)) 
+    if (list_Empty(pairlist))
       pairlist = list_List(pair);
     else {
       /* First sort subterms by number of free variables */
       int pairlength, currentlength;
       pairlength = list_Length((LIST) list_PairSecond(pair));
-      pairscan = pairlist; 
+      pairscan = pairlist;
       pairscan_pred = list_Nil();
       currentlength = 0;
       while (!list_Empty(pairscan)) {
@@ -2938,7 +2869,7 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
 	      fputs("\n has deeper variable than ", stdout);
 	      term_Print((TERM) list_PairFirst(pair));
 	    }
-#endif	    
+#endif
 	    pairscan_pred = pairscan;
 	    pairscan = list_Cdr(pairscan);
 	  }
@@ -2948,16 +2879,16 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
 	else
 	  break;
       }
-      
+
       /* New pair has more variables than all others in list */
       if (list_Empty(pairscan))
 	list_Rplacd(pairscan_pred, list_List(pair));
       /* New pair is inserted between pairscan_pred and pairscan */
-      else if (currentlength >= pairlength) { 
+      else if (currentlength >= pairlength) {
 	/* Head of list */
 	if (list_Empty(pairscan_pred))
 	  pairlist = list_Cons(pair, pairlist);
-	else 
+	else
 	  list_InsertNext(pairscan_pred, pair);
       }
       /* The case for the same number of variables is not yet implemented */
@@ -2983,14 +2914,14 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
   /* Create map from ex_variables tp skolem symbols */
   allfreevariables = cnf_FreeVariablesBut(Term, exlist);
   numberofallfreevariables = list_Length(allfreevariables);
-    
+
   mapping  = list_Nil();
 
   for (scan = exlist; !list_Empty(scan); scan = list_Cdr(scan)) {
     SYMBOL skolem;
     skolem = symbol_CreateSkolemFunction(numberofallfreevariables, Precedence);
     *Symblist = list_Cons((POINTER)skolem,*Symblist);
-    mapping = list_Cons(list_PairCreate(list_Car(scan), (POINTER)skolem), 
+    mapping = list_Cons(list_PairCreate(list_Car(scan), (POINTER)skolem),
 			mapping);
   }
   list_Delete(allfreevariables);
@@ -3013,7 +2944,7 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
     }
   }
 #endif
-  
+
   /* Now do the replacing */
   accumulatedvariables = list_Nil();
   acc_length = 0;
@@ -3061,7 +2992,7 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
     list_Delete(allist);
     cnf_OptimizedSkolemFormula(Search, Topterm, Toplabel, TopAnd,
 			       (TERM) list_PairFirst((LIST) list_Car(pairscan)),
-			       UsedTerms, Symblist, Result1, 
+			       UsedTerms, Symblist, Result1,
 			       InputClauseToTermLabellist, Depth);
   }
   while (!list_Empty(newvariables)) {
@@ -3076,10 +3007,9 @@ static void cnf_StrongSkolemization(PROOFSEARCH Search, TERM Topterm,
     fputs("\nStrong skolemization applied", stdout);
   }
 }
-    
 
 static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
-				       char* toplabel, BOOL TopAnd, TERM term, 
+				       char* toplabel, BOOL TopAnd, TERM term,
 				       LIST* UsedTerms, LIST* Symblist,
 				       BOOL Result1,
 				       HASH InputClauseToTermLabellist,
@@ -3106,7 +3036,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
   freevariables = list_Nil();
   Flags         = prfs_Store(Search);
   Precedence    = prfs_Precedence(Search);
-  
+
   top = term_TopSymbol(term);
   if (fol_IsQuantifier(top)) {
     if (symbol_Equal(top,fol_All())) {
@@ -3120,7 +3050,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 	    if (cnf_VARIABLEDEPTHARRAY[term_TopSymbol(list_Car(scan))] != -1) {
 	      fputs("\nFor variable ", stderr);
 	      term_Print((TERM) list_Car(scan));
-	      printf(" depth is already set to %d, now setting it to %d", 
+	      printf(" depth is already set to %d, now setting it to %d",
 		     cnf_VARIABLEDEPTHARRAY[term_TopSymbol(list_Car(scan))],Depth);
 	    }
 	  }
@@ -3138,7 +3068,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 	Depth++;
       }
       cnf_PopAllQuantifier(term);
-      cnf_OptimizedSkolemFormula(Search,topterm, toplabel, TopAnd, term, 
+      cnf_OptimizedSkolemFormula(Search,topterm, toplabel, TopAnd, term,
 				 UsedTerms, Symblist, Result1,
 				 InputClauseToTermLabellist, Depth);
       return;
@@ -3158,10 +3088,10 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 	      result2 = TRUE;
 	    }
 	    else {
-	      termL2 = cnf_QuantifyAndNegate((TERM) list_Car(scan), 
+	      termL2 = cnf_QuantifyAndNegate((TERM) list_Car(scan),
 					     varlist, freevariables);
 	      result2 = cnf_HaveProofOptSkolem(Search, topterm, toplabel, termL2,
-					       UsedTerms, Symblist, 
+					       UsedTerms, Symblist,
 					       InputClauseToTermLabellist);
 #ifdef CHECK_OPTSKOLEM
 	      if (flag_GetFlagValue(Flags, flag_POPTSKOLEM)) {
@@ -3174,7 +3104,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 #endif
 	    }
 	  }
-	    
+
 	  if (Result1 || result2) {
 	    optimized = TRUE;
 	    if (flag_GetFlagValue(Flags, flag_POPTSKOLEM)) {
@@ -3185,7 +3115,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 	      puts(" is moved to toplevel.");
 	    }
 	    provedterm =
-	      cnf_MoveProvedTermToTopLevel(topterm, term, list_Car(scan), 
+	      cnf_MoveProvedTermToTopLevel(topterm, term, list_Car(scan),
 					   varlist, freevariables, Precedence);
 	    if (flag_GetFlagValue(Flags, flag_POPTSKOLEM)) {
 	      fputs("Result : ", stdout);
@@ -3194,10 +3124,10 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 	    }
 	    /* provedterm is argument of top AND term */
 	    cnf_OptimizedSkolemFormula(Search, topterm, toplabel, TRUE,
-				       provedterm,UsedTerms, Symblist, Result1, 
+				       provedterm,UsedTerms, Symblist, Result1,
 				       InputClauseToTermLabellist, Depth);
 	  }
-	  else 
+	  else
 	    scan = list_Cdr(scan);
 	}
       }
@@ -3206,7 +3136,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
 	if (flag_GetFlagValue(Flags, flag_CNFSTRSKOLEM)) {
 	  optimized = TRUE; /* Strong Skolemization is always possible after exists[..](and(..)) */
 	  cnf_StrongSkolemization(Search, topterm, toplabel, TopAnd, term,
-				  UsedTerms, Symblist, Result1, 
+				  UsedTerms, Symblist, Result1,
 				  InputClauseToTermLabellist, Depth);
 	}
       }
@@ -3222,7 +3152,7 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
     cnf_OptimizedSkolemFormula(Search, topterm, toplabel, TopAnd, term,UsedTerms,
 			       Symblist,Result1,InputClauseToTermLabellist,Depth);
     return;
-  } 
+  }
   else {
     if (symbol_Equal(top,fol_And()) || symbol_Equal(top,fol_Or())) {
       if (symbol_Equal(top,fol_Or()))
@@ -3237,7 +3167,6 @@ static void cnf_OptimizedSkolemFormula(PROOFSEARCH Search, TERM topterm,
   }
   return;
 }
-
 
 static LIST cnf_SkolemFunctionFormula(TERM term, LIST allist, LIST exlist,
 				      PRECEDENCE Precedence)
@@ -3261,12 +3190,12 @@ static LIST cnf_SkolemFunctionFormula(TERM term, LIST allist, LIST exlist,
   Result = list_Nil();
   bottom = vec_ActMax();
   n = list_Length(allist);
-  
+
   for (scan1=exlist; !list_Empty(scan1); scan1=list_Cdr(scan1)) {
     vec_Push(term);
     skolem = symbol_CreateSkolemFunction(n, Precedence);
     Result = list_Cons((POINTER)skolem, Result);
-    
+
     while (bottom != vec_ActMax()) {
       term1 = (TERM)vec_PopResult();
       if (symbol_Equal(term_TopSymbol(term1),(SYMBOL)list_Car(scan1))) {
@@ -3283,11 +3212,10 @@ static LIST cnf_SkolemFunctionFormula(TERM term, LIST allist, LIST exlist,
   return Result;
 }
 
-
 static LIST cnf_OptimizedSkolemization(PROOFSEARCH Search, TERM Term,
-				       char* Label, LIST* UsedTerms, 
+				       char* Label, LIST* UsedTerms,
 				       LIST* Symblist, BOOL result,
-				       BOOL Conjecture, 
+				       BOOL Conjecture,
 				       HASH InputClauseToTermLabellist)
 /**************************************************************
   INPUT:   A term, a shared index and a list of non-ConClauses. ??? EK
@@ -3330,7 +3258,7 @@ static LIST cnf_OptimizedSkolemization(PROOFSEARCH Search, TERM Term,
 	flag_GetFlagValue(Flags, flag_CNFSTRSKOLEM))  {
       if (flag_GetFlagValue(Flags, flag_CNFOPTSKOLEM))
 	Term = term_Create(fol_And(), list_List(Term)); /* CW hack: definitions are added on top level*/
-      cnf_OptimizedSkolemFormula(Search, Term, Label, TRUE, FirstArg, UsedTerms, 
+      cnf_OptimizedSkolemFormula(Search, Term, Label, TRUE, FirstArg, UsedTerms,
 				 Symblist, result, InputClauseToTermLabellist, 0);
     }
     else {
@@ -3352,23 +3280,22 @@ static LIST cnf_OptimizedSkolemization(PROOFSEARCH Search, TERM Term,
   return Clauses;
 }
 
-
 LIST cnf_GetSkolemFunctions(TERM Term, LIST ArgList, LIST* SkolToExVar)
 /**************************************************************
   INPUT:   A term, the argumentlist of a skolem function, a mapping from
            a skolem function to a variable
   RETURNS: The longest argumentlist of all skolem functions found so far.
-  EFFECT:  Computes information for renaming variables and replacing 
+  EFFECT:  Computes information for renaming variables and replacing
            skolem functions during de-skolemization.
-**************************************************************/ 
+**************************************************************/
 {
   LIST Scan;
   SYMBOL Top;
-    
+
   Top = term_TopSymbol(Term);
 
-  if (fol_IsQuantifier(Top)) 
-    return cnf_GetSkolemFunctions(term_SecondArgument(Term), ArgList, 
+  if (fol_IsQuantifier(Top))
+    return cnf_GetSkolemFunctions(term_SecondArgument(Term), ArgList,
 				  SkolToExVar);
 
   if (symbol_IsFunction(Top) && symbol_HasProperty(Top, SKOLEM)) {
@@ -3376,7 +3303,7 @@ LIST cnf_GetSkolemFunctions(TERM Term, LIST ArgList, LIST* SkolToExVar)
     SYMBOL Var = 0;
     int Arity;
     found = FALSE;
-      
+
     /* Keep longest argument list of all skolem functions in the clause for renaming */
     /* Delete all other argument lists */
     Arity = list_Length(term_ArgumentList(Term));
@@ -3384,10 +3311,10 @@ LIST cnf_GetSkolemFunctions(TERM Term, LIST ArgList, LIST* SkolToExVar)
       term_DeleteTermList(ArgList);
       ArgList = term_ArgumentList(Term);
     }
-    else 
+    else
       term_DeleteTermList(term_ArgumentList(Term));
     term_RplacArgumentList(Term, NULL);
-      
+
     /* Replace skolem function by variable */
     if (list_Length(*SkolToExVar) > Arity) {
       NAT i;
@@ -3417,31 +3344,30 @@ LIST cnf_GetSkolemFunctions(TERM Term, LIST ArgList, LIST* SkolToExVar)
       }
 
       Var = symbol_CreateStandardVariable();
-      Pair = list_PairCreate((POINTER) term_TopSymbol(Term), 
+      Pair = list_PairCreate((POINTER) term_TopSymbol(Term),
 			     (POINTER) Var);
       if (list_Car(SkolScan) == list_Nil())
 	list_Rplaca(SkolScan, list_List(Pair));
       else
-	list_Rplaca(SkolScan, list_Nconc((LIST) list_Car(SkolScan), 
+	list_Rplaca(SkolScan, list_Nconc((LIST) list_Car(SkolScan),
 					 list_List(Pair)));
     }
     term_RplacTop(Term, Var);
   }
   else {
-    for (Scan = term_ArgumentList(Term); Scan != list_Nil(); 
+    for (Scan = term_ArgumentList(Term); Scan != list_Nil();
 	Scan = list_Cdr(Scan))
-      ArgList = cnf_GetSkolemFunctions((TERM) list_Car(Scan), ArgList, 
+      ArgList = cnf_GetSkolemFunctions((TERM) list_Car(Scan), ArgList,
 				       SkolToExVar);
   }
   return ArgList;
 }
 
-
 void cnf_ReplaceVariable(TERM Term, SYMBOL Old, SYMBOL New)
 /**************************************************************
   INPUT:  A term, two symbols that are variables
   EFFECT: In term every occurrence of Old is replaced by New
-**************************************************************/ 
+**************************************************************/
 {
   LIST Scan;
 
@@ -3455,12 +3381,11 @@ void cnf_ReplaceVariable(TERM Term, SYMBOL Old, SYMBOL New)
 
   if (symbol_Equal(term_TopSymbol(Term), Old))
     term_RplacTop(Term, New);
-  else 
-    for (Scan = term_ArgumentList(Term); !list_Empty(Scan); 
+  else
+    for (Scan = term_ArgumentList(Term); !list_Empty(Scan);
 	 Scan = list_Cdr(Scan))
       cnf_ReplaceVariable(list_Car(Scan), Old, New);
 }
-
 
 LIST cnf_RemoveSkolemFunctions(CLAUSE Clause, LIST* SkolToExVar, LIST Vars)
 /**************************************************************
@@ -3484,13 +3409,13 @@ LIST cnf_RemoveSkolemFunctions(CLAUSE Clause, LIST* SkolToExVar, LIST Vars)
     ArgList = cnf_GetSkolemFunctions(Term, ArgList, SkolToExVar);
     TermList = list_Cons(Term, TermList);
   }
-    
+
   if (list_Empty(ArgList))
     return TermList;
-    
+
   /* Rename variables */
   for (Scan = ArgList; Scan != list_Nil(); Scan = list_Cdr(Scan)) {
-    for (TermScan = TermList; TermScan != list_Nil(); 
+    for (TermScan = TermList; TermScan != list_Nil();
 	 TermScan = list_Cdr(TermScan)) {
       Term = (TERM) list_Car(TermScan);
       cnf_ReplaceVariable(Term,
@@ -3507,7 +3432,6 @@ LIST cnf_RemoveSkolemFunctions(CLAUSE Clause, LIST* SkolToExVar, LIST Vars)
   return TermList;
 }
 
-
 TERM cnf_DeSkolemFormula(LIST Clauses)
 /**************************************************************
   INPUT:   A list of clauses.
@@ -3518,12 +3442,12 @@ TERM cnf_DeSkolemFormula(LIST Clauses)
   LIST Scan, SkolToExVar, Vars, FreeVars, FreeVarsCopy, VarScan, TermList;
   TERM VarListTerm, TopTerm, Term;
   BOOL First;
-  
+
   SkolToExVar = list_List(NULL);
   Vars = list_List((POINTER) symbol_CreateStandardVariable());
-  
+
   TopTerm = term_Create(fol_And(), NULL);
-  
+
   for (Scan = Clauses; Scan != list_Nil(); Scan = list_Cdr(Scan)) {
     TermList =  cnf_RemoveSkolemFunctions((CLAUSE) list_Car(Scan),
 					  &SkolToExVar, Vars);
@@ -3536,19 +3460,19 @@ TERM cnf_DeSkolemFormula(LIST Clauses)
     }
     term_RplacArgumentList(TopTerm, list_Cons(Term, term_ArgumentList(TopTerm)));
   }
-  
+
   VarScan = Vars;
   First = TRUE;
-  
+
   for (Scan = SkolToExVar; Scan != list_Nil(); Scan = list_Cdr(Scan)) {
     if (list_Empty(list_Car(Scan))) {
       if (term_TopSymbol(TopTerm) == fol_All())
-	term_RplacArgumentList(TopTerm, list_Cons(term_Create((SYMBOL) list_Car(VarScan), NULL),  
+	term_RplacArgumentList(TopTerm, list_Cons(term_Create((SYMBOL) list_Car(VarScan), NULL),
 						  term_ArgumentList(TopTerm)));
       if (!First)
 	TopTerm = fol_CreateQuantifier(fol_All(),
 				       list_List(term_Create((SYMBOL) list_Car(VarScan), NULL)),
-				       list_List(TopTerm)); 
+				       list_List(TopTerm));
     }
     else {
       LIST ExVarScan;
@@ -3574,23 +3498,22 @@ TERM cnf_DeSkolemFormula(LIST Clauses)
 	TopTerm = fol_CreateQuantifier(fol_Exist(), ExVars, list_List(TopTerm));
       ExVars = list_Nil();
 
-      if (!First) 
-	TopTerm = fol_CreateQuantifier(fol_All(), 
+      if (!First)
+	TopTerm = fol_CreateQuantifier(fol_All(),
 				       list_List(term_Create((SYMBOL) list_Car(VarScan), NULL)),
 				       list_List(TopTerm));
     }
-    if (!First) 
+    if (!First)
       VarScan = list_Cdr(VarScan);
     else
       First = FALSE;
-	
+
   }
   list_Delete(SkolToExVar);
   list_Delete(Vars);
 
   return TopTerm;
 }
-
 
 #ifdef OPTCHECK
 /* Currently unused */
@@ -3611,62 +3534,62 @@ LIST cnf_CheckOptimizedSkolemization(LIST* AxClauses, LIST* ConClauses,
     DeSkolemizedAxOpt = cnf_DeSkolemFormula(*AxClauses);
     if (*ConClauses != list_Nil()) {
       DeSkolemizedConOpt = cnf_DeSkolemFormula(*ConClauses);
-      TopOpt = term_Create(fol_And(), 
-			   list_Cons(DeSkolemizedAxOpt, 
+      TopOpt = term_Create(fol_And(),
+			   list_Cons(DeSkolemizedAxOpt,
 				     list_List(DeSkolemizedConOpt)));
     }
-    else 
+    else
       TopOpt = DeSkolemizedAxOpt;
   }
   else {
-    DeSkolemizedConOpt = cnf_DeSkolemFormula(*ConClauses);     
+    DeSkolemizedConOpt = cnf_DeSkolemFormula(*ConClauses);
     TopOpt = DeSkolemizedConOpt;
   }
-  
+
   clause_DeleteClauseList(*AxClauses);
   clause_DeleteClauseList(*ConClauses);
   *AxClauses = list_Nil();
   *ConClauses = list_Nil();
-  
-  flag_SetFlagValue(flag_CNFOPTSKOLEM, flag_CNFOPTSKOLEMOFF);  
+
+  flag_SetFlagValue(flag_CNFOPTSKOLEM, flag_CNFOPTSKOLEMOFF);
   if (AxTerm) {
     *AxClauses = cnf_OptimizedSkolemization(term_Copy(AxTerm), ShIndex, NonConClauses, result,FALSE, ClauseToTermLabellist);
   }
   if (ConTerm) {
     *ConClauses = cnf_OptimizedSkolemization(term_Copy(ConTerm), ShIndex, NonConClauses, result,TRUE, ClauseToTermLabellist);
   }
-  
+
   if (*AxClauses != list_Nil()) {
     DeSkolemizedAx = cnf_DeSkolemFormula(*AxClauses);
     if (*ConClauses != list_Nil()) {
       DeSkolemizedCon = cnf_DeSkolemFormula(*ConClauses);
-      Top = term_Create(fol_And(), 
-			list_Cons(DeSkolemizedAx, 
+      Top = term_Create(fol_And(),
+			list_Cons(DeSkolemizedAx,
 				  list_List(DeSkolemizedCon)));
     }
-    else 
+    else
       Top = DeSkolemizedAx;
   }
   else {
-    DeSkolemizedCon = cnf_DeSkolemFormula(*ConClauses);    
+    DeSkolemizedCon = cnf_DeSkolemFormula(*ConClauses);
     Top = DeSkolemizedCon;
   }
-  
+
   clause_DeleteClauseList(*AxClauses);
   clause_DeleteClausList(*ConClauses);
   *AxClauses = list_Nil();
   *ConClauses = list_Nil();
-  
+
   ToProve = term_Create(fol_Equiv(), list_Cons(TopOpt, list_List(Top)));
   ToProve = term_Create(fol_Not(), list_List(ToProve));
-  fol_NormalizeVars(ToProve); 
+  fol_NormalizeVars(ToProve);
   ToProve  = cnf_ObviousSimplifications(ToProve);
   term_AddFatherLinks(ToProve);
   ToProve  = ren_Rename(ToProve,SkolemPredicates,FALSE);
   ToProve  = cnf_RemoveEquivImplFromFormula(ToProve);
   ToProve  = cnf_NegationNormalFormula(ToProve);
   ToProve  = cnf_AntiPrenex(ToProve);
-  
+
   SkolemFunctions2 = list_Nil();
   ToProve     = cnf_SkolemFormula(ToProve, &SkolemFunctions2);
   ToProve     = cnf_DistributiveFormula(ToProve);
@@ -3678,23 +3601,22 @@ LIST cnf_CheckOptimizedSkolemization(LIST* AxClauses, LIST* ConClauses,
 }
 #endif
 
-
-PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses, 
-			LIST* AllLabels, HASH TermLabelToClauselist, 
+PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
+			LIST* AllLabels, HASH TermLabelToClauselist,
 			HASH ClauseToTermLabellist, FLAGSTORE InputFlags,
 			PRECEDENCE InputPrecedence, LIST* Symblist)
 /**************************************************************
   INPUT:   A list of axiom formulae,
            a list of conjecture formulae,
-	   a pointer to a list in which clauses derived from axiom formulae 
+	   a pointer to a list in which clauses derived from axiom formulae
 	   are stored,
-	   a pointer to a list in which clauses derived from 
+	   a pointer to a list in which clauses derived from
 	   conjecture formulae are stored, ???
 	   a pointer to a list of all termlabels,
-	   a hasharray in which for every term label the list of clauses 
+	   a hasharray in which for every term label the list of clauses
 	   derived from the term is stored (if DocProof is set),
-	   a hasharray in which for every clause the list of labels 
-	   of the terms used for deriving the clause is stored (if DocProof 
+	   a hasharray in which for every clause the list of labels
+	   of the terms used for deriving the clause is stored (if DocProof
 	   is set),
 	   a flag store,
 	   a precedence
@@ -3736,7 +3658,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
   Result           = FALSE;
   if (flag_GetFlagValue(Flags, flag_DOCPROOF))
     InputClauseToTermLabellist = hsh_Create();
-  else 
+  else
     InputClauseToTermLabellist = NULL;
 
   symbol_ReinitGenericNameCounters();
@@ -3762,8 +3684,8 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
     list_Rplacd(Pair, (LIST) AxTerm);
   }
   AllFormulae = AxiomList;
-  
-  /* At this point the list contains max. 1 element, which is a pair 
+
+  /* At this point the list contains max. 1 element, which is a pair
      of the label NULL and the negated
      conjunction of all conjecture formulae. */
 
@@ -3772,7 +3694,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
     TERM  ConTerm;
     char* Label;
     char  buf[100];
-    /* Add label */  
+    /* Add label */
     if (list_PairFirst(list_Car(Scan)) == NULL) {
       sprintf(buf, "conjecture%d", Count);
       Label = string_StringCopy(buf);
@@ -3787,10 +3709,10 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
     ConTerm = (TERM) list_PairSecond((LIST) list_Car(Scan));
     fol_RemoveImplied(ConTerm);
     term_AddFatherLinks(ConTerm);
-    fol_NormalizeVars(ConTerm);  
+    fol_NormalizeVars(ConTerm);
     if (flag_GetFlagValue(Flags, flag_CNFFEQREDUCTIONS))
       cnf_PropagateSubstEquations(ConTerm);
-    ConTerm  = cnf_ObviousSimplifications(ConTerm); 
+    ConTerm  = cnf_ObviousSimplifications(ConTerm);
 
     if (flag_GetFlagValue(Flags, flag_CNFRENAMING)) {
       term_AddFatherLinks(ConTerm);
@@ -3807,7 +3729,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
     list_Rplacd((LIST) list_Car(Scan), (LIST) ConTerm);
 
     Count++;
-  } 
+  }
 
   AllFormulae = list_Append(ConjectureList, AllFormulae);
   for (Scan = ConjectureList;!list_Empty(Scan); Scan = list_Cdr(Scan))
@@ -3820,7 +3742,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
     LIST FormulaClausesTemp;
     Formula            = term_Copy((TERM) list_PairSecond(list_Car(Scan)));
 #ifdef CHECK_CNF
-    fputs("\nInputFormula : ",stdout); term_Print(Formula); 
+    fputs("\nInputFormula : ",stdout); term_Print(Formula);
     printf("\nLabel : %s", (char*) list_PairFirst(list_Car(Scan)));
 #endif
     Formula            = cnf_SkolemFormula(Formula,Precedence,&SkolemFunctions);
@@ -3836,7 +3758,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
   }
 
   /* Trage nun Formula Clauses modulo Reduktion in einen Index ein */
- 
+
   /* red_SatUnit works only on conclauses */
   for (Scan = FormulaClauses; !list_Empty(Scan); Scan = list_Cdr(Scan))
     clause_SetFlag((CLAUSE) list_Car(Scan), CONCLAUSE);
@@ -3858,8 +3780,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
 
 #ifdef CHECK
   /*cnf_CheckClauseListsConsistency(ShIndex); */
-#endif     
-
+#endif
 
   *Symblist = list_Nil();
   for (Scan = AllFormulae; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
@@ -3868,11 +3789,11 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
     Pair = list_Car(Scan);
 #ifdef CHECK_CNF
     fputs("\nFormula : ", stdout);
-    term_Print((TERM) list_PairSecond(Pair)); 
-    printf("\nLabel : %s", (char*) list_PairFirst(Pair)); 
+    term_Print((TERM) list_PairSecond(Pair));
+    printf("\nLabel : %s", (char*) list_PairFirst(Pair));
 #endif
-    Ax = cnf_OptimizedSkolemization(Search, term_Copy((TERM)list_PairSecond(Pair)), 
-				    (char*) list_PairFirst(Pair), &UsedTerms, 
+    Ax = cnf_OptimizedSkolemization(Search, term_Copy((TERM)list_PairSecond(Pair)),
+				    (char*) list_PairFirst(Pair), &UsedTerms,
 				    Symblist,Result,FALSE,InputClauseToTermLabellist);
     /* Set CONCLAUSE flag for clauses derived from conjectures */
     if (list_PointerMember(ConjectureList,list_PairSecond(Pair))) {
@@ -3890,7 +3811,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
       for (Scan2 = Ax; !list_Empty(Scan2); Scan2 = list_Cdr(Scan2)) {
 	hsh_PutList(ClauseToTermLabellist, list_Car(Scan2), list_Copy(UsedTerms));
 	hsh_PutList(InputClauseToTermLabellist, list_Car(Scan2), list_Copy(UsedTerms));
-      } 
+      }
     }
     *AxClauses = list_Nconc(*AxClauses, Ax);
     list_Delete(UsedTerms);
@@ -3902,7 +3823,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
   list_Delete(ConjectureList);
   if (flag_GetFlagValue(Flags, flag_DOCPROOF))
     hsh_Delete(InputClauseToTermLabellist);
-  if (!flag_GetFlagValue(Flags, flag_INTERACTIVE)) { 
+  if (!flag_GetFlagValue(Flags, flag_INTERACTIVE)) {
     list_Delete(*Symblist);
   }
 
@@ -3934,7 +3855,7 @@ PROOFSEARCH cnf_Flotter(LIST AxiomList, LIST ConjectureList, LIST* AxClauses,
 LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
 /**************************************************************
   INPUT:   A term to derive clauses from, using optimized skolemization,
-           and a ProofSearch object. 
+           and a ProofSearch object.
   RETURNS: A list of derived clauses.
   EFFECT:  ??? EK
            The precedence of new skolem symbols is set in <Search>.
@@ -3961,7 +3882,7 @@ LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
 
   SkolemPredicates = SkolemFunctions = list_Nil();
   Result = FALSE;
-  
+
   prfs_CopyIndices(Search, cnf_SEARCHCOPY);
 
   Term = term_Create(fol_Not(), list_List(Term));
@@ -3975,7 +3896,7 @@ LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
   Term = cnf_RemoveEquivImplFromFormula(Term);
   Term = cnf_NegationNormalFormula(Term);
   Term = cnf_AntiPrenex(Term);
-  
+
   TermCopy = term_Copy(Term);
   TermCopy = cnf_SkolemFormula(TermCopy, Precedence, &SkolemFunctions);
   TermCopy = cnf_DistributiveFormula(TermCopy);
@@ -4010,7 +3931,7 @@ LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
 
   if (Formulae2Clause)
     flag_SetFlagValue(SubProofFlags, flag_DOCPROOF, flag_DOCPROOFON);
-  
+
   term_Delete(Term);
   list_Delete(SkolemPredicates);
   list_Delete(SkolemFunctions);
@@ -4022,7 +3943,6 @@ LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
 
   return ResultClauses;
 }
-
 
 #ifdef CHECK
 /* Currently unused */
@@ -4041,7 +3961,7 @@ LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
       misc_StartErrorReport();
       misc_ErrorReport("\n In cnf_CheckClauseListsConsistency: Clause is a CONCLAUSE.\n");
       misc_FinishErrorReport();
-    } 
+    }
     if (clause_GetFlag((CLAUSE) list_Car(scan), BLOCKED)) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In cnf_CheckClauseListsConsistency: Clause is BLOCKED.\n");
@@ -4052,8 +3972,7 @@ LIST cnf_QueryFlotter(PROOFSEARCH Search, TERM Term, LIST* Symblist)
 }
 #endif
 
-
-static LIST cnf_SatUnit(PROOFSEARCH Search, LIST ClauseList) 
+static LIST cnf_SatUnit(PROOFSEARCH Search, LIST ClauseList)
 /*********************************************************
   INPUT:   A list of unshared clauses, proof search object
   RETURNS: A possibly empty list of empty clauses.
@@ -4070,7 +3989,7 @@ static LIST cnf_SatUnit(PROOFSEARCH Search, LIST ClauseList)
   Derived      = flag_GetFlagValue(Flags, flag_CNFPROOFSTEPS);
   EmptyClauses = list_Nil();
   ClauseList   = clause_ListSortWeighed(ClauseList);
-  
+
   while (!list_Empty(ClauseList) && list_Empty(EmptyClauses)) {
     Given = (CLAUSE)list_NCar(&ClauseList);
     Given = red_CompleteReductionOnDerivedClause(Search, Given, red_ALL);
@@ -4080,7 +3999,7 @@ static LIST cnf_SatUnit(PROOFSEARCH Search, LIST ClauseList)
       else {
         /*fputs("\n\nGiven: ",stdout);clause_Print(Given);*/
 	BackReduced = red_BackReduction(Search, Given, red_USABLE);
-	
+
         if (Derived != 0) {
 	  Derivables =
 	    inf_BoundedDepthUnitResolution(Given, prfs_UsableSharingIndex(Search),
@@ -4095,14 +4014,14 @@ static LIST cnf_SatUnit(PROOFSEARCH Search, LIST ClauseList)
           else
             Derived -= n;
         }
-        else 
+        else
           Derivables = list_Nil();
-	
+
         Derivables  = list_Nconc(BackReduced,Derivables);
         Derivables  = split_ExtractEmptyClauses(Derivables, &EmptyClauses);
-	
+
 	prfs_InsertUsableClause(Search, Given);
-	
+
 	for (Scan = Derivables; !list_Empty(Scan); Scan = list_Cdr(Scan))
 	  ClauseList = clause_InsertWeighed(list_Car(Scan), ClauseList, Flags,
 					    Precedence);
@@ -4114,8 +4033,7 @@ static LIST cnf_SatUnit(PROOFSEARCH Search, LIST ClauseList)
   return EmptyClauses;
 }
 
-
-TERM cnf_DefTargetConvert(TERM Target, TERM ToTopLevel, TERM ToProveDef, 
+TERM cnf_DefTargetConvert(TERM Target, TERM ToTopLevel, TERM ToProveDef,
 			  LIST DefPredArgs, LIST TargetPredArgs,
 			  LIST TargetPredVars, LIST VarsForTopLevel,
 			  FLAGSTORE Flags, PRECEDENCE Precedence,
@@ -4158,10 +4076,10 @@ TERM cnf_DefTargetConvert(TERM Target, TERM ToTopLevel, TERM ToProveDef,
 
   /* Remove implications from path */
   Target = cnf_RemoveImplFromFormulaPath(Target, ToTopLevel);
-    
+
   /* Move negations as far down as possible */
   Target = cnf_NegationNormalFormulaPath(Target, ToTopLevel);
-    
+
   /* Move quantifiers as far down as possible */
   Target = cnf_AntiPrenexPath(Target, ToTopLevel);
 
@@ -4187,7 +4105,7 @@ TERM cnf_DefTargetConvert(TERM Target, TERM ToTopLevel, TERM ToProveDef,
     /* Find subterm that contains the predicate */
     LIST arglist;
     arglist = term_ArgumentList(targettoprove);
-    for (l1=arglist, l2=term_ArgumentList(orterm); !list_Empty(l1); 
+    for (l1=arglist, l2=term_ArgumentList(orterm); !list_Empty(l1);
 	l1 = list_Cdr(l1), l2 = list_Cdr(l2)) {
       if (term_HasProperSuperterm(ToTopLevel, (TERM) list_Car(l2)) ||
 	  (ToTopLevel == (TERM) list_Car(l2))) {
@@ -4225,38 +4143,38 @@ TERM cnf_DefTargetConvert(TERM Target, TERM ToTopLevel, TERM ToProveDef,
   for (l1=vars; !list_Empty(l1); l1=list_Cdr(l1))
     term_ExchangeVariable(ToProveDef, term_TopSymbol(list_Car(l1)), symbol_CreateStandardVariable());
   list_Delete(vars);
-  
+
   /* Replace arguments of predicate in condition of definition by matching arguments
      of predicate in target term */
-  for (l1=DefPredArgs, l2=TargetPredArgs; !list_Empty(l1); l1=list_Cdr(l1), l2=list_Cdr(l2)) 
+  for (l1=DefPredArgs, l2=TargetPredArgs; !list_Empty(l1); l1=list_Cdr(l1), l2=list_Cdr(l2))
     term_ReplaceVariable(ToProveDef, term_TopSymbol((TERM) list_Car(l1)), (TERM) list_Car(l2));
 
   targettoprove = term_Create(fol_Not(), list_List(targettoprove));
   targettoprove = cnf_NegationNormalFormula(targettoprove);
-  targettoprove = term_Create(fol_Implies(), 
+  targettoprove = term_Create(fol_Implies(),
 			      list_Cons(targettoprove, list_List(ToProveDef)));
 
   /* At this point ToProveDef must not be accessed again ! */
-  
+
   /* Add all--quantifier to targettoprove */
   freevars = fol_FreeVariables(targettoprove);
   term_CopyTermsInList(freevars);
   targettoprove = fol_CreateQuantifier(fol_All(), freevars, list_List(targettoprove));
-  
+
   if (flag_GetFlagValue(Flags, flag_PAPPLYDEFS)) {
     puts("\nConverted to :");
     fol_PrettyPrint(Target);
   }
 
   targettoprove = cnf_NegationNormalFormula(targettoprove);
-  
+
   if (flag_GetFlagValue(Flags, flag_PAPPLYDEFS)) {
     puts("\nToProve for this target :");
     fol_PrettyPrint(targettoprove);
   }
- 
+
   *LocallyTrue = cnf_HaveProof(list_Nil(), targettoprove, Flags, Precedence);
-  
+
   term_Delete(targettoprove);
 
 #ifdef CHECK
@@ -4265,7 +4183,6 @@ TERM cnf_DefTargetConvert(TERM Target, TERM ToTopLevel, TERM ToProveDef,
 
   return Target;
 }
-
 
 static TERM cnf_RemoveQuantFromPathAndFlatten(TERM TopTerm, TERM SubTerm)
 /**********************************************************
@@ -4287,7 +4204,6 @@ static TERM cnf_RemoveQuantFromPathAndFlatten(TERM TopTerm, TERM SubTerm)
 {
   TERM Term1, Term2, Flat, Variable;
   LIST Scan1, Scan2, FreeVars;
-
 
 #ifdef CHECK
   if (!fol_CheckFormula(TopTerm) || !term_HasPointerSubterm(TopTerm, SubTerm)) {
@@ -4331,7 +4247,7 @@ static TERM cnf_RemoveQuantFromPathAndFlatten(TERM TopTerm, TERM SubTerm)
 	Term2 = term_Create(term_TopSymbol(Term1), ArgList);
 	term_RplacArgumentList(Term1, list_Cons(SubTerm, list_List(Term2)));
 	term_RplacTop(Term1, fol_Or());
-	Scan1 = term_ArgumentList(Term1); 
+	Scan1 = term_ArgumentList(Term1);
 	while (!list_Empty(Scan1)) {
 	  term_RplacSuperterm((TERM)list_Car(Scan1), Term1);
 	  Scan1 = list_Cdr(Scan1);
@@ -4359,7 +4275,6 @@ static TERM cnf_RemoveQuantFromPathAndFlatten(TERM TopTerm, TERM SubTerm)
   return TopTerm;
 }
 
-
 TERM cnf_DefConvert(TERM Def, TERM FoundPredicate, TERM* ToProve)
 /*********************************************************
   INPUT:   A term Def which is an equivalence (P(x1,..,xn) <=> Formula)
@@ -4375,7 +4290,7 @@ TERM cnf_DefConvert(TERM Def, TERM FoundPredicate, TERM* ToProve)
 #ifdef CHECK
   fol_CheckFatherLinks(Def);
 #endif
-  
+
   Def = cnf_RemoveImplFromFormulaPath(Def, FoundPredicate);   /* Remove implications along the path */
   Def = cnf_NegationNormalFormulaPath(Def, FoundPredicate);   /* Move not's as far down as possible */
 
@@ -4420,7 +4335,7 @@ TERM cnf_DefConvert(TERM Def, TERM FoundPredicate, TERM* ToProve)
       orterm = NULL;
       term_RplacSuperterm(term_SecondArgument(Def), Def);
     }
-    else 
+    else
       orterm = term_SecondArgument(Def);
   }
   else {
@@ -4434,7 +4349,7 @@ TERM cnf_DefConvert(TERM Def, TERM FoundPredicate, TERM* ToProve)
       orterm = NULL;
       term_RplacSuperterm(term_SecondArgument(Def), Def);
     }
-    else 
+    else
       orterm = Def;
   }
 
@@ -4455,14 +4370,14 @@ TERM cnf_DefConvert(TERM Def, TERM FoundPredicate, TERM* ToProve)
       /* First find equivalence term among arguments */
       args  = term_ArgumentList(orterm);
       equiv = term_Superterm(FoundPredicate);
-      
+
       /* Delete equivalence from list */
       args = list_PointerDeleteElement(args, equiv);
       term_RplacArgumentList(orterm, args);
-      
+
       /* ToProve consists of all the definitions arguments except the equivalence */
       *ToProve = term_Copy(orterm);
-      
+
       /* Now not(*ToProve) implies the equivalence */
       /* Negate *ToProve */
       *ToProve = term_Create(fol_Not(), list_List(*ToProve));
@@ -4471,22 +4386,21 @@ TERM cnf_DefConvert(TERM Def, TERM FoundPredicate, TERM* ToProve)
 
       /* Now convert definition to implication form */
       term_RplacTop(orterm, fol_Implies());
-      t = term_Create(fol_Not(), 
-		      list_List(term_Create(fol_Or(), 
+      t = term_Create(fol_Not(),
+		      list_List(term_Create(fol_Or(),
 					    term_ArgumentList(orterm))));
       term_RplacArgumentList(orterm, list_Cons(t, list_List(equiv)));
 
       Def = cnf_NegationNormalFormula(Def);
       term_AddFatherLinks(Def);
-    }    
+    }
   }
-  
+
 #ifdef CHECK
   fol_CheckFatherLinks(Def);
 #endif
   return Def;
 }
-
 
 LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
 			  LIST Sorts, LIST Conjectures)
@@ -4500,7 +4414,7 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
 ********************************************************************/
 {
   TERM definition, defpredicate, equivterm;
-  
+
   BOOL alwaysapplicable;     /* Is set to TRUE iff the definition can always be applied */
   FLAGSTORE Flags;
   PRECEDENCE Precedence;
@@ -4510,10 +4424,10 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
 
   /* The axiomlist consists of (label, formula) pairs */
   definition = list_PairSecond(Pair);
-  
+
   /* Test if Definition contains a definition */
   defpredicate = (TERM) NULL;
-  if (cnf_ContainsDefinition(definition, &defpredicate)) { 
+  if (cnf_ContainsDefinition(definition, &defpredicate)) {
     TERM toprove;
     LIST allformulae, scan;
 
@@ -4530,7 +4444,7 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
       }
     }
 #endif
-    
+
     /* Convert definition to standard form */
     if (flag_GetFlagValue(Flags, flag_PAPPLYDEFS)) {
       fputs("\nPredicate : ", stdout);
@@ -4540,29 +4454,28 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
     definition = cnf_DefConvert(definition, defpredicate, &toprove);
     if (toprove == NULL)
       alwaysapplicable = TRUE;
-    else 
+    else
       alwaysapplicable = FALSE;
 
-    prfs_SetDefinitions(Search, list_Cons(term_Copy(definition), 
+    prfs_SetDefinitions(Search, list_Cons(term_Copy(definition),
 					  prfs_Definitions(Search)));
-    
+
     if (flag_GetFlagValue(Flags, flag_PAPPLYDEFS)) {
       if (alwaysapplicable) {
 	fputs("\nAlways Applicable     : ", stdout);
-	fol_PrettyPrint(definition); 
-      } 
+	fol_PrettyPrint(definition);
+      }
     }
 
     /* Definition is converted to a form where the equivalence is
        the first argument of the disjunction */
     equivterm     = term_SecondArgument(term_Superterm(defpredicate));
-    
-    
+
     scan = allformulae;
     while (!list_Empty(scan)) {
       BOOL localfound;
       LIST pair, targettermvars;
-      
+
       /* Pair label / term */
       pair = list_Car(scan);
 
@@ -4572,7 +4485,7 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
 	LIST varsfortoplevel;
 	target = (TERM) list_PairSecond(pair);
 	targettermvars = varsfortoplevel = list_Nil();
-	
+
 	/* If definition is not always applicable, check if it is applicable
 	   for this formula */
 	localfound = FALSE;
@@ -4590,11 +4503,11 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
 	    list_Delete(targettermvars);
 	    list_Delete(varsfortoplevel);
 	    targettermvars = varsfortoplevel = list_Nil();
-	    
+
 	    list_Rplacd(pair, (LIST) target);
 	    if (localfound)
-	      list_Rplacd(pair, 
-			  (LIST) cnf_ApplyDefinitionOnce(defpredicate, 
+	      list_Rplacd(pair,
+			  (LIST) cnf_ApplyDefinitionOnce(defpredicate,
 							 equivterm,
 							 list_PairSecond(pair),
 							 targetpredicate,
@@ -4602,10 +4515,10 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
 	  }
 	}
 	else {
-	  if (cnf_ContainsPredicate(target, term_TopSymbol(defpredicate), 
+	  if (cnf_ContainsPredicate(target, term_TopSymbol(defpredicate),
 				    &targetpredicate, &totoplevel,
 				    &targettermvars, &varsfortoplevel))
-	    list_Rplacd(pair, (LIST) cnf_ApplyDefinitionOnce(defpredicate, 
+	    list_Rplacd(pair, (LIST) cnf_ApplyDefinitionOnce(defpredicate,
 							     equivterm,
 							     list_PairSecond(pair),
 							     targetpredicate,
@@ -4626,16 +4539,15 @@ LIST cnf_HandleDefinition(PROOFSEARCH Search, LIST Pair, LIST Axioms,
       term_Delete(toprove);
     list_Rplacd(Pair, (LIST) definition);
   }
- 
+
   return Pair;
 }
-
 
 LIST cnf_ApplyDefinitionToClause(CLAUSE Clause, TERM Predicate, TERM Expansion,
 				 FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause, two terms and a flag store and a precedence.
-  RETURNS: The list of clauses where each occurrence of Predicate is 
+  RETURNS: The list of clauses where each occurrence of Predicate is
            replaced by Expansion.
 ***************************************************************/
 {
@@ -4645,7 +4557,7 @@ LIST cnf_ApplyDefinitionToClause(CLAUSE Clause, TERM Predicate, TERM Expansion,
   TERM clauseterm, argument;
 
   changed = FALSE;
-  
+
   /* Build term from clause */
   args = list_Nil();
   for (i = 0; i < clause_Length(Clause); i++) {
@@ -4662,9 +4574,9 @@ LIST cnf_ApplyDefinitionToClause(CLAUSE Clause, TERM Predicate, TERM Expansion,
       argument = term_FirstArgument(argument);
       isneg = TRUE;
     }
-    else 
+    else
       isneg = FALSE;
-      
+
     /* Try to match with predicate */
     cont_StartBinding();
     if (unify_Match(cont_LeftContext(), Predicate, argument)) {
@@ -4678,7 +4590,7 @@ LIST cnf_ApplyDefinitionToClause(CLAUSE Clause, TERM Predicate, TERM Expansion,
       term_Delete((TERM) list_Car(scan));
       list_Rplaca(scan, newargument);
       changed = TRUE;
-    }      
+    }
     cont_BackTrack();
   }
 
@@ -4713,7 +4625,6 @@ LIST cnf_ApplyDefinitionToClause(CLAUSE Clause, TERM Predicate, TERM Expansion,
     return list_Nil();
   }
 }
-
 
 BOOL cnf_PropagateSubstEquations(TERM StartTerm)
 /*************************************************************
@@ -4778,7 +4689,7 @@ BOOL cnf_PropagateSubstEquations(TERM StartTerm)
       else
 	fol_SetTrue(Equation);
       Substituted = TRUE;
-    }   
+    }
   }
 
   /* <Subequ> was freed in the loop. */

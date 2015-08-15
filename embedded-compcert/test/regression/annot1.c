@@ -66,4 +66,3 @@ int main()
   printf("g returns %.2f\n", g(3.14, 2.718, 0, 1));
   return 0;
 }
-

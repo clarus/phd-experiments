@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                  STRUCTURE SHARING                     * */
 /* *                                                        * */
-/* *  $Module:   SHARING                                    * */ 
+/* *  $Module:   SHARING                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "sharing.h"
@@ -75,7 +74,6 @@ static void sharing_ResetTermStamp(TERM);
 
 static void sharing_PrintWithSuperterms(TERM);
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *			                                    * */
@@ -83,7 +81,6 @@ static void sharing_PrintWithSuperterms(TERM);
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 SHARED_INDEX sharing_IndexCreate(void)
 /**********************************************************
@@ -110,7 +107,6 @@ SHARED_INDEX sharing_IndexCreate(void)
   return Result;
 }
 
-
 void sharing_IndexDelete(SHARED_INDEX ShIndex)
 /**********************************************************
   INPUT:   A shared Index.
@@ -124,12 +120,11 @@ void sharing_IndexDelete(SHARED_INDEX ShIndex)
   memory_Free(ShIndex, sizeof(SHARED_INDEX_NODE));
 }
 
-
 void sharing_PushOnStack(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: None.
-  EFFECTS: Creates a Stack of Pointers to the 
+  EFFECTS: Creates a Stack of Pointers to the
            term and all of its subterms in their order in
 	   the arglist (thus ordered by depth).
 	   top of the stack is bottom term
@@ -155,12 +150,11 @@ void sharing_PushOnStack(TERM Term)
   }
 }
 
-
 void sharing_PushReverseOnStack(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: None.
-  EFFECTS: Creates a Stack of Pointers to the 
+  EFFECTS: Creates a Stack of Pointers to the
            term and all of its subterms, except variables in their order in
 	   the arglist (thus ordered by depth).
 	   top of the stack is top term
@@ -193,7 +187,7 @@ void sharing_PushReverseOnStackExcept(TERM Term, LIST DontTermList)
 /**********************************************************
   INPUT:   A term and an exception list.
   RETURNS: None.
-  EFFECTS: Creates a Stack of Pointers to the 
+  EFFECTS: Creates a Stack of Pointers to the
            term and all of its subterms that are not contained
 	   or below the terms in DontTermList in their order in
 	   the arglist (thus ordered by depth).
@@ -226,7 +220,7 @@ void sharing_PushOnStackNoStamps(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: None.
-  EFFECTS: Creates a Stack of Pointers to the 
+  EFFECTS: Creates a Stack of Pointers to the
            term and all of its subterms that are not stamped
 	   or below stamped terms.
 	   top of the stack is top term.
@@ -255,12 +249,11 @@ void sharing_PushOnStackNoStamps(TERM Term)
   }
 }
 
-
 void sharing_PushListOnStack(LIST TermList)
 /**********************************************************
   INPUT:   A list of terms.
   RETURNS: None.
-  EFFECTS: Creates a Stack of Pointers to the 
+  EFFECTS: Creates a Stack of Pointers to the
            terms in <TermList>  and all of subterms in their order in
 	   the arglist (thus ordered by depth).
 **********************************************************/
@@ -270,7 +263,6 @@ void sharing_PushListOnStack(LIST TermList)
     TermList = list_Cdr(TermList);
   }
 }
-
 
 void sharing_PushListReverseOnStack(LIST TermList)
 /**********************************************************
@@ -319,7 +311,6 @@ void sharing_PushListOnStackNoStamps(LIST TermList)
   }
 }
 
-
 static BOOL sharing_IsNoMoreUsed(TERM Term)
 /**********************************************************
   INPUT:   A term.
@@ -337,7 +328,6 @@ static BOOL sharing_IsNoMoreUsed(TERM Term)
 
   return (list_Empty(term_SupertermList(Term)));
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -361,7 +351,7 @@ TERM sharing_Insert(POINTER Data, TERM Atom, SHARED_INDEX SharedIndex)
   RETURNS: The shared term inserted into the SharedIndex.
   CAUTION: The superterm slot of <Atom> is destructively used!
   MEMORY:  The term 'Atom' still exists, memory needed for
-           the shared version is allocated. 
+           the shared version is allocated.
 **********************************************************/
 {
 #ifdef CHECK
@@ -378,7 +368,6 @@ TERM sharing_Insert(POINTER Data, TERM Atom, SHARED_INDEX SharedIndex)
 
   return(Atom);
 }
-
 
 static TERM sharing_InsertIntoSharing(TERM Term, SHARED_INDEX SharedIndex)
 /**********************************************************
@@ -427,13 +416,12 @@ static TERM sharing_InsertIntoSharing(TERM Term, SHARED_INDEX SharedIndex)
 	/* A complex T still has to be insert. into its Args superlists. */
 	/* The unshared Term isn't yet in the 'SharedIndex' and thus is  */
 	/* inserted, too.                                                */
-    
 
       sharing_RememberSharedTermCopy(InsTerm,
 				     sharing_VartableEntry(SharedIndex, sharing_VariableIndex(InsTerm)));
 
-    }else if (term_IsConstant(InsTerm)){ 
-      if (!sharing_IsSharedConst(InsTerm, SharedIndex)) { 
+    }else if (term_IsConstant(InsTerm)){
+      if (!sharing_IsSharedConst(InsTerm, SharedIndex)) {
 	sharing_SetConsttableEntry(SharedIndex, sharing_ConstantIndex(InsTerm),
 				   term_Create(term_TopSymbol(InsTerm),
 					       list_Nil()));
@@ -478,7 +466,7 @@ static TERM sharing_InsertIntoSharing(TERM Term, SHARED_INDEX SharedIndex)
 	    OrigHelpArgList = term_ArgumentList(InsTerm);
 	    DuplHelpArgList = term_ArgumentList(SharedDuplicate);
 	    while (!list_Empty(OrigHelpArgList) &&
-		   (DuplCandHasSameArgs = 
+		   (DuplCandHasSameArgs =
                    (sharing_SharedTermCopy(list_First(OrigHelpArgList)) ==
 		    list_First(DuplHelpArgList)))){
 	      DuplHelpArgList = list_Cdr(DuplHelpArgList);
@@ -497,10 +485,10 @@ static TERM sharing_InsertIntoSharing(TERM Term, SHARED_INDEX SharedIndex)
 	for (HelpList = term_ArgumentList(InsTerm); !list_Empty(HelpList);
 	     HelpList = list_Cdr(HelpList)){
 	  TERM SharedArg;
-	
+
 	  SharedArg = sharing_SharedTermCopy((TERM)list_First(HelpList));
 
-	  term_RplacArgumentList(SharedDuplicate, 
+	  term_RplacArgumentList(SharedDuplicate,
 				 list_Cons(SharedArg,
 					   term_ArgumentList(SharedDuplicate)));
 
@@ -508,11 +496,11 @@ static TERM sharing_InsertIntoSharing(TERM Term, SHARED_INDEX SharedIndex)
 	    list_Cons(SharedDuplicate,
 		      term_SupertermList(SharedArg)));
 	}
-	term_RplacArgumentList(SharedDuplicate, 
+	term_RplacArgumentList(SharedDuplicate,
 	  list_NReverse(term_ArgumentList(SharedDuplicate)));
-	
+
 	/* Now a newly generated term can be inserted into the 'SharedIndex' !  */
-	
+
 	st_EntryCreate(sharing_Index(SharedIndex),
 		       SharedDuplicate,
 		       SharedDuplicate,
@@ -521,8 +509,8 @@ static TERM sharing_InsertIntoSharing(TERM Term, SHARED_INDEX SharedIndex)
       }
       sharing_RememberSharedTermCopy(InsTerm,
 				      SharedDuplicate);
-    } 
-  } 
+    }
+  }
 
   return(sharing_SharedTermCopy(InsTerm));
 }
@@ -559,11 +547,10 @@ void sharing_Delete(POINTER Data, TERM Atom, SHARED_INDEX SharedIndex)
 
 }
 
-
 static void sharing_DeleteFromSharing(TERM Term, SHARED_INDEX SharedIndex)
 /**********************************************************
   INPUT:   A term and a SharedIndex
-  RETURNS: Nothing 
+  RETURNS: Nothing
   MEMORY:  'Term' is removed from the Sharing, only correct
            if 'Term' is unshared in sharing (real subterms
 	   may be shared, off course).
@@ -603,7 +590,7 @@ static void sharing_DeleteFromSharing(TERM Term, SHARED_INDEX SharedIndex)
       Args = list_Cdr(Args);
       list_Free(Help);
 
-      term_RplacSupertermList(NextArg, 
+      term_RplacSupertermList(NextArg,
 	list_PointerDeleteOneElement(term_SupertermList(NextArg), Term));
       if (sharing_IsNoMoreUsed(NextArg))
 	sharing_DeleteFromSharing(NextArg, SharedIndex);
@@ -617,7 +604,6 @@ static void sharing_DeleteFromSharing(TERM Term, SHARED_INDEX SharedIndex)
   list_Delete(term_SupertermList(Term));
   term_Free(Term);
 }
-
 
 /**************************************************************/
 /* Functions to access unshared data via the shared term.     */
@@ -645,7 +631,7 @@ LIST sharing_GetDataList(TERM Term, SHARED_INDEX SharedIndex)
 
   if (term_StampOverflow(sharing_StampID(SharedIndex)))
     sharing_ResetAllTermStamps(SharedIndex);
-    
+
   term_StartStamp();
 
   Result = sharing_InternGetDataList(Term);
@@ -654,7 +640,6 @@ LIST sharing_GetDataList(TERM Term, SHARED_INDEX SharedIndex)
 
   return Result;
 }
-
 
 static LIST sharing_InternGetDataList(TERM Term)
 /**********************************************************
@@ -665,7 +650,7 @@ static LIST sharing_InternGetDataList(TERM Term)
 {
   if (term_IsAtom(Term))
     /* We are at top level of the superterm "tree",  */
-    /* so the recursion stops here                   */ 
+    /* so the recursion stops here                   */
     return list_Copy(term_AtomsLiterals(Term));
   else{
     LIST SuperList;
@@ -682,7 +667,6 @@ static LIST sharing_InternGetDataList(TERM Term)
     return DataList;
   }
 }
-
 
 void sharing_StartDataIterator(TERM Term, SHARED_INDEX SharedIndex)
 /**********************************************************
@@ -718,10 +702,9 @@ void sharing_StartDataIterator(TERM Term, SHARED_INDEX SharedIndex)
     *(sharing_STACKPOINTER++) = term_SupertermList(Term);
     Term                      = list_Car(term_SupertermList(Term));
   }
-    
+
   sharing_DATALIST = term_AtomsLiterals(Term);
 }
-
 
 POINTER sharing_GetNextData(void)
 /**********************************************************
@@ -780,7 +763,6 @@ POINTER sharing_GetNextData(void)
   return Result;
 }
 
-
 void sharing_StopDataIterator(void)
 /**********************************************************
   INPUT:   None.
@@ -801,7 +783,6 @@ void sharing_StopDataIterator(void)
   term_StopStamp();
 }
 
-
 LIST sharing_NAtomDataList(TERM Atom)
 /**********************************************************
   INPUT:   A shared term.
@@ -817,10 +798,9 @@ LIST sharing_NAtomDataList(TERM Atom)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   return(term_AtomsLiterals(Atom));
 }
-
 
 LIST sharing_GetAllSuperTerms(SHARED_INDEX Index)
 /**********************************************************
@@ -836,7 +816,7 @@ LIST sharing_GetAllSuperTerms(SHARED_INDEX Index)
   if (term_StampOverflow(sharing_StampID(Index)))
     sharing_ResetAllTermStamps(Index);
   term_StartStamp();
-  
+
   for (i = 0; i < symbol_MaxVars(); i++) {
     term = sharing_VartableEntry(Index,i);
     if (term != NULL)
@@ -848,12 +828,11 @@ LIST sharing_GetAllSuperTerms(SHARED_INDEX Index)
     if (term != NULL)
       Result = list_Nconc(sharing_InternGetDataList(term), Result);
   }
-  
+
   term_StopStamp();
 
   return Result;
 }
-
 
 void sharing_ResetAllTermStamps(SHARED_INDEX SharedIndex)
 /**********************************************************
@@ -864,7 +843,7 @@ void sharing_ResetAllTermStamps(SHARED_INDEX SharedIndex)
 {
   TERM term;
   int i;
-     
+
   /* Reset stamp for all variables and their superterms */
   for (i = 0; i < symbol_MaxVars(); i++) {
     term = sharing_VartableEntry(SharedIndex, i);
@@ -879,7 +858,6 @@ void sharing_ResetAllTermStamps(SHARED_INDEX SharedIndex)
       sharing_ResetTermStamp(term);
   }
 }
-
 
 static void sharing_ResetTermStamp(TERM Term)
 /**********************************************************
@@ -902,7 +880,6 @@ static void sharing_ResetTermStamp(TERM Term)
     }
   }
 }
-
 
 NAT sharing_GetNumberOfOccurances(TERM Term)
 /**************************************************************
@@ -927,7 +904,6 @@ NAT sharing_GetNumberOfOccurances(TERM Term)
   }
 }
 
-
 NAT sharing_GetNumberOfInstances(TERM Term, SHARED_INDEX Index)
 /**************************************************************
   INPUT:   A (!) shared term and a shared index. The term has to be
@@ -949,7 +925,6 @@ NAT sharing_GetNumberOfInstances(TERM Term, SHARED_INDEX Index)
   return Result;
 }
 
-
 /**************************************************************/
 /* Output functions for the sharing structure.                  */
 /**************************************************************/
@@ -962,35 +937,33 @@ void sharing_PrintVartable(SHARED_INDEX SharedIndex)
 **********************************************************/
 {
   int i;
-     
+
   for (i = 0; i < symbol_MaxVars(); i++){
     if (sharing_VartableEntry(SharedIndex, i) != NULL){
       printf("\n X%d   :  ", i);
-      
+
       term_Print(sharing_VartableEntry(SharedIndex, i));
     }
   }
 }
 
-
 void sharing_PrintConsttable(SHARED_INDEX SharedIndex)
 /**********************************************************
-  INPUT: A shared index.  
+  INPUT: A shared index.
   RETURNS: Nothing.
   EFFECT:  Prints the Consttable entries to stdout
 **********************************************************/
 {
   int i;
-     
+
   for (i = 0; i < symbol_MaxConsts(); i++){
     if (sharing_ConsttableEntry(SharedIndex, i) != NULL){
       printf("\n c%d   :  ", i);
-      
+
       term_Print(sharing_ConsttableEntry(SharedIndex, i));
     }
   }
 }
-
 
 void sharing_PrintSharingConstterms1(SHARED_INDEX SharedIndex)
 /**********************************************************
@@ -1002,7 +975,7 @@ void sharing_PrintSharingConstterms1(SHARED_INDEX SharedIndex)
 {
   TERM term;
   int i;
-     
+
   for (i = 0; i < symbol_MaxConsts(); i++) {
     term = sharing_ConsttableEntry(SharedIndex, i);
     if (term != NULL){
@@ -1014,7 +987,6 @@ void sharing_PrintSharingConstterms1(SHARED_INDEX SharedIndex)
   }
 }
 
-
 void sharing_PrintSharingVarterms1(SHARED_INDEX SharedIndex)
 /**********************************************************
   INPUT:   A shared index.
@@ -1025,7 +997,7 @@ void sharing_PrintSharingVarterms1(SHARED_INDEX SharedIndex)
 {
   TERM term;
   int i;
-     
+
   for (i = 0; i < symbol_MaxVars(); i++) {
     term = sharing_VartableEntry(SharedIndex, i);
     if (term != NULL){
@@ -1036,7 +1008,6 @@ void sharing_PrintSharingVarterms1(SHARED_INDEX SharedIndex)
     }
   }
 }
-
 
 static void sharing_PrintWithSuperterms(TERM Term)
 /**********************************************************
@@ -1076,7 +1047,6 @@ static void sharing_PrintWithSuperterms(TERM Term)
   }
 }
 
-
 void sharing_PrintSharing(SHARED_INDEX SharedIndex)
 /**********************************************************
   INPUT:   A shared Index.
@@ -1084,7 +1054,7 @@ void sharing_PrintSharing(SHARED_INDEX SharedIndex)
 **********************************************************/
 {
   int i;
-     
+
   for (i = 0; i < symbol_MaxConsts(); i++){
     if (sharing_ConsttableEntry(SharedIndex, i) != NULL){
       sharing_PrintWithSuperterms(sharing_ConsttableEntry(SharedIndex, i));
@@ -1100,12 +1070,11 @@ void sharing_PrintSharing(SHARED_INDEX SharedIndex)
   }
 }
 
-
 void sharing_PrintSameLevelTerms(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: Nothing.
-  EFFECT:  Prints all terms, that share any of 'Term's args to 
+  EFFECT:  Prints all terms, that share any of 'Term's args to
            standard.out.
 **********************************************************/
 {
@@ -1139,5 +1108,3 @@ void sharing_PrintStack(void)
     putchar('\n');
   }
 }
-
-

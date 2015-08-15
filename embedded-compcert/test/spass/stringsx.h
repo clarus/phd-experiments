@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                STRING HANDLING                         * */
 /* *                                                        * */
-/* *  $Module:   STRINGS                                    * */ 
+/* *  $Module:   STRINGS                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,7 +41,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _STRINGS_
@@ -53,7 +52,6 @@
 
 #include <math.h>
 #include "memory.h"
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -67,7 +65,6 @@ static __inline__ BOOL string_Equal(const char* S1, const char* S2)
 {
   return strcmp(S1, S2) == 0;
 }
-
 
 BOOL   string_StringIsNumber(const char*);
 char*  string_StringCopy(const char*);

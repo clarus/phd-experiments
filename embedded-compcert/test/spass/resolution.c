@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                RESOLUTION                              * */
 /* *                                                        * */
-/* *  $Module:   RESOLUTION                                 * */ 
+/* *  $Module:   RESOLUTION                                 * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,16 +42,13 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "resolution.h"
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
-
 
 void res_InsertClauseIndex(CLAUSE clause, st_INDEX stindex)
 /**********************************************************
@@ -70,7 +67,6 @@ void res_InsertClauseIndex(CLAUSE clause, st_INDEX stindex)
 		   cont_LeftContext());
 }
 
-
 void res_DeleteClauseIndex(CLAUSE clause, st_INDEX stindex)
 /**********************************************************
   INPUT:   A st_INDEX and a clause.
@@ -83,18 +79,16 @@ void res_DeleteClauseIndex(CLAUSE clause, st_INDEX stindex)
   n = clause_Length(clause);
   for (j = 0; j < n; j++)
     if (!st_EntryDelete(stindex,
-			clause_GetLiteral(clause,j), 
+			clause_GetLiteral(clause,j),
 			clause_GetLiteralTerm(clause,j),
 			cont_LeftContext()))
       misc_DumpCore();
 }
 
-
-
 CLAUSE res_SelectLightestClause(LIST clauselist)
 /**********************************************************
   INPUT:   A list of clauses.
-  RETURNS: The lightest clause of the clauselist. 
+  RETURNS: The lightest clause of the clauselist.
   CAUTION: None.
 ***********************************************************/
 {
@@ -104,7 +98,7 @@ CLAUSE res_SelectLightestClause(LIST clauselist)
 
   clause = list_Car(clauselist);
   min    = clause_Weight(clause);
-  
+
   for (scan=list_Cdr(clauselist); !list_Empty(scan); scan=list_Cdr(scan)) {
     if (clause_Weight(list_Car(scan)) < min) {
       clause = list_Car(scan);
@@ -114,12 +108,11 @@ CLAUSE res_SelectLightestClause(LIST clauselist)
   return clause;
 }
 
-
 BOOL res_HasTautology(CLAUSE clause)
 /**********************************************************
   INPUT:   A clauses.
-  RETURNS: TRUE if the clause contains a complementary 
-           literal pair and FALSE otherwise. 
+  RETURNS: TRUE if the clause contains a complementary
+           literal pair and FALSE otherwise.
   CAUTION: None.
 ***********************************************************/
 {
@@ -129,7 +122,7 @@ BOOL res_HasTautology(CLAUSE clause)
 
   found = FALSE;
   n     = clause_Length(clause);
-  
+
   for (i = 0; i < n && !found; i++) {
     literal1 = fol_ComplementaryTerm(clause_GetLiteralTerm(clause,i));
     for (j = 0; j < n && !found; j++)
@@ -141,8 +134,6 @@ BOOL res_HasTautology(CLAUSE clause)
   return found;
 }
 
-
-
 BOOL res_BackSubWithLength(CLAUSE clause, st_INDEX stindex)
 /**********************************************************
   INPUT:   A clauses and an index.
@@ -151,7 +142,7 @@ BOOL res_BackSubWithLength(CLAUSE clause, st_INDEX stindex)
   CAUTION: None.
 ***********************************************************/
 {
-  int     n,i; 
+  int     n,i;
   LIST    scan,generals;
   TERM    term;
   LITERAL litres;
@@ -174,5 +165,3 @@ BOOL res_BackSubWithLength(CLAUSE clause, st_INDEX stindex)
   }
   return FALSE;
 }
-
-

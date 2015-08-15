@@ -20,7 +20,7 @@ void test1(void)
 #pragma pack(1,1,1)
 
 struct s3 {
-  unsigned char x; 
+  unsigned char x;
   unsigned short y;
   unsigned int z;
   signed short v;
@@ -31,7 +31,7 @@ struct s3 {
 };
 
 struct s3 s3 = {
-  42, 123, 456789, -333, -314159, 0, 
+  42, 123, 456789, -333, -314159, 0,
   { 111, 222, 333 },
   { 'o', 'k' }
 };

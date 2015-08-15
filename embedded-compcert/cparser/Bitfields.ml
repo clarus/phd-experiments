@@ -144,12 +144,12 @@ let transf_composite env su id attr ml =
 (* Bitfield manipulation expressions *)
 
 let left_shift_count bf =
-  intconst 
+  intconst
     (Int64.of_int (8 * !config.sizeof_int - (bf.bf_pos + bf.bf_size)))
     IInt
 
 let right_shift_count bf =
-  intconst 
+  intconst
     (Int64.of_int (8 * !config.sizeof_int - bf.bf_size))
     IInt
 
@@ -286,7 +286,7 @@ let transf_expr env ctx e =
         | Some(ex, bf) ->
             transf_post ctx (op_for_incr_decr op) ex bf e1.etyp
         end
-    | EUnop(op, e1) -> 
+    | EUnop(op, e1) ->
         {edesc = EUnop(op, texp Val e1); etyp = e.etyp}
 
     | EBinop(Oassign, e1, e2, ty) ->
@@ -452,5 +452,5 @@ let program p =
   Transform.program
     ~composite:transf_composite
     ~decl: transf_decl
-    ~fundef:transf_fundef 
+    ~fundef:transf_fundef
     p

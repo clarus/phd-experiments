@@ -17,7 +17,7 @@
 @     * Neither the name of the <organization> nor the
 @       names of its contributors may be used to endorse or promote products
 @       derived from this software without specific prior written permission.
-@ 
+@
 @ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 @ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 @ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -37,7 +37,7 @@
         .text
 
 @@@ Conversion from unsigned 64-bit integer to double float
-	
+
 	.global __i64_utod
 __i64_utod:
         fmsr s0, r0
@@ -50,7 +50,6 @@ __i64_utod:
         bx lr
 	.type __i64_utod, %function
 	.size __i64_utod, . - __i64_utod
-	
+
         .balign 8
 .LC1:   .quad 0x41f0000000000000 @ 2^32 in double precision
-	

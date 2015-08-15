@@ -22,8 +22,8 @@
 %            Number of variables   :   29 (   0 singleton;  28 !;   1 ?)
 %            Maximal term depth    :    2 (   1 average)
 
-% Comments : 
-%          : tptp2X -f dfg -t rm_equality:rstfp SET002+4.p 
+% Comments :
+%          : tptp2X -f dfg -t rm_equality:rstfp SET002+4.p
 %------------------------------------------------------------------------------
 
 begin_problem(TPTP_Problem).

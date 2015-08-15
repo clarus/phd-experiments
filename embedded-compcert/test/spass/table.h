@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             SIGNATURE TABLE                            * */
 /* *                                                        * */
-/* *  $Module:   TABLE                                      * */ 
+/* *  $Module:   TABLE                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -50,14 +50,12 @@
 #ifndef _TABLE_
 #define _TABLE_
 
-
 /**************************************************************/
 /* Includes                                                   */
 /**************************************************************/
 
 #include "term.h"
 #include "partition.h"
-
 
 /**************************************************************/
 /* Basic types                                                */
@@ -84,7 +82,6 @@ typedef struct table {
 /* term numbers of its arguments in [0, termbound] - or its variable index in */
 /* [1, varbound] if it is a variable)                                         */
 
-
 /**************************************************************/
 /* Prototypes                                                 */
 /**************************************************************/
@@ -96,6 +93,4 @@ TABLE table_Init(TABLE, int, int, int);
 TERM  table_QueryAndEnter(TABLE, PARTITION, TERM);
 TABLE table_Delete(TABLE, TERM);
 
-
 #endif
-

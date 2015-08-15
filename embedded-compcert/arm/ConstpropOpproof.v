@@ -34,7 +34,7 @@ Variable ge: genv.
 Variable sp: val.
 
 (** We first show that the dataflow analysis is correct with respect
-  to the dynamic semantics: the approximations (sets of values) 
+  to the dynamic semantics: the approximations (sets of values)
   of a register at a program point predicted by the static analysis
   are a superset of the values actually encountered during concrete
   executions.  We formalize this correspondence between run-time values and
@@ -104,7 +104,7 @@ Lemma eval_static_condition_correct:
   eval_condition cond vl m = Some b.
 Proof.
   intros until b.
-  unfold eval_static_condition. 
+  unfold eval_static_condition.
   case (eval_static_condition_match cond al); intros;
   InvVLMA; simpl; try (rewrite eval_static_shift_correct); congruence.
 Qed.
@@ -113,9 +113,8 @@ Remark shift_symbol_address:
   forall symb ofs n,
   symbol_address ge symb (Int.add ofs n) = Val.add (symbol_address ge symb ofs) (Vint n).
 Proof.
-  unfold symbol_address; intros. destruct (Genv.find_symbol ge symb); auto. 
+  unfold symbol_address; intros. destruct (Genv.find_symbol ge symb); auto.
 Qed.
-
 
 Lemma eval_static_operation_correct:
   forall op al vl m v,
@@ -124,17 +123,17 @@ Lemma eval_static_operation_correct:
   val_match_approx (eval_static_operation op al) v.
 Proof.
   intros until v.
-  unfold eval_static_operation. 
+  unfold eval_static_operation.
   case (eval_static_operation_match op al); intros;
   InvVLMA; simpl in *; FuncInv; try (subst v); try (rewrite eval_static_shift_correct); auto.
   destruct (propagate_float_constants tt); simpl; auto.
-  rewrite shift_symbol_address; auto. 
+  rewrite shift_symbol_address; auto.
   rewrite shift_symbol_address; auto.
   rewrite Val.add_assoc; auto.
   rewrite Val.add_assoc; auto.
   fold (Val.add (Vint n1) (symbol_address ge s2 n2)).
   rewrite Int.add_commut. rewrite Val.add_commut. rewrite shift_symbol_address; auto.
-  fold (Val.add (Vint n1) (Val.add sp (Vint n2))). 
+  fold (Val.add (Vint n1) (Val.add sp (Vint n2))).
   rewrite Val.add_permut. auto.
   rewrite shift_symbol_address. auto.
   rewrite Val.add_assoc. auto.
@@ -154,7 +153,7 @@ Proof.
   unfold eval_static_condition_val, Val.of_optbool.
   destruct (eval_static_condition c vl0) eqn:?.
   rewrite (eval_static_condition_correct _ _ _ m _ H Heqo).
-  destruct b; simpl; auto. 
+  destruct b; simpl; auto.
   simpl; auto.
 Qed.
 
@@ -168,7 +167,7 @@ Proof.
   case (eval_static_addressing_match addr al); intros;
   InvVLMA; simpl in *; FuncInv; try (subst v); try (rewrite eval_static_shift_correct); auto.
   rewrite shift_symbol_address; auto.
-  rewrite Val.add_assoc. auto. 
+  rewrite Val.add_assoc. auto.
   repeat rewrite shift_symbol_address. auto.
   fold (Val.add (Vint n1) (symbol_address ge id ofs)).
   repeat rewrite shift_symbol_address. apply Val.add_commut.
@@ -196,9 +195,9 @@ Hypothesis MATCH: forall r, val_match_approx (approx_reg app r) rs#r.
 
 Ltac InvApproxRegs :=
   match goal with
-  | [ H: _ :: _ = _ :: _ |- _ ] => 
+  | [ H: _ :: _ = _ :: _ |- _ ] =>
         injection H; clear H; intros; InvApproxRegs
-  | [ H: ?v = approx_reg app ?r |- _ ] => 
+  | [ H: ?v = approx_reg app ?r |- _ ] =>
         generalize (MATCH r); rewrite <- H; clear H; intro; InvApproxRegs
   | _ => idtac
   end.
@@ -211,7 +210,7 @@ Lemma cond_strength_reduction_correct:
 Proof.
   intros until vl. unfold cond_strength_reduction.
   case (cond_strength_reduction_match cond args vl); simpl; intros; InvApproxRegs; SimplVMA.
-  rewrite H0. apply Val.swap_cmp_bool. 
+  rewrite H0. apply Val.swap_cmp_bool.
   rewrite H. auto.
   rewrite H0. apply Val.swap_cmpu_bool.
   rewrite H. auto.
@@ -235,7 +234,7 @@ Lemma make_addimm_correct:
   exists v, eval_operation ge sp op rs##args m = Some v /\ Val.lessdef (Val.add rs#r (Vint n)) v.
 Proof.
   intros. unfold make_addimm.
-  predSpec Int.eq Int.eq_spec n Int.zero; intros. 
+  predSpec Int.eq Int.eq_spec n Int.zero; intros.
   subst. exists (rs#r); split; auto. destruct (rs#r); simpl; auto; rewrite Int.add_zero; auto.
   exists (Val.add rs#r (Vint n)); auto.
 Qed.
@@ -251,7 +250,7 @@ Proof.
   predSpec Int.eq Int.eq_spec n Int.zero; intros. subst.
   exists (rs#r1); split; auto. destruct (rs#r1); simpl; auto. rewrite Int.shl_zero. auto.
   destruct (Int.ltu n Int.iwordsize) eqn:?; intros.
-  econstructor; split. simpl; eauto.  rewrite mk_shift_amount_eq; auto. 
+  econstructor; split. simpl; eauto.  rewrite mk_shift_amount_eq; auto.
   econstructor; split; eauto. simpl. congruence.
 Qed.
 
@@ -265,7 +264,7 @@ Proof.
   predSpec Int.eq Int.eq_spec n Int.zero; intros. subst.
   exists (rs#r1); split; auto. destruct (rs#r1); simpl; auto. rewrite Int.shr_zero. auto.
   destruct (Int.ltu n Int.iwordsize) eqn:?; intros.
-  econstructor; split. simpl; eauto.  rewrite mk_shift_amount_eq; auto. 
+  econstructor; split. simpl; eauto.  rewrite mk_shift_amount_eq; auto.
   econstructor; split; eauto. simpl. congruence.
 Qed.
 
@@ -279,7 +278,7 @@ Proof.
   predSpec Int.eq Int.eq_spec n Int.zero; intros. subst.
   exists (rs#r1); split; auto. destruct (rs#r1); simpl; auto. rewrite Int.shru_zero. auto.
   destruct (Int.ltu n Int.iwordsize) eqn:?; intros.
-  econstructor; split. simpl; eauto.  rewrite mk_shift_amount_eq; auto. 
+  econstructor; split. simpl; eauto.  rewrite mk_shift_amount_eq; auto.
   econstructor; split; eauto. simpl. congruence.
 Qed.
 
@@ -296,7 +295,7 @@ Proof.
   exists (rs#r1); split; auto. destruct (rs#r1); simpl; auto. rewrite Int.mul_one; auto.
   destruct (Int.is_power2 n) eqn:?; intros.
   exploit Int.is_power2_range; eauto. intros R.
-  econstructor; split. simpl; eauto. rewrite mk_shift_amount_eq; auto.  
+  econstructor; split. simpl; eauto. rewrite mk_shift_amount_eq; auto.
   rewrite (Val.mul_pow2 rs#r1 _ _ Heqo). auto.
   econstructor; split; eauto. simpl. congruence.
 Qed.
@@ -311,7 +310,7 @@ Proof.
   intros; unfold make_divimm.
   destruct (Int.is_power2 n) eqn:?.
   destruct (Int.ltu i (Int.repr 31)) eqn:?.
-  exists v; split; auto. simpl. eapply Val.divs_pow2; eauto. congruence. 
+  exists v; split; auto. simpl. eapply Val.divs_pow2; eauto. congruence.
   exists v; auto.
   exists v; auto.
 Qed.
@@ -325,8 +324,8 @@ Lemma make_divuimm_correct:
 Proof.
   intros; unfold make_divuimm.
   destruct (Int.is_power2 n) eqn:?.
-  replace v with (Val.shru rs#r1 (Vint i)). 
-  econstructor; split. simpl. rewrite mk_shift_amount_eq. eauto. 
+  replace v with (Val.shru rs#r1 (Vint i)).
+  econstructor; split. simpl. rewrite mk_shift_amount_eq. eauto.
   eapply Int.is_power2_range; eauto. auto.
   eapply Val.divu_pow2; eauto. congruence.
   exists v; auto.
@@ -342,7 +341,7 @@ Proof.
   subst n. exists (Vint Int.zero); split; auto. destruct (rs#r); simpl; auto. rewrite Int.and_zero; auto.
   predSpec Int.eq Int.eq_spec n Int.mone; intros.
   subst n. exists (rs#r); split; auto. destruct (rs#r); simpl; auto. rewrite Int.and_mone; auto.
-  econstructor; split; eauto. auto. 
+  econstructor; split; eauto. auto.
 Qed.
 
 Lemma make_orimm_correct:
@@ -355,7 +354,7 @@ Proof.
   subst n. exists (rs#r); split; auto. destruct (rs#r); simpl; auto. rewrite Int.or_zero; auto.
   predSpec Int.eq Int.eq_spec n Int.mone; intros.
   subst n. exists (Vint Int.mone); split; auto. destruct (rs#r); simpl; auto. rewrite Int.or_mone; auto.
-  econstructor; split; eauto. auto. 
+  econstructor; split; eauto. auto.
 Qed.
 
 Lemma make_xorimm_correct:
@@ -368,8 +367,8 @@ Proof.
   subst n. exists (rs#r); split; auto. destruct (rs#r); simpl; auto. rewrite Int.xor_zero; auto.
   predSpec Int.eq Int.eq_spec n Int.mone; intros.
   subst n. exists (Val.notint (rs#r)); split. auto.
-  destruct (rs#r); simpl; auto. 
-  econstructor; split; eauto. auto. 
+  destruct (rs#r); simpl; auto.
+  econstructor; split; eauto. auto.
 Qed.
 
 Lemma op_strength_reduction_correct:
@@ -387,7 +386,7 @@ Proof.
 (* addshift *)
   InvApproxRegs. SimplVMA. inv H0. rewrite H. rewrite eval_static_shift_correct. apply make_addimm_correct.
 (* sub *)
-  InvApproxRegs; SimplVMA. inv H0. rewrite H1. econstructor; split; eauto. 
+  InvApproxRegs; SimplVMA. inv H0. rewrite H1. econstructor; split; eauto.
   InvApproxRegs; SimplVMA. inv H0. rewrite H. rewrite Val.sub_add_opp. apply make_addimm_correct.
 (* subshift *)
   InvApproxRegs; SimplVMA. inv H0. rewrite H. rewrite eval_static_shift_correct. rewrite Val.sub_add_opp. apply make_addimm_correct.
@@ -428,13 +427,13 @@ Proof.
 (* shru *)
   InvApproxRegs. SimplVMA. inv H0. rewrite H. apply make_shruimm_correct; auto.
 (* cmp *)
-  generalize (cond_strength_reduction_correct c args0 vl0). 
+  generalize (cond_strength_reduction_correct c args0 vl0).
   destruct (cond_strength_reduction c args0 vl0) as [c' args']; intros.
   rewrite <- H1 in H0; auto. econstructor; split; eauto.
 (* default *)
   exists v; auto.
 Qed.
- 
+
 Lemma addr_strength_reduction_correct:
   forall addr args vl,
   vl = approx_regs app args ->
@@ -444,7 +443,7 @@ Proof.
   intros until vl. unfold addr_strength_reduction.
   destruct (addr_strength_reduction_match addr args vl); simpl; intros; InvApproxRegs; SimplVMA.
   rewrite H; rewrite H0. rewrite Val.add_assoc; auto.
-  rewrite H; rewrite H0. rewrite Val.add_permut; auto. 
+  rewrite H; rewrite H0. rewrite Val.add_permut; auto.
   rewrite H0. rewrite Val.add_commut. auto.
   rewrite H. auto.
   rewrite H; rewrite H0. rewrite Val.add_assoc. rewrite eval_static_shift_correct. auto.

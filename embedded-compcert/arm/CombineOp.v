@@ -10,7 +10,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-(** Recognition of combined operations, addressing modes and conditions 
+(** Recognition of combined operations, addressing modes and conditions
   during the [CSE] phase. *)
 
 Require Import Coqlib.
@@ -126,5 +126,3 @@ Function combine_op (op: operation) (args: list valnum) : option(operation * lis
   end.
 
 End COMBINE.
-
-

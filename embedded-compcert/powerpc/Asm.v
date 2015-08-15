@@ -106,7 +106,7 @@ Inductive constant: Type :=
 (** A note on constants: while immediate operands to PowerPC
   instructions must be representable in 16 bits (with
   sign extension or left shift by 16 positions for some instructions),
-  we do not attempt to capture these restrictions in the 
+  we do not attempt to capture these restrictions in the
   abstract syntax nor in the semantics.  The assembler will
   emit an error if immediate operands exceed the representable
   range.  Of course, our PPC generator (file [Asmgen]) is
@@ -309,7 +309,7 @@ Definition program := AST.program fundef unit.
   type [Tint], float registers to values of type [Tfloat],
   and boolean registers ([CARRY], [CR0_0], etc) to either
   [Vzero] or [Vone]. *)
-  
+
 Definition regset := Pregmap.t val.
 Definition genv := Genv.t fundef unit.
 
@@ -399,11 +399,11 @@ Axiom low_high_half:
   the [low_half] and [high_half] functions are of type [Tint],
   i.e. either integers, pointers or undefined values. *)
 
-Axiom low_half_type: 
+Axiom low_half_type:
   forall v, Val.has_type (low_half v) Tint.
-Axiom high_half_type: 
+Axiom high_half_type:
   forall v, Val.has_type (high_half v) Tint.
- 
+
 (** We also axiomatize the small data area.  For simplicity, we
   claim that small data symbols can be accessed by absolute 16-bit
   offsets, that is, relative to [GPR0].  In reality, the linker
@@ -600,7 +600,7 @@ Definition exec_instr (c: code) (i: instruction) (rs: regset) (m: mem) : outcome
       end
   | Pbtbl r tbl =>
       match rs r with
-      | Vint n => 
+      | Vint n =>
           match list_nth_z tbl (Int.unsigned n) with
           | None => Stuck
           | Some lbl => goto_label c lbl (rs #GPR12 <- Vundef #CTR <- Vundef) m
@@ -897,7 +897,7 @@ Inductive final_state: state -> int -> Prop :=
       rs#PC = Vzero ->
       rs#GPR3 = Vint r ->
       final_state (State rs m) r.
-      
+
 Definition semantics (p: program) :=
   Semantics step (initial_state p) final_state (Genv.globalenv p).
 
@@ -912,19 +912,19 @@ Proof.
           forall vl2, list_forall2 (extcall_arg rs m) ll vl2 -> vl1 = vl2).
     induction 1; intros vl2 EA; inv EA.
     auto.
-    f_equal; auto. 
+    f_equal; auto.
     inv H; inv H3; congruence.
-  intros. red in H0; red in H1. eauto. 
+  intros. red in H0; red in H1. eauto.
 Qed.
 
 Remark annot_arguments_determ:
   forall rs m params args1 args2,
   annot_arguments rs m params args1 -> annot_arguments rs m params args2 -> args1 = args2.
 Proof.
-  unfold annot_arguments. intros. revert params args1 H args2 H0. 
-  induction 1; intros. 
+  unfold annot_arguments. intros. revert params args1 H args2 H0.
+  induction 1; intros.
   inv H0; auto.
-  inv H1. decEq; eauto. inv H; inv H4. auto. congruence. 
+  inv H1. decEq; eauto. inv H; inv H4. auto. congruence.
 Qed.
 
 Lemma semantics_determinate: forall p, determinate (semantics p).
@@ -941,7 +941,7 @@ Ltac Equalities :=
   split. constructor. auto.
   discriminate.
   discriminate.
-  inv H11. 
+  inv H11.
   exploit external_call_determ'. eexact H4. eexact H9. intros [A B].
   split. auto. intros. destruct B; auto. subst. auto.
   inv H12.
@@ -975,5 +975,3 @@ Definition data_preg (r: preg) : bool :=
   | CARRY => false
   | _ => true
   end.
-
-

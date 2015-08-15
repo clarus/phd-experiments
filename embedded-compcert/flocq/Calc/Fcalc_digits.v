@@ -29,8 +29,6 @@ Section Fcalc_digits.
 Variable beta : radix.
 Notation bpow e := (bpow beta e).
 
-
-
 Theorem Zdigits_ln_beta :
   forall n,
   n <> Z0 ->
@@ -379,4 +377,3 @@ now apply Z2R_lt.
 rewrite inj_S.
 apply Zpred_succ.
 Qed.
-

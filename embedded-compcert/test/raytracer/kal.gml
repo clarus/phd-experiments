@@ -33,7 +33,7 @@ union
 } cylinder
 20.0 rotatex
 0.5 0.5 15.0 translate
-union 
+union
 
 blue mirror apply plane
 0.0 -2.0 0.0 translate
@@ -75,4 +75,3 @@ scene			% object
 400 400 		% wid ht
 "kal.ppm"		% output file
 render
-

@@ -42,11 +42,9 @@
 /* ********************************************************** */
 /**************************************************************/
 
-     
 /* $RCSfile$ */
 
 #include "rpos.h"
-
 
 /**************************************************************/
 /* Top Down Version                                           */
@@ -66,8 +64,7 @@ static LIST rpos_MultisetDifference(TERM T1, TERM T2)
 				    (BOOL (*)(POINTER,POINTER)) rpos_Equal);
   return result;
 }
-  
-  
+
 static ord_RESULT rpos_MulGreaterEqual(TERM T1, TERM T2)
 /**************************************************************
   INPUT:   Two terms with equal top symbols and multiset status.
@@ -80,7 +77,7 @@ static ord_RESULT rpos_MulGreaterEqual(TERM T1, TERM T2)
 
   l1 = rpos_MultisetDifference(T1, T2);
   if (list_Empty(l1))
-    /* If |M| = |N| and M-N = {} then N-M = {} */ 
+    /* If |M| = |N| and M-N = {} then N-M = {} */
     return ord_Equal();   /* Terms are equal */
   else {
     LIST scan;
@@ -104,7 +101,7 @@ static ord_RESULT rpos_LexGreaterEqual(TERM T1, TERM T2)
 /**************************************************************
   INPUT:   Two terms with equal top symbols and lexicographic status.
   RETURNS: ord_GREATER_THAN if <T1> is greater than <T2>,
-	   ord_EQUAL        if both terms are equal and 
+	   ord_EQUAL        if both terms are equal and
 	   ord_UNCOMPARABLE otherwise.
 ***************************************************************/
 {
@@ -157,7 +154,6 @@ static ord_RESULT rpos_LexGreaterEqual(TERM T1, TERM T2)
   return result;
 }
 
-
 BOOL rpos_Equal(TERM T1, TERM T2)
 /**************************************************************
   INPUT:   Two terms.
@@ -189,7 +185,6 @@ BOOL rpos_Equal(TERM T1, TERM T2)
     }
   }
 }
-
 
 ord_RESULT rpos_GreaterEqual(TERM T1, TERM T2)
 /**************************************************************
@@ -299,8 +294,7 @@ static LIST rpos_ContMultisetDifference(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2
   }
   return list_PointerDeleteElement(result, NULL); /* Delete all marked terms */
 }
-  
-  
+
 static ord_RESULT rpos_ContMulGreaterEqual(CONTEXT C1, TERM T1,
 					   CONTEXT C2, TERM T2)
 /**************************************************************
@@ -319,7 +313,7 @@ static ord_RESULT rpos_ContMulGreaterEqual(CONTEXT C1, TERM T1,
 
   l1 = rpos_ContMultisetDifference(C1, T1, C2, T2);
   if (list_Empty(l1))
-    /* If |M| = |N| and M-N = {} then N-M = {} */ 
+    /* If |M| = |N| and M-N = {} then N-M = {} */
     return ord_Equal();   /* Terms are equal */
   else {
     LIST scan;
@@ -346,7 +340,7 @@ static ord_RESULT rpos_ContLexGreaterEqual(CONTEXT C1, TERM T1,
   INPUT:   Two contexts and two terms with equal top symbols
            and lexicographic status.
   RETURNS: ord_GREATER_THAN if <T1> is greater than <T2>,
-	   ord_EQUAL        if both terms are equal and 
+	   ord_EQUAL        if both terms are equal and
 	   ord_UNCOMPARABLE otherwise.
   EFFECT:  Variable bindings are considered.
 ***************************************************************/
@@ -403,7 +397,6 @@ static ord_RESULT rpos_ContLexGreaterEqual(CONTEXT C1, TERM T1,
   return result;
 }
 
-
 BOOL rpos_ContEqual(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2)
 /**************************************************************
   INPUT:   Two contexts and two terms.
@@ -438,7 +431,6 @@ BOOL rpos_ContEqual(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2)
     }
   }
 }
-
 
 ord_RESULT rpos_ContGreaterEqual(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2)
 /**************************************************************
@@ -518,4 +510,3 @@ ord_RESULT rpos_ContCompare(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2)
   else
     return ord_UNCOMPARABLE;
 }
-  

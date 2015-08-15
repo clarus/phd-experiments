@@ -3,9 +3,9 @@
 % Domain   : Set Theory
 % Problem  : Corollary 2 to universal class not set
 % Version  : [Qua92] axioms.
-% English  : 
+% English  :
 
-% Refs     : [BL+86] Boyer et al. (1986), Set Theory in First-Order Logic: 
+% Refs     : [BL+86] Boyer et al. (1986), Set Theory in First-Order Logic:
 %          : [Qua92] Quaife (1992), Automated Deduction in von Neumann-Bern
 % Source   : [Quaife]
 % Names    : SP6 cor.2 [Qua92]
@@ -20,7 +20,7 @@
 %            Number of variables  :  214 (  32 singleton)
 %            Maximal term depth   :    6 (   1 average)
 
-% Comments : Quaife proves all these problems by augmenting the axioms with 
+% Comments : Quaife proves all these problems by augmenting the axioms with
 %            all previously proved theorems. With a few exceptions (the
 %            problems that correspond to [BL+86] problems), the TPTP has
 %            retained the order in which Quaife presents the problems. The
@@ -28,7 +28,7 @@
 %            all previously proved theorems (the ones that correspond to
 %            [BL+86] are easily identified and positioned using Quaife's
 %            naming scheme).
-%          : tptp2X -f dfg -t rm_equality:rstfp SET505-6.p 
+%          : tptp2X -f dfg -t rm_equality:rstfp SET505-6.p
 % Bugfixes : v1.0.1 - Bugfix in SET004-1.ax.
 %          : v2.1.0 - Bugfix in SET004-0.ax.
 %--------------------------------------------------------------------------

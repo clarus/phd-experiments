@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                RESOLUTION                              * */
 /* *                                                        * */
-/* *  $Module:   RESOLUTION                                 * */ 
+/* *  $Module:   RESOLUTION                                 * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1998, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -58,11 +58,9 @@
 #include "subsumption.h"
 #include "condensing.h"
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
-
 
 void    res_InsertClauseIndex(CLAUSE, st_INDEX); /* used by cnf */
 void    res_DeleteClauseIndex(CLAUSE, st_INDEX); /* used by cnf */

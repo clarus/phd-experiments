@@ -106,5 +106,3 @@ let print_operation reg pp = function
   | Ohighlong, [r1] -> fprintf pp "highlong(%a)" reg r1
   | Ocmp c, args -> print_condition reg pp (c, args)
   | _ -> fprintf pp "<bad operator>"
-
-

@@ -17,7 +17,7 @@
 @     * Neither the name of the <organization> nor the
 @       names of its contributors may be used to endorse or promote products
 @       derived from this software without specific prior written permission.
-@ 
+@
 @ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 @ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 @ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,7 +36,7 @@
 
         .text
 
-@@@ Conversion from double float to unsigned 64-bit integer	
+@@@ Conversion from double float to unsigned 64-bit integer
 
 	.global __i64_dtou
 __i64_dtou:
@@ -61,13 +61,13 @@ __i64_dtou:
   @ shift it appropriately
         cmp r2, #0
         blt 3f
-  @ EXP >= 0: shift left by EXP.  Note that EXP < 12        
+  @ EXP >= 0: shift left by EXP.  Note that EXP < 12
         rsb r3, r2, #32         @ r3 = 32 - amount
         mov r1, r1, lsl r2
         orr r1, r1, r0, lsr r3
         mov r0, r0, lsl r2
 	bx lr
-  @ EXP < 0: shift right by -EXP.  Note that -EXP <= 52 but can be >= 32        
+  @ EXP < 0: shift right by -EXP.  Note that -EXP <= 52 but can be >= 32
 3:      rsb r2, r2, #0          @ r2 = -EXP - shift amount
         rsb r3, r2, #32         @ r3 = 32 - amount
         mov r0, r0, lsr r2
@@ -85,4 +85,3 @@ __i64_dtou:
         bx lr
 	.type __i64_dtou, %function
         .size __i64_dtou, . - __i64_dtou
-	

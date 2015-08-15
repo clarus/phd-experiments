@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *              SPASS OPTIONS HANDLING                    * */
 /* *                                                        * */
-/* *  $Module:    OPTIONS                                   * */ 
+/* *  $Module:    OPTIONS                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -44,7 +44,6 @@
 
 /* $RCSfile$ */
 
-
 #ifndef _OPTIONS_
 #define _OPTIONS_
 
@@ -54,7 +53,6 @@
 
 #include "flags.h"
 #include "list.h"
-
 
 /**************************************************************/
 /* Data Structures and Constants                              */
@@ -81,7 +79,7 @@ typedef struct {
 #define opts_DEFAULTOPTARG  "1" /* default value of options with optional arguments */
 
 /**************************************************************
- from the getopt.h file 
+ from the getopt.h file
  **************************************************************/
 struct OPTION
 {
@@ -93,7 +91,6 @@ struct OPTION
   int *flag;
   int val;
 };
-
 
 /**************************************************************/
 /* Functions                                                  */

@@ -3,10 +3,10 @@
 #include <string.h>
 
 void quicksort(int lo, int hi, int base[])
-{ 
+{
   int i,j;
   int pivot,temp;
-    
+
   if (lo<hi) {
     for (i=lo,j=hi,pivot=base[hi];i<j;) {
       while (i<hi && base[i]<=pivot) i++;

@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *              INTERFACE FOR THE DFG PARSER              * */
 /* *                                                        * */
-/* *  $Module:   DFG                                        * */ 
+/* *  $Module:   DFG                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1999, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _DFG_
@@ -59,7 +58,6 @@ typedef enum { DFG_SATISFIABLE, DFG_UNSATISFIABLE, DFG_UNKNOWNSTATE } DFG_STATE;
 LIST        dfg_DFGParser(FILE*, FLAGSTORE, PRECEDENCE, LIST*, LIST*, LIST*, LIST*);
 LIST        dfg_ProofParser(FILE*, FLAGSTORE, PRECEDENCE);
 LIST        dfg_TermParser(FILE*, FLAGSTORE, PRECEDENCE);
-
 
 /* Functions for accessing description information */
 const char* dfg_ProblemName(void);
@@ -80,7 +78,7 @@ void        dfg_FPrintDescription(FILE*);
 
 void        dfg_DeleteProofList(LIST);
 
-CLAUSE      dfg_CreateClauseFromTerm(TERM, BOOL, FLAGSTORE, PRECEDENCE); 
+CLAUSE      dfg_CreateClauseFromTerm(TERM, BOOL, FLAGSTORE, PRECEDENCE);
 TERM        dfg_CreateQuantifier(SYMBOL, LIST, TERM);
 
 #endif

@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                 PROOF DOCUMENTATION                    * */
 /* *                                                        * */
-/* *  $Module:   DOCPROOF                                   * */ 
+/* *  $Module:   DOCPROOF                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /**************************************************************/
@@ -57,7 +56,6 @@
 
 int dp_DEPTH;
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -66,7 +64,6 @@ void dp_Init(void)
 {
   dp_DEPTH = 0;
 }
-
 
 static void dp_FPrintDFGProof(LIST Clauses, const char *FilePrefix,
 			      FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -85,7 +82,7 @@ static void dp_FPrintDFGProof(LIST Clauses, const char *FilePrefix,
   char   *name;
 
   AxClauses = ConClauses = ProofClauses = list_Nil();
-  
+
   name = memory_Malloc(sizeof(char)*(strlen(FilePrefix)+5));
   sprintf(name,"%s.prf", FilePrefix);
 
@@ -123,7 +120,7 @@ static void dp_FPrintDFGProof(LIST Clauses, const char *FilePrefix,
   ConClauses   = list_NReverse(ConClauses);
   AxClauses    = list_NReverse(AxClauses);
   ProofClauses = list_NReverse(ProofClauses);
-  
+
   clause_FPrintCnfDFG(Output, FALSE, AxClauses, ConClauses, Flags, Precedence);
   fputs("\nlist_of_proof(SPASS).\n", Output);
   for (Scan=ProofClauses; !list_Empty(Scan); Scan=list_Cdr(Scan)) {
@@ -161,29 +158,29 @@ LIST dp_PrintProof(PROOFSEARCH Search, LIST Clauses, const char *FilePrefix)
   Flags = prfs_Store(Search);
 
   Missing = pcheck_ConvertParentsInSPASSProof(Search, Clauses);
-  
+
   if (!list_Empty(Missing)) {
     puts("\nNOTE: clauses with following numbers have not been found:");
     for (; !list_Empty(Missing); Missing = list_Pop(Missing))
-      printf("%d ", (int)list_Car(Missing)); 
+      printf("%d ", (int)list_Car(Missing));
     putchar('\n');
   }
 
-  EmptyClauses = list_Copy(Clauses); 
+  EmptyClauses = list_Copy(Clauses);
   ProofClauses = list_Nil();
   AllClauses   = list_Nconc(list_Copy(prfs_DocProofClauses(Search)),
 			    list_Nconc(list_Copy(prfs_UsableClauses(Search)),
 				       list_Copy(prfs_WorkedOffClauses(Search))));
 
   /*
-   *  collect proof clauses by noodling upward in the 
+   *  collect proof clauses by noodling upward in the
    *  proof tree, starting from <EmptyClauses>.
-   *  Before, add all splitting clauses to avoid gaps in split tree 
+   *  Before, add all splitting clauses to avoid gaps in split tree
    */
 
   SplitClauses = list_Nil();
-  for (Scan = AllClauses; !list_Empty(Scan); Scan = list_Cdr(Scan)) 
-    if (clause_IsFromSplitting(list_Car(Scan))) 
+  for (Scan = AllClauses; !list_Empty(Scan); Scan = list_Cdr(Scan))
+    if (clause_IsFromSplitting(list_Car(Scan)))
       SplitClauses = list_Cons(list_Car(Scan), SplitClauses);
 
   /* mark all needed clauses */
@@ -191,21 +188,21 @@ LIST dp_PrintProof(PROOFSEARCH Search, LIST Clauses, const char *FilePrefix)
   pcheck_ClauseListRemoveFlag(AllClauses, MARKED);
   pcheck_MarkRecursive(EmptyClauses);
   pcheck_MarkRecursive(SplitClauses);
-  
+
   /* collect all marked clauses */
   ProofClauses = list_Nil();
   for (Scan = AllClauses; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
     if (clause_GetFlag(list_Car(Scan), MARKED))
-      ProofClauses = list_Cons(list_Car(Scan), ProofClauses); 
+      ProofClauses = list_Cons(list_Car(Scan), ProofClauses);
   }
 
   /* build reduced proof  */
   ProofClauses = list_Nconc(ProofClauses, list_Copy(EmptyClauses));
   ProofClauses = pcheck_ClauseNumberMergeSort(ProofClauses);
-  ReducedProof = pcheck_ReduceSPASSProof(ProofClauses); 
+  ReducedProof = pcheck_ReduceSPASSProof(ProofClauses);
 
   dp_SetProofDepth(pcheck_SeqProofDepth(ReducedProof));
-  
+
   pcheck_ParentPointersToParentNumbers(AllClauses);
   pcheck_ParentPointersToParentNumbers(Clauses);
 
@@ -237,11 +234,7 @@ LIST dp_PrintProof(PROOFSEARCH Search, LIST Clauses, const char *FilePrefix)
   list_Delete(AllClauses);
   list_Delete(ProofClauses);
   list_Delete(SplitClauses);
-  list_Delete(Incomplete); 
+  list_Delete(Incomplete);
 
   return ReducedProof;
 }
-
-
-
-

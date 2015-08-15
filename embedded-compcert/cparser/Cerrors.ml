@@ -51,5 +51,3 @@ let check_errors () =
             !num_warnings
             (if !num_warnings = 1 then "" else "s");
   !num_errors > 0 || (!warn_error && !num_warnings > 0)
-
-

@@ -181,7 +181,7 @@ if $cchecklink; then
   if ocamlfind query bitstring > /dev/null
   then
     echo "yes"
-  else 
+  else
     echo "no"
     echo "ocamlfind or ocaml-bitstring missing, cchecklink will not be built"
     cchecklink=false

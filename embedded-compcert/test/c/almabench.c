@@ -15,7 +15,7 @@
     Longitudes, Paris, France), as detailed in Astronomy & Astrophysics
     282, 663 (1994)
 
-    Note that the code herein is design for the purpose of testing 
+    Note that the code herein is design for the purpose of testing
     computational performance; error handling and other such "niceties"
     is virtually non-existent.
 
@@ -57,8 +57,8 @@ const double a [8][3] =
       {   9.5549091915, -0.0000213896,  444e-10 },
       {  19.2184460618,     -3716e-10,  979e-10 },
       {  30.1103868694,    -16635e-10,  686e-10 } };
-       
-const double dlm[8][3] = 
+
+const double dlm[8][3] =
     { { 252.25090552, 5381016286.88982,  -1.92789 },
       { 181.97980085, 2106641364.33548,   0.59381 },
       { 100.46645683, 1295977422.83429,  -2.04411 },
@@ -173,14 +173,14 @@ const double sl[8][10] =
 double anpm (double a)
 {
     double w = fmod(a,TWOPI);
-    
-    if (fabs(w) >= PI) 
+
+    if (fabs(w) >= PI)
         w = w - ((a < 0) ? -TWOPI : TWOPI);
-        
+
     return w;
 }
 
-//---------------------------------------------------------------------------    
+//---------------------------------------------------------------------------
 // The reference frame is equatorial and is with respect to the
 //    mean equator and equinox of epoch j2000.
 void planetpv (double epoch[2], int np, double pv[2][3])
@@ -201,10 +201,10 @@ void planetpv (double epoch[2], int np, double pv[2][3])
     dp  = anpm((3600.0 * pi[np][0] + (pi[np][1] + pi[np][2] * t ) * t ) * A2R );
     di  = (3600.0 * dinc[np][0] + (dinc[np][1] + dinc[np][2] * t ) * t ) * A2R;
     doh = anpm((3600.0 * omega[np][0] + (omega[np][1] + omega[np][2] * t ) * t ) * A2R );
-    
+
     // apply the trigonometric terms.
     dmu = 0.35953620 * t;
-    
+
     for (k = 0; k < 8; ++k)
     {
         arga = kp[np][k] * dmu;
@@ -234,7 +234,7 @@ void planetpv (double epoch[2], int np, double pv[2][3])
         dae = (am - ae + de * sin(ae)) / (1.0 - de * cos(ae));
         ae  = ae + dae;
         k   = k + 1;
-    
+
         if ((k >= 10) || (fabs(dae) < 1e-12))
             break;
     }
@@ -305,7 +305,7 @@ static void test(void)
     double jd[2];
     double pv[2][3];
     double position[3];
-    
+
     jd[0] = J2000;
     jd[1] = 0.0;
     for (p = 0; p < 8; ++p)
@@ -317,14 +317,13 @@ static void test(void)
       }
 }
 
-
 static void bench(int nloops)
 {
     int i, n, p;
     double jd[2];
     double pv[2][3];
     double position[3];
-    
+
     for (i = 0; i < nloops; ++i)
     {
         jd[0] = J2000;
@@ -333,7 +332,7 @@ static void bench(int nloops)
         for (n = 0; n < TEST_LENGTH; ++n)
         {
             jd[0] += 1.0;
-            
+
             for (p = 0; p < 8; ++p)
             {
                 planetpv(jd,p,pv);

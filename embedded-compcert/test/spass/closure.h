@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             CONGRUENCE CLOSURE ALGORITHM               * */
 /* *                                                        * */
-/* *  $Module:   CLOSURE                                    * */ 
+/* *  $Module:   CLOSURE                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -44,7 +44,6 @@
 #ifndef _CLOSURE_
 #define _CLOSURE_
 
-
 /**************************************************************/
 /* Includes                                                   */
 /**************************************************************/
@@ -52,7 +51,6 @@
 #include "clause.h"
 #include "table.h"
 #include "ras.h"
-
 
 /**************************************************************/
 /* Prototype                                                  */
@@ -62,6 +60,4 @@ void cc_Init(void);
 void cc_Free(void);
 BOOL cc_Tautology(CLAUSE);
 
-
 #endif
-

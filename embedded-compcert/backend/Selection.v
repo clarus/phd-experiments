@@ -76,10 +76,10 @@ Definition sel_constant (cst: Cminor.constant) : expr :=
 
 Definition sel_unop (op: Cminor.unary_operation) (arg: expr) : expr :=
   match op with
-  | Cminor.Ocast8unsigned => cast8unsigned arg 
-  | Cminor.Ocast8signed => cast8signed arg 
-  | Cminor.Ocast16unsigned => cast16unsigned arg 
-  | Cminor.Ocast16signed => cast16signed arg 
+  | Cminor.Ocast8unsigned => cast8unsigned arg
+  | Cminor.Ocast8signed => cast8signed arg
+  | Cminor.Ocast16unsigned => cast16unsigned arg
+  | Cminor.Ocast16signed => cast16signed arg
   | Cminor.Onegint => negint arg
   | Cminor.Onotint => notint arg
   | Cminor.Onegf => negf arg
@@ -200,7 +200,7 @@ Fixpoint sel_stmt (ge: Cminor.genv) (s: Cminor.stmt) : stmt :=
       end
   | Cminor.Sbuiltin optid ef args =>
       Sbuiltin optid ef (sel_exprlist args)
-  | Cminor.Stailcall sg fn args => 
+  | Cminor.Stailcall sg fn args =>
       match classify_call ge fn with
       | Call_imm id  => Stailcall sg (inr _ id) (sel_exprlist args)
       | _            => Stailcall sg (inl _ (sel_expr fn)) (sel_exprlist args)
@@ -241,4 +241,3 @@ Local Open Scope error_monad_scope.
 Definition sel_program (p: Cminor.program) : res program :=
   let ge := Genv.globalenv p in
   do hf <- get_helpers ge; OK (transform_program (sel_fundef hf ge) p).
-

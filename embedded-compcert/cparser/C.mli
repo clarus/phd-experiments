@@ -27,7 +27,7 @@ type ident =
 
 (* kinds of integers *)
 
-type ikind = 
+type ikind =
   | IBool       (** [_Bool] *)
   | IChar       (** [char] *)
   | ISChar      (** [signed char] *)
@@ -39,16 +39,15 @@ type ikind =
   | ILong       (** [long] *)
   | IULong      (** [unsigned long] *)
   | ILongLong   (** [long long] (or [_int64] on Microsoft Visual C) *)
-  | IULongLong  (** [unsigned long long] (or [unsigned _int64] on Microsoft 
+  | IULongLong  (** [unsigned long long] (or [unsigned _int64] on Microsoft
                     Visual C) *)
 
 (** Kinds of floating-point numbers*)
 
-type fkind = 
+type fkind =
     FFloat      (** [float] *)
   | FDouble     (** [double] *)
   | FLongDouble (** [long double] *)
-
 
 (** Constants *)
 
@@ -73,7 +72,7 @@ type attr_arg =
   | AInt of int64
   | AString of string
 
-type attribute = 
+type attribute =
   | AConst
   | AVolatile
   | ARestrict
@@ -190,7 +189,7 @@ and stmt_desc =
   | Sdecl of decl
   | Sasm of string
 
-and slabel = 
+and slabel =
   | Slabel of string
   | Scase of exp
   | Sdefault

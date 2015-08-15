@@ -17,7 +17,7 @@
 #     * Neither the name of the <organization> nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,7 +36,7 @@
 
         .text
 
-### Conversion from double float to signed long	
+### Conversion from double float to signed long
 
         .balign 16
         .globl __i64_dtos
@@ -77,7 +77,7 @@ __i64_dtos:
         srw r0, r3, r7
         or r4, r4, r0
         srw r3, r3, r5
-  # apply sign to result	
+  # apply sign to result
 4:      xor r4, r4, r10
         xor r3, r3, r10
         subfc r4, r10, r4
@@ -97,4 +97,3 @@ __i64_dtos:
         blr
         .type __i64_dtos, @function
         .size __i64_dtos, .-__i64_dtos
-        

@@ -22,21 +22,21 @@ Local Unset Elimination Schemes.
 Local Unset Case Analysis Schemes.
 
 (** A forward dataflow problem is a set of inequations of the form
-- [X(s) >= transf n X(n)] 
+- [X(s) >= transf n X(n)]
   if program point [s] is a successor of program point [n]
 - [X(n) >= a]
   if [(n, a)] belongs to a given list of (program points, approximations).
 
 The unknowns are the [X(n)], indexed by program points (e.g. nodes in the
-CFG graph of a RTL function).  They range over a given ordered set that 
+CFG graph of a RTL function).  They range over a given ordered set that
 represents static approximations of the program state at each point.
-The [transf] function is the abstract transfer function: it computes an 
+The [transf] function is the abstract transfer function: it computes an
 approximation [transf n X(n)] of the program state after executing instruction
 at point [n], as a function of the approximation [X(n)] of the program state
 before executing that instruction.
 
 Symmetrically, a backward dataflow problem is a set of inequations of the form
-- [X(n) >= transf s X(s)] 
+- [X(n) >= transf s X(s)]
   if program point [s] is a successor of program point [n]
 - [X(n) >= a]
   if [(n, a)] belongs to a given list of (program points, approximations).
@@ -101,11 +101,11 @@ Module Type DATAFLOW_SOLVER.
     L.ge res!!n v.
 
   (** The [fixpoint_entry] theorem shows that the returned solution,
-    if any, satisfies the additional constraints expressed 
+    if any, satisfies the additional constraints expressed
     by [entrypoints]. *)
 
   Hypothesis fixpoint_invariant:
-    forall successors transf entrypoints 
+    forall successors transf entrypoints
            (P: L.t -> Prop),
     P L.bot ->
     (forall x y, P x -> P y -> P (L.lub x y)) ->
@@ -149,7 +149,7 @@ Module Type NODE_SET.
 
 End NODE_SET.
 
-(** We now define a generic solver that works over 
+(** We now define a generic solver that works over
     any semi-lattice structure. *)
 
 Module Dataflow_Solver (LAT: SEMILATTICE) (NS: NODE_SET):
@@ -232,7 +232,7 @@ Fixpoint propagate_succ_list (s: state) (out: L.t) (succs: list positive)
 
 Definition step (s: state) : PMap.t L.t + state :=
   match NS.pick s.(st_wrk) with
-  | None => 
+  | None =>
       inl _ s.(st_in)
   | Some(n, rem) =>
       inr _ (propagate_succ_list
@@ -286,9 +286,9 @@ Lemma propagate_succ_list_incr:
 Proof.
   induction scs; simpl; intros.
   apply in_incr_refl.
-  apply in_incr_trans with (propagate_succ st out a).(st_in). 
+  apply in_incr_trans with (propagate_succ st out a).(st_in).
   apply propagate_succ_incr. auto.
-Qed. 
+Qed.
 
 Lemma fixpoint_incr:
   forall res,
@@ -302,10 +302,10 @@ Proof.
 
   intros st INCR. unfold step.
   destruct (NS.pick st.(st_wrk)) as [ [n rem] | ].
-  apply in_incr_trans with st.(st_in). auto. 
-  change st.(st_in) with (mkstate st.(st_in) rem).(st_in). 
-  apply propagate_succ_list_incr. 
-  auto. 
+  apply in_incr_trans with st.(st_in). auto.
+  change st.(st_in) with (mkstate st.(st_in) rem).(st_in).
+  apply propagate_succ_list_incr.
+  auto.
 
   eauto. apply in_incr_refl.
 Qed.
@@ -348,7 +348,7 @@ Proof.
            ((st_in st) !! n) (L.lub (st_in st) !! n out).
   split.
   eapply L.ge_trans. apply L.ge_refl. apply H; auto.
-  apply L.ge_lub_right. 
+  apply L.ge_lub_right.
   auto.
 
   simpl. split.
@@ -383,7 +383,7 @@ Lemma propagate_succ_incr_worklist:
   forall st out n x,
   NS.In x st.(st_wrk) -> NS.In x (propagate_succ st out n).(st_wrk).
 Proof.
-  intros. unfold propagate_succ. 
+  intros. unfold propagate_succ.
   case (L.beq (st_in st) !! n (L.lub (st_in st) !! n out)).
   auto.
   simpl. rewrite NS.add_spec. auto.
@@ -403,7 +403,7 @@ Lemma propagate_succ_records_changes:
   let st' := propagate_succ st out n in
   NS.In s st'.(st_wrk) \/ st'.(st_in)!!s = st.(st_in)!!s.
 Proof.
-  simpl. intros. unfold propagate_succ. 
+  simpl. intros. unfold propagate_succ.
   case (L.beq (st_in st) !! n (L.lub (st_in st) !! n out)).
   right; auto.
   case (peq s n); intro.
@@ -434,7 +434,7 @@ Proof.
   unfold good_state. intros st n rem WKL GOOD x.
   generalize (NS.pick_some _ _ _ WKL); intro PICK.
   set (out := transf n st.(st_in)!!n).
-  elim (propagate_succ_list_records_changes 
+  elim (propagate_succ_list_records_changes
           out (successors!!!n) (mkstate st.(st_in) rem) x).
   intro; left; auto.
   simpl; intros EQ. rewrite EQ.
@@ -456,7 +456,7 @@ Proof.
   (* Case 2.2.1: s is a successor of n, it may have increased *)
   apply L.ge_trans with st.(st_in)!!s.
   change st.(st_in)!!s with (mkstate st.(st_in) rem).(st_in)!!s.
-  apply propagate_succ_list_incr. 
+  apply propagate_succ_list_incr.
   auto.
   (* Case 2.2.2: s is not a successor of n, it did not change *)
   elim (propagate_succ_list_charact out (successors!!!n)
@@ -480,14 +480,14 @@ Proof.
           forall n s,
           In s successors!!!n ->
           L.ge res!!s (transf n res!!n)).
-  unfold fixpoint. intros res PI. pattern res. 
+  unfold fixpoint. intros res PI. pattern res.
   eapply (PrimIter.iterate_prop _ _ step good_state).
 
-  intros st GOOD. unfold step. 
-  caseEq (NS.pick st.(st_wrk)). 
-  intros [n rem] PICK. apply step_state_good; auto. 
-  intros. 
-  elim (GOOD n); intro. 
+  intros st GOOD. unfold step.
+  caseEq (NS.pick st.(st_wrk)).
+  intros [n rem] PICK. apply step_state_good; auto.
+  intros.
+  elim (GOOD n); intro.
   elim (NS.pick_none _ n H). auto.
   auto.
 
@@ -546,14 +546,14 @@ Proof.
     induction ep; intros; simpl.
     rewrite PMap.gi. auto.
     simpl in H.
-    assert (P (start_state_in ep)!!pc). apply IHep. eauto.  
+    assert (P (start_state_in ep)!!pc). apply IHep. eauto.
     destruct a as [n v]. rewrite PMap.gsspec. destruct (peq pc n).
     apply P_lub. subst. auto. eapply H. left; reflexivity. auto.
   set (inv := fun st => forall pc, P (st.(st_in)!!pc)).
   assert (forall st v n, inv st -> P v -> inv (propagate_succ st v n)).
-    unfold inv, propagate_succ. intros. 
+    unfold inv, propagate_succ. intros.
     destruct (LAT.beq (st_in st)!!n (LAT.lub (st_in st)!!n v)).
-    auto. simpl. rewrite PMap.gsspec. destruct (peq pc n). 
+    auto. simpl. rewrite PMap.gsspec. destruct (peq pc n).
     apply P_lub. subst n; auto. auto.
     auto.
   assert (forall l st v, inv st -> P v -> inv (propagate_succ_list st v l)).
@@ -565,8 +565,8 @@ Proof.
     intros. unfold step. destruct (NS.pick (st_wrk a)) as [[n rem] | ].
     apply H1. auto. apply P_transf. apply H2.
     assumption.
-    eauto. 
-    unfold inv, start_state; simpl. auto. 
+    eauto.
+    unfold inv, start_state; simpl. auto.
   intros. auto.
 Qed.
 
@@ -597,15 +597,15 @@ Fixpoint add_successors (pred: PTree.t (list positive))
 
 Lemma add_successors_correct:
   forall tolist from pred n s,
-  In n pred!!!s \/ (n = from /\ In s tolist) -> 
+  In n pred!!!s \/ (n = from /\ In s tolist) ->
   In n (add_successors pred from tolist)!!!s.
 Proof.
   induction tolist; simpl; intros.
   tauto.
   apply IHtolist.
   unfold successors_list at 1. rewrite PTree.gsspec. destruct (peq s a).
-  subst a. destruct H. auto with coqlib. 
-  destruct H. subst n. auto with coqlib. 
+  subst a. destruct H. auto with coqlib.
+  destruct H. subst n. auto with coqlib.
   fold (successors_list pred s). intuition congruence.
 Qed.
 
@@ -628,7 +628,7 @@ Proof.
   red; unfold successors_list. intros n s. repeat rewrite PTree.gempty. auto.
 (* inductive case *)
   unfold P; intros. apply add_successors_correct.
-  unfold successors_list in H2. rewrite PTree.gsspec in H2. 
+  unfold successors_list in H2. rewrite PTree.gsspec in H2.
   destruct (peq n k).
   subst k. auto.
   fold (successors_list m n) in H2. auto.
@@ -727,8 +727,8 @@ Theorem fixpoint_invariant:
   fixpoint = Some res ->
   P res!!pc.
 Proof.
-  intros. apply DS.fixpoint_invariant with 
-    (make_predecessors successors) transf entrypoints; auto. 
+  intros. apply DS.fixpoint_invariant with
+    (make_predecessors successors) transf entrypoints; auto.
 Qed.
 
 End Kildall.
@@ -742,7 +742,7 @@ End Backward_Dataflow_Solver.
   In other terms, program points with multiple predecessors are mapped
   to [L.top] (the greatest, or coarsest, approximation) and the other
   program points are mapped to [transf p X[p]] where [p] is their unique
-  predecessor. 
+  predecessor.
 
   This analysis applies to any type of approximations equipped with
   an ordering and a greatest element. *)
@@ -759,7 +759,7 @@ End ORDERED_TYPE_WITH_TOP.
 
 (** The interface of the solver is similar to that of Kildall's forward
   solver.  We provide one additional theorem [fixpoint_invariant]
-  stating that any property preserved by the [transf] function 
+  stating that any property preserved by the [transf] function
   holds for the returned solution. *)
 
 Module Type BBLOCK_SOLVER.
@@ -784,7 +784,7 @@ Module Type BBLOCK_SOLVER.
     res!!entrypoint = L.top.
 
   Hypothesis fixpoint_invariant:
-    forall successors transf entrypoint 
+    forall successors transf entrypoint
            (P: L.t -> Prop),
     P L.top ->
     (forall pc x, P x -> P (transf pc x)) ->
@@ -860,7 +860,7 @@ Definition step (bb: bbmap) (st: state) : result + state :=
   match st.(st_wrk) with
   | nil => inl _ st.(st_in)
   | pc :: rem =>
-        inr _ (propagate_successors 
+        inr _ (propagate_successors
                  bb (successors!!!pc)
                  (transf pc st.(st_in)!!pc)
                  (mkstate st.(st_in) rem))
@@ -868,7 +868,7 @@ Definition step (bb: bbmap) (st: state) : result + state :=
 
 (** Recognition of program points that have more than one predecessor. *)
 
-Definition is_basic_block_head 
+Definition is_basic_block_head
     (preds: PTree.t (list positive)) (pc: positive) : bool :=
   if peq pc entrypoint then true else
     match preds!!!pc with
@@ -908,16 +908,16 @@ Lemma multiple_predecessors:
   n1 <> n2 ->
   basic_block_map s = true.
 Proof.
-  intros. 
+  intros.
   assert (In n1 predecessors!!!s). apply predecessors_correct; auto.
   assert (In n2 predecessors!!!s). apply predecessors_correct; auto.
   unfold basic_block_map, is_basic_block_head.
-  destruct (peq s entrypoint). auto. 
+  destruct (peq s entrypoint). auto.
   fold predecessors.
-  destruct (predecessors!!!s). 
+  destruct (predecessors!!!s).
   auto.
   destruct l.
-  simpl in H2. simpl in H3. intuition congruence. 
+  simpl in H2. simpl in H3. intuition congruence.
   auto.
 Qed.
 
@@ -926,11 +926,11 @@ Lemma no_self_loop:
   In n (successors!!!n) -> basic_block_map n = true.
 Proof.
   intros. unfold basic_block_map, is_basic_block_head.
-  destruct (peq n entrypoint). auto. 
-  fold predecessors. 
+  destruct (peq n entrypoint). auto.
+  fold predecessors.
   generalize (predecessors_correct n n H). intro.
   destruct (predecessors!!!n). auto.
-  destruct l. replace n with p. apply peq_true. simpl in H0. tauto. 
+  destruct l. replace n with p. apply peq_true. simpl in H0. tauto.
   auto.
 Qed.
 
@@ -938,7 +938,7 @@ Qed.
 
 (** The invariant over the state is as follows:
 - Points with several predecessors are mapped to [L.top]
-- Points not in the worklist satisfy their inequations 
+- Points not in the worklist satisfy their inequations
   (as in Kildall's algorithm).
 *)
 
@@ -947,7 +947,7 @@ Definition state_invariant (st: state) : Prop :=
 /\
   (forall n,
    In n st.(st_wrk) \/
-   (forall s, In s (successors!!!n) -> 
+   (forall s, In s (successors!!!n) ->
                L.ge st.(st_in)!!s (transf n st.(st_in)!!n))).
 
 Lemma propagate_successors_charact1:
@@ -979,8 +979,8 @@ Proof.
   caseEq (bb a); intro.
   elim (IHsuccs l st n); intros A B.
   split; intros. apply A; auto.
-  elim H0; intro. subst a. congruence. auto. 
-  apply B. tauto. 
+  elim H0; intro. subst a. congruence. auto.
+  apply B. tauto.
   set (st1 := mkstate (PMap.set a l (st_in st)) (a :: st_wrk st)).
   elim (IHsuccs l st1 n); intros A B.
   split; intros.
@@ -991,15 +991,15 @@ Proof.
   elim (A i H1); auto.
   rewrite B. unfold st1; simpl. apply PMap.gss. tauto.
   apply A; auto.
-  rewrite B. unfold st1; simpl. apply PMap.gso. 
+  rewrite B. unfold st1; simpl. apply PMap.gso.
   red; intro; subst n. elim H0; intro. tauto. congruence.
-  tauto. 
+  tauto.
 Qed.
 
 Lemma propagate_successors_invariant:
   forall pc res rem,
   state_invariant (mkstate res (pc :: rem)) ->
-  state_invariant 
+  state_invariant
     (propagate_successors basic_block_map (successors!!!pc)
                           (transf pc res!!pc)
                           (mkstate res rem)).
@@ -1012,22 +1012,22 @@ Proof.
                 (successors!!!pc) l (mkstate res rem)).
   set (st1 := propagate_successors basic_block_map
                  (successors!!!pc) l (mkstate res rem)).
-  intros A B. simpl in A. 
+  intros A B. simpl in A.
   (* First part: BB entries remain at top *)
   split; intros.
-  elim (A n); intros C D. rewrite D. simpl. apply INV1. auto. tauto. 
+  elim (A n); intros C D. rewrite D. simpl. apply INV1. auto. tauto.
   (* Second part: monotonicity *)
   (* Case 1: n = pc *)
   case (peq pc n); intros.
-  subst n. right; intros. 
+  subst n. right; intros.
   elim (A s); intros C D.
-  replace (st1.(st_in)!!pc) with res!!pc. fold l. 
+  replace (st1.(st_in)!!pc) with res!!pc. fold l.
   caseEq (basic_block_map s); intro.
-  rewrite D. simpl. rewrite INV1. apply L.top_ge. auto. tauto. 
-  elim (C H H0); intros. rewrite H2. apply L.refl_ge. 
-  elim (A pc); intros E F. rewrite F. reflexivity. 
+  rewrite D. simpl. rewrite INV1. apply L.top_ge. auto. tauto.
+  elim (C H H0); intros. rewrite H2. apply L.refl_ge.
+  elim (A pc); intros E F. rewrite F. reflexivity.
   case (In_dec peq pc (successors!!!pc)); intro.
-  right. apply no_self_loop; auto. 
+  right. apply no_self_loop; auto.
   left; auto.
   (* Case 2: n <> pc *)
   elim (INV2 n); intro.
@@ -1039,7 +1039,7 @@ Proof.
        they could change is if they were successors of pc as well,
        but that gives them two different predecessors, so
        they are basic block heads, and thus do not change! *)
-    intros. elim (A s); intros C D. rewrite D. reflexivity. 
+    intros. elim (A s); intros C D. rewrite D. reflexivity.
     case (In_dec peq s (successors!!!pc)); intro.
     right. apply multiple_predecessors with n pc; auto.
     left; auto.
@@ -1047,13 +1047,13 @@ Proof.
   (* Case 2.2.1: n is a successor of pc. Either it is in the
      worklist or it did not change *)
   caseEq (basic_block_map n); intro.
-  right; intros. 
+  right; intros.
   elim (A n); intros C D. rewrite D. rewrite INV3; auto.
   tauto.
   left. elim (A n); intros C D. elim (C i H0); intros. auto.
   (* Case 2.2.2: n is not a successor of pc. It did not change. *)
   right; intros.
-  elim (A n); intros C D. rewrite D. 
+  elim (A n); intros C D. rewrite D.
   rewrite INV3; auto.
   tauto.
 Qed.
@@ -1075,12 +1075,12 @@ Proof.
   eapply (PrimIter.iterate_prop _ _ (step basic_block_map)
            state_invariant).
 
-  intros st INV. destruct st as [stin stwrk]. 
+  intros st INV. destruct st as [stin stwrk].
   unfold step. simpl. caseEq stwrk.
   intro. congruence.
 
-  intros pc rem WRK. 
-  apply propagate_successors_invariant; auto. congruence. 
+  intros pc rem WRK.
+  apply propagate_successors_invariant; auto. congruence.
 
   eauto. apply initial_state_invariant.
 Qed.
@@ -1093,11 +1093,11 @@ Theorem fixpoint_solution:
   In s (successors!!!n) ->
   L.ge res!!s (transf n res!!n).
 Proof.
-  intros. 
+  intros.
   assert (state_invariant (mkstate res nil)).
-  eapply analyze_invariant; eauto. 
-  elim H1; simpl; intros. 
-  elim (H3 n); intros. 
+  eapply analyze_invariant; eauto.
+  elim H1; simpl; intros.
+  elim (H3 n); intros.
   contradiction.
   auto.
 Qed.
@@ -1107,13 +1107,13 @@ Theorem fixpoint_entry:
   fixpoint = Some res ->
   res!!entrypoint = L.top.
 Proof.
-  intros. 
+  intros.
   assert (state_invariant (mkstate res nil)).
-  eapply analyze_invariant; eauto. 
-  elim H0; simpl; intros. 
+  eapply analyze_invariant; eauto.
+  elim H0; simpl; intros.
   apply H1. unfold basic_block_map, is_basic_block_head.
-  fold predecessors. apply peq_true. 
-Qed. 
+  fold predecessors. apply peq_true.
+Qed.
 
 (** ** Preservation of a property over solutions *)
 
@@ -1129,8 +1129,8 @@ Lemma propagate_successors_P:
 Proof.
   induction succs; simpl; intros.
   auto.
-  case (bb a). auto. 
-  apply IHsuccs. red; simpl; intros. 
+  case (bb a). auto.
+  apply IHsuccs. red; simpl; intros.
   rewrite PMap.gsspec. case (peq pc a); intro.
   auto. apply H0.
 Qed.
@@ -1138,14 +1138,14 @@ Qed.
 Theorem fixpoint_invariant:
   forall res pc, fixpoint = Some res -> P res!!pc.
 Proof.
-  unfold fixpoint; intros. pattern res. 
+  unfold fixpoint; intros. pattern res.
   eapply (PrimIter.iterate_prop _ _ (step basic_block_map) Pstate).
 
   intros st PS. unfold step. destruct (st.(st_wrk)).
   apply PS.
   assert (PS2: Pstate (mkstate st.(st_in) l)).
     red; intro; simpl. apply PS.
-  apply propagate_successors_P. auto. auto. eauto. 
+  apply propagate_successors_P. auto. auto. eauto.
 
   red; intro; simpl. rewrite PMap.gi. apply Ptop.
 Qed.
@@ -1165,7 +1165,7 @@ End BBlock_solver.
   the enumeration [n-1], [n-2], ..., 3, 2, 1 where [n] is the
   top CFG node is a reverse postorder traversal.
   Therefore, for forward analysis, we will use an implementation
-  of [NODE_SET] where the [pick] operation selects the 
+  of [NODE_SET] where the [pick] operation selects the
   greatest node in the working list.  For backward analysis,
   we will similarly pick the smallest node in the working list. *)
 
@@ -1188,7 +1188,7 @@ Module NodeSetForward <: NODE_SET.
   Proof.
     intros. rewrite PHeap.In_insert. unfold In. intuition.
   Qed.
-    
+
   Lemma pick_none:
     forall s n, pick s = None -> ~In n s.
   Proof.
@@ -1208,7 +1208,7 @@ Module NodeSetForward <: NODE_SET.
   Qed.
 
   Lemma initial_spec:
-    forall successors n s, 
+    forall successors n s,
     successors!n = Some s -> In n (initial successors).
   Proof.
     intros successors.
@@ -1260,8 +1260,7 @@ Module NodeSetBackward <: NODE_SET.
   Qed.
 
   Lemma initial_spec:
-    forall successors n s, 
+    forall successors n s,
     successors!n = Some s -> In n (initial successors).
   Proof NodeSetForward.initial_spec.
 End NodeSetBackward.
-

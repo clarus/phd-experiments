@@ -45,7 +45,7 @@ void test2(void)
 #pragma pack(1,1,1)
 
 struct s3 {
-  unsigned char x; 
+  unsigned char x;
   unsigned short y;
   unsigned int z;
   signed short v;
@@ -124,7 +124,6 @@ void test6(void)
   s62.x = 123; s62.y = -456; s62.z = 3.14159;
   printf("s62 = {x = %d, y = %d, z = %.5f}\n\n", s62.x, s62.y, s62.z);
 }
-
 
 /* Test harness */
 

@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *               SPLITTING OF CLAUSES                     * */
 /* *                                                        * */
-/* *  $Module:   SPLIT                                      * */ 
+/* *  $Module:   SPLIT                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 2000                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /**************************************************************/
@@ -56,13 +55,11 @@ static LIST  split_DeleteInvalidClausesFromList(PROOFSEARCH, int, LIST);
 static void  split_DeleteInvalidClausesFromStack(PROOFSEARCH);
 static LIST  split_RemoveUnnecessarySplits(PROOFSEARCH, CLAUSE);
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
 
-
-LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause) 
+LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
 /**************************************************************
   INPUT:   A proofsearch object, an empty clause and a pointer to a clause
            used as return value.
@@ -96,7 +93,7 @@ LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
     prfs_SplitFree(ActBacktrackSplit);
     prfs_DecValidLevel(PS);
   }
-  
+
   /* Backtrack further for all right branches on top of the stack */
   while (!prfs_SplitStackEmpty(PS) &&
 	 list_Empty(prfs_SplitBlockedClauses(prfs_SplitStackTop(PS)))) {
@@ -110,7 +107,7 @@ LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
     prfs_SplitFree(ActBacktrackSplit);
     prfs_DecValidLevel(PS);
   }
-  
+
   if (!prfs_SplitStackEmpty(PS)) {
     /* Enter the right branch of the splitting step */
     int SplitMinus1;
@@ -121,12 +118,12 @@ LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
 
     RecoverList       = list_Nconc(prfs_SplitDeletedClauses(ActBacktrackSplit),
 				   RecoverList);
-    prfs_SplitSetDeletedClauses(ActBacktrackSplit, list_Nil());    
+    prfs_SplitSetDeletedClauses(ActBacktrackSplit, list_Nil());
     RecoverList       = split_DeleteInvalidClausesFromList(PS, SplitMinus1,
 							   RecoverList);
 
     RightClauses = prfs_SplitBlockedClauses(ActBacktrackSplit);
-    prfs_SplitSetBlockedClauses(ActBacktrackSplit, list_Nil());    
+    prfs_SplitSetBlockedClauses(ActBacktrackSplit, list_Nil());
     for (Scan = RightClauses; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
       if (clause_Number(list_Car(Scan)) == 0) {
 	/* Found the right clause, the negation clauses have number -1. */
@@ -142,7 +139,7 @@ LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
 #endif
 	*SplitClause = list_Car(Scan);
       }
-      
+
       clause_NewNumber((CLAUSE) list_Car(Scan));
       clause_AddParentClause((CLAUSE) list_Car(Scan), clause_Number(EmptyClause));
       clause_AddParentLiteral((CLAUSE) list_Car(Scan), 0);  /* dummy literal */
@@ -157,7 +154,7 @@ LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
       misc_FinishErrorReport();
     }
 #endif
-    
+
     RecoverList = list_Nconc(RightClauses, RecoverList);
 
     /* Then, delete clauses from current level (Hack) */
@@ -178,7 +175,6 @@ LIST split_Backtrack(PROOFSEARCH PS, CLAUSE EmptyClause, CLAUSE* SplitClause)
   return RecoverList;
 }
 
-
 static LIST split_DeleteClausesDependingOnLevelFromList(PROOFSEARCH Search,
 							LIST ClauseList,
 							int Level, LIST* New)
@@ -198,7 +194,7 @@ static LIST split_DeleteClausesDependingOnLevelFromList(PROOFSEARCH Search,
   SPLIT  Reinsert;
 
   for (Scan = ClauseList; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
-    Clause = list_Car(Scan);   
+    Clause = list_Car(Scan);
     if (clause_DependsOnSplitLevel(Clause, Level)) {
       Reinsert = prfs_GetSplitOfLevel(clause_SplitLevel(Clause), Search);
       if (prfs_SplitDeletedClauses(Reinsert) != list_Nil()) {
@@ -211,7 +207,6 @@ static LIST split_DeleteClausesDependingOnLevelFromList(PROOFSEARCH Search,
   }
   return list_PointerDeleteElement(ClauseList, NULL);
 }
- 
 
 static LIST split_DeleteClausesDependingOnLevelFromSet(PROOFSEARCH PS,
 						       LIST ClauseList,
@@ -257,8 +252,6 @@ static LIST split_DeleteClausesDependingOnLevelFromSet(PROOFSEARCH PS,
   return recover;
 }
 
-
-
 static LIST split_DeleteInvalidClausesFromList(PROOFSEARCH Search, int Level,
 					       LIST ClauseList)
 /**************************************************************
@@ -287,7 +280,7 @@ static LIST split_DeleteInvalidClausesFromList(PROOFSEARCH Search, int Level,
 
 static void split_DeleteInvalidClausesFromStack(PROOFSEARCH Search)
 /**************************************************************
-  INPUT:   A proof search object.            
+  INPUT:   A proof search object.
   EFFECT:  All clauses in the split stack of <Search> that have a higher
            split level than the current <Search> split level are deleted.
 ***************************************************************/
@@ -310,7 +303,6 @@ static void split_DeleteInvalidClausesFromStack(PROOFSEARCH Search)
     prfs_SplitSetDeletedClauses(list_Car(Scan1),list_PointerDeleteElement(ClauseList, NULL));
   }
 }
-
 
 static LIST split_RemoveUnnecessarySplits(PROOFSEARCH PS, CLAUSE EmptyClause)
 /**************************************************************
@@ -341,21 +333,21 @@ static LIST split_RemoveUnnecessarySplits(PROOFSEARCH PS, CLAUSE EmptyClause)
       Split = list_Car(Scan);
 
       /*printf("\n\t Removed: %d",prfs_SplitSplitLevel(Split));*/
-      
+
       clause_DeleteClauseList(prfs_SplitBlockedClauses(Split));
       prfs_SplitSetBlockedClauses(Split, list_Nil());
-      
+
       Recover = list_Nconc(prfs_SplitDeletedClauses(Split), Recover);
       prfs_SplitSetDeletedClauses(Split, list_Nil());
-      
+
       if (prfs_SplitFatherClause(Split) != (CLAUSE)NULL) {
 	Recover = list_Cons(prfs_SplitFatherClause(Split),Recover);
 	prfs_SplitSetFatherClause(Split,NULL);
       }
       Recover = split_DeleteClausesDependingOnLevelFromList(PS, Recover, SplitLevel, &New);
-      
+
       ScanStack = prfs_SplitStack(PS);
-      while (!list_StackEmpty(ScanStack) &&  
+      while (!list_StackEmpty(ScanStack) &&
 	     prfs_SplitSplitLevel((ScanSplit = (SPLIT)list_Car(ScanStack))) > LastBacktrackLevel) {
 	Deleted = prfs_SplitDeletedClauses(ScanSplit);
 	prfs_SplitSetDeletedClauses(ScanSplit, list_Nil()); /* IMPORTANT!, see next line */
@@ -363,27 +355,26 @@ static LIST split_RemoveUnnecessarySplits(PROOFSEARCH PS, CLAUSE EmptyClause)
 	prfs_SplitSetDeletedClauses(ScanSplit, Deleted);
 	ScanStack = list_Cdr(ScanStack);
       }
-      
+
       while (!list_Empty(New)) {
 	Deleted = list_Nil();
 	Recover = list_Nconc(split_DeleteClausesDependingOnLevelFromList(PS, New, SplitLevel, &Deleted),
 			     Recover);
 	New     = Deleted;
       }
-      Recover = list_Nconc(Recover, 
+      Recover = list_Nconc(Recover,
 		    split_DeleteClausesDependingOnLevelFromSet(PS, prfs_UsableClauses(PS), SplitLevel));
       Recover = list_Nconc(Recover,
 			   split_DeleteClausesDependingOnLevelFromSet(PS, prfs_WorkedOffClauses(PS), SplitLevel));
-      
+
       prfs_SplitSetUsed(Split);
     }
-    
+
     SplitLevel--;
     Scan = list_Cdr(Scan);
   }
   return Recover;
 }
-
 
 void split_DeleteClauseAtLevel(PROOFSEARCH PS, CLAUSE Clause, int Level)
 /**************************************************************
@@ -393,14 +384,13 @@ void split_DeleteClauseAtLevel(PROOFSEARCH PS, CLAUSE Clause, int Level)
            and made unshared.
 ***************************************************************/
 {
-  if (clause_GetFlag(Clause,WORKEDOFF)) 
+  if (clause_GetFlag(Clause,WORKEDOFF))
     prfs_ExtractWorkedOff(PS, Clause);
-  else 
+  else
     prfs_ExtractUsable(PS, Clause);
 
   split_KeepClauseAtLevel(PS, Clause, Level);
 }
-
 
 void split_KeepClauseAtLevel(PROOFSEARCH PS, CLAUSE Clause, int Level)
 /**************************************************************
@@ -414,7 +404,6 @@ void split_KeepClauseAtLevel(PROOFSEARCH PS, CLAUSE Clause, int Level)
   Split = prfs_GetSplitOfLevel(Level, PS);
   prfs_SplitSetDeletedClauses(Split,list_Cons(Clause, prfs_SplitDeletedClauses(Split)));
 }
-
 
 LIST split_ExtractEmptyClauses(LIST Clauses, LIST* EmptyClauses)
 /**************************************************************
@@ -449,7 +438,7 @@ CLAUSE split_SmallestSplitLevelClause(LIST Clauses)
 
   Result  = (CLAUSE)list_Car(Clauses);
   Clauses = list_Cdr(Clauses);
-  
+
   while (!list_Empty(Clauses)) {
     if (clause_SplitLevel(Result) > clause_SplitLevel(list_Car(Clauses)))
       Result  = list_Car(Clauses);

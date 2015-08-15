@@ -66,7 +66,6 @@ let unsupported msg =
 let warning msg =
   eprintf "%aWarning: %s\n" Cutil.printloc !currentLocation msg
 
-
 (** ** The builtin environment *)
 
 let builtins_generic = {
@@ -81,8 +80,8 @@ let builtins_generic = {
     (* Block copy *)
     "__builtin_memcpy_aligned",
          (TVoid [],
-           [TPtr(TVoid [], []); 
-            TPtr(TVoid [AConst], []); 
+           [TPtr(TVoid [], []);
+            TPtr(TVoid [AConst], []);
             TInt(Cutil.size_t_ikind, []);
             TInt(Cutil.size_t_ikind, [])],
           false);
@@ -184,12 +183,12 @@ let make_builtin_memcpy args =
       let sz1 =
         match Initializers.constval sz with
         | Errors.OK(Vint n) -> n
-        | _ -> error "ill-formed __builtin_memcpy_aligned (3rd argument must be 
+        | _ -> error "ill-formed __builtin_memcpy_aligned (3rd argument must be
 a constant)"; Integers.Int.zero in
       let al1 =
         match Initializers.constval al with
         | Errors.OK(Vint n) -> n
-        | _ -> error "ill-formed __builtin_memcpy_aligned (4th argument must be 
+        | _ -> error "ill-formed __builtin_memcpy_aligned (4th argument must be
 a constant)"; Integers.Int.one in
       (* to check: sz1 > 0, al1 divides sz1, al1 = 1|2|4|8 *)
       Ebuiltin(EF_memcpy(sz1, al1),
@@ -244,7 +243,7 @@ let convertFkind = function
   | C.FFloat -> F32
   | C.FDouble -> F64
   | C.FLongDouble ->
-      if not !Clflags.option_flongdouble then unsupported "'long double' type"; 
+      if not !Clflags.option_flongdouble then unsupported "'long double' type";
       F64
 
 (** A cache for structs and unions already converted *)
@@ -530,8 +529,8 @@ let rec convertExpr env e =
       | _ ->
           error "ill-formed __builtin_annot (first argument must be string literal)";
           ezero
-      end          
- 
+      end
+
   | C.ECall({edesc = C.EVar {name = "__builtin_annot_intval"}}, args) ->
       begin match args with
       | [ {edesc = C.EConst(CStr txt)}; arg ] ->
@@ -541,7 +540,7 @@ let rec convertExpr env e =
       | _ ->
           error "ill-formed __builtin_annot_intval (first argument must be string literal)";
           ezero
-      end          
+      end
 
  | C.ECall({edesc = C.EVar {name = "__builtin_memcpy_aligned"}}, args) ->
       make_builtin_memcpy (convertExprList env args)
@@ -609,7 +608,7 @@ type switchlabel =
   | Case of C.exp
   | Default
 
-type switchbody = 
+type switchbody =
   | Label of switchlabel
   | Stmt of C.stmt
 
@@ -661,7 +660,7 @@ let rec convertStmt ploc env s =
       Ssequence(convertStmt ploc env s1, convertStmt s1.sloc env s2)
   | C.Sif(e, s1, s2) ->
       let te = convertExpr env e in
-      add_lineno ploc s.sloc 
+      add_lineno ploc s.sloc
         (Sifthenelse(te, convertStmt s.sloc env s1, convertStmt s.sloc env s2))
   | C.Swhile(e, s1) ->
       let te = convertExpr env e in
@@ -815,7 +814,7 @@ let convertInitializer env ty i =
 
 let convertGlobvar loc env (sto, id, ty, optinit) =
   let id' = intern_string id.name in
-  let ty' = convertTyp env ty in 
+  let ty' = convertTyp env ty in
   let sz = Ctypes.sizeof ty' in
   let attr = Cutil.attributes_of_type env ty in
   let init' =
@@ -851,7 +850,7 @@ let checkComposite env si id attr flds =
   let checkField f =
     if f.fld_bitfield <> None then
       unsupported "bit field in struct or union";
-    if Cutil.find_custom_attributes ["aligned"; "__aligned__"] 
+    if Cutil.find_custom_attributes ["aligned"; "__aligned__"]
           (Cutil.attributes_of_type env f.fld_typ) <> [] then
       warning ("ignoring 'aligned' attribute on field " ^ f.fld_name)
   in List.iter checkField flds
@@ -922,7 +921,7 @@ let rec translEnv env = function
 module IdentSet = Set.Make(struct type t = C.ident let compare = compare end)
 
 let cleanupGlobals p =
-  
+
   (* First pass: determine what is defined *)
   let strong = ref IdentSet.empty (* def functions or variables with inits *)
   and weak = ref IdentSet.empty (* variables without inits *)
@@ -945,7 +944,7 @@ let cleanupGlobals p =
     | _ -> () in
   List.iter classify_def p;
 
-  (* Second pass: keep "best" definition for each identifier *)  
+  (* Second pass: keep "best" definition for each identifier *)
   let rec clean defs accu = function
     | [] -> accu
     | g :: gl ->

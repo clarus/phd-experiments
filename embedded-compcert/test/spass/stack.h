@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *              GLOBAL SYSTEM STACK                       * */
 /* *                                                        * */
-/* *  $Module:      STACK                                   * */ 
+/* *  $Module:      STACK                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1998, 1999, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _STACK_
@@ -58,11 +57,9 @@
 /* More basic types and macros                                */
 /**************************************************************/
 
-
 #define stack_SIZE 10000
 
 typedef POINTER STACK[stack_SIZE];
-
 
 /**************************************************************/
 /* Global Variables                                           */
@@ -70,7 +67,6 @@ typedef POINTER STACK[stack_SIZE];
 
 extern STACK stack_STACK;
 extern NAT   stack_POINTER;
-
 
 /**************************************************************/
 /* Inline Functions                                           */
@@ -90,7 +86,7 @@ static __inline__ void stack_Push(POINTER Entry)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   stack_STACK[stack_POINTER++]= Entry;
 }
 
@@ -149,7 +145,4 @@ static __inline__ BOOL stack_Empty(NAT Ptr)
   return stack_POINTER == Ptr;
 }
 
-
 #endif
-
-

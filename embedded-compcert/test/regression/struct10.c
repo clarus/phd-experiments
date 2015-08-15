@@ -1,5 +1,5 @@
 typedef struct xs X;
 
 struct xs {
-  X *x; 
+  X *x;
 } x0;

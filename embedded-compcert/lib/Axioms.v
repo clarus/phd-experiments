@@ -21,13 +21,13 @@ Require ClassicalFacts.
 
 (** The following [Require Export] gives us functional extensionality for dependent function types:
 <<
-Axiom functional_extensionality_dep : forall {A} {B : A -> Type}, 
-  forall (f g : forall x : A, B x), 
+Axiom functional_extensionality_dep : forall {A} {B : A -> Type},
+  forall (f g : forall x : A, B x),
   (forall x, f x = g x) -> f = g.
->> 
+>>
 and, as a corollary, functional extensionality for non-dependent functions:
 <<
-Lemma functional_extensionality {A B} (f g : A -> B) : 
+Lemma functional_extensionality {A B} (f g : A -> B) :
   (forall x, f x = g x) -> f = g.
 >>
 *)

@@ -87,4 +87,3 @@ let filter_prog used p =
 
 let transf_program p =
   filter_prog (used_idents (use_map p) IdentSet.empty (initial_worklist p)) p
-

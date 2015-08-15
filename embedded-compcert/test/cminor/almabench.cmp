@@ -76,9 +76,9 @@ extern "fmod": float -> float -> float
     dp  = anpm((3600.0 *f pi(np,0) +f (pi(np,1) +f pi(np,2) *f t ) *f t ) *f A2R );
     di  = (3600.0 *f dinc(np,0) +f (dinc(np,1) +f dinc(np,2) *f t ) *f t ) *f A2R;
     doh = anpm((3600.0 *f omega(np,0) +f (omega(np,1) +f omega(np,2) *f t ) *f t ) *f A2R );
-    
+
     dmu = 0.35953620 *f t;
-    
+
     k = 0;
     {{ loop {
         if (! (k < 8)) exit;
@@ -110,7 +110,7 @@ extern "fmod": float -> float -> float
         dae = (am -f ae +f de *f sin(ae)) /f (1.0 -f de *f cos(ae));
         ae  = ae +f dae;
         k   = k + 1;
-    
+
         if (k >= 10) exit;
         if (absf(dae) <f 1e-12) exit;
     } }}

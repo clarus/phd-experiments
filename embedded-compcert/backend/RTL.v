@@ -64,7 +64,7 @@ Inductive instruction: Type :=
   | Icall: signature -> reg + ident -> list reg -> reg -> node -> instruction
       (** [Icall sig fn args dest succ] invokes the function determined by
           [fn] (either a function pointer found in a register or a
-          function name), giving it the values of registers [args] 
+          function name), giving it the values of registers [args]
           as arguments.  It stores the return value in [dest] and branches
           to [succ]. *)
   | Itailcall: signature -> reg + ident -> list reg -> instruction
@@ -128,7 +128,7 @@ Fixpoint init_regs (vl: list val) (rl: list reg) {struct rl} : regset :=
   | _, _ => Regmap.init Vundef
   end.
 
-(** The dynamic semantics of RTL is given in small-step style, as a 
+(** The dynamic semantics of RTL is given in small-step style, as a
   set of transitions between states.  A state captures the current
   point in the execution.  Three kinds of states appear in the transitions:
 
@@ -150,7 +150,7 @@ Fixpoint init_regs (vl: list val) (rl: list reg) {struct rl} : regset :=
 
 In all three kinds of states, the [cs] parameter represents the call stack.
 It is a list of frames [Stackframe res f sp pc rs].  Each frame represents
-a function call in progress.  
+a function call in progress.
 [res] is the pseudo-register that will receive the result of the call.
 [f] is the calling function.
 [sp] is its stack pointer.
@@ -355,9 +355,9 @@ Proof.
   assert (t1 = E0 -> exists s2, step (Genv.globalenv p) s t2 s2).
     intros. subst. inv H0. exists s1; auto.
   inversion H; subst; auto.
-  exploit external_call_receptive; eauto. intros [vres2 [m2 EC2]]. 
+  exploit external_call_receptive; eauto. intros [vres2 [m2 EC2]].
   exists (State s0 f sp pc' (rs#res <- vres2) m2). eapply exec_Ibuiltin; eauto.
-  exploit external_call_receptive; eauto. intros [vres2 [m2 EC2]]. 
+  exploit external_call_receptive; eauto. intros [vres2 [m2 EC2]].
   exists (Returnstate s0 vres2 m2). econstructor; eauto.
 (* trace length *)
   red; intros; inv H; simpl; try omega.

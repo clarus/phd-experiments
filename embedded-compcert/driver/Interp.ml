@@ -101,7 +101,7 @@ let name_of_function prog fn =
   in find_name prog.prog_defs
 
 let invert_local_variable e b =
-  Maps.PTree.fold 
+  Maps.PTree.fold
     (fun res id (b', _) -> if b = b' then Some id else res)
     e None
 
@@ -179,7 +179,7 @@ let rec compare_cont k1 k2 =
   match k1, k2 with
   | Kstop, Kstop -> 0
   | Kdo k1, Kdo k2 -> compare_cont k1 k2
-  | Kseq(s1, k1), Kseq(s2, k2) ->  
+  | Kseq(s1, k1), Kseq(s2, k2) ->
       let c = compare s1 s2 in if c <> 0 then c else compare_cont k1 k2
   | Kifthenelse(s1, s1', k1), Kifthenelse(s2, s2', k2) ->
       let c = compare (s1,s1') (s2,s2') in
@@ -290,7 +290,7 @@ let extract_string ge m id ofs =
         if c = '\000' then begin
           Some(Buffer.contents b)
         end else begin
-          Buffer.add_char b c; 
+          Buffer.add_char b c;
           extract blk (Z.succ ofs)
         end
     | _ ->
@@ -553,18 +553,18 @@ let rec explore_all p prog ge seen queue =
       if StateSet.mem sw seen then
         explore_all p prog ge seen queue'
       else
-        let succs = 
+        let succs =
           List.rev_map (fun sw -> (time + 1, sw)) (do_step p prog ge time sw) in
         let queue'' = List.fold_left PrioQueue.insert queue' succs in
         let seen' = StateSet.add sw seen in
-        let seen'' = 
+        let seen'' =
           if PrioQueue.dominate tsw queue''
           then purge_seen (mem_state (fst sw)).Mem.nextblock seen'
           else seen' in
         explore_all p prog ge seen'' queue''
 
 (* The variant of the source program used to build the world for
-   executing events.  
+   executing events.
    Volatile variables are turned into non-volatile ones, so that
      reads and writes can be performed.
    Readonly variables are kept, for string literals in particular.
@@ -647,5 +647,5 @@ let execute prog =
           | First | Random ->
               explore_one p prog1 ge 0 (s, world wge wm)
           | All ->
-              explore_all p prog1 ge StateSet.empty 
+              explore_all p prog1 ge StateSet.empty
                                 (PrioQueue.singleton (0, (s, world wge wm)))

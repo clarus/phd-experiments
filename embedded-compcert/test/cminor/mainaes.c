@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-typedef unsigned char	u8;	
-typedef unsigned short	u16;	
+typedef unsigned char	u8;
+typedef unsigned short	u16;
 typedef unsigned int	u32;
 #define MAXNR	14
 
@@ -713,7 +713,7 @@ static void do_bench(int nblocks)
 int main(int argc, char ** argv)
 {
   if (argc < 2) {
-  do_test(128, 
+  do_test(128,
           (u8 *)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F",
           (u8 *)"\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF",
           (u8 *)"\x69\xC4\xE0\xD8\x6A\x7B\x04\x30\xD8\xCD\xB7\x80\x70\xB4\xC5\x5A",
@@ -733,7 +733,3 @@ int main(int argc, char ** argv)
   }
   return 0;
 }
-
-
-
-

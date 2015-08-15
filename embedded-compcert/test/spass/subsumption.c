@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     SUBSUMPTION                        * */
 /* *                                                        * */
-/* *  $Module:   SUBSUMPTION                                * */ 
+/* *  $Module:   SUBSUMPTION                                * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,9 +42,7 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #include "subsumption.h"
 
@@ -61,8 +59,7 @@ static BOOL subs_InternIdcRes(CLAUSE, int, int, int);
 BOOL subs_IdcTestlits(CLAUSE, CLAUSE, LITPTR*);
 BOOL subs_Testlits(CLAUSE, CLAUSE);
 
-
-void subs_Init(void) 
+void subs_Init(void)
 {
   int i;
 
@@ -70,7 +67,6 @@ void subs_Init(void)
   for (i = 0; i < subs__MAXLITS; i++)
     multvec_i[i] = multvec_j[i] = 0;
 }
-
 
 static BOOL subs_TestlitsEq(CLAUSE c1, CLAUSE c2)
 /**********************************************************
@@ -110,16 +106,16 @@ static BOOL subs_TestlitsEq(CLAUSE c1, CLAUSE c2)
 			  term_SecondArgument(fol_Atom(t1)),
 			  term_FirstArgument(fol_Atom(t2))))
 	    found = TRUE;
-	  else 
+	  else
 	    j++;
 	}
 	else
 	  j++;
       }
       cont_BackTrack();
-      
+
     } while (!found && j < k);
-       
+
     if (!found)
       return FALSE;
   }
@@ -127,16 +123,15 @@ static BOOL subs_TestlitsEq(CLAUSE c1, CLAUSE c2)
   return TRUE;
 }
 
-
 static BOOL subs_STMultiIntern(int i, CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Integers i,j and two clauses c1 and c2
-           i and j stand for the i-th and the j-th literal 
-	   in the clause c1 respectively c2. 
+           i and j stand for the i-th and the j-th literal
+	   in the clause c1 respectively c2.
   RETURNS: FALSE if c1 does not multisubsume c2 and TRUE otherwise.
   CAUTION: None.
 ***********************************************************/
-{  
+{
   int  n,j;
   TERM lit1,lit2;
 
@@ -192,7 +187,6 @@ static BOOL subs_STMultiIntern(int i, CLAUSE c1, CLAUSE c2)
   return FALSE;
 }
 
-
 BOOL subs_STMulti(CLAUSE c1, CLAUSE c2)
 {
   BOOL Result;
@@ -219,7 +213,6 @@ BOOL subs_STMulti(CLAUSE c1, CLAUSE c2)
   /*unify_CheckState();*/
   return Result;
 }
-
 
 static BOOL subs_TestlitsEqExcept(CLAUSE C1, CLAUSE C2)
 {
@@ -261,7 +254,7 @@ static BOOL subs_TestlitsEqExcept(CLAUSE C1, CLAUSE C2)
 				    term_SecondArgument(fol_Atom(t1)),
 				    term_FirstArgument(fol_Atom(t2))))
 	      found = TRUE;
-	    else 
+	    else
 	      j++;
 	  }
 	  else
@@ -270,18 +263,16 @@ static BOOL subs_TestlitsEqExcept(CLAUSE C1, CLAUSE C2)
 	cont_BackTrack();
       }  /* else */
     } while (!found && (j < k));
-       
-    if (!found) 
+
+    if (!found)
       return FALSE;
     do
       i++;
     while (multvec_i[i] == stamp && i < n);
   } /* while i < n */
 
-
   return TRUE;
 }
-
 
 static BOOL subs_STMultiExceptIntern(CLAUSE C1, CLAUSE C2)
 {
@@ -358,7 +349,6 @@ static BOOL subs_STMultiExceptIntern(CLAUSE C1, CLAUSE C2)
   return FALSE;
 }
 
-
 BOOL subs_STMultiExcept(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
 /**********************************************************
   INPUT:   Two clauses and for each clause a literal that is
@@ -395,7 +385,6 @@ BOOL subs_STMultiExcept(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
   /*unify_CheckState();*/
   return Result;
 }
-
 
 static BOOL subs_PartnerTest(CLAUSE C1, int c1l, int c1r, CLAUSE C2, int c2l, int c2r)
 /**********************************************************
@@ -448,7 +437,7 @@ static BOOL subs_PartnerTest(CLAUSE C1, int c1l, int c1r, CLAUSE C2, int c2l, in
 					term_SecondArgument(fol_Atom(t1)),
 					term_FirstArgument(fol_Atom(t2))))
 		  found = TRUE;
-		else 
+		else
 		  j++;
 	      }
 	      else
@@ -457,8 +446,8 @@ static BOOL subs_PartnerTest(CLAUSE C1, int c1l, int c1r, CLAUSE C2, int c2l, in
 	    cont_BackTrack();
 	  }  /* else */
 	} while (!found && (j < c2r));
-       
-	if (!found) 
+
+	if (!found)
 	  return FALSE;
 	do
 	  c1l++;
@@ -468,8 +457,7 @@ static BOOL subs_PartnerTest(CLAUSE C1, int c1l, int c1r, CLAUSE C2, int c2l, in
   return TRUE;
 }
 
-
-static BOOL subs_SubsumesInternBasic(CLAUSE C1, int c1fa, int c1fs, int c1l, 
+static BOOL subs_SubsumesInternBasic(CLAUSE C1, int c1fa, int c1fs, int c1l,
 				     CLAUSE C2, int c2fa, int c2fs, int c2l)
 {
   int  i, j, n, k;
@@ -555,7 +543,6 @@ static BOOL subs_SubsumesInternBasic(CLAUSE C1, int c1fa, int c1fs, int c1l,
   return FALSE;
 }
 
-
 BOOL subs_SubsumesBasic(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
 /**********************************************************
   INPUT:   Two clauses and for each clause a literal that are
@@ -598,7 +585,7 @@ BOOL subs_SubsumesBasic(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
   if (ExceptJ >= clause_FirstLitIndex())
     multvec_j[ExceptJ] = stamp;
 
-  if (c1l > 1 && 
+  if (c1l > 1 &&
       (!subs_PartnerTest(C1,clause_FirstConstraintLitIndex(C1),c1fa,
 			 C2,clause_FirstConstraintLitIndex(C2),c2fa) ||
        !subs_PartnerTest(C1,c1fa,c1fs,C2,c2fa,c2fs) ||
@@ -618,14 +605,13 @@ BOOL subs_SubsumesBasic(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
   return Result;
 }
 
-
 static BOOL subs_SubsumesInternWithSignature(int i, CLAUSE c1, CLAUSE c2, BOOL Variants, LIST* Bindings)
 /**********************************************************
-  INPUT:   
-  RETURNS: 
-  CAUTION: 
+  INPUT:
+  RETURNS:
+  CAUTION:
 ***********************************************************/
-{  
+{
   int  n,j;
   TERM lit1,lit2;
   LIST NewBindings,Scan;
@@ -650,7 +636,7 @@ static BOOL subs_SubsumesInternWithSignature(int i, CLAUSE c1, CLAUSE c2, BOOL V
 	  return TRUE;
 	}
 	multvec_j[j] = 0;
-      }      
+      }
       for (Scan=NewBindings;!list_Empty(Scan);Scan=list_Cdr(Scan)) { /* Backtrack bindings */
 	if (symbol_IsVariable((SYMBOL)list_Car(Scan)))
 	  term_ClearBinding((SYMBOL)list_Car(Scan));
@@ -705,7 +691,7 @@ BOOL subs_SubsumesWithSignature(CLAUSE C1, CLAUSE C2, BOOL Variants, LIST *Bindi
 
   if (clause_Length(C1) > clause_Length(C2) ||
       clause_NumOfSuccLits(C1) > clause_NumOfSuccLits(C2) ||
-      (clause_NumOfAnteLits(C1) + clause_NumOfConsLits(C1)) > 
+      (clause_NumOfAnteLits(C1) + clause_NumOfConsLits(C1)) >
       (clause_NumOfAnteLits(C2) + clause_NumOfConsLits(C2))) {   /* Multiset restriction */
     return FALSE;
   }
@@ -804,7 +790,6 @@ static BOOL subs_SubsumesIntern(CLAUSE C1, int c1fs, int c1l, CLAUSE C2, int c2f
   return FALSE;
 }
 
-
 BOOL subs_Subsumes(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
 /**********************************************************
   INPUT:   Two clauses and for each clause a literal that is
@@ -821,7 +806,7 @@ BOOL subs_Subsumes(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
   c1l    = clause_Length(C1);
   c2fs   = clause_FirstSuccedentLitIndex(C2);
   c2l    = clause_Length(C2);
-  
+
   lw1 = (ExceptI >= clause_FirstLitIndex() ?
 	 clause_LiteralWeight(clause_GetLiteral(C1,ExceptI)) : 0);
   lw2 = (ExceptJ >= clause_FirstLitIndex() ?
@@ -843,7 +828,7 @@ BOOL subs_Subsumes(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
   if (ExceptJ >= clause_FirstLitIndex())
     multvec_j[ExceptJ] = stamp;
 
-  if (c1l > 1 && 
+  if (c1l > 1 &&
       (!subs_PartnerTest(C1,clause_FirstConstraintLitIndex(C1),c1fs,
 			 C2,clause_FirstConstraintLitIndex(C2),c2fs) ||
        !subs_PartnerTest(C1,c1fs,c1l,C2,c2fs,c2l)))
@@ -854,7 +839,7 @@ BOOL subs_Subsumes(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
 #endif
 
   Result = subs_SubsumesIntern(C1,c1fs,c1l,C2,c2fs,c2l);
-  
+
 #ifdef CHECK
   cont_CheckState();
 #endif
@@ -862,18 +847,15 @@ BOOL subs_Subsumes(CLAUSE C1, CLAUSE C2, int ExceptI, int ExceptJ)
   return Result;
 }
 
-
-
-
 BOOL subs_ST(int i, int j, CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Integers i,j and two clauses c1 and c2.
-           i and j stand for the i-th and the j-th literal 
+           i and j stand for the i-th and the j-th literal
 	   in the clause c1 respectively c2.
   RETURNS: FALSE if c1 does not subsume c2 and TRUE otherwise.
   CAUTION: None.
 ***********************************************************/
-{  
+{
   cont_StartBinding();
 
   while ((j < clause_Length(c2)) &&
@@ -900,7 +882,6 @@ BOOL subs_ST(int i, int j, CLAUSE c1, CLAUSE c2)
   return subs_ST(i, j, c1, c2);
 }
 
-
 BOOL subs_Testlits(CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1 and c2.
@@ -922,16 +903,15 @@ BOOL subs_Testlits(CLAUSE c1, CLAUSE c2)
       if (!(found = unify_Match(cont_LeftContext(), t1, clause_GetLiteralTerm(c2,j))))
 	j++;
       cont_BackTrack();
-      
+
     } while (!found && (j < clause_Length(c2)));
-       
+
     if (!found)
       return FALSE;
   }
 
   return TRUE;
 }
-
 
 static LIST subs_GetVariables(TERM t)
 /**********************************************************
@@ -965,7 +945,6 @@ static LIST subs_GetVariables(TERM t)
   return(symbols);
 }
 
-
 static BOOL subs_SubsumptionPossible(CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1 and c2.
@@ -992,11 +971,10 @@ static BOOL subs_SubsumptionPossible(CLAUSE c1, CLAUSE c2)
   return TRUE;
 }
 
-
 BOOL subs_IdcTestlits(CLAUSE c1, CLAUSE c2, LITPTR* litptr)
 /**********************************************************
   INPUT:   Two clauses c1, c2  and a pointer to a litptr structure.
-  RETURNS: FALSE if c1 can not independently be matched 
+  RETURNS: FALSE if c1 can not independently be matched
            to c2 and TRUE otherwise.
   CAUTION: A structure is build and litptr points to that structure.
 ***********************************************************/
@@ -1005,21 +983,21 @@ BOOL subs_IdcTestlits(CLAUSE c1, CLAUSE c2, LITPTR* litptr)
   int   i;
 
   if (subs_SubsumptionPossible(c1,c2)) {
- 
+
     TermIndexlist  = list_Nil();
     VarSymbList    = list_Nil();
     TermSymbList   = list_Nil();
- 
+
     for (i = 0; i < clause_Length(c1); i++) {
       VarSymbList = subs_GetVariables(clause_GetLiteralTerm(c1,i));
-   
+
       if (VarSymbList != list_Nil()){
-	TermIndexlist = list_Cons((POINTER)i, TermIndexlist);         
+	TermIndexlist = list_Cons((POINTER)i, TermIndexlist);
 	TermSymbList  = list_Cons(VarSymbList,TermSymbList);
-      } 
+      }
     }
-  
-    *litptr = litptr_Create(TermIndexlist,TermSymbList); 
+
+    *litptr = litptr_Create(TermIndexlist,TermSymbList);
 
     list_Delete(TermSymbList);
     list_Delete(TermIndexlist);
@@ -1029,12 +1007,11 @@ BOOL subs_IdcTestlits(CLAUSE c1, CLAUSE c2, LITPTR* litptr)
   return FALSE;
 }
 
-
 static BOOL subs_SubsumptionVecPossible(CLAUSE c1, int vec, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1 and c2 and a vector pointer.
   RETURNS: TRUE if all literals in c1 which indexes stand
-           in the vector with bottom pointer vec can 
+           in the vector with bottom pointer vec can
 	   independently be matched to a literal in c2.
   CAUTION: None.
 ***********************************************************/
@@ -1045,7 +1022,7 @@ static BOOL subs_SubsumptionVecPossible(CLAUSE c1, int vec, CLAUSE c2)
     for (j = 0; j < clause_Length(c2); j++) {
       cont_StartBinding();
       if (unify_Match(cont_LeftContext(),
-		      clause_GetLiteralTerm(c1, (int) vec_GetNth(i)), 
+		      clause_GetLiteralTerm(c1, (int) vec_GetNth(i)),
 		      clause_GetLiteralTerm(c2,j)))
 	j = clause_Length(c2) + 1;
       cont_BackTrack();
@@ -1053,23 +1030,22 @@ static BOOL subs_SubsumptionVecPossible(CLAUSE c1, int vec, CLAUSE c2)
     if (j == clause_Length(c2))
       return FALSE;
   }
-  
+
   return TRUE;
 }
-
 
 static BOOL subs_SubsumptionVecPossibleEq(CLAUSE c1, int vec, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1 and c2 and a vector pointer.
   RETURNS: TRUE if all literals in c1 which indexes stand
-           in the vector with bottom pointer vec can 
+           in the vector with bottom pointer vec can
 	   independently be matched to a literal in c2.
   CAUTION: None.
 ***********************************************************/
 {
   int    i,j,n;
   TERM   lit1,lit2;
-  
+
   n = clause_Length(c2);
   for (i = vec; i < vec_ActMax(); i++) {
     lit1 = clause_GetLiteralTerm(c1, (int) vec_GetNth(i));
@@ -1103,10 +1079,9 @@ static BOOL subs_SubsumptionVecPossibleEq(CLAUSE c1, int vec, CLAUSE c2)
     if (j==n)
 	return FALSE;
   }
-  
+
   return TRUE;
 }
-
 
 static BOOL subs_IdcVecTestlits(CLAUSE c1, int vec, CLAUSE c2, LITPTR* litptr)
 /**********************************************************
@@ -1119,33 +1094,32 @@ static BOOL subs_IdcVecTestlits(CLAUSE c1, int vec, CLAUSE c2, LITPTR* litptr)
 {
   LIST  TermIndexlist,VarSymbList,TermSymbList;
   int   i;
-  
+
   if (subs_SubsumptionVecPossible(c1,vec,c2)) {
-    
+
     TermIndexlist  = list_Nil();
     VarSymbList    = list_Nil();
     TermSymbList   = list_Nil();
-    
+
     for (i = vec; i < vec_ActMax(); i++) {
       VarSymbList =
 	subs_GetVariables(clause_GetLiteralTerm(c1, (int) vec_GetNth(i)));
-   
+
       if (VarSymbList != list_Nil()){
-	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);         
+	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);
 	TermSymbList  = list_Cons(VarSymbList,TermSymbList);
-      } 
+      }
     }
-	    
-    *litptr = litptr_Create(TermIndexlist,TermSymbList); 
+
+    *litptr = litptr_Create(TermIndexlist,TermSymbList);
 
     list_Delete(TermSymbList);
     list_Delete(TermIndexlist);
-	
+
     return TRUE;
   }
   return FALSE;
 }
-
 
 static BOOL subs_IdcVecTestlitsEq(CLAUSE c1, int vec, CLAUSE c2,
 				  LITPTR* litptr)
@@ -1159,40 +1133,39 @@ static BOOL subs_IdcVecTestlitsEq(CLAUSE c1, int vec, CLAUSE c2,
 {
   LIST  TermIndexlist,VarSymbList,TermSymbList;
   int   i;
-  
+
   if (subs_SubsumptionVecPossibleEq(c1,vec,c2)) {
-    
+
     TermIndexlist  = list_Nil();
     VarSymbList    = list_Nil();
     TermSymbList   = list_Nil();
-    
+
     for (i = vec; i < vec_ActMax(); i++){
       VarSymbList =
 	subs_GetVariables(clause_GetLiteralTerm(c1, (int) vec_GetNth(i)));
-   
+
       if (VarSymbList != list_Nil()){
-	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);         
+	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);
 	TermSymbList  = list_Cons(VarSymbList,TermSymbList);
-      } 
+      }
     }
-	    
-    *litptr = litptr_Create(TermIndexlist,TermSymbList); 
+
+    *litptr = litptr_Create(TermIndexlist,TermSymbList);
 
     list_Delete(TermSymbList);
     list_Delete(TermIndexlist);
-	
+
     return TRUE;
   }
   return FALSE;
 }
-
 
 static void subs_CompVec(LITPTR litptr)
 /**********************************************************
   INPUT:   A  LITPTR pointer.
   RETURNS: None.
   CAUTION: Indexes are pushed on the vector. These indexes build
-           a component with respect to the structure litptr and to the 
+           a component with respect to the structure litptr and to the
 	   actual bindings.
 ***********************************************************/
 {
@@ -1201,7 +1174,6 @@ static void subs_CompVec(LITPTR litptr)
 
   n        = litptr_Length(litptr);
   complist = list_Nil();
-
 
   if (n > 0){
     for (j = 0; j < n; j++) {
@@ -1233,34 +1205,33 @@ static void subs_CompVec(LITPTR litptr)
   }
 }
 
-
 static BOOL subs_StVec(int i, int j, CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Integers i,j and two clauses c1 and c2.
-           i is a pointer to vector and represents a 
-	   literal in clause c1 and j stand for the j-th 
+           i is a pointer to vector and represents a
+	   literal in clause c1 and j stand for the j-th
 	   literal in the clause c2.
   RETURNS: FALSE if c1 do not subsume c2 and TRUE otherwise.
   CAUTION: None.
 ***********************************************************/
-{  
+{
   int a;
-    
+
   if (j >= clause_Length(c2))
     return FALSE;
-    
+
   a = j;
-  
+
   cont_StartBinding();
 
-  while ((a < clause_Length(c2)) && 
+  while ((a < clause_Length(c2)) &&
 	 !(unify_Match(cont_LeftContext(),
 		       clause_GetLiteralTerm(c1, (int) vec_GetNth(i)),
 		       clause_GetLiteralTerm(c2,a)))){
     a++;
     cont_BackTrackAndStart();
   }
-  
+
   if (a >= clause_Length(c2)) {
     cont_BackTrack();
     return FALSE;
@@ -1268,12 +1239,11 @@ static BOOL subs_StVec(int i, int j, CLAUSE c1, CLAUSE c2)
 
   if ((i == (vec_ActMax()-1)) || subs_StVec(i+1, 0, c1, c2))
     return TRUE;
-  else 
+  else
     cont_BackTrack();
 
   return subs_StVec(i, a+1, c1, c2);
 }
-
 
 static int subs_SearchTop(CLAUSE c1, int vec, CLAUSE c2)
 /**********************************************************
@@ -1309,7 +1279,6 @@ static int subs_SearchTop(CLAUSE c1, int vec, CLAUSE c2)
   return index;
 }
 
-
 static BOOL subs_TcVec(CLAUSE c1, int vec, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1, c2, a vector pointer vec.
@@ -1322,7 +1291,7 @@ static BOOL subs_TcVec(CLAUSE c1, int vec, CLAUSE c2)
   a    = 0;
 
   top_index = subs_SearchTop(c1,vec,c2);
-    
+
   do {
     cont_StartBinding();
     while ((a < clause_Length(c2)) &&
@@ -1332,24 +1301,24 @@ static BOOL subs_TcVec(CLAUSE c1, int vec, CLAUSE c2)
       a++;
       cont_BackTrackAndStart();
     }
-    
+
     if (a >= clause_Length(c2)){
       cont_BackTrack();
       return FALSE;
     }
 
-    if ((vec - vec_ActMax()) == 1) 
-      return TRUE;		
-    
+    if ((vec - vec_ActMax()) == 1)
+      return TRUE;
+
     if (subs_InternIdc(c1, vec, c2))
       return TRUE;
     else {
       cont_BackTrack();	/* Dies ist der 'Hurra' Fall.*/
-      a++;			
+      a++;
     }
 
   } while (a < clause_Length(c2));
-  
+
   return FALSE;
 }
 
@@ -1368,7 +1337,7 @@ static BOOL subs_TcVecEq(CLAUSE c1, int vec, CLAUSE c2)
   a         = 0;
   top_index = subs_SearchTop(c1,vec,c2);
   lit1      = clause_GetLiteralTerm(c1,top_index);
-    
+
   do {
     search = TRUE;
 
@@ -1398,89 +1367,85 @@ static BOOL subs_TcVecEq(CLAUSE c1, int vec, CLAUSE c2)
 	}
       }
     }
-    
+
     if (a >= clause_Length(c2)) {
       cont_BackTrack();
       return FALSE;
     }
 
-    if ((vec_ActMax() - vec) == 1) 
-      return TRUE;		
-    
+    if ((vec_ActMax() - vec) == 1)
+      return TRUE;
+
     if (subs_InternIdcEq(c1, vec, c2))
       return TRUE;
     else {
       cont_BackTrack();
-      a++;			
+      a++;
     }
 
   } while (a < clause_Length(c2));
-  
+
   return FALSE;
 }
-
 
 static BOOL subs_InternIdc(CLAUSE c1, int vec, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1, c2, a vector pointer vec.
   RETURNS: FALSE if the literals of c1 which are designed by
            the elements of vec do not subsume c2 and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int        locvec;
   LITPTR litptr;
-  
-  
+
   if (!subs_IdcVecTestlits(c1,vec,c2,&litptr))
     return FALSE;
 
   locvec = vec_ActMax();
-  
+
   do {
-    subs_CompVec(litptr);	
+    subs_CompVec(litptr);
     if (!vec_IsMax(locvec)) {
       if (!subs_TcVec(c1,locvec,c2)) {
 	vec_SetMax(locvec);
 	litptr_Delete(litptr);
 	return FALSE;
-      } 
+      }
       else
 	vec_SetMax(locvec);
     }
   } while (!litptr_AllUsed(litptr));
 
   litptr_Delete(litptr);
-  
+
   return TRUE;
 }
-
 
 static BOOL subs_InternIdcEq(CLAUSE c1, int vec, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1, c2, a vector pointer vec.
   RETURNS: FALSE if the literals of c1 which are designed by
            the elements of vec do not subsume c2 and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int        locvec;
   LITPTR litptr;
-  
-  
+
   if (!subs_IdcVecTestlitsEq(c1,vec,c2,&litptr))
     return FALSE;
 
   locvec = vec_ActMax();
-  
+
   do {
-    subs_CompVec(litptr);	
+    subs_CompVec(litptr);
     if (!vec_IsMax(locvec)) {
       if (!subs_TcVecEq(c1,locvec,c2)) {
 	vec_SetMax(locvec);
 	litptr_Delete(litptr);
 	return FALSE;
-      } 
+      }
       else
 	vec_SetMax(locvec);
     }
@@ -1488,16 +1453,15 @@ static BOOL subs_InternIdcEq(CLAUSE c1, int vec, CLAUSE c2)
   } while (!litptr_AllUsed(litptr));
 
   litptr_Delete(litptr);
-  
+
   return TRUE;
 }
-
 
 BOOL subs_Idc(CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1, c2.
   RETURNS: FALSE if c1 do not subsume c2 and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int  i,vec;
@@ -1509,34 +1473,33 @@ BOOL subs_Idc(CLAUSE c1, CLAUSE c2)
     vec_Push((POINTER) i);
 
   Result = subs_InternIdc(c1,vec,c2);
-    
+
   vec_SetMax(vec);
 
   cont_Reset();
-    
+
   return Result;
 }
-
 
 BOOL subs_IdcEq(CLAUSE c1, CLAUSE c2)
 /**********************************************************
   INPUT:   Two clauses c1, c2.
   RETURNS: FALSE if c1 do not subsume c2 and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int  i,vec;
   BOOL Result;
 
   /*fputs("\n Idc on:  ", stdout); clause_Print(c1);
-    putchar('\t'); clause_Print(c2); */ 
+    putchar('\t'); clause_Print(c2); */
   vec = vec_ActMax();
 
   for (i = 0; i < clause_Length(c1); i++)
     vec_Push((POINTER) i);
 
   Result = subs_InternIdcEq(c1,vec,c2);
-    
+
   vec_SetMax(vec);
 
   cont_Reset();
@@ -1546,12 +1509,11 @@ BOOL subs_IdcEq(CLAUSE c1, CLAUSE c2)
   return Result;
 }
 
-
 BOOL subs_IdcEqMatch(CLAUSE c1, CLAUSE c2, SUBST subst)
 /**********************************************************
   INPUT:   Two clauses c1, c2.
   RETURNS: FALSE if c1 do not subsume c2 and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int  i,vec;
@@ -1568,7 +1530,7 @@ BOOL subs_IdcEqMatch(CLAUSE c1, CLAUSE c2, SUBST subst)
   unify_EstablishMatcher(cont_LeftContext(), subst);
 
   Result = subs_InternIdcEq(c1,vec,c2);
-    
+
   vec_SetMax(vec);
 
   cont_Reset();
@@ -1578,14 +1540,13 @@ BOOL subs_IdcEqMatch(CLAUSE c1, CLAUSE c2, SUBST subst)
   return Result;
 }
 
-
 static BOOL subs_SubsumptionVecPossibleRes(CLAUSE c1, int vec,
 					   int beg, int end)
 /**********************************************************
   INPUT:   Two clauses c1 and c2 and three vector pointer
            vec,beg and end.
   RETURNS: TRUE if all literals in c1 which indexes stand
-           in the vector with bottom pointer vec can 
+           in the vector with bottom pointer vec can
 	   independently be matched to a literal in c2
 	   which indexes stand in the vector between the
 	   pointers beg and end (exclusive).
@@ -1598,7 +1559,7 @@ static BOOL subs_SubsumptionVecPossibleRes(CLAUSE c1, int vec,
     for (j = beg; j < end; j++){
       cont_StartBinding();
       if (unify_Match(cont_LeftContext(),
-		      clause_GetLiteralTerm(c1, (int) vec_GetNth(i)), 
+		      clause_GetLiteralTerm(c1, (int) vec_GetNth(i)),
 		      clause_GetLiteralTerm(c1, (int) vec_GetNth(j))))
 	j = end+1;
       cont_BackTrack();
@@ -1608,7 +1569,6 @@ static BOOL subs_SubsumptionVecPossibleRes(CLAUSE c1, int vec,
   }
   return TRUE;
 }
-
 
 static BOOL subs_IdcVecTestlitsRes(CLAUSE c1, int vec,
 				   int beg, int end, LITPTR* litptr)
@@ -1624,33 +1584,32 @@ static BOOL subs_IdcVecTestlitsRes(CLAUSE c1, int vec,
 {
   LIST  TermIndexlist,VarSymbList,TermSymbList;
   int   i;
-  
+
   if (subs_SubsumptionVecPossibleRes(c1,vec,beg,end)) {
-    
+
     TermIndexlist  = list_Nil();
     VarSymbList    = list_Nil();
     TermSymbList   = list_Nil();
-    
+
     for (i = vec; i < vec_ActMax(); i++) {
       VarSymbList =
 	subs_GetVariables(clause_GetLiteralTerm(c1, (int) vec_GetNth(i)));
-      
+
       if (VarSymbList != list_Nil()) {
-	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);         
+	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);
 	TermSymbList  = list_Cons(VarSymbList,TermSymbList);
-      } 
+      }
     }
-    
-    *litptr = litptr_Create(TermIndexlist,TermSymbList); 
-    
+
+    *litptr = litptr_Create(TermIndexlist,TermSymbList);
+
     list_Delete(TermSymbList);
     list_Delete(TermIndexlist);
-    
+
     return TRUE;
   }
   return FALSE;
 }
-
 
 static int subs_SearchTopRes(CLAUSE c1, int vec, int beg, int end)
 /**********************************************************
@@ -1662,7 +1621,7 @@ static int subs_SearchTopRes(CLAUSE c1, int vec, int beg, int end)
 ***********************************************************/
 {
   int  index,i,j,zaehler;
-    
+
   index = (int) vec_GetNth(vec);
 
   for (i = vec; i < vec_ActMax(); i++) {
@@ -1687,12 +1646,11 @@ static int subs_SearchTopRes(CLAUSE c1, int vec, int beg, int end)
   return index;
 }
 
-
 static BOOL subs_TcVecRes(CLAUSE c1, int vec, int beg, int end)
 /**********************************************************
   INPUT:   A clause c1, three vector pointers vec,beg and end.
   RETURNS: FALSE if the literals of c1 which are designated by
-           the elements of vec do not subsume c2 with 
+           the elements of vec do not subsume c2 with
 	   respect to the vector and the vector pointers
 	   beg and end and TRUE otherwise.
   CAUTION: None.
@@ -1703,75 +1661,72 @@ static BOOL subs_TcVecRes(CLAUSE c1, int vec, int beg, int end)
   a = beg;
 
   top_index = subs_SearchTopRes(c1,vec,beg,end);
-    
+
   do {
     cont_StartBinding();
-    while ((a < end) && 
+    while ((a < end) &&
 	   !unify_Match(cont_LeftContext(),
 			clause_GetLiteralTerm(c1,top_index),
 			clause_GetLiteralTerm(c1,(int)vec_GetNth(a)))) {
       a++;
       cont_BackTrackAndStart();
     }
-    
+
     if (a >= end){
       cont_BackTrack();
       return FALSE;
     }
 
     if ((vec - vec_ActMax()) == 1)
-      return TRUE;		    
-                                    
+      return TRUE;
+
     if (subs_InternIdcRes(c1, vec, beg, end))
       return TRUE;
     else {
-      cont_BackTrack();	
+      cont_BackTrack();
       a++;
     }
 
   } while (a < end);
-  
+
   return FALSE;
 }
-       
 
 static BOOL subs_InternIdcRes(CLAUSE c1, int vec, int beg, int end)
 /**********************************************************
   INPUT:   A clause c1 and three  vector pointers vec,beg and end.
   RETURNS: FALSE if the literals of c1 which are designated by
            the elements of vec do not subsume c2 with respect
-	   to vector and the vector pointers beg and end 
+	   to vector and the vector pointers beg and end
 	   and TRUE otherwise.
   CAUTION: None.
 ***********************************************************/
 {
   int        locvec;
   LITPTR litptr;
-  
-  
+
   if (!subs_IdcVecTestlitsRes(c1,vec,beg,end,&litptr))
     return FALSE;
 
   locvec = vec_ActMax();
-  
+
   do {
-    subs_CompVec(litptr);	
+    subs_CompVec(litptr);
     if (!vec_IsMax(locvec)) {
       if (!subs_TcVecRes(c1,locvec,beg,end)) {
 	vec_SetMax(locvec);
 	litptr_Delete(litptr);
 	return FALSE;
-      } 
+      }
       else
 	vec_SetMax(locvec);
     }
   } while (!litptr_AllUsed(litptr));
 
   litptr_Delete(litptr);
-  
+
   return TRUE;
 }
-
 
 BOOL subs_IdcRes(CLAUSE c1, int beg, int end)
 /**********************************************************
@@ -1779,26 +1734,25 @@ BOOL subs_IdcRes(CLAUSE c1, int beg, int end)
   RETURNS: FALSE if c1 do not subsume c2 with respect to
            vector and the vector pointers beg and end
 	   and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int  i,vec;
   BOOL Result;
-  
+
   vec = vec_ActMax();
-  
+
   for (i = 0; i < clause_Length(c1); i++)
     vec_Push((POINTER) i);
-  
+
   Result = subs_InternIdcRes(c1, vec, beg, end);
-  
+
   vec_SetMax(vec);
-  
+
   cont_Reset();
-  
+
   return Result;
 }
-
 
 static BOOL subs_TcVecEqExcept(CLAUSE c1, int vec, CLAUSE c2, int i2)
 /**********************************************************
@@ -1815,7 +1769,7 @@ static BOOL subs_TcVecEqExcept(CLAUSE c1, int vec, CLAUSE c2, int i2)
   a         = 0;
   top_index = subs_SearchTop(c1,vec,c2);
   lit1      = clause_GetLiteralTerm(c1,top_index);
-    
+
   do {
     search = TRUE;
 
@@ -1849,27 +1803,26 @@ static BOOL subs_TcVecEqExcept(CLAUSE c1, int vec, CLAUSE c2, int i2)
       else
 	a++;
     }
-    
+
     if (a>=clause_Length(c2)) {
       cont_BackTrack();
       return FALSE;
     }
 
-    if ((vec_ActMax() - vec) == 1) 
-      return TRUE;		
-    
+    if ((vec_ActMax() - vec) == 1)
+      return TRUE;
+
     if (subs_InternIdcEqExcept(c1, vec, c2, i2))
       return TRUE;
     else {
       cont_BackTrack();
-      a++;			
+      a++;
     }
 
   } while (a < clause_Length(c2));
-  
+
   return FALSE;
 }
-
 
 static BOOL subs_SubsumptionVecPossibleEqExcept(CLAUSE c1, int vec,
 						CLAUSE c2, int i2)
@@ -1877,7 +1830,7 @@ static BOOL subs_SubsumptionVecPossibleEqExcept(CLAUSE c1, int vec,
   INPUT:   Two clauses c1 and c2 and a vector pointer
            and an accept literal index for c2.
   RETURNS: TRUE if all literals in c1 which indexes stand
-           in the vector with bottom pointer vec can 
+           in the vector with bottom pointer vec can
 	   independently be matched to a literal in c2.
   CAUTION: None.
 ***********************************************************/
@@ -1889,7 +1842,7 @@ static BOOL subs_SubsumptionVecPossibleEqExcept(CLAUSE c1, int vec,
   for (i = vec; i < vec_ActMax(); i++) {
     lit1 = clause_GetLiteralTerm(c1, (int) vec_GetNth(i));
     for (j = 0; j < n; j++) {
-      if (j != i2) { 
+      if (j != i2) {
 	lit2 = clause_GetLiteralTerm(c2,j);
 	cont_StartBinding();
 	if (unify_Match(cont_LeftContext(),lit1,lit2))
@@ -1917,10 +1870,9 @@ static BOOL subs_SubsumptionVecPossibleEqExcept(CLAUSE c1, int vec,
     if (j==n)
       return FALSE;
   }
-  
+
   return TRUE;
 }
-
 
 static BOOL subs_IdcVecTestlitsEqExcept(CLAUSE c1, int vec,
 					CLAUSE c2, int i2, LITPTR* litptr)
@@ -1934,33 +1886,32 @@ static BOOL subs_IdcVecTestlitsEqExcept(CLAUSE c1, int vec,
 {
   LIST  TermIndexlist,VarSymbList,TermSymbList;
   int   i;
-  
+
   if (subs_SubsumptionVecPossibleEqExcept(c1,vec,c2,i2)) {
-    
+
     TermIndexlist  = list_Nil();
     VarSymbList    = list_Nil();
     TermSymbList   = list_Nil();
-    
+
     for (i = vec; i < vec_ActMax(); i++) {
       VarSymbList =
 	subs_GetVariables(clause_GetLiteralTerm(c1, (int) vec_GetNth(i)));
-   
+
       if (VarSymbList != list_Nil()){
-	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);         
+	TermIndexlist = list_Cons(vec_GetNth(i), TermIndexlist);
 	TermSymbList  = list_Cons(VarSymbList,TermSymbList);
-      } 
+      }
     }
-	    
-    *litptr = litptr_Create(TermIndexlist,TermSymbList); 
+
+    *litptr = litptr_Create(TermIndexlist,TermSymbList);
 
     list_Delete(TermSymbList);
     list_Delete(TermIndexlist);
-	
+
     return TRUE;
   }
   return FALSE;
 }
-
 
 static BOOL subs_InternIdcEqExcept(CLAUSE c1, int vec, CLAUSE c2, int i2)
 /**********************************************************
@@ -1968,36 +1919,34 @@ static BOOL subs_InternIdcEqExcept(CLAUSE c1, int vec, CLAUSE c2, int i2)
            i2 in c2 which must not be considered
   RETURNS: FALSE if the literals of c1 which are designed by
            the elements of vec do not subsume c2/i2 and TRUE otherwise.
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int        locvec;
   LITPTR litptr;
-  
-  
+
   if (!subs_IdcVecTestlitsEqExcept(c1,vec,c2,i2,&litptr))
     return FALSE;
 
   locvec = vec_ActMax();
-  
+
   do {
-    subs_CompVec(litptr);	
+    subs_CompVec(litptr);
     if (!vec_IsMax(locvec)) {
       if (!subs_TcVecEqExcept(c1,locvec,c2,i2)) {
 	vec_SetMax(locvec);
 	litptr_Delete(litptr);
 	return FALSE;
-      } 
+      }
       else
 	vec_SetMax(locvec);
     }
   } while (!litptr_AllUsed(litptr));
 
   litptr_Delete(litptr);
-  
+
   return TRUE;
 }
-
 
 BOOL subs_IdcEqMatchExcept(CLAUSE c1, int i1, CLAUSE c2, int i2,
 				  SUBST subst)
@@ -2005,7 +1954,7 @@ BOOL subs_IdcEqMatchExcept(CLAUSE c1, int i1, CLAUSE c2, int i2,
   INPUT:   Two clauses c1, c2 with the indices of two literals
            which need not to be considered and a matcher
   RETURNS: TRUE if (<c1>/<i1>)<subst> subsumes (<c2>/<i2>)<subst>
-  CAUTION: 
+  CAUTION:
 ***********************************************************/
 {
   int  i,vec;
@@ -2013,7 +1962,7 @@ BOOL subs_IdcEqMatchExcept(CLAUSE c1, int i1, CLAUSE c2, int i2,
 
   /*fputs("\n IdcEQExcept on:  \n\t", stdout);
     subst_Print(subst); fputs("\n\t", stdout);
-    clause_Print(c1); printf(" \t\t%d \n\t",i1); 
+    clause_Print(c1); printf(" \t\t%d \n\t",i1);
     clause_Print(c2);  printf(" \t\t%d \n\t",i2);*/
 
   if (clause_Length(c1) == 1)

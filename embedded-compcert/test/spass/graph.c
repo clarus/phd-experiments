@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                       GRAPHS                           * */
 /* *                                                        * */
-/* *  $Module:   GRAPH                                      * */ 
+/* *  $Module:   GRAPH                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1998, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,15 +41,12 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "graph.h"
 
-
 static LIST graph_ROOTS;      /* used as stack by SCC algorithm */
 static LIST graph_UNFINISHED; /* used as stack by SCC algorithm */
-
 
 void graph_NodePrint(GRAPHNODE Node)
 /**************************************************************
@@ -61,7 +58,6 @@ void graph_NodePrint(GRAPHNODE Node)
   printf("(%d,%d,%d) ", graph_NodeNumber(Node), graph_NodeDfsNum(Node),
 	 graph_NodeCompNum(Node));
 }
-
 
 GRAPH graph_Create(void)
 /**************************************************************
@@ -79,7 +75,6 @@ GRAPH graph_Create(void)
   return result;
 }
 
-
 void graph_Delete(GRAPH Graph)
 /**************************************************************
   INPUT:   A graph.
@@ -94,7 +89,6 @@ void graph_Delete(GRAPH Graph)
   }
   memory_Free(Graph, sizeof(GRAPH_STRUCT));
 }
-
 
 GRAPHNODE graph_GetNode(GRAPH Graph, NAT Number)
 /**************************************************************
@@ -112,7 +106,6 @@ GRAPHNODE graph_GetNode(GRAPH Graph, NAT Number)
 
   return NULL;
 }
-
 
 GRAPHNODE graph_AddNode(GRAPH Graph, NAT Number)
 /**************************************************************
@@ -136,7 +129,6 @@ GRAPHNODE graph_AddNode(GRAPH Graph, NAT Number)
   return result;
 }
 
-
 void graph_AddEdge(GRAPHNODE From, GRAPHNODE To)
 /**************************************************************
   INPUT:   Two graph nodes.
@@ -147,7 +139,6 @@ void graph_AddEdge(GRAPHNODE From, GRAPHNODE To)
   From->neighbors = list_Cons(To, From->neighbors);
 }
 
-
 void graph_DeleteEdge(GRAPHNODE From, GRAPHNODE To)
 /**************************************************************
   INPUT:   Two graph nodes.
@@ -157,7 +148,6 @@ void graph_DeleteEdge(GRAPHNODE From, GRAPHNODE To)
 {
   From->neighbors = list_PointerDeleteElement(From->neighbors, To);
 }
-
 
 void graph_DeleteDuplicateEdges(GRAPH Graph)
 /**************************************************************
@@ -174,7 +164,6 @@ void graph_DeleteDuplicateEdges(GRAPH Graph)
   }
 }
 
-
 void graph_SortNodes(GRAPH Graph, BOOL (*SortFunction)(GRAPHNODE, GRAPHNODE))
 /**************************************************************
   INPUT:   A graph and a sorting function for graph nodes.
@@ -184,9 +173,8 @@ void graph_SortNodes(GRAPH Graph, BOOL (*SortFunction)(GRAPHNODE, GRAPHNODE))
 ***************************************************************/
 {
   Graph->nodes = list_Sort(graph_Nodes(Graph),
-			   (BOOL (*) (POINTER, POINTER)) SortFunction);  
+			   (BOOL (*) (POINTER, POINTER)) SortFunction);
 }
-
 
 static void graph_ReinitDFS(GRAPH Graph)
 /**************************************************************
@@ -206,7 +194,6 @@ static void graph_ReinitDFS(GRAPH Graph)
     graph_NodeSetCompNum(list_Car(scan), -1);
   }
 }
-
 
 static void graph_InternSCC(GRAPH Graph, GRAPHNODE Node)
 /**************************************************************
@@ -268,7 +255,6 @@ static void graph_InternSCC(GRAPH Graph, GRAPHNODE Node)
      putchar('\n'); list_Apply(graph_NodePrint, graph_ROOTS); fflush(stdout); DBG */
 }
 
-
 NAT graph_StronglyConnectedComponents(GRAPH Graph)
 /**************************************************************
   INPUT:   A graph.
@@ -297,7 +283,6 @@ NAT graph_StronglyConnectedComponents(GRAPH Graph)
   return Graph->compcount;
 }
 
-
 void graph_Print(GRAPH Graph)
 /**************************************************************
   INPUT:   A graph.
@@ -307,7 +292,7 @@ void graph_Print(GRAPH Graph)
 ***************************************************************/
 {
   LIST scan1, scan2;
-  
+
   for (scan1 = graph_Nodes(Graph); !list_Empty(scan1); scan1 = list_Cdr(scan1)) {
     printf("\n%u -> ", graph_NodeNumber(list_Car(scan1)));
     for (scan2 = graph_NodeNeighbors(list_Car(scan1)); !list_Empty(scan2);

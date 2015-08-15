@@ -98,5 +98,3 @@ struct array * parse_program(void)
   }
   return a;
 }
-
-  

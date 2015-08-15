@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     SUBSTITUTION                       * */
 /* *                                                        * */
-/* *  $Module:      SUBSTITUTION                            * */ 
+/* *  $Module:      SUBSTITUTION                            * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _SUBST_
@@ -65,7 +64,6 @@ typedef struct subst {
   SYMBOL dom;
   TERM   codomain;
 } SUBST_NODE, *SUBST;
-
 
 static __inline__ SUBST subst_Get(void)
 {
@@ -126,21 +124,20 @@ static __inline__ SUBST subst_NUnion(SUBST S1,SUBST S2)
 {
   SUBST Result;
 
-  if (S1 == (SUBST)NULL)  
-    return S2;        
+  if (S1 == (SUBST)NULL)
+    return S2;
 
-  if (S2 == (SUBST)NULL) 
+  if (S2 == (SUBST)NULL)
     return S1;
 
   Result = S1;
 
   for (; S1->next != (SUBST)NULL; S1 = S1->next);
-            
+
   S1->next = S2;
 
-  return Result; 
+  return Result;
 }
-
 
 /**************************************************************/
 /* Functions for Creation and Deletion                        */
@@ -215,5 +212,3 @@ SUBST     subst_ExtractMatcher(void);
 void  subst_Print(SUBST);
 
 #endif
-
-

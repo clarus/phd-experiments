@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                MISCELLANEOUS                           * */
 /* *                                                        * */
-/* *  $Module:   MISC                                       * */ 
+/* *  $Module:   MISC                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -41,7 +41,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -84,13 +83,10 @@ void misc_DumpCoreOut(const char* String)
   misc_DumpCore();
 }
 
-
-
 int misc_ReturnValue(void)
 {
   return 0;
 }
-
 
 int misc_Max(int a, int b)
 {
@@ -117,11 +113,11 @@ FILE* misc_OpenFile(const char* Name, const char* Mode)
 
   if (File == (FILE*)NULL) {
     misc_StartUserErrorReport();
-    misc_UserErrorReport("\n\tError in opening file %s for %s !\n\n", Name, 
+    misc_UserErrorReport("\n\tError in opening file %s for %s !\n\n", Name,
 			 (Mode[0] == 'r' ? "reading" :
 			  (Mode[0] == 'w' ? "writing" : "i/o operations")));
     misc_FinishUserErrorReport();
-  }  
+  }
 
   return File;
 }
@@ -142,6 +138,5 @@ void misc_CloseFile(FILE* File, const char* Name)
     misc_StartUserErrorReport();
     misc_UserErrorReport("\n\tError in closing file %s !\n\n", Name);
     misc_FinishUserErrorReport();
-  }  
+  }
 }
-

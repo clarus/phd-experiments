@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             RANDOM ACCESS STACK                        * */
 /* *                                                        * */
-/* *  $Module:   RAS                                        * */ 
+/* *  $Module:   RAS                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -44,14 +44,12 @@
 #ifndef _RAS_
 #define _RAS_
 
-
 /**************************************************************/
 /* Includes                                                   */
 /**************************************************************/
 
 #include "misc.h"
 #include "memory.h"
-
 
 /**************************************************************/
 /* Constants and types                                        */
@@ -62,13 +60,11 @@
 #define ras_head     2  /* size of stack head for management purposes */
 #define ras_stdsize 16  /* standard stack size */
 
-
 typedef POINTER *RAS;
 
 /* A RAS (Random Access Stack) is a pointer to an array of elements */
 /* where the actual size of the stack and its current top pointer   */
 /* are stored one and two cells before the array pointer.           */
-
 
 /**************************************************************/
 /* Inline Functions                                           */
@@ -97,12 +93,10 @@ static __inline__ RAS ras_CreateWithSize(int size)
   return result;
 }
 
-
 static __inline__ RAS ras_Create(void)
 {
   return ras_CreateWithSize(ras_stdsize);
 }
-
 
 static __inline__ void ras_Free(RAS ras)
 {
@@ -113,7 +107,6 @@ static __inline__ void ras_Free(RAS ras)
     );
   }
 }
-
 
 static __inline__ RAS ras_InitWithSize(RAS ras, int size)
 /****************************************************************
@@ -143,7 +136,6 @@ static __inline__ RAS ras_InitWithSize(RAS ras, int size)
   return ras;
 }
 
-
 static __inline__ RAS ras_Init(RAS ras)
 /****************************************************************
   INPUT:   A random access stack.
@@ -156,19 +148,17 @@ static __inline__ RAS ras_Init(RAS ras)
   return ras_InitWithSize(ras, ras_stdsize);
 }
 
-
 static __inline__ int ras_Size(RAS ras)
 {
   return (int) ras[ras_top];
 }
-
 
 static __inline__ RAS ras_FastPush(RAS ras, POINTER entry)
 /*********************************************************
   INPUT:   A random access stack and an element to push.
   RETURNS: The modified stack.
   CAUTION: The function does not care about stack overflow!
-**********************************************************/    
+**********************************************************/
 {
   int top;
 
@@ -186,7 +176,6 @@ static __inline__ RAS ras_FastPush(RAS ras, POINTER entry)
   return ras;
 }
 
-
 static __inline__ RAS ras_Push(RAS ras, POINTER entry)
 /*********************************************************
   INPUT:   A random access stack and an element to push.
@@ -196,7 +185,7 @@ static __inline__ RAS ras_Push(RAS ras, POINTER entry)
            elements are copied to the (new) stack.
   CAUTION: Must be called inside an assignment:
               stack = ras_Push(stack, ...)
-**********************************************************/  
+**********************************************************/
 {
   RAS old;
   int oldsize;
@@ -220,12 +209,10 @@ static __inline__ RAS ras_Push(RAS ras, POINTER entry)
   return ras_FastPush(ras, entry);
 }
 
-
 static __inline__ BOOL ras_LegalIndex(RAS ras, int index)
 {
   return 0 <= index && index < ras_Size(ras);
 }
-
 
 static __inline__ POINTER ras_Get(RAS ras, int index)
 {
@@ -239,7 +226,6 @@ static __inline__ POINTER ras_Get(RAS ras, int index)
 
   return ras[index];
 }
-
 
 static __inline__ RAS ras_Set(RAS ras, int index, POINTER entry)
 {
@@ -255,12 +241,10 @@ static __inline__ RAS ras_Set(RAS ras, int index, POINTER entry)
   return ras;
 }
 
-
 static __inline__ BOOL ras_Empty(RAS ras)
 {
   return ras_Size(ras) == 0;
 }
-
 
 static __inline__ POINTER ras_Pop(RAS ras)
 {
@@ -279,7 +263,6 @@ static __inline__ POINTER ras_Pop(RAS ras)
   return ras[top];
 }
 
-
 static __inline__ POINTER ras_Top(RAS ras)
 {
 #ifdef CHECK
@@ -293,6 +276,4 @@ static __inline__ POINTER ras_Top(RAS ras)
   return ras[ras_Size(ras) - 1];
 }
 
-
 #endif
-

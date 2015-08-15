@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     SYMBOLS                            * */
 /* *                                                        * */
-/* *  $Module:   SYMBOL                                     * */ 
+/* *  $Module:   SYMBOL                                     * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,9 +42,7 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #ifndef _SYMBOL_
 #define _SYMBOL_
@@ -97,12 +95,12 @@ extern const int symbol_TYPESTATBITS;
 
 extern const int symbol_SIGTYPES;
 
-#define symbol_CONSTANT  0 
+#define symbol_CONSTANT  0
 #define symbol_FUNCTION  1
 #define symbol_PREDICATE 2
 #define symbol_JUNCTOR   3
 
-#define symbol_STATLEX   0 
+#define symbol_STATLEX   0
 #define symbol_STATMUL   1
 
 /* For constants, functions, predicates, junctors, is a special */
@@ -126,7 +124,6 @@ typedef enum {SKOLEM=1,    CUMMUTATIVE=2, ASSOCIATIVE=4, ORDRIGHT=8, ORDMUL=16,
 	      DECLSORT=32, DOMPRED=64, ISDEF=128, FREELY=256, GENERATED=512
 } SPROPERTY;
 
-
 #define symbol__MAXSIGNATURE 4000
 
 extern SIGNATURE *symbol_SIGNATURE;
@@ -142,7 +139,6 @@ extern int symbol_ACTSKOLEMAINDEX;
 
 /* For matching of signature symbols */
 extern SYMBOL symbol_CONTEXT[symbol__MAXSIGNATURE];
-
 
 /**************************************************************/
 /* Specials                                                   */
@@ -247,7 +243,6 @@ static __inline__ BOOL symbol_IsSuccessor(SYMBOL S, SYMBOL P)
   return S > P;
 }
 
-
 /**************************************************************/
 /* Symbol Manipulation                                        */
 /**************************************************************/
@@ -314,7 +309,6 @@ static __inline__ void symbol_ResetSkolemIndex(void)
   symbol_ACTSKOLEMAINDEX = 0;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -338,8 +332,7 @@ static __inline__ void symbol_FreeSignature(SIGNATURE Sig)
 static __inline__ SIGNATURE symbol_GetSignature(void)
 {
   return (SIGNATURE) memory_Malloc(sizeof(SIGNATURE_NODE));
-} 
-
+}
 
 /**************************************************************/
 /* Symbol Creation                                            */
@@ -365,7 +358,6 @@ static __inline__ SYMBOL symbol_CreateStandardVariable(void)
   return (++symbol_STANDARDVARCOUNTER);
 }
 
-
 static __inline__ SYMBOL symbol_CreateIndexVariable(void)
 /***************************************************************
   INPUT:   None
@@ -386,7 +378,6 @@ static __inline__ SYMBOL symbol_CreateIndexVariable(void)
   return (++symbol_INDEXVARCOUNTER);
 }
 
-
 static __inline__ SYMBOL symbol_NextIndexVariable(SYMBOL Variable)
 {
 #ifdef CHECK
@@ -402,7 +393,6 @@ static __inline__ SYMBOL symbol_NextIndexVariable(SYMBOL Variable)
   return (Variable + 1);
 }
 
-
 static __inline__ void symbol_SetStandardVarCounter(SYMBOL Variable)
 {
 #ifdef CHECK
@@ -411,8 +401,8 @@ static __inline__ void symbol_SetStandardVarCounter(SYMBOL Variable)
     misc_StartErrorReport();
     misc_ErrorReport("\n In symbol_SetStandardVarCounter: Illegal input.\n");
     misc_FinishErrorReport();
-  } 
-  else 
+  }
+  else
     if (Variable >= symbol__MAXSTANDARDVAR) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In symbol_SetStandardVarCounter: Number of standard variables exceeded.\n");
@@ -556,7 +546,7 @@ static __inline__ void symbol_SetArity(SYMBOL ActSymbol, int Arity)
 {
   symbol_Signature(symbol_Index(ActSymbol))->arity = Arity;
 }
-  
+
 static __inline__ int symbol_ArbitraryArity(void)
 {
   return -1;
@@ -585,7 +575,7 @@ static __inline__ int symbol_Weight(SYMBOL ActSymbol)
 static __inline__ int symbol_Ordering(PRECEDENCE P, SYMBOL ActSymbol)
 {
   int Index;
-  
+
   Index = symbol_Index(ActSymbol);
 #ifdef CHECK
   symbol_CheckIndexInRange(Index);
@@ -639,7 +629,6 @@ static __inline__ void symbol_SetIncreasedOrdering(PRECEDENCE P, SYMBOL S)
   symbol_SetOrdering(P, S, symbol_GetIncreasedOrderingCounter());
 }
 
-
 static __inline__ BOOL symbol_PrecedenceGreater(PRECEDENCE P, SYMBOL S1, SYMBOL S2)
 {
   return symbol_Ordering(P, S1) < symbol_Ordering(P, S2);
@@ -674,7 +663,7 @@ static __inline__ void symbol_ClearPrecedence(PRECEDENCE P)
   const int clear = -42; /* Some negative number */
 
   for (i = 0; i < symbol__MAXSIGNATURE; i++)
-    P[i] = clear;        
+    P[i] = clear;
 }
 
 static __inline__ PRECEDENCE symbol_CreatePrecedence(void)
@@ -704,7 +693,7 @@ static __inline__ void symbol_TransferPrecedence(PRECEDENCE Source,
 static __inline__ LIST symbol_DeleteSymbolFromList(LIST Symbols, SYMBOL S)
   /* Deletes all occurrences of <S> from the list */
 {
-  return list_DeleteElement(Symbols, (POINTER) S, 
+  return list_DeleteElement(Symbols, (POINTER) S,
 			    (BOOL (*)(POINTER, POINTER)) symbol_Equal);
 }
 

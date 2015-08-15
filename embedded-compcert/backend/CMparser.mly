@@ -13,7 +13,7 @@
 /*                                                                     */
 /* *********************************************************************/
 
-/* Note that this compiles a superset of the language defined by the AST, 
+/* Note that this compiles a superset of the language defined by the AST,
    including function calls in expressions, matches, while statements, etc. */
 
 %{
@@ -42,10 +42,10 @@ let mkef sg toks =
       EF_vload c
   | [EFT_tok "volatile"; EFT_tok "store"; EFT_chunk c] ->
       EF_vstore c
-  | [EFT_tok "volatile"; EFT_tok "load"; EFT_chunk c; 
+  | [EFT_tok "volatile"; EFT_tok "load"; EFT_chunk c;
      EFT_tok "global"; EFT_string s; EFT_int n] ->
       EF_vload_global(c, intern_string s, coqint_of_camlint n)
-  | [EFT_tok "volatile"; EFT_tok "store"; EFT_chunk c; 
+  | [EFT_tok "volatile"; EFT_tok "store"; EFT_chunk c;
      EFT_tok "global"; EFT_string s; EFT_int n] ->
       EF_vstore_global(c, intern_string s, coqint_of_camlint n)
   | [EFT_tok "malloc"] ->
@@ -130,7 +130,7 @@ let mkeval e =
       let c1 = convert_rexpr e1 in
       let cl = convert_rexpr_list el in
       prepend_seq !convert_accu (Scall(None, sg, c1, cl))
-  | Rbuiltin(sg, pef, el) -> 
+  | Rbuiltin(sg, pef, el) ->
       let ef = mkef sg pef in
       let cl = convert_rexpr_list el in
       prepend_seq !convert_accu (Sbuiltin(None, ef, cl))
@@ -345,7 +345,7 @@ let mkmatch expr cases =
 %left BAR
 %left CARET
 %left AMPERSAND
-%left EQUALEQUAL BANGEQUAL LESS LESSEQUAL GREATER GREATEREQUAL EQUALEQUALU BANGEQUALU LESSU LESSEQUALU GREATERU GREATEREQUALU EQUALEQUALF BANGEQUALF LESSF LESSEQUALF GREATERF GREATEREQUALF 
+%left EQUALEQUAL BANGEQUAL LESS LESSEQUAL GREATER GREATEREQUAL EQUALEQUALU BANGEQUALU LESSU LESSEQUALU GREATERU GREATEREQUALU EQUALEQUALF BANGEQUALF LESSF LESSEQUALF GREATERF GREATEREQUALF
 %left LESSLESS GREATERGREATER GREATERGREATERU
 %left PLUS PLUSF MINUS MINUSF
 %left STAR SLASH PERCENT STARF SLASHF SLASHU PERCENTU
@@ -397,12 +397,12 @@ init_data_list:
     /* empty */                                 { [] }
    | init_data_list_1                           { $1 }
  ;
- 
+
 init_data_list_1:
      init_data                                   { [$1] }
    | init_data_list_1 COMMA init_data            { $3 :: $1 }
  ;
- 
+
 init_data:
      INT8 INTLIT                                 { Init_int8 (coqint_of_camlint $2) }
    | INT16 INTLIT                                { Init_int16 (coqint_of_camlint $2) }
@@ -416,7 +416,7 @@ init_data:
    | LBRACKET INTLIT RBRACKET                    { Init_space (Z.of_sint32 $2) }
    | INTLIT LPAREN STRINGLIT RPAREN              { Init_addrof (intern_string $3, coqint_of_camlint $1) }
  ;
- 
+
 /* Procedures */
 
 proc:
@@ -435,14 +435,14 @@ proc:
                         fn_vars = List.rev (tmp @ $9);
                         fn_stackspace = $8;
                         fn_body = $10 })) }
-  | EXTERN STRINGLIT COLON signature 
+  | EXTERN STRINGLIT COLON signature
       { (intern_string $2, Gfun(External(EF_external(intern_string $2,$4)))) }
   | EXTERN STRINGLIT EQUAL eftoks COLON signature
       { (intern_string $2, Gfun(External(mkef $6 $4))) }
 ;
 
 signature:
-    type_ 
+    type_
                { {sig_args = []; sig_res = Some $1} }
   | VOID
                { {sig_args = []; sig_res = None} }

@@ -109,7 +109,7 @@ Inductive expand_block_shape: block_shape -> RTL.instruction -> LTL.bblock -> Pr
                          (expand_moves mv1
                            (Lload Mint32 addr args1' dst1' ::
                            expand_moves mv2
-                             (Lload Mint32 addr2 args2' dst2' :: 
+                             (Lload Mint32 addr2 args2' dst2' ::
                               expand_moves mv3 (Lbranch s :: k))))
   | ebs_load2_1: forall addr args dst mv1 args' dst' mv2 s k,
       wf_moves mv1 -> wf_moves mv2 ->
@@ -224,7 +224,7 @@ Proof.
           extract_moves accu b = (mv, b') ->
           wf_moves accu ->
           wf_moves mv /\ expand_moves (List.rev accu) b = expand_moves mv b').
-    induction b; simpl; intros. 
+    induction b; simpl; intros.
     inv H. auto.
     destruct a; try (inv H; apply BASE; auto; fail).
     destruct (is_move_operation op args) as [arg|] eqn:E.
@@ -233,30 +233,30 @@ Proof.
     exploit IHb; eauto.
       red; intros. destruct H1; auto. subst sd; exact I.
     intros [P Q].
-    split; auto. rewrite <- Q. simpl. unfold expand_moves. rewrite map_app. 
+    split; auto. rewrite <- Q. simpl. unfold expand_moves. rewrite map_app.
     rewrite app_ass. simpl. auto.
     inv H; apply BASE; auto.
     (* stack-reg move *)
     exploit IHb; eauto.
       red; intros. destruct H1; auto. subst sd; exact I.
     intros [P Q].
-    split; auto. rewrite <- Q. simpl. unfold expand_moves. rewrite map_app. 
+    split; auto. rewrite <- Q. simpl. unfold expand_moves. rewrite map_app.
     rewrite app_ass. simpl. auto.
     (* reg-stack move *)
     exploit IHb; eauto.
       red; intros. destruct H1; auto. subst sd; exact I.
     intros [P Q].
-    split; auto. rewrite <- Q. simpl. unfold expand_moves. rewrite map_app. 
+    split; auto. rewrite <- Q. simpl. unfold expand_moves. rewrite map_app.
     rewrite app_ass. simpl. auto.
 
-  intros. exploit IND; eauto. red; intros. elim H0. 
+  intros. exploit IND; eauto. red; intros. elim H0.
 Qed.
 
 Lemma check_succ_sound:
   forall s b, check_succ s b = true -> exists k, b = Lbranch s :: k.
 Proof.
-  intros. destruct b; simpl in H; try discriminate. 
-  destruct i; try discriminate. 
+  intros. destruct b; simpl in H; try discriminate.
+  destruct i; try discriminate.
   destruct (peq s s0); simpl in H; inv H. exists b; auto.
 Qed.
 
@@ -278,9 +278,9 @@ Proof.
 (* nop *)
   econstructor; eauto.
 (* op *)
-  destruct (classify_operation o l). 
+  destruct (classify_operation o l).
   (* move *)
-  MonadInv; UseParsingLemmas. econstructor; eauto. 
+  MonadInv; UseParsingLemmas. econstructor; eauto.
   (* makelong *)
   MonadInv; UseParsingLemmas. econstructor; eauto.
   (* lowlong *)
@@ -290,7 +290,7 @@ Proof.
   (* other ops *)
   MonadInv. destruct b0.
   MonadInv; UseParsingLemmas.
-  destruct i; MonadInv; UseParsingLemmas. 
+  destruct i; MonadInv; UseParsingLemmas.
   eapply ebs_op; eauto.
   inv H0. eapply ebs_op_dead; eauto.
 (* load *)
@@ -298,8 +298,8 @@ Proof.
   MonadInv; UseParsingLemmas.
   destruct i; MonadInv; UseParsingLemmas.
   destruct (chunk_eq m Mint64).
-  MonadInv; UseParsingLemmas. 
-  destruct b; MonadInv; UseParsingLemmas. destruct i; MonadInv; UseParsingLemmas. 
+  MonadInv; UseParsingLemmas.
+  destruct b; MonadInv; UseParsingLemmas. destruct i; MonadInv; UseParsingLemmas.
   eapply ebs_load2; eauto.
   destruct (eq_addressing a addr).
   MonadInv. inv H2. eapply ebs_load2_1; eauto.
@@ -315,13 +315,13 @@ Proof.
   MonadInv; UseParsingLemmas.
   eapply ebs_store; eauto.
 (* call *)
-  destruct b0; MonadInv. destruct i; MonadInv; UseParsingLemmas. econstructor; eauto. 
+  destruct b0; MonadInv. destruct i; MonadInv; UseParsingLemmas. econstructor; eauto.
 (* tailcall *)
   destruct b0; MonadInv. destruct i; MonadInv; UseParsingLemmas. econstructor; eauto.
-(* builtin *) 
+(* builtin *)
   destruct b0; MonadInv. destruct i; MonadInv; UseParsingLemmas.
   econstructor; eauto.
-  destruct ef; inv H. econstructor; eauto. 
+  destruct ef; inv H. econstructor; eauto.
 (* cond *)
   destruct b0; MonadInv. destruct i; MonadInv; UseParsingLemmas. econstructor; eauto.
 (* jumptable *)
@@ -337,8 +337,8 @@ Lemma matching_instr_block:
   exists b, (LTL.fn_code f2)!pc = Some b /\ expand_block_shape bsh i b.
 Proof.
   intros. unfold pair_codes in H. rewrite PTree.gcombine in H; auto. rewrite H0 in H.
-  destruct (LTL.fn_code f2)!pc as [b|]. 
-  exists b; split; auto. apply pair_instr_block_sound; auto. 
+  destruct (LTL.fn_code f2)!pc as [b|].
+  exists b; split; auto. apply pair_instr_block_sound; auto.
   discriminate.
 Qed.
 
@@ -373,7 +373,7 @@ Lemma satisf_incr:
   forall rs ls (e1 e2: eqs),
   satisf rs ls e2 -> EqSet.Subset e1 e2 -> satisf rs ls e1.
 Proof.
-  unfold satisf; intros. apply H. ESD.fsetdec. 
+  unfold satisf; intros. apply H. ESD.fsetdec.
 Qed.
 
 Lemma satisf_undef_reg:
@@ -389,14 +389,14 @@ Lemma add_equation_lessdef:
   forall rs ls q e,
   satisf rs ls (add_equation q e) -> Val.lessdef (sel_val (ekind q) rs#(ereg q)) (ls (eloc q)).
 Proof.
-  intros. apply H. unfold add_equation. simpl. apply EqSet.add_1. auto. 
+  intros. apply H. unfold add_equation. simpl. apply EqSet.add_1. auto.
 Qed.
 
 Lemma add_equation_satisf:
   forall rs ls q e,
   satisf rs ls (add_equation q e) -> satisf rs ls e.
 Proof.
-  intros. eapply satisf_incr; eauto. unfold add_equation. simpl. ESD.fsetdec. 
+  intros. eapply satisf_incr; eauto. unfold add_equation. simpl. ESD.fsetdec.
 Qed.
 
 Lemma add_equations_satisf:
@@ -406,7 +406,7 @@ Lemma add_equations_satisf:
 Proof.
   induction rl; destruct ml; simpl; intros; MonadInv.
   auto.
-  eapply add_equation_satisf; eauto. 
+  eapply add_equation_satisf; eauto.
 Qed.
 
 Lemma add_equations_lessdef:
@@ -428,8 +428,8 @@ Lemma add_equations_args_satisf:
   satisf rs ls e' -> satisf rs ls e.
 Proof.
   intros until e'. functional induction (add_equations_args rl tyl ll e); intros.
-  inv H; auto. 
-  eapply add_equation_satisf. eapply add_equation_satisf. eauto. 
+  inv H; auto.
+  eapply add_equation_satisf. eapply add_equation_satisf. eauto.
   eapply add_equation_satisf. eauto.
   eapply add_equation_satisf. eauto.
   eapply add_equation_satisf. eauto.
@@ -455,17 +455,17 @@ Lemma add_equations_args_lessdef:
 Proof.
   intros until e'. functional induction (add_equations_args rl tyl ll e); simpl; intros.
 - inv H; auto.
-- destruct H1. constructor; auto. 
-  rewrite <- (val_longofwords_eq (rs#r1)); auto. apply Val.longofwords_lessdef. 
-  eapply add_equation_lessdef with (q := Eq High r1 l1). 
-  eapply add_equation_satisf. eapply add_equations_args_satisf; eauto. 
-  eapply add_equation_lessdef with (q := Eq Low r1 l2). 
+- destruct H1. constructor; auto.
+  rewrite <- (val_longofwords_eq (rs#r1)); auto. apply Val.longofwords_lessdef.
+  eapply add_equation_lessdef with (q := Eq High r1 l1).
+  eapply add_equation_satisf. eapply add_equations_args_satisf; eauto.
+  eapply add_equation_lessdef with (q := Eq Low r1 l2).
   eapply add_equations_args_satisf; eauto.
-- destruct H1. constructor; auto. 
+- destruct H1. constructor; auto.
   eapply add_equation_lessdef with (q := Eq Full r1 l1). eapply add_equations_args_satisf; eauto.
-- destruct H1. constructor; auto. 
+- destruct H1. constructor; auto.
   eapply add_equation_lessdef with (q := Eq Full r1 l1). eapply add_equations_args_satisf; eauto.
-- destruct H1. constructor; auto. 
+- destruct H1. constructor; auto.
   eapply add_equation_lessdef with (q := Eq Full r1 l1). eapply add_equations_args_satisf; eauto.
 - discriminate.
 Qed.
@@ -484,7 +484,7 @@ Lemma remove_equation_satisf:
   forall rs ls q e,
   satisf rs ls e -> satisf rs ls (remove_equation q e).
 Proof.
-  intros. eapply satisf_incr; eauto. unfold remove_equation; simpl. ESD.fsetdec. 
+  intros. eapply satisf_incr; eauto. unfold remove_equation; simpl. ESD.fsetdec.
 Qed.
 
 Lemma remove_equation_res_satisf:
@@ -492,7 +492,7 @@ Lemma remove_equation_res_satisf:
   remove_equations_res r oty ll e = Some e' ->
   satisf rs ls e -> satisf rs ls e'.
 Proof.
-  intros. functional inversion H. 
+  intros. functional inversion H.
   apply remove_equation_satisf. apply remove_equation_satisf; auto.
   apply remove_equation_satisf; auto.
 Qed.
@@ -504,7 +504,7 @@ Remark select_reg_l_monotone:
 Proof.
   unfold select_reg_l; intros. destruct H.
   red in H. congruence.
-  rewrite Pos.leb_le in *. red in H. destruct H as [A | [A B]]. 
+  rewrite Pos.leb_le in *. red in H. destruct H as [A | [A B]].
   red in A. zify; omega.
   rewrite <- A; auto.
 Qed.
@@ -516,7 +516,7 @@ Remark select_reg_h_monotone:
 Proof.
   unfold select_reg_h; intros. destruct H.
   red in H. congruence.
-  rewrite Pos.leb_le in *. red in H. destruct H as [A | [A B]]. 
+  rewrite Pos.leb_le in *. red in H. destruct H as [A | [A B]].
   red in A. zify; omega.
   rewrite A; auto.
 Qed.
@@ -526,7 +526,7 @@ Remark select_reg_charact:
 Proof.
   unfold select_reg_l, select_reg_h; intros; split.
   rewrite ! Pos.leb_le. unfold reg; zify; omega.
-  intros. rewrite H. rewrite ! Pos.leb_refl; auto. 
+  intros. rewrite H. rewrite ! Pos.leb_refl; auto.
 Qed.
 
 Lemma reg_unconstrained_sound:
@@ -536,7 +536,7 @@ Lemma reg_unconstrained_sound:
   ereg q <> r.
 Proof.
   unfold reg_unconstrained; intros. red; intros.
-  apply select_reg_charact in H1. 
+  apply select_reg_charact in H1.
   assert (EqSet.mem_between (select_reg_l r) (select_reg_h r) e = true).
   {
     apply EqSet.mem_between_2 with q; auto.
@@ -554,7 +554,7 @@ Lemma reg_unconstrained_satisf:
   satisf rs ls e ->
   satisf (rs#r <- v) ls e.
 Proof.
-  red; intros. rewrite PMap.gso. auto. eapply reg_unconstrained_sound; eauto. 
+  red; intros. rewrite PMap.gso. auto. eapply reg_unconstrained_sound; eauto.
 Qed.
 
 Remark select_loc_l_monotone:
@@ -564,13 +564,13 @@ Remark select_loc_l_monotone:
 Proof.
   unfold select_loc_l; intros. set (lb := OrderedLoc.diff_low_bound l) in *.
   destruct H.
-  red in H. subst q2; auto. 
+  red in H. subst q2; auto.
   assert (eloc q1 = eloc q2 \/ OrderedLoc.lt (eloc q1) (eloc q2)).
-    red in H. tauto. 
-  destruct H1. rewrite <- H1; auto. 
-  destruct (OrderedLoc.compare (eloc q2) lb); auto. 
-  assert (OrderedLoc.lt (eloc q1) lb) by (eapply OrderedLoc.lt_trans; eauto). 
-  destruct (OrderedLoc.compare (eloc q1) lb). 
+    red in H. tauto.
+  destruct H1. rewrite <- H1; auto.
+  destruct (OrderedLoc.compare (eloc q2) lb); auto.
+  assert (OrderedLoc.lt (eloc q1) lb) by (eapply OrderedLoc.lt_trans; eauto).
+  destruct (OrderedLoc.compare (eloc q1) lb).
   auto.
   eelim OrderedLoc.lt_not_eq; eauto.
   eelim OrderedLoc.lt_not_eq. eapply OrderedLoc.lt_trans. eexact l1. eexact H2. red; auto.
@@ -583,13 +583,13 @@ Remark select_loc_h_monotone:
 Proof.
   unfold select_loc_h; intros. set (lb := OrderedLoc.diff_high_bound l) in *.
   destruct H.
-  red in H. subst q2; auto. 
+  red in H. subst q2; auto.
   assert (eloc q2 = eloc q1 \/ OrderedLoc.lt (eloc q2) (eloc q1)).
-    red in H. tauto. 
-  destruct H1. rewrite H1; auto. 
-  destruct (OrderedLoc.compare (eloc q2) lb); auto. 
-  assert (OrderedLoc.lt lb (eloc q1)) by (eapply OrderedLoc.lt_trans; eauto). 
-  destruct (OrderedLoc.compare (eloc q1) lb). 
+    red in H. tauto.
+  destruct H1. rewrite H1; auto.
+  destruct (OrderedLoc.compare (eloc q2) lb); auto.
+  assert (OrderedLoc.lt lb (eloc q1)) by (eapply OrderedLoc.lt_trans; eauto).
+  destruct (OrderedLoc.compare (eloc q1) lb).
   eelim OrderedLoc.lt_not_eq. eapply OrderedLoc.lt_trans. eexact l1. eexact H2. red; auto.
   eelim OrderedLoc.lt_not_eq. eexact H2. apply OrderedLoc.eq_sym; auto.
   auto.
@@ -600,19 +600,19 @@ Remark select_loc_charact:
   select_loc_l l q = false \/ select_loc_h l q = false <-> Loc.diff l (eloc q).
 Proof.
   unfold select_loc_l, select_loc_h; intros; split; intros.
-  apply OrderedLoc.outside_interval_diff. 
+  apply OrderedLoc.outside_interval_diff.
   destruct H.
   left. destruct (OrderedLoc.compare (eloc q) (OrderedLoc.diff_low_bound l)); assumption || discriminate.
   right. destruct (OrderedLoc.compare (eloc q) (OrderedLoc.diff_high_bound l)); assumption || discriminate.
-  exploit OrderedLoc.diff_outside_interval. eauto. 
+  exploit OrderedLoc.diff_outside_interval. eauto.
   intros [A | A].
   left. destruct (OrderedLoc.compare (eloc q) (OrderedLoc.diff_low_bound l)).
   auto.
-  eelim OrderedLoc.lt_not_eq; eauto. 
+  eelim OrderedLoc.lt_not_eq; eauto.
   eelim OrderedLoc.lt_not_eq. eapply OrderedLoc.lt_trans; eauto. red; auto.
   right. destruct (OrderedLoc.compare (eloc q) (OrderedLoc.diff_high_bound l)).
   eelim OrderedLoc.lt_not_eq. eapply OrderedLoc.lt_trans; eauto. red; auto.
-  eelim OrderedLoc.lt_not_eq; eauto. apply OrderedLoc.eq_sym; auto. 
+  eelim OrderedLoc.lt_not_eq; eauto. apply OrderedLoc.eq_sym; auto.
   auto.
 Qed.
 
@@ -622,7 +622,7 @@ Lemma loc_unconstrained_sound:
   EqSet.In q e ->
   Loc.diff l (eloc q).
 Proof.
-  unfold loc_unconstrained; intros. 
+  unfold loc_unconstrained; intros.
   destruct (select_loc_l l q) eqn:SL.
   destruct (select_loc_h l q) eqn:SH.
   assert (EqSet2.mem_between (select_loc_l l) (select_loc_h l) (eqs2 e) = true).
@@ -630,7 +630,7 @@ Proof.
     apply EqSet2.mem_between_2 with q; auto.
     exact (select_loc_l_monotone l).
     exact (select_loc_h_monotone l).
-    apply eqs_same. auto. 
+    apply eqs_same. auto.
   }
   rewrite H1 in H; discriminate.
   apply select_loc_charact; auto.
@@ -645,12 +645,12 @@ Lemma loc_unconstrained_satisf:
   Val.lessdef (sel_val k rs#r) v ->
   satisf rs (Locmap.set l v ls) e.
 Proof.
-  intros; red; intros. 
-  destruct (OrderedEquation.eq_dec q (Eq k r l)). 
+  intros; red; intros.
+  destruct (OrderedEquation.eq_dec q (Eq k r l)).
   subst q; simpl. unfold l; rewrite Locmap.gss_reg. auto.
   assert (EqSet.In q (remove_equation (Eq k r l) e)).
-    simpl. ESD.fsetdec.  
-  rewrite Locmap.gso. apply H; auto. eapply loc_unconstrained_sound; eauto. 
+    simpl. ESD.fsetdec.
+  rewrite Locmap.gso. apply H; auto. eapply loc_unconstrained_sound; eauto.
 Qed.
 
 Lemma reg_loc_unconstrained_sound:
@@ -659,7 +659,7 @@ Lemma reg_loc_unconstrained_sound:
   EqSet.In q e ->
   ereg q <> r /\ Loc.diff l (eloc q).
 Proof.
-  intros. destruct (andb_prop _ _ H). 
+  intros. destruct (andb_prop _ _ H).
   split. eapply reg_unconstrained_sound; eauto. eapply loc_unconstrained_sound; eauto.
 Qed.
 
@@ -677,7 +677,7 @@ Proof.
   assert (EqSet.In q (remove_equation {| ekind := k; ereg := r; eloc := l |} e)).
     simpl. ESD.fsetdec.
   exploit reg_loc_unconstrained_sound; eauto. intros [A B].
-  rewrite Regmap.gso; auto. rewrite Locmap.gso; auto. 
+  rewrite Regmap.gso; auto. rewrite Locmap.gso; auto.
 Qed.
 
 Lemma parallel_assignment_satisf_2:
@@ -695,20 +695,20 @@ Proof.
   { unfold res'; intros. exploit list_in_map_inv; eauto. intros [mr [A B]]. exists mr; auto. }
   functional inversion H.
 - (* Two 32-bit halves *)
-  subst. 
+  subst.
   set (e' := remove_equation {| ekind := Low; ereg := res; eloc := l2 |}
           (remove_equation {| ekind := High; ereg := res; eloc := l1 |} e)) in *.
   rewrite <- H5 in H2. simpl in H2. InvBooleans. simpl.
   destruct (OrderedEquation.eq_dec q (Eq Low res l2)).
   subst q; simpl. rewrite Regmap.gss.
   destruct (ISREG l2) as [r2 EQ]. rewrite <- H5; auto with coqlib. rewrite EQ. rewrite Locmap.gss_reg.
-  apply Val.loword_lessdef; auto. 
+  apply Val.loword_lessdef; auto.
   destruct (OrderedEquation.eq_dec q (Eq High res l1)).
   subst q; simpl. rewrite Regmap.gss. rewrite Locmap.gso by auto.
   destruct (ISREG l1) as [r1 EQ]. rewrite <- H5; auto with coqlib. rewrite EQ. rewrite Locmap.gss_reg.
   apply Val.hiword_lessdef; auto.
-  assert (EqSet.In q e'). unfold e', remove_equation; simpl; ESD.fsetdec. 
-  rewrite Regmap.gso. rewrite ! Locmap.gso. auto. 
+  assert (EqSet.In q e'). unfold e', remove_equation; simpl; ESD.fsetdec.
+  rewrite Regmap.gso. rewrite ! Locmap.gso. auto.
   eapply loc_unconstrained_sound; eauto.
   eapply loc_unconstrained_sound; eauto.
   eapply reg_unconstrained_sound; eauto.
@@ -716,11 +716,11 @@ Proof.
   subst. rewrite <- H5 in H2. simpl in H2. InvBooleans.
   replace (encode_long oty v') with (v' :: nil).
   set (e' := remove_equation {| ekind := Full; ereg := res; eloc := l1 |} e) in *.
-  destruct (OrderedEquation.eq_dec q (Eq Full res l1)). 
+  destruct (OrderedEquation.eq_dec q (Eq Full res l1)).
   subst q; simpl. rewrite Regmap.gss.
   destruct (ISREG l1) as [r1 EQ]. rewrite <- H5; auto with coqlib. rewrite EQ. rewrite Locmap.gss_reg.
   auto.
-  assert (EqSet.In q e'). unfold e', remove_equation; simpl. ESD.fsetdec. 
+  assert (EqSet.In q e'). unfold e', remove_equation; simpl. ESD.fsetdec.
   simpl. rewrite Regmap.gso. rewrite Locmap.gso. auto.
   eapply loc_unconstrained_sound; eauto.
   eapply reg_unconstrained_sound; eauto.
@@ -739,7 +739,7 @@ Proof.
   assert (IN_ELT: forall q, EqSet.In q elt <-> EqSet.In q e0 /\ ereg q = r1).
   {
     intros. unfold elt. rewrite EqSet.elements_between_iff.
-    rewrite select_reg_charact. tauto. 
+    rewrite select_reg_charact. tauto.
     exact (select_reg_l_monotone r1).
     exact (select_reg_h_monotone r1).
   }
@@ -750,11 +750,11 @@ Proof.
   {
     apply ESP.fold_rec; unfold P; intros.
     - ESD.fsetdec.
-    - simpl. red in H1. apply H1 in H3. destruct H3. 
-      + subst x. ESD.fsetdec. 
-      + rewrite ESF.add_iff. rewrite ESF.remove_iff. 
+    - simpl. red in H1. apply H1 in H3. destruct H3.
+      + subst x. ESD.fsetdec.
+      + rewrite ESF.add_iff. rewrite ESF.remove_iff.
         destruct (OrderedEquation.eq_dec x {| ekind := ekind q; ereg := r2; eloc := eloc q |}); auto.
-        left. subst x; auto. 
+        left. subst x; auto.
   }
   set (Q := fun e1 e2 =>
          ~EqSet.In q e1 ->
@@ -765,11 +765,11 @@ Proof.
     - auto.
     - simpl. red in H2. rewrite H2 in H4.
       rewrite ESF.add_iff. rewrite ESF.remove_iff.
-      right. split. apply H3. tauto. tauto. 
+      right. split. apply H3. tauto. tauto.
   }
   destruct (ESP.In_dec q elt).
   left. split. apply IN_ELT. auto. apply H. auto.
-  right. split. red; intros. elim n. rewrite IN_ELT. auto. apply H0. auto. 
+  right. split. red; intros. elim n. rewrite IN_ELT. auto. apply H0. auto.
 Qed.
 
 Lemma subst_reg_satisf:
@@ -798,7 +798,7 @@ Proof.
   assert (IN_ELT: forall q, EqSet.In q elt <-> EqSet.In q e0 /\ ereg q = r1).
   {
     intros. unfold elt. rewrite EqSet.elements_between_iff.
-    rewrite select_reg_charact. tauto. 
+    rewrite select_reg_charact. tauto.
     exact (select_reg_l_monotone r1).
     exact (select_reg_h_monotone r1).
   }
@@ -809,14 +809,14 @@ Proof.
   {
     intros; apply ESP.fold_rec; unfold P; intros.
     - ESD.fsetdec.
-    - simpl. red in H1. apply H1 in H3. destruct H3. 
+    - simpl. red in H1. apply H1 in H3. destruct H3.
       + subst x. unfold f. destruct (IndexedEqKind.eq (ekind q) k1).
         simpl. ESD.fsetdec. contradiction.
       + unfold f. destruct (IndexedEqKind.eq (ekind x) k1).
-        simpl. rewrite ESF.add_iff. rewrite ESF.remove_iff. 
+        simpl. rewrite ESF.add_iff. rewrite ESF.remove_iff.
         destruct (OrderedEquation.eq_dec x {| ekind := k2; ereg := r2; eloc := eloc q |}); auto.
         left. subst x; auto.
-        auto. 
+        auto.
   }
   set (Q := fun e1 e2 =>
          ~EqSet.In q e1 \/ ekind q <> k1 ->
@@ -828,8 +828,8 @@ Proof.
     - unfold f. red in H2. rewrite H2 in H4.
       destruct (IndexedEqKind.eq (ekind x) k1).
       simpl. rewrite ESF.add_iff. rewrite ESF.remove_iff.
-      right. split. apply H3. tauto. intuition congruence. 
-      apply H3. intuition. 
+      right. split. apply H3. tauto. intuition congruence.
+      apply H3. intuition.
   }
   destruct (ESP.In_dec q elt).
   destruct (IndexedEqKind.eq (ekind q) k1).
@@ -851,17 +851,17 @@ Proof.
   destruct (in_subst_reg_kind dst Low src2 Full _ e1 B) as [[C D] | D]; fold e2 in D.
   simpl in C; simpl in D. inv C.
   inversion A. rewrite H3; rewrite H4. rewrite Regmap.gss.
-  apply Val.lessdef_trans with (rs#src1). 
-  simpl. destruct (rs#src1); simpl; auto. destruct (rs#src2); simpl; auto. 
+  apply Val.lessdef_trans with (rs#src1).
+  simpl. destruct (rs#src1); simpl; auto. destruct (rs#src2); simpl; auto.
   rewrite Int64.hi_ofwords. auto.
-  exploit H0. eexact D. simpl. auto. 
+  exploit H0. eexact D. simpl. auto.
   destruct (in_subst_reg_kind dst Low src2 Full q e1 B) as [[C D] | D]; fold e2 in D.
-  inversion C. rewrite H3; rewrite H4. rewrite Regmap.gss. 
-  apply Val.lessdef_trans with (rs#src2). 
-  simpl. destruct (rs#src1); simpl; auto. destruct (rs#src2); simpl; auto. 
+  inversion C. rewrite H3; rewrite H4. rewrite Regmap.gss.
+  apply Val.lessdef_trans with (rs#src2).
+  simpl. destruct (rs#src1); simpl; auto. destruct (rs#src2); simpl; auto.
   rewrite Int64.lo_ofwords. auto.
   exploit H0. eexact D. simpl. auto.
-  rewrite Regmap.gso. apply H0; auto. eapply reg_unconstrained_sound; eauto. 
+  rewrite Regmap.gso. apply H0; auto. eapply reg_unconstrained_sound; eauto.
 Qed.
 
 Lemma subst_reg_kind_satisf_lowlong:
@@ -873,8 +873,8 @@ Lemma subst_reg_kind_satisf_lowlong:
 Proof.
   intros; red; intros.
   destruct (in_subst_reg_kind dst Full src Low q e H1) as [[A B] | B]; fold e1 in B.
-  inversion A. rewrite H3; rewrite H4. simpl. rewrite Regmap.gss. 
-  exploit H0. eexact B. simpl. auto. 
+  inversion A. rewrite H3; rewrite H4. simpl. rewrite Regmap.gss.
+  exploit H0. eexact B. simpl. auto.
   rewrite Regmap.gso. apply H0; auto. eapply reg_unconstrained_sound; eauto.
 Qed.
 
@@ -887,8 +887,8 @@ Lemma subst_reg_kind_satisf_highlong:
 Proof.
   intros; red; intros.
   destruct (in_subst_reg_kind dst Full src High q e H1) as [[A B] | B]; fold e1 in B.
-  inversion A. rewrite H3; rewrite H4. simpl. rewrite Regmap.gss. 
-  exploit H0. eexact B. simpl. auto. 
+  inversion A. rewrite H3; rewrite H4. simpl. rewrite Regmap.gss.
+  exploit H0. eexact B. simpl. auto.
   rewrite Regmap.gso. apply H0; auto. eapply reg_unconstrained_sound; eauto.
 Qed.
 
@@ -903,7 +903,7 @@ Lemma in_subst_loc:
   (eloc q = l1 /\ EqSet.In (Eq (ekind q) (ereg q) l2) e') \/ (Loc.diff l1 (eloc q) /\ EqSet.In q e').
 Proof.
   intros l1 l2 q e0 e0'.
-  unfold subst_loc. 
+  unfold subst_loc.
   set (f := fun (q0 : EqSet2.elt) (opte : option eqs) =>
    match opte with
    | Some e =>
@@ -927,17 +927,17 @@ Proof.
   assert (P elt (EqSet2.fold f elt (Some e0))).
   {
     apply ESP2.fold_rec; unfold P; intros.
-    - ESD2.fsetdec. 
-    - destruct a as [e2|]; simpl; auto. 
+    - ESD2.fsetdec.
+    - destruct a as [e2|]; simpl; auto.
       destruct (Loc.eq l1 (eloc x)); auto.
       unfold add_equation, remove_equation; simpl.
-      red in H1. rewrite H1. intros [A|A]. 
+      red in H1. rewrite H1. intros [A|A].
       + subst x. split. auto. ESD.fsetdec.
       + exploit H2; eauto. intros [B C]. split. auto.
-        rewrite ESF.add_iff. rewrite ESF.remove_iff. 
+        rewrite ESF.add_iff. rewrite ESF.remove_iff.
         destruct (OrderedEquation.eq_dec x {| ekind := ekind q; ereg := ereg q; eloc := l2 |}).
-        left. rewrite e1; auto. 
-        right; auto. 
+        left. rewrite e1; auto.
+        right; auto.
   }
   set (Q := fun e1 (opte: option eqs) =>
           match opte with
@@ -947,25 +947,25 @@ Proof.
   assert (Q elt (EqSet2.fold f elt (Some e0))).
   {
     apply ESP2.fold_rec; unfold Q; intros.
-    - auto. 
-    - destruct a as [e2|]; simpl; auto. 
-      destruct (Loc.eq l1 (eloc x)); auto. 
-      red in H2. rewrite H2; intros. 
+    - auto.
+    - destruct a as [e2|]; simpl; auto.
+      destruct (Loc.eq l1 (eloc x)); auto.
+      red in H2. rewrite H2; intros.
       unfold add_equation, remove_equation; simpl.
       rewrite ESF.add_iff. rewrite ESF.remove_iff.
       right; split. apply H3. tauto. tauto.
   }
-  rewrite SUBST in H; rewrite SUBST in H0; simpl in *. 
-  destruct (ESP2.In_dec q elt). 
+  rewrite SUBST in H; rewrite SUBST in H0; simpl in *.
+  destruct (ESP2.In_dec q elt).
   left. apply H; auto.
-  right. split; auto. 
+  right. split; auto.
   rewrite <- select_loc_charact.
   destruct (select_loc_l l1 q) eqn: LL; auto.
   destruct (select_loc_h l1 q) eqn: LH; auto.
-  elim n. eapply EqSet2.elements_between_iff. 
+  elim n. eapply EqSet2.elements_between_iff.
   exact (select_loc_l_monotone l1).
   exact (select_loc_h_monotone l1).
-  split. apply eqs_same; auto. auto. 
+  split. apply eqs_same; auto. auto.
 Qed.
 
 Lemma loc_type_compat_charact:
@@ -974,12 +974,12 @@ Lemma loc_type_compat_charact:
   EqSet.In q e ->
   subtype (sel_type (ekind q) (env (ereg q))) (Loc.type l) = true \/ Loc.diff l (eloc q).
 Proof.
-  unfold loc_type_compat; intros. 
+  unfold loc_type_compat; intros.
   rewrite EqSet2.for_all_between_iff in H.
   destruct (select_loc_l l q) eqn: LL.
   destruct (select_loc_h l q) eqn: LH.
-  left; apply H; auto. apply eqs_same; auto. 
-  right. apply select_loc_charact. auto. 
+  left; apply H; auto. apply eqs_same; auto.
+  right. apply select_loc_charact. auto.
   right. apply select_loc_charact. auto.
   intros; subst; auto.
   exact (select_loc_l_monotone l).
@@ -996,11 +996,11 @@ Lemma well_typed_move_charact:
   | S sl ofs ty => Val.has_type (sel_val k rs#r) ty
   end.
 Proof.
-  unfold well_typed_move; intros. 
-  destruct l as [mr | sl ofs ty]. 
+  unfold well_typed_move; intros.
+  destruct l as [mr | sl ofs ty].
   auto.
   exploit loc_type_compat_charact; eauto. intros [A | A].
-  simpl in A. eapply Val.has_subtype; eauto. 
+  simpl in A. eapply Val.has_subtype; eauto.
   generalize (H1 r). destruct k; simpl; intros.
   auto.
   destruct (rs#r); exact I.
@@ -1013,7 +1013,7 @@ Remark val_lessdef_normalize:
   Val.has_type v ty -> Val.lessdef v v' ->
   Val.lessdef v (Val.load_result (chunk_of_type ty) v').
 Proof.
-  intros. inv H0. rewrite Val.load_result_same; auto. auto. 
+  intros. inv H0. rewrite Val.load_result_same; auto. auto.
 Qed.
 
 Lemma subst_loc_satisf:
@@ -1030,8 +1030,8 @@ Proof.
   destruct q as [k r l]; simpl in *.
   exploit well_typed_move_charact; eauto.
   destruct l as [mr | sl ofs ty]; intros.
-  apply (H2 _ B). 
-  apply val_lessdef_normalize; auto. apply (H2 _ B). 
+  apply (H2 _ B).
+  apply val_lessdef_normalize; auto. apply (H2 _ B).
   rewrite Locmap.gso; auto.
 Qed.
 
@@ -1042,7 +1042,7 @@ Proof.
   induction ml; simpl; intros.
   tauto.
   InvBooleans. split.
-  apply Loc.diff_sym. eapply loc_unconstrained_sound; eauto. 
+  apply Loc.diff_sym. eapply loc_unconstrained_sound; eauto.
   eauto.
 Qed.
 
@@ -1051,7 +1051,7 @@ Lemma undef_regs_outside:
   Loc.notin l (map R ml) -> undef_regs ml ls l = ls l.
 Proof.
   induction ml; simpl; intros. auto.
-  rewrite Locmap.gso. apply IHml. tauto. apply Loc.diff_sym. tauto. 
+  rewrite Locmap.gso. apply IHml. tauto. apply Loc.diff_sym. tauto.
 Qed.
 
 Lemma can_undef_satisf:
@@ -1071,9 +1071,9 @@ Proof.
   induction ml; simpl; intros.
   tauto.
   InvBooleans. split.
-  destruct (orb_true_elim _ _ H2). 
+  destruct (orb_true_elim _ _ H2).
   apply proj_sumbool_true in e0. congruence.
-  apply Loc.diff_sym. eapply loc_unconstrained_sound; eauto. 
+  apply Loc.diff_sym. eapply loc_unconstrained_sound; eauto.
   eapply IHml; eauto.
 Qed.
 
@@ -1092,9 +1092,9 @@ Proof.
   destruct q as [k r l]; simpl in *.
   exploit well_typed_move_charact; eauto.
   destruct l as [mr | sl ofs ty]; intros.
-  apply (H3 _ B). 
-  apply val_lessdef_normalize; auto. apply (H3 _ B). 
-  rewrite Locmap.gso; auto. rewrite undef_regs_outside. eauto. 
+  apply (H3 _ B).
+  apply val_lessdef_normalize; auto. apply (H3 _ B).
+  rewrite Locmap.gso; auto. rewrite undef_regs_outside. eauto.
   eapply can_undef_except_sound; eauto. apply Loc.diff_sym; auto.
 Qed.
 
@@ -1106,11 +1106,11 @@ Lemma transfer_use_def_satisf:
   (forall v v', Val.lessdef v v' ->
     satisf (rs#res <- v) (Locmap.set (R res') v' (undef_regs und ls)) e).
 Proof.
-  unfold transfer_use_def; intros. MonadInv. 
+  unfold transfer_use_def; intros. MonadInv.
   split. eapply add_equations_lessdef; eauto.
-  intros. eapply parallel_assignment_satisf; eauto. assumption. 
-  eapply can_undef_satisf; eauto. 
-  eapply add_equations_satisf; eauto. 
+  intros. eapply parallel_assignment_satisf; eauto. assumption.
+  eapply can_undef_satisf; eauto.
+  eapply add_equations_satisf; eauto.
 Qed.
 
 Lemma add_equations_res_lessdef:
@@ -1120,9 +1120,9 @@ Lemma add_equations_res_lessdef:
   Val.lessdef_list (encode_long oty rs#r) (map ls ll).
 Proof.
   intros. functional inversion H.
-- subst. simpl. constructor. 
+- subst. simpl. constructor.
   eapply add_equation_lessdef with (q := Eq High r l1).
-  eapply add_equation_satisf. eauto. 
+  eapply add_equation_satisf. eauto.
   constructor.
   eapply add_equation_lessdef with (q := Eq Low r l2). eauto.
   constructor.
@@ -1144,10 +1144,10 @@ Lemma return_regs_agree_callee_save:
   forall caller callee,
   agree_callee_save caller (return_regs caller callee).
 Proof.
-  intros; red; intros. unfold return_regs. red in H. 
+  intros; red; intros. unfold return_regs. red in H.
   destruct l.
-  rewrite pred_dec_false; auto. 
-  destruct sl; auto || congruence. 
+  rewrite pred_dec_false; auto.
+  destruct sl; auto || congruence.
 Qed.
 
 Lemma no_caller_saves_sound:
@@ -1159,7 +1159,7 @@ Proof.
   unfold no_caller_saves, callee_save_loc; intros.
   exploit EqSet.for_all_2; eauto.
   hnf. intros. simpl in H1. rewrite H1. auto.
-  lazy beta. destruct (eloc q). 
+  lazy beta. destruct (eloc q).
   intros; red; intros. destruct (orb_true_elim _ _ H1); InvBooleans.
   eapply int_callee_save_not_destroyed; eauto.
   apply index_int_callee_save_pos2. omega.
@@ -1181,8 +1181,8 @@ Lemma function_return_satisf:
 Proof.
   intros; red; intros.
   functional inversion H0.
-- subst. rewrite <- H11 in *. unfold encode_long in H4. rewrite <- H7 in H4. 
-  simpl in H4. inv H4. inv H14. 
+- subst. rewrite <- H11 in *. unfold encode_long in H4. rewrite <- H7 in H4.
+  simpl in H4. inv H4. inv H14.
   set (e' := remove_equation {| ekind := Low; ereg := res; eloc := l2 |}
           (remove_equation {| ekind := High; ereg := res; eloc := l1 |} e)) in *.
   simpl in H2. InvBooleans.
@@ -1190,20 +1190,20 @@ Proof.
   subst q; simpl. rewrite Regmap.gss. auto.
   destruct (OrderedEquation.eq_dec q (Eq High res l1)).
   subst q; simpl. rewrite Regmap.gss. auto.
-  assert (EqSet.In q e'). unfold e', remove_equation; simpl; ESD.fsetdec. 
+  assert (EqSet.In q e'). unfold e', remove_equation; simpl; ESD.fsetdec.
   exploit reg_loc_unconstrained_sound. eexact H. eauto. intros [A B].
   exploit reg_loc_unconstrained_sound. eexact H2. eauto. intros [C D].
   rewrite Regmap.gso; auto.
   exploit no_caller_saves_sound; eauto. intros.
-  red in H5. rewrite <- H5; auto. 
+  red in H5. rewrite <- H5; auto.
 - subst. rewrite <- H11 in *.
   replace (encode_long (sig_res sg) v) with (v :: nil) in H4.
   simpl in H4. inv H4.
   simpl in H2. InvBooleans.
   set (e' := remove_equation {| ekind := Full; ereg := res; eloc := l1 |} e) in *.
-  destruct (OrderedEquation.eq_dec q (Eq Full res l1)). 
-  subst q; simpl. rewrite Regmap.gss; auto. 
-  assert (EqSet.In q e'). unfold e', remove_equation; simpl. ESD.fsetdec. 
+  destruct (OrderedEquation.eq_dec q (Eq Full res l1)).
+  subst q; simpl. rewrite Regmap.gss; auto.
+  assert (EqSet.In q e'). unfold e', remove_equation; simpl. ESD.fsetdec.
   exploit reg_loc_unconstrained_sound; eauto. intros [A B].
   rewrite Regmap.gso; auto.
   exploit no_caller_saves_sound; eauto. intros.
@@ -1216,11 +1216,11 @@ Lemma compat_left_sound:
   compat_left r l e = true -> EqSet.In q e -> ereg q = r -> ekind q = Full /\ eloc q = l.
 Proof.
   unfold compat_left; intros.
-  rewrite EqSet.for_all_between_iff in H. 
-  apply select_reg_charact in H1. destruct H1. 
-  exploit H; eauto. intros. 
-  destruct (ekind q); try discriminate. 
-  destruct (Loc.eq l (eloc q)); try discriminate. 
+  rewrite EqSet.for_all_between_iff in H.
+  apply select_reg_charact in H1. destruct H1.
+  exploit H; eauto. intros.
+  destruct (ekind q); try discriminate.
+  destruct (Loc.eq l (eloc q)); try discriminate.
   auto.
   intros. subst x2. auto.
   exact (select_reg_l_monotone r).
@@ -1233,10 +1233,10 @@ Lemma compat_left2_sound:
   (ekind q = High /\ eloc q = l1) \/ (ekind q = Low /\ eloc q = l2).
 Proof.
   unfold compat_left2; intros.
-  rewrite EqSet.for_all_between_iff in H. 
-  apply select_reg_charact in H1. destruct H1. 
-  exploit H; eauto. intros. 
-  destruct (ekind q); try discriminate. 
+  rewrite EqSet.for_all_between_iff in H.
+  apply select_reg_charact in H1. destruct H1.
+  exploit H; eauto. intros.
+  destruct (ekind q); try discriminate.
   InvBooleans. auto.
   InvBooleans. auto.
   intros. subst x2. auto.
@@ -1265,12 +1265,12 @@ Lemma compat_entry_satisf:
   Val.lessdef_list vl (decode_longs tyl (map ls ll)) ->
   satisf (init_regs vl rl) ls e.
 Proof.
-  intros until e. functional induction (compat_entry rl tyl ll e); intros. 
+  intros until e. functional induction (compat_entry rl tyl ll e); intros.
 - (* no params *)
   simpl. red; intros. rewrite Regmap.gi. destruct (ekind q); simpl; auto.
 - (* a param of type Tlong *)
   InvBooleans. simpl in H0. inv H0. simpl.
-  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1). 
+  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1).
   exploit compat_left2_sound; eauto.
   intros [[A B] | [A B]]; rewrite A; rewrite B; simpl.
   apply Val.lessdef_trans with (Val.hiword (Val.longofwords (ls l1) (ls l2))).
@@ -1280,17 +1280,17 @@ Proof.
   eapply IHb; eauto.
 - (* a param of type Tint *)
   InvBooleans. simpl in H0. inv H0. simpl.
-  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1). 
+  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1).
   exploit compat_left_sound; eauto. intros [A B]. rewrite A; rewrite B; auto.
   eapply IHb; eauto.
 - (* a param of type Tfloat *)
   InvBooleans. simpl in H0. inv H0. simpl.
-  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1). 
+  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1).
   exploit compat_left_sound; eauto. intros [A B]. rewrite A; rewrite B; auto.
   eapply IHb; eauto.
 - (* a param of type Tsingle *)
   InvBooleans. simpl in H0. inv H0. simpl.
-  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1). 
+  red; intros. rewrite Regmap.gsspec. destruct (peq (ereg q) r1).
   exploit compat_left_sound; eauto. intros [A B]. rewrite A; rewrite B; auto.
   eapply IHb; eauto.
 - (* error case *)
@@ -1301,10 +1301,10 @@ Lemma call_regs_param_values:
   forall sg ls,
   map (call_regs ls) (loc_parameters sg) = map ls (loc_arguments sg).
 Proof.
-  intros. unfold loc_parameters. rewrite list_map_compose. 
+  intros. unfold loc_parameters. rewrite list_map_compose.
   apply list_map_exten; intros. unfold call_regs, parameter_of_argument.
-  exploit loc_arguments_acceptable; eauto. unfold loc_argument_acceptable. 
-  destruct x; auto. destruct sl; tauto. 
+  exploit loc_arguments_acceptable; eauto. unfold loc_argument_acceptable.
+  destruct x; auto. destruct sl; tauto.
 Qed.
 
 Lemma return_regs_arg_values:
@@ -1312,12 +1312,12 @@ Lemma return_regs_arg_values:
   tailcall_is_possible sg = true ->
   map (return_regs ls1 ls2) (loc_arguments sg) = map ls2 (loc_arguments sg).
 Proof.
-  intros. apply list_map_exten; intros. 
+  intros. apply list_map_exten; intros.
   exploit loc_arguments_acceptable; eauto.
-  exploit tailcall_is_possible_correct; eauto. 
+  exploit tailcall_is_possible_correct; eauto.
   unfold loc_argument_acceptable, return_regs.
   destruct x; intros.
-  rewrite pred_dec_true; auto. 
+  rewrite pred_dec_true; auto.
   contradiction.
 Qed.
 
@@ -1326,7 +1326,7 @@ Lemma find_function_tailcall:
   ros_compatible_tailcall ros = true ->
   find_function tge ros (return_regs ls1 ls2) = find_function tge ros ls2.
 Proof.
-  unfold ros_compatible_tailcall, find_function; intros. 
+  unfold ros_compatible_tailcall, find_function; intros.
   destruct ros as [r|id]; auto.
   unfold return_regs. destruct (in_dec mreg_eq r destroyed_at_call); simpl in H.
   auto. congruence.
@@ -1343,10 +1343,10 @@ Lemma analyze_successors:
   exists e', transfer f env bsh s an!!s = OK e' /\ EqSet.Subset e' e.
 Proof.
   unfold analyze; intros. exploit Allocation.DS.fixpoint_solution; eauto.
-  instantiate (1 := pc). instantiate (1 := s). 
-  unfold successors_list. rewrite PTree.gmap1. rewrite H0. simpl. auto. 
+  instantiate (1 := pc). instantiate (1 := s).
+  unfold successors_list. rewrite PTree.gmap1. rewrite H0. simpl. auto.
   rewrite H2. unfold Allocation.DS.L.ge. destruct (transfer f env bsh s an#s); intros.
-  exists e0; auto. 
+  exists e0; auto.
   contradiction.
 Qed.
 
@@ -1359,14 +1359,14 @@ Lemma satisf_successors:
   satisf rs ls e ->
   exists e', transfer f env bsh s an!!s = OK e' /\ satisf rs ls e'.
 Proof.
-  intros. exploit analyze_successors; eauto. intros [e' [A B]]. 
+  intros. exploit analyze_successors; eauto. intros [e' [A B]].
   exists e'; split; auto. eapply satisf_incr; eauto.
 Qed.
 
 (** Inversion on [transf_function] *)
 
 Inductive transf_function_spec (f: RTL.function) (tf: LTL.function) : Prop :=
-  | transf_function_spec_intro:  
+  | transf_function_spec_intro:
       forall env an mv k e1 e2,
       wt_function f env ->
       analyze f env (pair_codes f tf) = Some an ->
@@ -1389,14 +1389,14 @@ Proof.
   destruct (type_function f) as [env|] eqn:TY; try discriminate.
   destruct (regalloc f); try discriminate.
   destruct (check_function f f0 env) as [] eqn:?; inv H.
-  unfold check_function in Heqr. 
+  unfold check_function in Heqr.
   destruct (analyze f env (pair_codes f tf)) as [an|] eqn:?; try discriminate.
-  monadInv Heqr. 
+  monadInv Heqr.
   destruct (check_entrypoints_aux f tf env x) as [y|] eqn:?; try discriminate.
   unfold check_entrypoints_aux, pair_entrypoints in Heqo0. MonadInv.
   exploit extract_moves_sound; eauto. intros [A B]. subst b.
   exploit check_succ_sound; eauto. intros [k EQ1]. subst b0.
-  econstructor; eauto. eapply type_function_correct; eauto. congruence. 
+  econstructor; eauto. eapply type_function_correct; eauto. congruence.
 Qed.
 
 Lemma invert_code:
@@ -1405,7 +1405,7 @@ Lemma invert_code:
   (RTL.fn_code f)!pc = Some i ->
   transfer f env (pair_codes f tf) pc opte = OK e ->
   exists eafter, exists bsh, exists bb,
-  opte = OK eafter /\ 
+  opte = OK eafter /\
   (pair_codes f tf)!pc = Some bsh /\
   (LTL.fn_code tf)!pc = Some bb /\
   expand_block_shape bsh i bb /\
@@ -1413,11 +1413,11 @@ Lemma invert_code:
   wt_instr f env i.
 Proof.
   intros. destruct opte as [eafter|]; simpl in H1; try discriminate. exists eafter.
-  destruct (pair_codes f tf)!pc as [bsh|] eqn:?; try discriminate. exists bsh. 
+  destruct (pair_codes f tf)!pc as [bsh|] eqn:?; try discriminate. exists bsh.
   exploit matching_instr_block; eauto. intros [bb [A B]].
-  destruct (transfer_aux f env bsh eafter) as [e1|] eqn:?; inv H1. 
+  destruct (transfer_aux f env bsh eafter) as [e1|] eqn:?; inv H1.
   exists bb. exploit wt_instr_at; eauto.
-  tauto. 
+  tauto.
 Qed.
 
 (** * Semantic preservation *)
@@ -1486,7 +1486,7 @@ Proof.
   eapply functions_translated; eauto.
   rewrite <- H2 in H. simpl in H. congruence.
   (* two symbols *)
-  rewrite symbols_preserved. rewrite Heqo. 
+  rewrite symbols_preserved. rewrite Heqo.
   eapply function_ptr_translated; eauto.
 Qed.
 
@@ -1506,22 +1506,22 @@ Opaque destroyed_by_op.
   (* base *)
 - unfold expand_moves; simpl. inv H. exists ls; split. apply star_refl. auto.
   (* step *)
-- destruct a as [src dst]. unfold expand_moves. simpl. 
+- destruct a as [src dst]. unfold expand_moves. simpl.
   destruct (track_moves env mv e) as [e1|] eqn:?; MonadInv.
-  assert (wf_moves mv). red; intros. apply H0; auto with coqlib. 
+  assert (wf_moves mv). red; intros. apply H0; auto with coqlib.
   destruct src as [rsrc | ssrc]; destruct dst as [rdst | sdst].
   (* reg-reg *)
-+ exploit IHmv; eauto. eapply subst_loc_undef_satisf; eauto. 
-  intros [ls' [A B]]. exists ls'; split; auto. eapply star_left; eauto. 
++ exploit IHmv; eauto. eapply subst_loc_undef_satisf; eauto.
+  intros [ls' [A B]]. exists ls'; split; auto. eapply star_left; eauto.
   econstructor. simpl. eauto. auto. auto.
   (* reg->stack *)
-+ exploit IHmv; eauto. eapply subst_loc_undef_satisf; eauto. 
-  intros [ls' [A B]]. exists ls'; split; auto. eapply star_left; eauto. 
++ exploit IHmv; eauto. eapply subst_loc_undef_satisf; eauto.
+  intros [ls' [A B]]. exists ls'; split; auto. eapply star_left; eauto.
   econstructor. simpl. eauto. auto.
   (* stack->reg *)
-+ simpl in Heqb. exploit IHmv; eauto. eapply subst_loc_undef_satisf; eauto. 
-  intros [ls' [A B]]. exists ls'; split; auto. eapply star_left; eauto. 
-  econstructor. auto. auto. 
++ simpl in Heqb. exploit IHmv; eauto. eapply subst_loc_undef_satisf; eauto.
+  intros [ls' [A B]]. exists ls'; split; auto. eapply star_left; eauto.
+  econstructor. auto. auto.
   (* stack->stack *)
 + exploit H0; auto with coqlib. unfold wf_move. tauto.
 Qed.
@@ -1593,17 +1593,17 @@ Lemma match_stackframes_change_sig:
   sg'.(sig_res) = sg.(sig_res) ->
   match_stackframes s ts sg'.
 Proof.
-  intros. inv H. 
+  intros. inv H.
   constructor. congruence.
   econstructor; eauto.
-  unfold proj_sig_res in *. rewrite H0; auto. 
-  intros. unfold loc_result in H; rewrite H0 in H; eauto. 
+  unfold proj_sig_res in *. rewrite H0; auto.
+  intros. unfold loc_result in H; rewrite H0 in H; eauto.
 Qed.
 
 Ltac UseShape :=
   match goal with
   | [ WT: wt_function _ _, CODE: (RTL.fn_code _)!_ = Some _, EQ: transfer _ _ _ _ _ = OK _ |- _ ] =>
-      destruct (invert_code _ _ _ _ _ _ _ WT CODE EQ) as (eafter & bsh & bb & AFTER & BSH & TCODE & EBS & TR & WTI); 
+      destruct (invert_code _ _ _ _ _ _ _ WT CODE EQ) as (eafter & bsh & bb & AFTER & BSH & TCODE & EBS & TR & WTI);
       inv EBS; unfold transfer_aux in TR; MonadInv
   end.
 
@@ -1612,7 +1612,7 @@ Remark addressing_not_long:
   wt_instr f env (Iload Mint64 addr args dst s) ->
   In r args -> r <> dst.
 Proof.
-  intros. 
+  intros.
   assert (forall ty, In ty (type_of_addressing addr) -> ty = Tint).
   { intros. destruct addr; simpl in H1; intuition. }
   inv H.
@@ -1620,11 +1620,11 @@ Proof.
   { generalize args (type_of_addressing addr) H0 H1 H5.
     induction args0; simpl; intros.
     contradiction.
-    destruct l. discriminate. InvBooleans. 
-    destruct H2. subst a. 
-    assert (t = Tint) by auto with coqlib. subst t. 
-    destruct (env r); auto || discriminate. 
-    eauto with coqlib. 
+    destruct l. discriminate. InvBooleans.
+    destruct H2. subst a.
+    assert (t = Tint) by auto with coqlib. subst t.
+    destruct (env r); auto || discriminate.
+    eauto with coqlib.
   }
   red; intros; subst r. rewrite H in H8; discriminate.
 Qed.
@@ -1640,108 +1640,108 @@ Proof.
   induction 1; intros S1' MS; inv MS; try UseShape.
 
 (* nop *)
-  exploit exec_moves; eauto. intros [ls1 [X Y]]. 
+  exploit exec_moves; eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. intros [enext [U V]]. 
-  econstructor; eauto. 
+  exploit satisf_successors; eauto. simpl; eauto. intros [enext [U V]].
+  econstructor; eauto.
 
 (* op move *)
 - generalize (wt_exec_Iop _ _ _ _ _ _ _ _ _ _ _ WTI H0 WTRS). intros WTRS'.
-  simpl in H0. inv H0.  
-  exploit (exec_moves mv); eauto. intros [ls1 [X Y]]. 
+  simpl in H0. inv H0.
+  exploit (exec_moves mv); eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. eapply subst_reg_satisf; eauto. 
-  intros [enext [U V]]. 
+  exploit satisf_successors; eauto. simpl; eauto. eapply subst_reg_satisf; eauto.
+  intros [enext [U V]].
   econstructor; eauto.
 
 (* op makelong *)
 - generalize (wt_exec_Iop _ _ _ _ _ _ _ _ _ _ _ WTI H0 WTRS). intros WTRS'.
-  simpl in H0. inv H0. 
-  exploit (exec_moves mv); eauto. intros [ls1 [X Y]]. 
+  simpl in H0. inv H0.
+  exploit (exec_moves mv); eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
   exploit satisf_successors; eauto. simpl; eauto.
-  eapply subst_reg_kind_satisf_makelong. eauto. eauto. 
-  intros [enext [U V]]. 
+  eapply subst_reg_kind_satisf_makelong. eauto. eauto.
+  intros [enext [U V]].
   econstructor; eauto.
 
 (* op lowlong *)
 - generalize (wt_exec_Iop _ _ _ _ _ _ _ _ _ _ _ WTI H0 WTRS). intros WTRS'.
-  simpl in H0. inv H0. 
-  exploit (exec_moves mv); eauto. intros [ls1 [X Y]]. 
+  simpl in H0. inv H0.
+  exploit (exec_moves mv); eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
   exploit satisf_successors; eauto. simpl; eauto.
-  eapply subst_reg_kind_satisf_lowlong. eauto. eauto. 
-  intros [enext [U V]]. 
+  eapply subst_reg_kind_satisf_lowlong. eauto. eauto.
+  intros [enext [U V]].
   econstructor; eauto.
 
 (* op highlong *)
 - generalize (wt_exec_Iop _ _ _ _ _ _ _ _ _ _ _ WTI H0 WTRS). intros WTRS'.
-  simpl in H0. inv H0. 
-  exploit (exec_moves mv); eauto. intros [ls1 [X Y]]. 
+  simpl in H0. inv H0.
+  exploit (exec_moves mv); eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
   exploit satisf_successors; eauto. simpl; eauto.
-  eapply subst_reg_kind_satisf_highlong. eauto. eauto. 
-  intros [enext [U V]]. 
+  eapply subst_reg_kind_satisf_highlong. eauto. eauto.
+  intros [enext [U V]].
   econstructor; eauto.
 
 (* op regular *)
 - generalize (wt_exec_Iop _ _ _ _ _ _ _ _ _ _ _ WTI H0 WTRS). intros WTRS'.
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
   exploit transfer_use_def_satisf; eauto. intros [X Y].
-  exploit eval_operation_lessdef; eauto. intros [v' [F G]]. 
+  exploit eval_operation_lessdef; eauto. intros [v' [F G]].
   exploit (exec_moves mv2); eauto. intros [ls2 [A2 B2]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
-  eapply star_left. econstructor. instantiate (1 := v'). rewrite <- F. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
+  eapply star_left. econstructor. instantiate (1 := v'). rewrite <- F.
   apply eval_operation_preserved. exact symbols_preserved.
-  eauto. eapply star_right. eexact A2. constructor. 
+  eauto. eapply star_right. eexact A2. constructor.
   eauto. eauto. eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. intros [enext [U V]]. 
+  exploit satisf_successors; eauto. simpl; eauto. intros [enext [U V]].
   econstructor; eauto.
 
 (* op dead *)
-- exploit exec_moves; eauto. intros [ls1 [X Y]]. 
+- exploit exec_moves; eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
-  exploit satisf_successors. eauto. eauto. simpl; eauto. eauto. 
-  eapply reg_unconstrained_satisf; eauto. 
-  intros [enext [U V]]. 
+  exploit satisf_successors. eauto. eauto. simpl; eauto. eauto.
+  eapply reg_unconstrained_satisf; eauto.
+  intros [enext [U V]].
   econstructor; eauto.
-  eapply wt_exec_Iop; eauto. 
+  eapply wt_exec_Iop; eauto.
 
 (* load regular *)
 - generalize (wt_exec_Iload _ _ _ _ _ _ _ _ _ _ _ WTI H1 WTRS). intros WTRS'.
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
   exploit transfer_use_def_satisf; eauto. intros [X Y].
   exploit eval_addressing_lessdef; eauto. intros [a' [F G]].
-  exploit Mem.loadv_extends; eauto. intros [v' [P Q]]. 
+  exploit Mem.loadv_extends; eauto. intros [v' [P Q]].
   exploit (exec_moves mv2); eauto. intros [ls2 [A2 B2]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
-  eapply star_left. econstructor. instantiate (1 := a'). rewrite <- F. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
+  eapply star_left. econstructor. instantiate (1 := a'). rewrite <- F.
   apply eval_addressing_preserved. exact symbols_preserved. eauto. eauto.
-  eapply star_right. eexact A2. constructor. 
+  eapply star_right. eexact A2. constructor.
   eauto. eauto. eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. intros [enext [U V]]. 
+  exploit satisf_successors; eauto. simpl; eauto. intros [enext [U V]].
   econstructor; eauto.
 
 (* load pair *)
@@ -1749,53 +1749,53 @@ Proof.
   exploit Mem.loadv_int64_split; eauto. intros (v1 & v2 & LOAD1 & LOAD2 & V12).
   set (v2' := if big_endian then v2 else v1) in *.
   set (v1' := if big_endian then v1 else v2) in *.
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
   assert (LD1: Val.lessdef_list rs##args (reglist ls1 args1')).
   { eapply add_equations_lessdef; eauto. }
   exploit eval_addressing_lessdef. eexact LD1. eauto. intros [a1' [F1 G1]].
   exploit Mem.loadv_extends. eauto. eexact LOAD1. eexact G1. intros (v1'' & LOAD1' & LD2).
   set (ls2 := Locmap.set (R dst1') v1'' (undef_regs (destroyed_by_load Mint32 addr) ls1)).
   assert (SAT2: satisf (rs#dst <- v) ls2 e2).
-  { eapply loc_unconstrained_satisf. eapply can_undef_satisf; eauto. 
-    eapply reg_unconstrained_satisf. eauto. 
+  { eapply loc_unconstrained_satisf. eapply can_undef_satisf; eauto.
+    eapply reg_unconstrained_satisf. eauto.
     eapply add_equations_satisf; eauto. assumption.
-    rewrite Regmap.gss. apply Val.lessdef_trans with v1'; auto. 
+    rewrite Regmap.gss. apply Val.lessdef_trans with v1'; auto.
     subst v. unfold v1', kind_first_word.
     destruct big_endian; apply val_hiword_longofwords || apply val_loword_longofwords.
   }
-  exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]]. 
+  exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]].
   assert (LD3: Val.lessdef_list rs##args (reglist ls3 args2')).
-  { replace (rs##args) with ((rs#dst<-v)##args). 
-    eapply add_equations_lessdef; eauto. 
-    apply list_map_exten; intros. rewrite Regmap.gso; auto. 
-    eapply addressing_not_long; eauto. 
+  { replace (rs##args) with ((rs#dst<-v)##args).
+    eapply add_equations_lessdef; eauto.
+    apply list_map_exten; intros. rewrite Regmap.gso; auto.
+    eapply addressing_not_long; eauto.
   }
   exploit eval_addressing_lessdef. eexact LD3.
   eapply eval_offset_addressing; eauto. intros [a2' [F2 G2]].
   exploit Mem.loadv_extends. eauto. eexact LOAD2. eexact G2. intros (v2'' & LOAD2' & LD4).
   set (ls4 := Locmap.set (R dst2') v2'' (undef_regs (destroyed_by_load Mint32 addr2) ls3)).
   assert (SAT4: satisf (rs#dst <- v) ls4 e0).
-  { eapply loc_unconstrained_satisf. eapply can_undef_satisf; eauto. 
+  { eapply loc_unconstrained_satisf. eapply can_undef_satisf; eauto.
     eapply add_equations_satisf; eauto. assumption.
-    apply Val.lessdef_trans with v2'; auto. 
+    apply Val.lessdef_trans with v2'; auto.
     rewrite Regmap.gss. subst v. unfold v2', kind_second_word.
     destruct big_endian; apply val_hiword_longofwords || apply val_loword_longofwords.
   }
   exploit (exec_moves mv3); eauto. intros [ls5 [A5 B5]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
-  eapply star_left. econstructor. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
+  eapply star_left. econstructor.
   instantiate (1 := a1'). rewrite <- F1. apply eval_addressing_preserved. exact symbols_preserved.
-  eexact LOAD1'. instantiate (1 := ls2); auto. 
+  eexact LOAD1'. instantiate (1 := ls2); auto.
   eapply star_trans. eexact A3.
   eapply star_left. econstructor.
   instantiate (1 := a2'). rewrite <- F2. apply eval_addressing_preserved. exact symbols_preserved.
   eexact LOAD2'. instantiate (1 := ls4); auto.
   eapply star_right. eexact A5.
-  constructor. 
+  constructor.
   eauto. eauto. eauto. eauto. eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. intros [enext [W Z]]. 
+  exploit satisf_successors; eauto. simpl; eauto. intros [enext [W Z]].
   econstructor; eauto.
 
 (* load first word of a pair *)
@@ -1803,7 +1803,7 @@ Proof.
   exploit Mem.loadv_int64_split; eauto. intros (v1 & v2 & LOAD1 & LOAD2 & V12).
   set (v2' := if big_endian then v2 else v1) in *.
   set (v1' := if big_endian then v1 else v2) in *.
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
   assert (LD1: Val.lessdef_list rs##args (reglist ls1 args')).
   { eapply add_equations_lessdef; eauto. }
   exploit eval_addressing_lessdef. eexact LD1. eauto. intros [a1' [F1 G1]].
@@ -1811,22 +1811,22 @@ Proof.
   set (ls2 := Locmap.set (R dst') v1'' (undef_regs (destroyed_by_load Mint32 addr) ls1)).
   assert (SAT2: satisf (rs#dst <- v) ls2 e0).
   { eapply parallel_assignment_satisf; eauto.
-    apply Val.lessdef_trans with v1'; auto. 
+    apply Val.lessdef_trans with v1'; auto.
     subst v. unfold v1', kind_first_word.
     destruct big_endian; apply val_hiword_longofwords || apply val_loword_longofwords.
     eapply can_undef_satisf. eauto. eapply add_equations_satisf; eauto.
   }
-  exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]]. 
+  exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
-  eapply star_left. econstructor. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
+  eapply star_left. econstructor.
   instantiate (1 := a1'). rewrite <- F1. apply eval_addressing_preserved. exact symbols_preserved.
-  eexact LOAD1'. instantiate (1 := ls2); auto. 
+  eexact LOAD1'. instantiate (1 := ls2); auto.
   eapply star_right. eexact A3.
-  constructor. 
+  constructor.
   eauto. eauto. eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. intros [enext [W Z]]. 
+  exploit satisf_successors; eauto. simpl; eauto. intros [enext [W Z]].
   econstructor; eauto.
 
 (* load second word of a pair *)
@@ -1834,7 +1834,7 @@ Proof.
   exploit Mem.loadv_int64_split; eauto. intros (v1 & v2 & LOAD1 & LOAD2 & V12).
   set (v2' := if big_endian then v2 else v1) in *.
   set (v1' := if big_endian then v1 else v2) in *.
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
   assert (LD1: Val.lessdef_list rs##args (reglist ls1 args')).
   { eapply add_equations_lessdef; eauto. }
   exploit eval_addressing_lessdef. eexact LD1.
@@ -1843,53 +1843,53 @@ Proof.
   set (ls2 := Locmap.set (R dst') v2'' (undef_regs (destroyed_by_load Mint32 addr2) ls1)).
   assert (SAT2: satisf (rs#dst <- v) ls2 e0).
   { eapply parallel_assignment_satisf; eauto.
-    apply Val.lessdef_trans with v2'; auto. 
+    apply Val.lessdef_trans with v2'; auto.
     subst v. unfold v2', kind_second_word.
     destruct big_endian; apply val_hiword_longofwords || apply val_loword_longofwords.
     eapply can_undef_satisf. eauto. eapply add_equations_satisf; eauto.
   }
-  exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]]. 
+  exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
-  eapply star_left. econstructor. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
+  eapply star_left. econstructor.
   instantiate (1 := a1'). rewrite <- F1. apply eval_addressing_preserved. exact symbols_preserved.
-  eexact LOAD2'. instantiate (1 := ls2); auto. 
+  eexact LOAD2'. instantiate (1 := ls2); auto.
   eapply star_right. eexact A3.
-  constructor. 
+  constructor.
   eauto. eauto. eauto. traceEq.
-  exploit satisf_successors; eauto. simpl; eauto. intros [enext [W Z]]. 
+  exploit satisf_successors; eauto. simpl; eauto. intros [enext [W Z]].
   econstructor; eauto.
 
 (* load dead *)
-- exploit exec_moves; eauto. intros [ls1 [X Y]]. 
+- exploit exec_moves; eauto. intros [ls1 [X Y]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_right. eexact X. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_right. eexact X. econstructor; eauto.
   eauto. traceEq.
-  exploit satisf_successors. eauto. eauto. simpl; eauto. eauto. 
-  eapply reg_unconstrained_satisf; eauto. 
-  intros [enext [U V]]. 
+  exploit satisf_successors. eauto. eauto. simpl; eauto. eauto.
+  eapply reg_unconstrained_satisf; eauto.
+  intros [enext [U V]].
   econstructor; eauto.
   eapply wt_exec_Iload; eauto.
 
 (* store *)
 - exploit exec_moves; eauto. intros [ls1 [X Y]].
-  exploit add_equations_lessdef; eauto. intros LD. simpl in LD. inv LD. 
+  exploit add_equations_lessdef; eauto. intros LD. simpl in LD. inv LD.
   exploit eval_addressing_lessdef; eauto. intros [a' [F G]].
   exploit Mem.storev_extends; eauto. intros [m'' [P Q]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_trans. eexact X.
-  eapply star_two. econstructor. instantiate (1 := a'). rewrite <- F. 
+  eapply star_two. econstructor. instantiate (1 := a'). rewrite <- F.
   apply eval_addressing_preserved. exact symbols_preserved. eauto. eauto.
   constructor. eauto. eauto. traceEq.
   exploit satisf_successors; eauto. simpl; eauto.
-  eapply can_undef_satisf; eauto. eapply add_equations_satisf; eauto. intros [enext [U V]]. 
+  eapply can_undef_satisf; eauto. eapply add_equations_satisf; eauto. intros [enext [U V]].
   econstructor; eauto.
 
 (* store 2 *)
-- exploit Mem.storev_int64_split; eauto. 
+- exploit Mem.storev_int64_split; eauto.
   replace (if big_endian then Val.hiword rs#src else Val.loword rs#src)
      with (sel_val kind_first_word rs#src)
        by (unfold kind_first_word; destruct big_endian; reflexivity).
@@ -1899,16 +1899,16 @@ Proof.
   intros [m1 [STORE1 STORE2]].
   exploit (exec_moves mv1); eauto. intros [ls1 [X Y]].
   exploit add_equations_lessdef. eexact Heqo1. eexact Y. intros LD1.
-  exploit add_equation_lessdef. eapply add_equations_satisf. eexact Heqo1. eexact Y. 
+  exploit add_equation_lessdef. eapply add_equations_satisf. eexact Heqo1. eexact Y.
   simpl. intros LD2.
   set (ls2 := undef_regs (destroyed_by_store Mint32 addr) ls1).
   assert (SAT2: satisf rs ls2 e1).
-    eapply can_undef_satisf. eauto. 
+    eapply can_undef_satisf. eauto.
     eapply add_equation_satisf. eapply add_equations_satisf; eauto.
   exploit eval_addressing_lessdef. eexact LD1. eauto. intros [a1' [F1 G1]].
   assert (F1': eval_addressing tge sp addr (reglist ls1 args1') = Some a1').
     rewrite <- F1. apply eval_addressing_preserved. exact symbols_preserved.
-  exploit Mem.storev_extends. eauto. eexact STORE1. eexact G1. eauto. 
+  exploit Mem.storev_extends. eauto. eexact STORE1. eexact G1. eauto.
   intros [m1' [STORE1' EXT1]].
   exploit (exec_moves mv2); eauto. intros [ls3 [U V]].
   exploit add_equations_lessdef. eexact Heqo. eexact V. intros LD3.
@@ -1918,67 +1918,67 @@ Proof.
   assert (F2': eval_addressing tge sp addr (reglist ls3 args2') = Some a2').
     rewrite <- F2. apply eval_addressing_preserved. exact symbols_preserved.
   exploit eval_offset_addressing. eauto. eexact F2'. intros F2''.
-  exploit Mem.storev_extends. eexact EXT1. eexact STORE2. 
-  apply Val.add_lessdef. eexact G2. eauto. eauto. 
+  exploit Mem.storev_extends. eexact EXT1. eexact STORE2.
+  apply Val.add_lessdef. eexact G2. eauto. eauto.
   intros [m2' [STORE2' EXT2]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_trans. eexact X.
-  eapply star_left. 
+  eapply star_left.
   econstructor. eexact F1'. eexact STORE1'. instantiate (1 := ls2). auto.
   eapply star_trans. eexact U.
   eapply star_two.
-  econstructor. eexact F2''. eexact STORE2'. eauto. 
+  econstructor. eexact F2''. eexact STORE2'. eauto.
   constructor. eauto. eauto. eauto. eauto. traceEq.
   exploit satisf_successors; eauto. simpl; eauto.
   eapply can_undef_satisf. eauto.
   eapply add_equation_satisf. eapply add_equations_satisf; eauto.
-  intros [enext [P Q]]. 
+  intros [enext [P Q]].
   econstructor; eauto.
 
 (* call *)
 - set (sg := RTL.funsig fd) in *.
   set (args' := loc_arguments sg) in *.
   set (res' := map R (loc_result sg)) in *.
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
-  exploit find_function_translated. eauto. eauto. eapply add_equations_args_satisf; eauto. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
+  exploit find_function_translated. eauto. eauto. eapply add_equations_args_satisf; eauto.
   intros [tfd [E F]].
   assert (SIG: funsig tfd = sg). eapply sig_function_translated; eauto.
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_right. eexact A1. econstructor; eauto.
   eauto. traceEq.
   exploit analyze_successors; eauto. simpl. left; eauto. intros [enext [U V]].
   econstructor; eauto.
   econstructor; eauto.
-  inv WTI. rewrite SIG. auto. 
-  intros. exploit (exec_moves mv2). eauto. eauto. 
+  inv WTI. rewrite SIG. auto.
+  intros. exploit (exec_moves mv2). eauto. eauto.
   eapply function_return_satisf with (v := v) (ls_before := ls1) (ls_after := ls0); eauto.
-  eapply add_equation_ros_satisf; eauto. 
-  eapply add_equations_args_satisf; eauto. 
+  eapply add_equation_ros_satisf; eauto.
+  eapply add_equations_args_satisf; eauto.
   congruence.
   apply wt_regset_assign; auto.
   intros [ls2 [A2 B2]].
-  exists ls2; split. 
+  exists ls2; split.
   eapply star_right. eexact A2. constructor. traceEq.
-  apply satisf_incr with eafter; auto. 
+  apply satisf_incr with eafter; auto.
   rewrite SIG. eapply add_equations_args_lessdef; eauto.
-  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto. 
+  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto.
   simpl. red; auto.
-  inv WTI. rewrite SIG. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto. 
+  inv WTI. rewrite SIG. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto.
 
 (* tailcall *)
 - set (sg := RTL.funsig fd) in *.
   set (args' := loc_arguments sg) in *.
-  exploit Mem.free_parallel_extends; eauto. intros [m'' [P Q]]. 
-  exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]]. 
-  exploit find_function_translated. eauto. eauto. eapply add_equations_args_satisf; eauto. 
+  exploit Mem.free_parallel_extends; eauto. intros [m'' [P Q]].
+  exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]].
+  exploit find_function_translated. eauto. eauto. eapply add_equations_args_satisf; eauto.
   intros [tfd [E F]].
   assert (SIG: funsig tfd = sg). eapply sig_function_translated; eauto.
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_right. eexact A1. econstructor; eauto.
-  rewrite <- E. apply find_function_tailcall; auto. 
+  rewrite <- E. apply find_function_tailcall; auto.
   replace (fn_stacksize tf) with (RTL.fn_stacksize f); eauto.
   destruct (transf_function_inv _ _ FUN); auto.
   eauto. traceEq.
@@ -1986,16 +1986,16 @@ Proof.
   eapply match_stackframes_change_sig; eauto. rewrite SIG. rewrite e0. decEq.
   destruct (transf_function_inv _ _ FUN); auto.
   rewrite SIG. rewrite return_regs_arg_values; auto. eapply add_equations_args_lessdef; eauto.
-  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto. 
+  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto.
   apply return_regs_agree_callee_save.
-  rewrite SIG. inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto. 
+  rewrite SIG. inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto.
 
 (* builtin *)
 - assert (WTRS': wt_regset env (rs#res <- v)) by (eapply wt_exec_Ibuiltin; eauto).
-  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]]. 
+  exploit (exec_moves mv1); eauto. intros [ls1 [A1 B1]].
   exploit external_call_mem_extends; eauto.
   eapply add_equations_args_lessdef; eauto.
-  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto. 
+  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto.
   intros [v' [m'' [F [G [J K]]]]].
   assert (E: map ls1 (map R args') = reglist ls1 args').
   { unfold reglist. rewrite list_map_compose. auto. }
@@ -2003,84 +2003,84 @@ Proof.
   set (vl' := encode_long (sig_res (ef_sig ef)) v').
   set (ls2 := Locmap.setlist (map R res') vl' (undef_regs (destroyed_by_builtin ef) ls1)).
   assert (satisf (rs#res <- v) ls2 e0).
-  { eapply parallel_assignment_satisf_2; eauto. 
+  { eapply parallel_assignment_satisf_2; eauto.
     eapply can_undef_satisf; eauto.
     eapply add_equations_args_satisf; eauto. }
   exploit (exec_moves mv2); eauto. intros [ls3 [A3 B3]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
-  eapply star_left. econstructor. 
-  econstructor. unfold reglist. eapply external_call_symbols_preserved; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
+  eapply star_left. econstructor.
+  econstructor. unfold reglist. eapply external_call_symbols_preserved; eauto.
   exact symbols_preserved. exact varinfo_preserved.
-  instantiate (1 := vl'); auto. 
-  instantiate (1 := ls2); auto. 
+  instantiate (1 := vl'); auto.
+  instantiate (1 := ls2); auto.
   eapply star_right. eexact A3.
-  econstructor. 
-  reflexivity. reflexivity. reflexivity. traceEq. 
+  econstructor.
+  reflexivity. reflexivity. reflexivity. traceEq.
   exploit satisf_successors; eauto. simpl; eauto.
-  intros [enext [U V]]. 
+  intros [enext [U V]].
   econstructor; eauto.
- 
+
 (* annot *)
-- exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]]. 
+- exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]].
   exploit external_call_mem_extends; eauto. eapply add_equations_args_lessdef; eauto.
-  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto. 
+  inv WTI. eapply Val.has_subtype_list; eauto. apply wt_regset_list; auto.
   intros [v' [m'' [F [G [J K]]]]].
   assert (v = Vundef). red in H0; inv H0. auto.
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_trans. eexact A1. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_trans. eexact A1.
   eapply star_two. econstructor.
   eapply external_call_symbols_preserved' with (ge1 := ge).
-  econstructor; eauto. 
+  econstructor; eauto.
   exact symbols_preserved. exact varinfo_preserved.
   eauto. constructor. eauto. eauto. traceEq.
-  exploit satisf_successors. eauto. eauto. simpl; eauto. eauto. 
+  exploit satisf_successors. eauto. eauto. simpl; eauto. eauto.
   eapply satisf_undef_reg with (r := res).
-  eapply add_equations_args_satisf; eauto. 
-  intros [enext [U V]]. 
+  eapply add_equations_args_satisf; eauto.
+  intros [enext [U V]].
   econstructor; eauto.
-  change (destroyed_by_builtin (EF_annot txt typ)) with (@nil mreg). 
+  change (destroyed_by_builtin (EF_annot txt typ)) with (@nil mreg).
   simpl. subst v. assumption.
-  apply wt_regset_assign; auto. subst v. constructor. 
+  apply wt_regset_assign; auto. subst v. constructor.
 
 (* cond *)
 - exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_right. eexact A1.
-  econstructor. eapply eval_condition_lessdef; eauto. eapply add_equations_lessdef; eauto. 
-  eauto. eauto. eauto. traceEq. 
+  econstructor. eapply eval_condition_lessdef; eauto. eapply add_equations_lessdef; eauto.
+  eauto. eauto. eauto. traceEq.
   exploit satisf_successors; eauto.
   instantiate (1 := if b then ifso else ifnot). simpl. destruct b; auto.
   eapply can_undef_satisf. eauto. eapply add_equations_satisf; eauto.
-  intros [enext [U V]]. 
+  intros [enext [U V]].
   econstructor; eauto.
 
 (* jumptable *)
 - exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]].
   assert (Val.lessdef (Vint n) (ls1 (R arg'))).
     rewrite <- H0. eapply add_equation_lessdef with (q := Eq Full arg (R arg')); eauto.
-  inv H2.  
+  inv H2.
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_right. eexact A1.
-  econstructor. eauto. eauto. eauto. eauto. traceEq. 
+  econstructor. eauto. eauto. eauto. eauto. traceEq.
   exploit satisf_successors; eauto.
-  instantiate (1 := pc'). simpl. eapply list_nth_z_in; eauto. 
+  instantiate (1 := pc'). simpl. eapply list_nth_z_in; eauto.
   eapply can_undef_satisf. eauto. eapply add_equation_satisf; eauto.
-  intros [enext [U V]]. 
+  intros [enext [U V]].
   econstructor; eauto.
 
 (* return *)
-- destruct (transf_function_inv _ _ FUN). 
+- destruct (transf_function_inv _ _ FUN).
   exploit Mem.free_parallel_extends; eauto. rewrite H10. intros [m'' [P Q]].
   inv WTI; MonadInv.
   (* without an argument *)
 + exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_right. eexact A1.
   econstructor. eauto. eauto. traceEq.
   simpl. econstructor; eauto.
@@ -2090,7 +2090,7 @@ Proof.
   (* with an argument *)
 + exploit (exec_moves mv); eauto. intros [ls1 [A1 B1]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
   eapply star_right. eexact A1.
   econstructor. eauto. eauto. traceEq.
   simpl. econstructor; eauto. rewrite <- H11.
@@ -2100,26 +2100,26 @@ Proof.
   rewrite !list_map_compose. apply list_map_exten; intros.
   unfold return_regs. apply pred_dec_true. eapply loc_result_caller_save; eauto.
   apply return_regs_agree_callee_save.
-  unfold proj_sig_res. rewrite <- H11; rewrite H13. 
-  eapply Val.has_subtype; eauto. 
+  unfold proj_sig_res. rewrite <- H11; rewrite H13.
+  eapply Val.has_subtype; eauto.
 
 (* internal function *)
 - monadInv FUN. simpl in *.
-  destruct (transf_function_inv _ _ EQ). 
-  exploit Mem.alloc_extends; eauto. apply Zle_refl. rewrite H8; apply Zle_refl. 
+  destruct (transf_function_inv _ _ EQ).
+  exploit Mem.alloc_extends; eauto. apply Zle_refl. rewrite H8; apply Zle_refl.
   intros [m'' [U V]].
   assert (WTRS: wt_regset env (init_regs args (fn_params f))).
   { apply wt_init_regs. inv H0. eapply Val.has_subtype_list; eauto. congruence. }
   exploit (exec_moves mv). eauto. eauto.
-    eapply can_undef_satisf; eauto. eapply compat_entry_satisf; eauto. 
+    eapply can_undef_satisf; eauto. eapply compat_entry_satisf; eauto.
     rewrite call_regs_param_values. rewrite H9. eexact ARGS.
     exact WTRS.
   intros [ls1 [A B]].
   econstructor; split.
-  eapply plus_left. econstructor; eauto. 
-  eapply star_left. econstructor; eauto. 
-  eapply star_right. eexact A. 
-  econstructor; eauto. 
+  eapply plus_left. econstructor; eauto.
+  eapply star_left. econstructor; eauto.
+  eapply star_right. eexact A.
+  econstructor; eauto.
   eauto. eauto. traceEq.
   econstructor; eauto.
 
@@ -2127,9 +2127,9 @@ Proof.
 - exploit external_call_mem_extends; eauto. intros [v' [m'' [F [G [J K]]]]].
   simpl in FUN; inv FUN.
   econstructor; split.
-  apply plus_one. econstructor; eauto. 
-  eapply external_call_symbols_preserved' with (ge1 := ge). 
-  econstructor; eauto. 
+  apply plus_one. econstructor; eauto.
+  eapply external_call_symbols_preserved' with (ge1 := ge).
+  econstructor; eauto.
   exact symbols_preserved. exact varinfo_preserved.
   econstructor; eauto. simpl.
   replace (map
@@ -2141,19 +2141,19 @@ Proof.
   unfold encode_long, loc_result.
   destruct (sig_res (ef_sig ef)) as [[]|]; simpl; symmetry; f_equal; auto.
   red; intros. rewrite Locmap.gsetlisto. apply AG; auto.
-  apply Loc.notin_iff. intros. 
-  exploit list_in_map_inv; eauto. intros [r [A B]]; subst l'. 
+  apply Loc.notin_iff. intros.
+  exploit list_in_map_inv; eauto. intros [r [A B]]; subst l'.
   destruct l; simpl; auto. red; intros; subst r0; elim H0.
   eapply loc_result_caller_save; eauto.
-  simpl. eapply external_call_well_typed; eauto. 
- 
+  simpl. eapply external_call_well_typed; eauto.
+
 (* return *)
 - inv STACKS.
   exploit STEPS; eauto. eapply Val.has_subtype; eauto. intros [ls2 [A B]].
   econstructor; split.
   eapply plus_left. constructor. eexact A. traceEq.
   econstructor; eauto.
-  apply wt_regset_assign; auto. eapply Val.has_subtype; eauto. 
+  apply wt_regset_assign; auto. eapply Val.has_subtype; eauto.
 Qed.
 
 Lemma initial_states_simulation:
@@ -2165,12 +2165,12 @@ Proof.
   exploit sig_function_translated; eauto. intros SIG.
   exists (LTL.Callstate nil tf (Locmap.init Vundef) m0); split.
   econstructor; eauto.
-  eapply Genv.init_mem_transf_partial; eauto. 
-  rewrite symbols_preserved. 
+  eapply Genv.init_mem_transf_partial; eauto.
+  rewrite symbols_preserved.
   rewrite (transform_partial_program_main _ _ TRANSF).  auto.
   congruence.
   constructor; auto.
-  constructor. rewrite SIG; rewrite H3; auto. 
+  constructor. rewrite SIG; rewrite H3; auto.
   rewrite SIG; rewrite H3; simpl; auto.
   red; auto.
   apply Mem.extends_refl.
@@ -2178,12 +2178,12 @@ Proof.
 Qed.
 
 Lemma final_states_simulation:
-  forall st1 st2 r, 
+  forall st1 st2 r,
   match_states st1 st2 -> RTL.final_state st1 r -> LTL.final_state st2 r.
 Proof.
   intros. inv H0. inv H. inv STACKS.
-  econstructor. simpl; reflexivity.  
-  unfold loc_result in RES; rewrite H in RES. simpl in RES. inv RES. inv H3; auto. 
+  econstructor. simpl; reflexivity.
+  unfold loc_result in RES; rewrite H in RES. simpl in RES. inv RES. inv H3; auto.
 Qed.
 
 Theorem transf_program_correct:
@@ -2193,7 +2193,7 @@ Proof.
   eexact symbols_preserved.
   eexact initial_states_simulation.
   eexact final_states_simulation.
-  exact step_simulation. 
+  exact step_simulation.
 Qed.
 
 End PRESERVATION.

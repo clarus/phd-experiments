@@ -11,13 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 typedef struct tn {
     struct tn*    left;
     struct tn*    right;
     long          item;
 } treeNode;
-
 
 treeNode* NewTreeNode(treeNode* left, treeNode* right, long item)
 {
@@ -32,7 +30,6 @@ treeNode* NewTreeNode(treeNode* left, treeNode* right, long item)
     return new;
 } /* NewTreeNode() */
 
-
 long ItemCheck(treeNode* tree)
 {
     if (tree->left == NULL)
@@ -40,7 +37,6 @@ long ItemCheck(treeNode* tree)
     else
         return tree->item + ItemCheck(tree->left) - ItemCheck(tree->right);
 } /* ItemCheck() */
-
 
 treeNode* BottomUpTree(long item, unsigned depth)
 {
@@ -55,7 +51,6 @@ treeNode* BottomUpTree(long item, unsigned depth)
         return NewTreeNode(NULL, NULL, item);
 } /* BottomUpTree() */
 
-
 void DeleteTree(treeNode* tree)
 {
     if (tree->left != NULL)
@@ -66,7 +61,6 @@ void DeleteTree(treeNode* tree)
 
     free(tree);
 } /* DeleteTree() */
-
 
 int main(int argc, char* argv[])
 {

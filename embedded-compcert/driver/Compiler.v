@@ -137,7 +137,7 @@ Definition transf_cminor_program (p: Cminor.program) : res Asm.program :=
   @@@ transf_rtl_program.
 
 Definition transf_clight_program (p: Clight.program) : res Asm.program :=
-  OK p 
+  OK p
    @@ print print_Clight
   @@@ SimplLocals.transf_program
   @@@ Cshmgen.transl_program
@@ -145,7 +145,7 @@ Definition transf_clight_program (p: Clight.program) : res Asm.program :=
   @@@ transf_cminor_program.
 
 Definition transf_c_program (p: Csyntax.program) : res Asm.program :=
-  OK p 
+  OK p
   @@@ SimplExpr.transl_program
   @@@ transf_clight_program.
 
@@ -160,14 +160,14 @@ Lemma print_identity:
   forall (A: Type) (printer: A -> unit) (prog: A),
   print printer prog = prog.
 Proof.
-  intros; unfold print. destruct (printer prog); auto. 
+  intros; unfold print. destruct (printer prog); auto.
 Qed.
 
 Lemma compose_print_identity:
-  forall (A: Type) (x: res A) (f: A -> unit), 
+  forall (A: Type) (x: res A) (f: A -> unit),
   x @@ print f = x.
 Proof.
-  intros. destruct x; simpl. rewrite print_identity. auto. auto. 
+  intros. destruct x; simpl. rewrite print_identity. auto. auto.
 Qed.
 
 (** * Semantic preservation *)
@@ -206,21 +206,21 @@ Proof.
   destruct (Linearize.transf_program p5) as [p6|] eqn:?; simpl in H; try discriminate.
   set (p7 := CleanupLabels.transf_program p6) in *.
   destruct (Stacking.transf_program p7) as [p8|] eqn:?; simpl in H; try discriminate.
-  eapply compose_forward_simulation. apply Tailcallproof.transf_program_correct. 
+  eapply compose_forward_simulation. apply Tailcallproof.transf_program_correct.
   eapply compose_forward_simulation. apply Inliningproof.transf_program_correct. eassumption.
-  eapply compose_forward_simulation. apply Renumberproof.transf_program_correct. 
-  eapply compose_forward_simulation. apply Constpropproof.transf_program_correct. 
-  eapply compose_forward_simulation. apply Renumberproof.transf_program_correct. 
+  eapply compose_forward_simulation. apply Renumberproof.transf_program_correct.
+  eapply compose_forward_simulation. apply Constpropproof.transf_program_correct.
+  eapply compose_forward_simulation. apply Renumberproof.transf_program_correct.
   eapply compose_forward_simulation. apply CSEproof.transf_program_correct. eassumption.
   eapply compose_forward_simulation. apply Allocproof.transf_program_correct. eassumption.
   eapply compose_forward_simulation. apply Tunnelingproof.transf_program_correct.
-  eapply compose_forward_simulation. apply Linearizeproof.transf_program_correct. eassumption. 
-  eapply compose_forward_simulation. apply CleanupLabelsproof.transf_program_correct. 
+  eapply compose_forward_simulation. apply Linearizeproof.transf_program_correct. eassumption.
+  eapply compose_forward_simulation. apply CleanupLabelsproof.transf_program_correct.
   eapply compose_forward_simulation. apply Stackingproof.transf_program_correct.
     eexact Asmgenproof.return_address_exists. eassumption.
   apply Asmgenproof.transf_program_correct; eauto.
-  split. auto. 
-  apply forward_to_backward_simulation. auto. 
+  split. auto.
+  apply forward_to_backward_simulation. auto.
   apply RTL.semantics_receptive.
   apply Asm.semantics_determinate.
 Qed.
@@ -235,15 +235,15 @@ Proof.
   assert (F: forward_simulation (Cminor.semantics p) (Asm.semantics tp)).
   unfold transf_cminor_program in H.
   repeat rewrite compose_print_identity in H.
-  simpl in H. 
+  simpl in H.
   destruct (Selection.sel_program p) as [p1|] eqn:?; simpl in H; try discriminate.
   destruct (RTLgen.transl_program p1) as [p2|] eqn:?; simpl in H; try discriminate.
   eapply compose_forward_simulation. apply Selectionproof.transf_program_correct. eauto.
   eapply compose_forward_simulation. apply RTLgenproof.transf_program_correct. eassumption.
   exact (fst (transf_rtl_program_correct _ _ H)).
 
-  split. auto. 
-  apply forward_to_backward_simulation. auto. 
+  split. auto.
+  apply forward_to_backward_simulation. auto.
   apply Cminor.semantics_receptive.
   apply Asm.semantics_determinate.
 Qed.
@@ -254,7 +254,7 @@ Theorem transf_clight_program_correct:
   forward_simulation (Clight.semantics1 p) (Asm.semantics tp)
   * backward_simulation (Clight.semantics1 p) (Asm.semantics tp).
 Proof.
-  intros. 
+  intros.
   assert (F: forward_simulation (Clight.semantics1 p) (Asm.semantics tp)).
   revert H; unfold transf_clight_program; simpl.
   rewrite print_identity.
@@ -265,10 +265,10 @@ Proof.
   eapply compose_forward_simulation. apply SimplLocalsproof.transf_program_correct. eauto.
   eapply compose_forward_simulation. apply Cshmgenproof.transl_program_correct. eauto.
   eapply compose_forward_simulation. apply Cminorgenproof.transl_program_correct. eauto.
-  exact (fst (transf_cminor_program_correct _ _ EQ3)). 
+  exact (fst (transf_cminor_program_correct _ _ EQ3)).
 
-  split. auto. 
-  apply forward_to_backward_simulation. auto. 
+  split. auto.
+  apply forward_to_backward_simulation. auto.
   apply Clight.semantics_receptive.
   apply Asm.semantics_determinate.
 Qed.
@@ -285,9 +285,9 @@ Proof.
   caseEq (SimplExpr.transl_program p); simpl; try congruence; intros p0 EQ0.
   intros EQ1.
   eapply compose_forward_simulation. apply SimplExprproof.transl_program_correct. eauto.
-  exact (fst (transf_clight_program_correct _ _ EQ1)). 
+  exact (fst (transf_clight_program_correct _ _ EQ1)).
 
-  split. auto. 
+  split. auto.
   apply forward_to_backward_simulation.
   apply factor_forward_simulation. auto. eapply sd_traces. eapply Asm.semantics_determinate.
   apply atomic_receptive. apply Cstrategy.semantics_strongly_receptive.
@@ -299,10 +299,10 @@ Theorem transf_c_program_correct:
   transf_c_program p = OK tp ->
   backward_simulation (Csem.semantics p) (Asm.semantics tp).
 Proof.
-  intros. 
+  intros.
   apply compose_backward_simulation with (atomic (Cstrategy.semantics p)).
   eapply sd_traces; eapply Asm.semantics_determinate.
-  apply factor_backward_simulation. 
+  apply factor_backward_simulation.
   apply Cstrategy.strategy_simulation.
   apply Csem.semantics_single_events.
   eapply ssr_well_behaved; eapply Cstrategy.semantics_strongly_receptive.

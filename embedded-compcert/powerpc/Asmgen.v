@@ -476,7 +476,7 @@ Definition int_temp_for (r: mreg) :=
 Definition transl_memory_access
      (mk1: constant -> ireg -> instruction)
      (mk2: ireg -> ireg -> instruction)
-     (addr: addressing) (args: list mreg) 
+     (addr: addressing) (args: list mreg)
      (temp: ireg) (k: code) :=
   match addr, args with
   | Aindexed ofs, a1 :: nil =>
@@ -598,12 +598,12 @@ Definition transl_instr (f: Mach.function) (i: Mach.instruction)
       OK (Pmtctr r1 ::
           Plwz GPR0 (Cint f.(fn_retaddr_ofs)) GPR1 ::
           Pmtlr GPR0 ::
-          Pfreeframe f.(fn_stacksize) f.(fn_link_ofs) :: 
+          Pfreeframe f.(fn_stacksize) f.(fn_link_ofs) ::
           Pbctr :: k)
   | Mtailcall sig (inr symb) =>
       OK (Plwz GPR0 (Cint f.(fn_retaddr_ofs)) GPR1 ::
           Pmtlr GPR0 ::
-          Pfreeframe f.(fn_stacksize) f.(fn_link_ofs) :: 
+          Pfreeframe f.(fn_stacksize) f.(fn_link_ofs) ::
           Pbs symb :: k)
   | Mbuiltin ef args res =>
       OK (Pbuiltin ef (map preg_of args) (map preg_of res) :: k)
@@ -685,4 +685,3 @@ Definition transf_fundef (f: Mach.fundef) : res Asm.fundef :=
 
 Definition transf_program (p: Mach.program) : res Asm.program :=
   transform_partial_program transf_fundef p.
-

@@ -50,7 +50,6 @@
 #include "rules-ur.h"
 #include "list.h"
 
-
 static LIST inf_GetURPartnerLits(TERM Atom, LITERAL Lit,
 				 BOOL Unit, SHARED_INDEX Index)
 /**************************************************************
@@ -91,7 +90,6 @@ static LIST inf_GetURPartnerLits(TERM Atom, LITERAL Lit,
   return Result;
 }
 
-
 static CLAUSE inf_CreateURUnitResolvent(CLAUSE Clause, int i, SUBST Subst,
 					LIST FoundMap, FLAGSTORE Flags,
 					PRECEDENCE Precedence)
@@ -129,7 +127,7 @@ static CLAUSE inf_CreateURUnitResolvent(CLAUSE Clause, int i, SUBST Subst,
   Parents = list_List(Clause);
   depth   = clause_Depth(Clause);
   for ( ; !list_Empty(FoundMap); FoundMap = list_Cdr(FoundMap)) {
-    Lit     = list_PairSecond(list_Car(FoundMap)); /* Literal from unit */ 
+    Lit     = list_PairSecond(list_Car(FoundMap)); /* Literal from unit */
     PClause = clause_LiteralOwningClause(Lit);
     Parents = list_Cons(PClause, Parents);
     depth   = misc_Max(depth, clause_Depth(PClause));
@@ -147,7 +145,6 @@ static CLAUSE inf_CreateURUnitResolvent(CLAUSE Clause, int i, SUBST Subst,
 
   return Result;
 }
-
 
 static LIST inf_SearchURResolvents(CLAUSE Clause, int i, LIST FoundMap,
 				   LIST RestLits, SUBST Subst,
@@ -206,7 +203,7 @@ static LIST inf_SearchURResolvents(CLAUSE Clause, int i, LIST FoundMap,
 	NewMaxVar = term_MaxVar(PAtom);
 	if (symbol_GreaterVariable(GlobalMaxVar, NewMaxVar))
 	  NewMaxVar = GlobalMaxVar;
-	
+
 	/* Get the substitution */
 	cont_Check();
 	if (!unify_UnifyNoOC(cont_LeftContext(), AtomCopy,
@@ -227,12 +224,12 @@ static LIST inf_SearchURResolvents(CLAUSE Clause, int i, LIST FoundMap,
 	subst_Delete(RightSubst);
 
 	FoundMap    = list_Cons(list_PairCreate(Lit, PLit), FoundMap);
-	
+
 	Result = list_Nconc(inf_SearchURResolvents(Clause,i,FoundMap,RestLits,
 						   NewSubst,NewMaxVar,Index,
 						   Flags, Precedence),
 			    Result);
-	
+
 	list_PairFree(list_Car(FoundMap));
 	FoundMap = list_Pop(FoundMap);
 	subst_Delete(NewSubst);
@@ -248,11 +245,10 @@ static LIST inf_SearchURResolvents(CLAUSE Clause, int i, LIST FoundMap,
     /* cleanup */
     term_Delete(AtomCopy);
     list_Delete(RestLits);
-    
+
     return Result;
   }
 }
-
 
 static LIST inf_NonUnitURResolution(CLAUSE Clause, int SpecialLitIndex,
 				    LIST FoundMap, SUBST Subst,
@@ -286,19 +282,18 @@ static LIST inf_NonUnitURResolution(CLAUSE Clause, int SpecialLitIndex,
     if (i != SpecialLitIndex) {
       RestLits = list_PointerDeleteOneElement(RestLits,
 					      clause_GetLiteral(Clause,i));
-      
+
       Result = list_Nconc(inf_SearchURResolvents(Clause, i, FoundMap, RestLits,
 						 Subst, GlobalMaxVar, Index,
 						 Flags, Precedence),
 			  Result);
-      
+
       RestLits = list_Cons(clause_GetLiteral(Clause, i), RestLits);
     }
   }
   list_Delete(RestLits);
   return Result;
 }
-
 
 LIST inf_URResolution(CLAUSE Clause, SHARED_INDEX Index, FLAGSTORE Flags,
 		      PRECEDENCE Precedence)
@@ -338,19 +333,19 @@ LIST inf_URResolution(CLAUSE Clause, SHARED_INDEX Index, FLAGSTORE Flags,
     while (TRUE) {
       /* Get complementary literals from non-unit clauses */
       Partners = inf_GetURPartnerLits(Atom, Lit, FALSE, Index);
-      
+
       for ( ; !list_Empty(Partners); Partners = list_Pop(Partners)) {
 	PLit     = list_Car(Partners);
 	PLitInd  = clause_LiteralGetIndex(PLit);
 	PClause  = clause_LiteralOwningClause(PLit); /* non-unit clause */
-	
+
 	PMaxVar   = clause_MaxVar(PClause);
 	term_StartMaxRenaming(PMaxVar);
 	term_Rename(Atom);              /* Rename atom from unit clause */
-	MaxVar = term_MaxVar(Atom); 
+	MaxVar = term_MaxVar(Atom);
 	if (symbol_GreaterVariable(PMaxVar, MaxVar))
 	  MaxVar = PMaxVar;
-	
+
 	/* Get the substitution */
 	cont_Check();
 	unify_UnifyNoOC(cont_LeftContext(), clause_LiteralAtom(PLit),
@@ -360,14 +355,14 @@ LIST inf_URResolution(CLAUSE Clause, SHARED_INDEX Index, FLAGSTORE Flags,
 	cont_Reset();
 	/* We don't need the substitution for the unit clause */
 	subst_Delete(RightSubst);
-	
+
 	FoundMap = list_List(list_PairCreate(PLit, Lit));
-	
+
 	Result = list_Nconc(inf_NonUnitURResolution(PClause, PLitInd, FoundMap,
 						    LeftSubst, MaxVar, Index,
 						    Flags, Precedence),
 			    Result);
-	
+
 	list_DeletePairList(FoundMap);
 	subst_Delete(LeftSubst);
       }

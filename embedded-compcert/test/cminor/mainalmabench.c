@@ -16,8 +16,8 @@ const double a [8][3] =
       {   9.5549091915, -0.0000213896,  444e-10 },
       {  19.2184460618,     -3716e-10,  979e-10 },
       {  30.1103868694,    -16635e-10,  686e-10 } };
-       
-const double dlm[8][3] = 
+
+const double dlm[8][3] =
     { { 252.25090552, 5381016286.88982,  -1.92789 },
       { 181.97980085, 2106641364.33548,   0.59381 },
       { 100.46645683, 1295977422.83429,  -2.04411 },
@@ -136,7 +136,7 @@ static void test(void)
     double jd[2];
     double pv[2][3];
     double position[3];
-    
+
     jd[0] = J2000;
     jd[1] = 0.0;
     for (p = 0; p < 8; ++p)
@@ -148,14 +148,13 @@ static void test(void)
       }
 }
 
-
 static void bench(int nloops)
 {
     int i, n, p;
     double jd[2];
     double pv[2][3];
     double position[3];
-    
+
     for (i = 0; i < nloops; ++i)
     {
         jd[0] = J2000;
@@ -164,7 +163,7 @@ static void bench(int nloops)
         for (n = 0; n < TEST_LENGTH; ++n)
         {
             jd[0] += 1.0;
-            
+
             for (p = 0; p < 8; ++p)
             {
                 planetpv(jd,p,pv);
@@ -182,4 +181,3 @@ int main(int argc, char ** argv)
     test();
   return 0;
 }
-

@@ -42,9 +42,7 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #include "term.h"
 
@@ -62,7 +60,6 @@ NAT  term_STAMP;
 BOOL term_STAMPBLOCKED;
 static BOOL term_STAMPOVERFLOW[term_MAXSTAMPUSERS];
 static NAT  term_STAMPUSERS;
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -92,7 +89,6 @@ void term_Init(void)
   term_BINDPHASE = FALSE;
 #endif
 }
-
 
 TERM term_Create(SYMBOL Symbol, LIST List)
 /**********************************************************
@@ -146,7 +142,6 @@ TERM term_CreateStandardVariable(void)
   return term_Create(symbol_CreateStandardVariable(), list_Nil());
 }
 
-
 void term_Delete(TERM Term)
 /**********************************************************
   INPUT:   A term.
@@ -164,7 +159,6 @@ void term_Delete(TERM Term)
   }
   term_Free(Term);
 }
-
 
 void term_DeleteIterative(TERM Term)
 /**********************************************************
@@ -217,7 +211,7 @@ BOOL term_Equal(TERM Term1, TERM Term2)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   /* if (term_IsIndexVariable(Term1))
      puts("\nterm_Equal: Left index variable.");
      else if (term_IsIndexVariable(Term2))
@@ -241,7 +235,6 @@ BOOL term_Equal(TERM Term1, TERM Term2)
     return TRUE;
 }
 
-
 BOOL term_EqualIterative(TERM Term1, TERM Term2)
 /*********************************************************
   INPUT:   Two terms.
@@ -258,7 +251,7 @@ BOOL term_EqualIterative(TERM Term1, TERM Term2)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   Stack1 = Stack2 = list_StackBottom();
   do {
     if (term_EqualTopSymbols(Term1,Term2) &&
@@ -299,7 +292,6 @@ BOOL term_EqualIterative(TERM Term1, TERM Term2)
   return TRUE;
 }
 
-
 BOOL term_VariableEqual(TERM Variable1, TERM Variable2)
 /*********************************************************
   INPUT:   Two Variables.
@@ -309,7 +301,6 @@ BOOL term_VariableEqual(TERM Variable1, TERM Variable2)
 {
   return term_EqualTopSymbols(Variable1, Variable2);
 }
-
 
 BOOL term_IsGround(TERM Term)
 /**********************************************************
@@ -325,7 +316,7 @@ BOOL term_IsGround(TERM Term)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   if (term_IsComplex(Term)) {
     LIST Stack;
     Stack = list_StackBottom();
@@ -349,7 +340,6 @@ BOOL term_IsGround(TERM Term)
     return !term_IsVariable(Term);
 }
 
-
 BOOL term_IsTerm(TERM Term)
 /*********************************************************
   INPUT:   A term.
@@ -359,7 +349,6 @@ BOOL term_IsTerm(TERM Term)
 {
   return (Term != (TERM)NULL && symbol_IsSymbol(term_TopSymbol(Term)));
 }
-
 
 BOOL term_IsTermList(LIST TermList)
 /*********************************************************
@@ -373,7 +362,6 @@ BOOL term_IsTermList(LIST TermList)
 
   return TRUE;
 }
-
 
 BOOL term_AllArgsAreVar(TERM Term)
 /*********************************************************
@@ -390,7 +378,6 @@ BOOL term_AllArgsAreVar(TERM Term)
   return TRUE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -398,7 +385,6 @@ BOOL term_AllArgsAreVar(TERM Term)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 TERM term_Copy(TERM Term)
 /**********************************************************
@@ -432,7 +418,6 @@ TERM term_Copy(TERM Term)
 
   return Result;
 }
-
 
 TERM term_CopyIterative(TERM Term)
 /**********************************************************
@@ -491,7 +476,6 @@ TERM term_CopyIterative(TERM Term)
     return term_Create(term_TopSymbol(Term), list_Nil());
 }
 
-
 TERM term_CopyWithEmptyArgListNode(TERM Term, LIST ArgListNode,
 				   LIST* ListNodeCopyPt)
 /**********************************************************
@@ -540,7 +524,6 @@ TERM term_CopyWithEmptyArgListNode(TERM Term, LIST ArgListNode,
     return term_Create(term_TopSymbol(Term), list_Nil());
 }
 
-
 void term_PrintWithEmptyArgListNode(TERM Term)
 /**************************************************************
   INPUT:   A term.
@@ -552,7 +535,7 @@ void term_PrintWithEmptyArgListNode(TERM Term)
 {
   if (Term == (TERM)NULL)
     fputs("(NULL)", stdout);
-  
+
   else if (term_IsComplex(Term)) {
     putchar('(');
     symbol_Print(term_TopSymbol(Term));
@@ -560,20 +543,19 @@ void term_PrintWithEmptyArgListNode(TERM Term)
     list_Apply((void (*)(POINTER)) term_PrintWithEmptyArgListNode,
 	       term_ArgumentList(Term));
     putchar(')');
-    
+
   } else if (term_IsVariable(Term)) {
-    
+
     symbol_Print(term_TopSymbol(Term));
-    
+
   } else {
-    
+
     /* term_IsConstant(Term) */
     putchar('(');
     symbol_Print(term_TopSymbol(Term));
     putchar(')');
   }
 }
-
 
 BOOL term_ReplaceSubtermBy(TERM Atom, TERM TermS, TERM TermT)
 /**************************************************************
@@ -607,12 +589,12 @@ BOOL term_ReplaceSubtermBy(TERM Atom, TERM TermS, TERM TermT)
 
     B_Stack = stack_Bottom();
     stack_Push(term_ArgumentList(Atom));
-    
+
     while (!stack_Empty(B_Stack)) {
       ArgListNode = stack_Top();
       Atom        = (TERM)list_Car(ArgListNode);
       stack_RplacTop(list_Cdr(ArgListNode));
-      
+
       if (term_Equal(Atom, TermS)) {
 	Replaced = TRUE;
 	list_Rplaca(ArgListNode, term_Copy(TermT));
@@ -621,7 +603,7 @@ BOOL term_ReplaceSubtermBy(TERM Atom, TERM TermS, TERM TermT)
       else
 	if (term_IsComplex(Atom))
 	  stack_Push(term_ArgumentList(Atom));
-      
+
       while (!stack_Empty(B_Stack) && list_Empty(stack_Top()))
 	stack_Pop();
     }
@@ -630,12 +612,11 @@ BOOL term_ReplaceSubtermBy(TERM Atom, TERM TermS, TERM TermT)
   return Replaced;
 }
 
-
 void term_ReplaceVariable(TERM Term, SYMBOL Symbol, TERM Repl)
 /**************************************************************
   INPUT:   A term, a variable symbol and a replacement term.
   RETURNS: void
-  EFFECT:  All variables with <Symbol> in <Term> are replaced 
+  EFFECT:  All variables with <Symbol> in <Term> are replaced
            with copies of <Repl>
   CAUTION: Destructive
 ***************************************************************/
@@ -649,7 +630,7 @@ void term_ReplaceVariable(TERM Term, SYMBOL Symbol, TERM Repl)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   if (symbol_Equal(term_TopSymbol(Term), Symbol)) {
     term_RplacTop(Term,term_TopSymbol(Repl));
     term_RplacArgumentList(Term,term_CopyTermList(term_ArgumentList(Repl)));
@@ -684,18 +665,17 @@ void term_ExchangeVariable(TERM Term, SYMBOL Old, SYMBOL New)
       term_ExchangeVariable(list_Car(Scan),Old,New);
 }
 
-
 BOOL term_SubstituteVariable(SYMBOL Symbol, TERM Repl, TERM* Term)
 /******************************************************
    INPUT:   A Symbol which has to be found in the Term,
-            a term which is the replacement for the    
+            a term which is the replacement for the
             'Symbol', and a term in which the substitu-
-            tions take place.                          
-   RETURNS: A boolean value which is TRUE, if any sub- 
-            stitutions were made.                      
+            tions take place.
+   RETURNS: A boolean value which is TRUE, if any sub-
+            stitutions were made.
    SUMMARY: term_Substitute works recursively and repl.
-            every occurence of 'Symbol' in 'Term' by   
-            'Repl'.                                    
+            every occurence of 'Symbol' in 'Term' by
+            'Repl'.
    CAUTION: FUNCTION IS DESTRUCTIVE ON 'Term'. REPLACE-
             MENT IS COPIED EACH TIME A SUB. TAKES PLACE
 *******************************************************/
@@ -709,22 +689,22 @@ BOOL term_SubstituteVariable(SYMBOL Symbol, TERM Repl, TERM* Term)
 #endif
 
   if (symbol_Equal(term_TopSymbol(*Term), Symbol)) {
-    
+
     TERM New;
     New             = term_Copy(Repl);
     (*Term)->symbol = Repl->symbol;
     (*Term)->args   = term_ArgumentList(New);
-    
+
     /* Free Top-Node of New, as the symbol has been written */
     /* into the node pointed to by `Term'. */
     memory_Free(New, sizeof(TERM_NODE));
     return TRUE;
- 
+
   } else {
-    
+
     BOOL Result;
     LIST List;
-    
+
     Result	= FALSE;
     for (List	= term_ArgumentList(*Term);
 	 list_Exist(List); List = list_Cdr(List))
@@ -734,14 +714,13 @@ BOOL term_SubstituteVariable(SYMBOL Symbol, TERM Repl, TERM* Term)
   }
 }
 
-
 static int term_CompareByConstants(TERM Left, TERM Right)
 /**************************************************************
   INPUT:   Two terms.
   RETURNS:  1 if left term < right term
             0 if left term = right term
 	   -1 if left term > right term
-  EFFECT:  The terms are compared by their multisets of 
+  EFFECT:  The terms are compared by their multisets of
            constants. The frequency of elements in the
 	   multisets is a multiset itself. The frequencies
 	   are sorted and the resulting sorted multisets
@@ -756,7 +735,7 @@ static int term_CompareByConstants(TERM Left, TERM Right)
   lconsts = term_ListOfConstants(Left);
   rconsts = term_ListOfConstants(Right);
 
-  result  = list_CompareMultisetsByElementDistribution(lconsts, rconsts); 
+  result  = list_CompareMultisetsByElementDistribution(lconsts, rconsts);
 
   list_Delete(lconsts);
   list_Delete(rconsts);
@@ -764,13 +743,13 @@ static int term_CompareByConstants(TERM Left, TERM Right)
   return result;
 }
 
-static int term_CompareByFunctions(TERM Left, TERM Right) 
+static int term_CompareByFunctions(TERM Left, TERM Right)
 /**************************************************************
   INPUT:   Two terms.
   RETURNS:  1 if left term < right term
             0 if left term = right term
 	   -1 if left term > right term
-  EFFECT:  The terms are compared by their multisets of 
+  EFFECT:  The terms are compared by their multisets of
            functions. The frequency of elements in the
 	   multisets is a multiset itself. The frequencies
 	   are sorted and the resulting sorted multisets
@@ -785,7 +764,7 @@ static int term_CompareByFunctions(TERM Left, TERM Right)
   lfuns = term_ListOfFunctions(Left);
   rfuns = term_ListOfFunctions(Right);
 
-  result  = list_CompareMultisetsByElementDistribution(lfuns, rfuns); 
+  result  = list_CompareMultisetsByElementDistribution(lfuns, rfuns);
 
   list_Delete(lfuns);
   list_Delete(rfuns);
@@ -793,13 +772,13 @@ static int term_CompareByFunctions(TERM Left, TERM Right)
   return result;
 }
 
-static int term_CompareByVariables(TERM Left, TERM Right) 
+static int term_CompareByVariables(TERM Left, TERM Right)
 /**************************************************************
   INPUT:   Two terms.
   RETURNS:  1 if left term < right term
             0 if left term = right term
 	   -1 if left term > right term
-  EFFECT:  The terms are compared by their multisets of 
+  EFFECT:  The terms are compared by their multisets of
            variables. The frequency of elements in the
 	   multisets is a multiset itself. The frequencies
 	   are sorted and the resulting sorted multisets
@@ -814,7 +793,7 @@ static int term_CompareByVariables(TERM Left, TERM Right)
   lvars = term_ListOfVariables(Left);
   rvars = term_ListOfVariables(Right);
 
-  result  = list_CompareMultisetsByElementDistribution(lvars, rvars); 
+  result  = list_CompareMultisetsByElementDistribution(lvars, rvars);
 
   list_Delete(lvars);
   list_Delete(rvars);
@@ -827,7 +806,7 @@ LIST term_ListOfConstants(TERM Term)
   INPUT:   A term.
   RETURNS: A list of constants.
   EFFECT:  Creates a list of constants used in a term. If no
-           constants are used in a term, it returns an empty 
+           constants are used in a term, it returns an empty
 	   list.
 ***************************************************************/
 {
@@ -844,13 +823,13 @@ LIST term_ListOfConstants(TERM Term)
   else {
     LIST result;
     LIST scan;
-  
+
     result = list_Nil();
-    for (scan = term_ArgumentList(Term); 
-	 !list_Empty(scan); 
+    for (scan = term_ArgumentList(Term);
+	 !list_Empty(scan);
 	 scan = list_Cdr(scan)) {
-      /* Append to the smaller list for efficiency. 
-	 A subterm's list of constants will usually 
+      /* Append to the smaller list for efficiency.
+	 A subterm's list of constants will usually
 	 be smaller than the intermediate result.
       */
       result = list_Nconc(term_ListOfConstants((TERM) list_Car(scan)), result);
@@ -865,7 +844,7 @@ LIST term_ListOfFunctions(TERM Term)
   INPUT:   A term.
   RETURNS: A list of functions.
   EFFECT:  Creates a list of functions used in a term. If no
-           functions are used in a term, it returns an empty 
+           functions are used in a term, it returns an empty
 	   list.
 ***************************************************************/
 {
@@ -888,16 +867,16 @@ LIST term_ListOfFunctions(TERM Term)
   if (symbol_IsFunction(term_TopSymbol(Term))) {
     result = list_Nconc(result, list_List((POINTER) term_TopSymbol(Term)));
   }
-  
+
   /* A function can utilize other functions, so
      traverse the argument list for further
      functions.
   */
-  for (scan = term_ArgumentList(Term); 
-       !list_Empty(scan); 
+  for (scan = term_ArgumentList(Term);
+       !list_Empty(scan);
        scan = list_Cdr(scan)) {
-    /* Append to the smaller list for efficiency. 
-       A subterm's list of functions will usually 
+    /* Append to the smaller list for efficiency.
+       A subterm's list of functions will usually
        be smaller than the intermediate result.
     */
     result = list_Nconc(term_ListOfFunctions((TERM) list_Car(scan)), result);
@@ -910,7 +889,7 @@ void term_CountSymbols(TERM Term)
 /**************************************************************
   INPUT:   A term.
   RETURNS: None.
-  EFFECT:  Counts the non-variable symbols in the term, and 
+  EFFECT:  Counts the non-variable symbols in the term, and
            increases their counts accordingly.
 ***************************************************************/
 {
@@ -938,8 +917,8 @@ void term_CountSymbols(TERM Term)
      traverse the argument list for further
      function symbols.
   */
-  for (scan = term_ArgumentList(Term); 
-       !list_Empty(scan); 
+  for (scan = term_ArgumentList(Term);
+       !list_Empty(scan);
        scan = list_Cdr(scan)) {
     term_CountSymbols((TERM) list_Car(scan));
   }
@@ -951,7 +930,7 @@ static int term_CompareByArity(TERM Left, TERM Right)
   RETURNS:  1 if left term < right term
             0 if left term = right term
 	   -1 if left term > right term
-  EFFECT:  Terms are compared top down, left to right with 
+  EFFECT:  Terms are compared top down, left to right with
            respect to the arity of their signature symbols,
 	   where variables in addition are defined to be smaller
 	   than constants.
@@ -980,7 +959,7 @@ static int term_CompareByArity(TERM Left, TERM Right)
 
   lval = symbol_Arity(lsymb);
   rval = symbol_Arity(rsymb);
-  
+
   if (lval > rval)
     return -1;
 
@@ -992,7 +971,7 @@ static int term_CompareByArity(TERM Left, TERM Right)
   rargs = term_ArgumentList(Right);
 
   while(!list_Empty(largs)) {
-    result = term_CompareByArity(list_Car(largs), list_Car(rargs));	
+    result = term_CompareByArity(list_Car(largs), list_Car(rargs));
     if (result != 0)
       break;
 
@@ -1009,7 +988,7 @@ int term_CompareBySymbolOccurences(TERM Left, TERM Right)
   RETURNS:  1 if left term < right term
             0 if left term = right term
 	   -1 if left term > right term
-  EFFECT:  Terms are compared top down, left to right with 
+  EFFECT:  Terms are compared top down, left to right with
            respect to the frequency of their symbols.
 ***************************************************************/
 {
@@ -1029,20 +1008,20 @@ int term_CompareBySymbolOccurences(TERM Left, TERM Right)
 
       lval = symbol_GetCount(lsymb);
       rval = symbol_GetCount(rsymb);
-  
+
       if (lval > rval)
 	return -1;
 
       if (lval < rval)
 	return 1;
-    
+
       /* If top symbol arities are equal, compare subterms left to right */
       largs = term_ArgumentList(Left);
       rargs = term_ArgumentList(Right);
 
       while(!list_Empty(largs)) {
-	result = term_CompareBySymbolOccurences(list_Car(largs), 
-						list_Car(rargs));	
+	result = term_CompareBySymbolOccurences(list_Car(largs),
+						list_Car(rargs));
 	if (result != 0)
 	  break;
 
@@ -1069,10 +1048,10 @@ int term_CompareAbstract(TERM Left, TERM Right)
   RETURNS:  1 if left term < right term
             0 if left term = right term
 	   -1 if left term > right term
-  EFFECT:  Compares two terms using an internal array of term 
-           comparison functions. As soon as a term is found to 
-	   compare greater than the other, the result of the 
-	   comparison is returned. If all term comparison 
+  EFFECT:  Compares two terms using an internal array of term
+           comparison functions. As soon as a term is found to
+	   compare greater than the other, the result of the
+	   comparison is returned. If all term comparison
 	   functions yield an "equal", then 0 is returned.
 ***************************************************************/
 {
@@ -1116,7 +1095,7 @@ BOOL term_CompareAbstractLEQ(TERM Left, TERM Right)
 /**************************************************************
   INPUT:   Two terms.
   RETURNS: TRUE if left term <= right term, FALSE otherwise.
-  EFFECT:  Terms are compared top down, left to right with 
+  EFFECT:  Terms are compared top down, left to right with
            respect to the arity of their signature symbols,
 	   where variables in addition are defined to be smaller
 	   than constants.
@@ -1124,7 +1103,6 @@ BOOL term_CompareAbstractLEQ(TERM Left, TERM Right)
 {
   return (term_CompareAbstract(Left, Right) >= 0);
 }
-
 
 NAT term_ComputeSize(TERM Term)
 /**************************************************************
@@ -1328,7 +1306,7 @@ static int term_SharingList(TERM Term, LIST List)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   n = 0;
 
   for (Scan=term_ArgumentList(Term); !list_Empty(Scan); Scan=list_Cdr(Scan)) {
@@ -1339,7 +1317,6 @@ static int term_SharingList(TERM Term, LIST List)
 
   return n;
 }
-
 
 static int term_SharingTerm(TERM Term, TERM CompareTerm)
 /**************************************************************
@@ -1358,7 +1335,7 @@ static int term_SharingTerm(TERM Term, TERM CompareTerm)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   n = 0;
 
   if (Term == CompareTerm)
@@ -1369,7 +1346,6 @@ static int term_SharingTerm(TERM Term, TERM CompareTerm)
 
   return n;
 }
-
 
 BOOL term_Sharing(TERM Term)
 /**************************************************************
@@ -1396,10 +1372,10 @@ BOOL term_Sharing(TERM Term)
   while (!stack_Empty(stack)) {
     ActTerm = (TERM)stack_Top();
     stack_Pop();
-    
+
     if (term_SharingTerm(Term,ActTerm)>1)
       return TRUE;
-  
+
     if (term_IsComplex(Term)) {
       for (Scan = term_ArgumentList(ActTerm);
 	   !list_Empty(Scan);
@@ -1410,10 +1386,9 @@ BOOL term_Sharing(TERM Term)
 	  stack_Push(list_Car(Scan));
     }
   }
-  
+
   return FALSE;
 }
-
 
 void term_AddFatherLinks(TERM Term)
 /**************************************************************
@@ -1427,7 +1402,7 @@ void term_AddFatherLinks(TERM Term)
   TERM ActTerm;
 
   term_RplacSuperterm(Term,(TERM)NULL);
-  
+
   for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan)) {
     ActTerm  = (TERM)list_Car(Scan);
     term_AddFatherLinks(ActTerm);
@@ -1444,7 +1419,7 @@ BOOL term_FatherLinksEstablished(TERM Term)
 ***************************************************************/
 {
   LIST Scan;
-  
+
   for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan))
    if (Term != term_Superterm(list_Car(Scan)) || !term_FatherLinksEstablished(list_Car(Scan)))
      return FALSE;
@@ -1463,7 +1438,6 @@ TERM term_TopLevelTerm(TERM Term)
     Term = term_Superterm(Term);
   return Term;
 }
-
 
 BOOL term_HasPointerSubterm(TERM Term, TERM Subterm)
 /**************************************************************
@@ -1529,7 +1503,6 @@ BOOL term_HasProperSuperterm(TERM Term, TERM Super)
   return FALSE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -1576,7 +1549,6 @@ static void term_PrettyPrintIntern(TERM Term, int Depth)
   int i;
   LIST scan;
 
-
   for (i=0; i < Depth; i++)
     fputs("  ", stdout);
   if (symbol_IsJunctor(term_TopSymbol(Term))) {
@@ -1617,7 +1589,6 @@ void term_PrettyPrint(TERM Term)
   term_PrettyPrintIntern(Term, 0);
 }
 
-
 void term_FPrint(FILE* File,TERM Term)
 /**************************************************************
   INPUT:   A file and a term.
@@ -1646,7 +1617,6 @@ void term_FPrint(FILE* File,TERM Term)
   }
 }
 
-
 void term_TermListPrint(LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -1660,7 +1630,6 @@ void term_TermListPrint(LIST List)
   }
 }
 
-
 void term_TermListFPrint(FILE* File, LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -1673,7 +1642,6 @@ void term_TermListFPrint(FILE* File, LIST List)
       putc(' ', File);
   }
 }
-
 
 void term_PrintPrefix(TERM Term)
 /**************************************************************
@@ -1693,7 +1661,6 @@ void term_PrintPrefix(TERM Term)
     symbol_Print(term_TopSymbol(Term));
 }
 
-
 void term_FPrintPrefix(FILE* File, TERM Term)
 /**************************************************************
   INPUT:   A file and a term.
@@ -1712,7 +1679,6 @@ void term_FPrintPrefix(FILE* File, TERM Term)
     symbol_FPrint(File,term_TopSymbol(Term));
 }
 
-
 void term_TermListPrintPrefix(LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -1726,7 +1692,6 @@ void term_TermListPrintPrefix(LIST List)
   }
 }
 
-
 void term_TermListFPrintPrefix(FILE* File, LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -1739,8 +1704,6 @@ void term_TermListFPrintPrefix(FILE* File, LIST List)
       putc(',', File);
   }
 }
-
-
 
 void term_FPrintOtterPrefix(FILE* File, TERM Term)
 /**************************************************************
@@ -1759,7 +1722,6 @@ void term_FPrintOtterPrefix(FILE* File, TERM Term)
     symbol_FPrintOtter(File, term_TopSymbol(Term));
 }
 
-
 void term_TermListFPrintOtterPrefix(FILE* File, LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -1772,7 +1734,6 @@ void term_TermListFPrintOtterPrefix(FILE* File, LIST List)
       putc(',', File);
   }
 }
-
 
 void term_FPrintPosition(FILE* File, TERM TopTerm, TERM Subterm)
 /**************************************************************
@@ -1809,7 +1770,6 @@ void term_FPrintPosition(FILE* File, TERM TopTerm, TERM Subterm)
   misc_FinishErrorReport();
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -1833,7 +1793,6 @@ NAT term_Bytes(TERM Term)
     Bytes += term_Bytes((TERM)list_Car(Scan));
   return Bytes;
 }
-
 
 LIST term_ListOfVariables(TERM Term)
 /**************************************************************
@@ -1870,7 +1829,6 @@ LIST term_ListOfVariables(TERM Term)
   return Variables;
 }
 
-
 void term_MarkVariables(TERM Term, NAT Mark)
 /**************************************************************
   INPUT:   A term.
@@ -1906,7 +1864,6 @@ void term_MarkVariables(TERM Term, NAT Mark)
     }
   } while (!stack_Empty(Stack));
 }
-
 
 LIST term_VariableSymbols(TERM Term)
 /**************************************************************
@@ -1955,7 +1912,6 @@ LIST term_VariableSymbols(TERM Term)
 
   return Variables;
 }
-
 
 NAT term_NumberOfVarOccs(TERM Term)
 /**************************************************************
@@ -2013,7 +1969,7 @@ NAT term_NumberOfSymbolOccurrences(TERM Term, SYMBOL Symbol)
 #endif
 
   Result = 0;
-  
+
   if (symbol_Equal(term_TopSymbol(Term),Symbol))
     Result++;
 
@@ -2022,7 +1978,6 @@ NAT term_NumberOfSymbolOccurrences(TERM Term, SYMBOL Symbol)
 
   return Result;
 }
-
 
 BOOL term_ContainsFunctions(TERM Term)
 /**************************************************************
@@ -2126,12 +2081,12 @@ SYMBOL term_MaxVar(TERM Term)
   else
     if (term_IsComplex(Term))
       stack_Push(term_ArgumentList(Term));
-  
+
   while (!stack_Empty(Stack)) {
     Scan = stack_Top();
     Term = (TERM)list_Car(Scan);
     stack_RplacTop(list_Cdr(Scan));
-    
+
     if (term_IsStandardVariable(Term)) {
       if (term_TopSymbol(Term)>Result)
 	Result = term_TopSymbol(Term);
@@ -2139,15 +2094,13 @@ SYMBOL term_MaxVar(TERM Term)
     else
       if (term_IsComplex(Term))
 	stack_Push(term_ArgumentList(Term));
-    
+
     while (!stack_Empty(Stack) && list_Empty(stack_Top()))
       stack_Pop();
   }
-  
+
   return Result;
 }
-
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -2156,7 +2109,6 @@ SYMBOL term_MaxVar(TERM Term)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 void term_StartMinRenaming(void)
 /**************************************************************
@@ -2168,7 +2120,6 @@ void term_StartMinRenaming(void)
   term_NewMark();
 }
 
-
 void term_StartMaxRenaming(SYMBOL MaxVar)
 /**************************************************************
   INPUT:   A variable symbol.
@@ -2178,7 +2129,6 @@ void term_StartMaxRenaming(SYMBOL MaxVar)
   symbol_SetStandardVarCounter(MaxVar);
   term_NewMark();
 }
-
 
 TERM term_Rename(TERM Term)
 /**************************************************************
@@ -2191,7 +2141,7 @@ TERM term_Rename(TERM Term)
   SYMBOL  Top;
   NAT     ActMark;
   TERM    ActTerm;
-  
+
 #ifdef CHECK
   if (!term_IsTerm(Term) || term_InBindingPhase()) {
     misc_StartErrorReport();
@@ -2201,7 +2151,7 @@ TERM term_Rename(TERM Term)
 #endif
 
   term_StartBinding();
-  
+
   Stack = stack_Bottom();
   ActMark = term_OldMark();
   ActTerm = Term;
@@ -2217,7 +2167,7 @@ TERM term_Rename(TERM Term)
 	term_RplacTop(ActTerm,(SYMBOL)term_BindingValue(Top));
       }
     }
-    
+
     while (!stack_Empty(Stack) && list_Empty(stack_Top()))
       stack_Pop();
     if (!stack_Empty(Stack)) {
@@ -2227,7 +2177,7 @@ TERM term_Rename(TERM Term)
   } while (!stack_Empty(Stack));
 
   term_StopBinding();
-  
+
   return Term;
 }
 
@@ -2249,15 +2199,14 @@ SYMBOL term_GetRenamedVarSymbol(SYMBOL Var)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   ActMark = term_OldMark();
-  
+
   if (term_VarIsMarked(Var, ActMark))
     return (SYMBOL)term_BindingValue(Var);
 
   return Var;
 }
-
 
 static LIST term_MakePseudoLinear(TERM Term, NAT Depth, NAT Mark)
 /**************************************************************
@@ -2290,10 +2239,9 @@ static LIST term_MakePseudoLinear(TERM Term, NAT Depth, NAT Mark)
       }
     }
   }
-  
+
   return Result;
 }
-
 
 LIST term_RenamePseudoLinear(TERM Term, SYMBOL Var)
 /**************************************************************
@@ -2312,7 +2260,7 @@ LIST term_RenamePseudoLinear(TERM Term, SYMBOL Var)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   term_StartBinding();
   symbol_SetStandardVarCounter(Var);
 
@@ -2324,7 +2272,6 @@ LIST term_RenamePseudoLinear(TERM Term, SYMBOL Var)
 
   return Result;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -2354,7 +2301,6 @@ NAT term_GetStampID(void)
 
   return term_STAMPUSERS++;
 }
-
 
 BOOL term_StampOverflow(NAT ID)
 /**************************************************************
@@ -2505,7 +2451,7 @@ BOOL term_CheckTermIntern(TERM Term, BOOL Links)
 {
   LIST Scan;
   SYMBOL Top;
-  
+
   if (!term_IsTerm(Term))
     return FALSE;
 

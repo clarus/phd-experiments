@@ -244,7 +244,7 @@ let external_function p = function
   | EF_free -> fprintf p "EF_free"
   | EF_memcpy(sz, al) ->
       fprintf p "(EF_memcpy %ld %ld)" (Z.to_int32 sz) (Z.to_int32 al)
-  | EF_annot(text, targs) -> 
+  | EF_annot(text, targs) ->
       assertions := (text, targs) :: !assertions;
       fprintf p "(EF_annot %ld%%positive %a)" (P.to_int32 text) (print_list annot_arg) targs
   | EF_annot_val(text, targ) ->
@@ -318,7 +318,7 @@ let rec stmt p = function
         (print_option ident) optid expr e1 (print_list expr) el
   | Sbuiltin(optid, ef, tyl, el) ->
       fprintf p "@[<hov 2>(Sbuiltin %a@ %a@ %a@ %a)@]"
-        (print_option ident) optid 
+        (print_option ident) optid
         external_function ef
         typlist tyl
         (print_list expr) el
@@ -390,7 +390,7 @@ let print_globdef p (id, gd) =
   | Gvar v -> print_variable p (id, v)
 
 let print_ident_globdef p = function
-  | (id, Gfun(Internal f)) -> 
+  | (id, Gfun(Internal f)) ->
       fprintf p "(%a, Gfun(Internal f_%s))" ident id (extern_atom id)
   | (id, Gfun(External(ef, targs, tres))) ->
       fprintf p "@[<hov 2>(%a,@ @[<hov 2>Gfun(External %a@ %a@ %a))@]@]"
@@ -593,4 +593,3 @@ let print_program p prog =
   fprintf p "|}.@ ";
   print_assertions p;
   fprintf p "@]@."
-

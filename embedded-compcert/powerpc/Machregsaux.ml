@@ -48,4 +48,3 @@ let register_by_name s =
 let can_reserve_register r =
   List.mem r Conventions1.int_callee_save_regs
   || List.mem r Conventions1.float_callee_save_regs
-

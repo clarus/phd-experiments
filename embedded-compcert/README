@@ -19,7 +19,6 @@ For more information on CompCert (supported platforms, supported C
 features, installation instructions, using the compiler, etc), please
 refer to the user's manual: http://compcert.inria.fr/man/
 
-
 COPYRIGHT:
 
 The CompCert verified compiler is Copyright 2004, 2005, 2006, 2007,
@@ -27,8 +26,6 @@ The CompCert verified compiler is Copyright 2004, 2005, 2006, 2007,
 Informatique et en Automatique (INRIA).  It is distributed under the
 conditions stated in file LICENSE.
 
-
 CONTACT:
 
 The authors can be contacted by e-mail at compcert@yquem.inria.fr
-

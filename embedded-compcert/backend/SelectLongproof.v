@@ -114,7 +114,7 @@ Remark eval_builtin_1:
   builtin_implements ge id sg (varg1::nil) vres ->
   eval_expr ge sp e m le (Ebuiltin (EF_builtin id sg) (arg1 ::: Enil)) vres.
 Proof.
-  intros. econstructor. econstructor. eauto. constructor. apply H0. 
+  intros. econstructor. econstructor. eauto. constructor. apply H0.
 Qed.
 
 Remark eval_builtin_2:
@@ -164,10 +164,10 @@ Proof.
   intros until sem; intros EXEC UNDEF.
   unfold splitlong. case (splitlong_match a); intros.
 - InvEval. subst v.
-  exploit EXEC. eexact H2. eexact H3. intros [v' [A B]]. 
+  exploit EXEC. eexact H2. eexact H3. intros [v' [A B]].
   exists v'; split. auto.
-  destruct v1; simpl in *; try (rewrite UNDEF; auto). 
-  destruct v0; simpl in *; try (rewrite UNDEF; auto). 
+  destruct v1; simpl in *; try (rewrite UNDEF; auto).
+  destruct v0; simpl in *; try (rewrite UNDEF; auto).
   erewrite B; eauto.
 - exploit (EXEC (v :: le) (Eop Ohighlong (Eletvar 0 ::: Enil)) (Eop Olowlong (Eletvar 0 ::: Enil))).
   EvalOp. EvalOp.
@@ -185,9 +185,9 @@ Lemma eval_splitlong_strict:
      eval_expr ge sp e m le (f a1 a2) v) ->
   eval_expr ge sp e m le (splitlong a f) v.
 Proof.
-  intros until v. 
+  intros until v.
   unfold splitlong. case (splitlong_match a); intros.
-- InvEval. destruct v1; simpl in H; try discriminate. destruct v0; inv H. 
+- InvEval. destruct v1; simpl in H; try discriminate. destruct v0; inv H.
   apply H0. rewrite Int64.hi_ofwords; auto. rewrite Int64.lo_ofwords; auto.
 - EvalOp. apply H0; EvalOp.
 Qed.
@@ -219,10 +219,10 @@ Proof.
   destruct v2; simpl in *; try (rewrite UNDEF; auto).
   destruct v3; try (rewrite UNDEF; auto).
   erewrite B; eauto.
-- InvEval. subst va. 
-  exploit (EXEC (vb :: le) (lift h1) (lift l1) 
+- InvEval. subst va.
+  exploit (EXEC (vb :: le) (lift h1) (lift l1)
                 (Eop Ohighlong (Eletvar 0 ::: Enil)) (Eop Olowlong (Eletvar 0 ::: Enil))).
-  EvalOp. EvalOp. EvalOp. EvalOp. 
+  EvalOp. EvalOp. EvalOp. EvalOp.
   intros [v [A B]].
   exists v; split.
   econstructor; eauto.
@@ -230,7 +230,7 @@ Proof.
   destruct v0; try (rewrite UNDEF; auto).
   destruct vb; try (rewrite UNDEF; auto).
   erewrite B; simpl; eauto. rewrite Int64.ofwords_recompose. auto.
-- InvEval. subst vb. 
+- InvEval. subst vb.
   exploit (EXEC (va :: le)
                 (Eop Ohighlong (Eletvar 0 ::: Enil)) (Eop Olowlong (Eletvar 0 ::: Enil))
                 (lift h2) (lift l2)).
@@ -239,15 +239,15 @@ Proof.
   exists v; split.
   econstructor; eauto.
   destruct va; try (rewrite UNDEF; auto).
-  destruct v1; simpl in *; try (rewrite UNDEF; auto). 
+  destruct v1; simpl in *; try (rewrite UNDEF; auto).
   destruct v0; try (rewrite UNDEF; auto).
-  erewrite B; simpl; eauto. rewrite Int64.ofwords_recompose. auto. 
+  erewrite B; simpl; eauto. rewrite Int64.ofwords_recompose. auto.
 - exploit (EXEC (vb :: va :: le)
                 (Eop Ohighlong (Eletvar 1 ::: Enil)) (Eop Olowlong (Eletvar 1 ::: Enil))
                 (Eop Ohighlong (Eletvar 0 ::: Enil)) (Eop Olowlong (Eletvar 0 ::: Enil))).
   EvalOp. EvalOp. EvalOp. EvalOp.
   intros [v [A B]].
-  exists v; split. EvalOp. 
+  exists v; split. EvalOp.
   destruct va; try (rewrite UNDEF; auto); destruct vb; try (rewrite UNDEF; auto).
   erewrite B; simpl; eauto. rewrite ! Int64.ofwords_recompose; auto.
 Qed.
@@ -270,13 +270,13 @@ Proof.
     intros. destruct v1; simpl in H; try discriminate. destruct v2; inv H.
     rewrite Int64.hi_ofwords; rewrite Int64.lo_ofwords; auto.
   }
-  intros until v. 
+  intros until v.
   unfold splitlong2. case (splitlong2_match a b); intros.
-- InvEval. exploit INV. eexact H. intros [EQ1 EQ2]. exploit INV. eexact H0. intros [EQ3 EQ4]. 
+- InvEval. exploit INV. eexact H. intros [EQ1 EQ2]. exploit INV. eexact H0. intros [EQ3 EQ4].
   subst. auto.
-- InvEval. exploit INV; eauto. intros [EQ1 EQ2]. subst. 
-  econstructor. eauto. apply H1; EvalOp. 
-- InvEval. exploit INV; eauto. intros [EQ1 EQ2]. subst. 
+- InvEval. exploit INV; eauto. intros [EQ1 EQ2]. subst.
+  econstructor. eauto. apply H1; EvalOp.
+- InvEval. exploit INV; eauto. intros [EQ1 EQ2]. subst.
   econstructor. eauto. apply H1; EvalOp.
 - EvalOp. apply H1; EvalOp.
 Qed.
@@ -287,9 +287,9 @@ Lemma is_longconst_sound:
   eval_expr ge sp e m le a x ->
   x = Vlong n.
 Proof.
-  unfold is_longconst; intros until n; intros LC. 
+  unfold is_longconst; intros until n; intros LC.
   destruct (is_longconst_match a); intros.
-  inv LC. InvEval. simpl in H5. inv H5. auto. 
+  inv LC. InvEval. simpl in H5. inv H5. auto.
   discriminate.
 Qed.
 
@@ -299,35 +299,35 @@ Lemma is_longconst_zero_sound:
   eval_expr ge sp e m le a x ->
   x = Vlong Int64.zero.
 Proof.
-  unfold is_longconst_zero; intros. 
+  unfold is_longconst_zero; intros.
   destruct (is_longconst a) as [n|] eqn:E; try discriminate.
   revert H. predSpec Int64.eq Int64.eq_spec n Int64.zero.
-  intros. subst. eapply is_longconst_sound; eauto. 
+  intros. subst. eapply is_longconst_sound; eauto.
   congruence.
 Qed.
 
 Lemma eval_lowlong: unary_constructor_sound lowlong Val.loword.
 Proof.
   unfold lowlong; red. intros until x. destruct (lowlong_match a); intros.
-  InvEval. subst x. exists v0; split; auto. 
-  destruct v1; simpl; auto. destruct v0; simpl; auto. 
-  rewrite Int64.lo_ofwords. auto. 
-  exists (Val.loword x); split; auto. EvalOp. 
+  InvEval. subst x. exists v0; split; auto.
+  destruct v1; simpl; auto. destruct v0; simpl; auto.
+  rewrite Int64.lo_ofwords. auto.
+  exists (Val.loword x); split; auto. EvalOp.
 Qed.
 
 Lemma eval_highlong: unary_constructor_sound highlong Val.hiword.
 Proof.
   unfold highlong; red. intros until x. destruct (highlong_match a); intros.
-  InvEval. subst x. exists v1; split; auto. 
-  destruct v1; simpl; auto. destruct v0; simpl; auto. 
-  rewrite Int64.hi_ofwords. auto. 
-  exists (Val.hiword x); split; auto. EvalOp. 
+  InvEval. subst x. exists v1; split; auto.
+  destruct v1; simpl; auto. destruct v0; simpl; auto.
+  rewrite Int64.hi_ofwords. auto.
+  exists (Val.hiword x); split; auto. EvalOp.
 Qed.
 
-Lemma eval_longconst: 
+Lemma eval_longconst:
   forall le n, eval_expr ge sp e m le (longconst n) (Vlong n).
 Proof.
-  intros. EvalOp. rewrite Int64.ofwords_recompose; auto. 
+  intros. EvalOp. rewrite Int64.ofwords_recompose; auto.
 Qed.
 
 Theorem eval_intoflong: unary_constructor_sound intoflong Val.loword.
@@ -335,10 +335,10 @@ Proof eval_lowlong.
 
 Theorem eval_longofintu: unary_constructor_sound longofintu Val.longofintu.
 Proof.
-  red; intros. unfold longofintu. econstructor; split. EvalOp. 
-  unfold Val.longofintu. destruct x; auto. 
+  red; intros. unfold longofintu. econstructor; split. EvalOp.
+  unfold Val.longofintu. destruct x; auto.
   replace (Int64.repr (Int.unsigned i)) with (Int64.ofwords Int.zero i); auto.
-  apply Int64.same_bits_eq; intros. 
+  apply Int64.same_bits_eq; intros.
   rewrite Int64.testbit_repr by auto.
   rewrite Int64.bits_ofwords by auto.
   fold (Int.testbit i i0).
@@ -353,17 +353,17 @@ Proof.
   exploit (eval_shrimm ge sp e m (Int.repr 31) (x :: le) (Eletvar 0)). EvalOp.
   intros [v1 [A B]].
   econstructor; split. EvalOp.
-  destruct x; simpl; auto. 
-  simpl in B. inv B. simpl. 
+  destruct x; simpl; auto.
+  simpl in B. inv B. simpl.
   replace (Int64.repr (Int.signed i))
      with (Int64.ofwords (Int.shr i (Int.repr 31)) i); auto.
-  apply Int64.same_bits_eq; intros. 
+  apply Int64.same_bits_eq; intros.
   rewrite Int64.testbit_repr by auto.
   rewrite Int64.bits_ofwords by auto.
   rewrite Int.bits_signed by omega.
   destruct (zlt i0 Int.zwordsize).
   auto.
-  assert (Int64.zwordsize = 2 * Int.zwordsize) by reflexivity. 
+  assert (Int64.zwordsize = 2 * Int.zwordsize) by reflexivity.
   rewrite Int.bits_shr by omega.
   change (Int.unsigned (Int.repr 31)) with (Int.zwordsize - 1).
   f_equal. destruct (zlt (i0 - Int.zwordsize + (Int.zwordsize - 1)) Int.zwordsize); omega.
@@ -372,19 +372,19 @@ Qed.
 Theorem eval_negl: unary_constructor_sound (negl hf) Val.negl.
 Proof.
   unfold negl; red; intros. destruct (is_longconst a) eqn:E.
-  econstructor; split. apply eval_longconst.  
+  econstructor; split. apply eval_longconst.
   exploit is_longconst_sound; eauto. intros EQ; subst x. simpl. auto.
   econstructor; split. eapply eval_builtin_1; eauto. UseHelper. auto.
 Qed.
 
 Theorem eval_notl: unary_constructor_sound notl Val.notl.
 Proof.
-  red; intros. unfold notl. apply eval_splitlong; auto. 
-  intros. 
+  red; intros. unfold notl. apply eval_splitlong; auto.
+  intros.
   exploit eval_notint. eexact H0. intros [va [A B]].
   exploit eval_notint. eexact H1. intros [vb [C D]].
   exists (Val.longofwords va vb); split. EvalOp.
-  intros; subst. simpl in *. inv B; inv D. 
+  intros; subst. simpl in *. inv B; inv D.
   simpl. unfold Int.not. rewrite <- Int64.decompose_xor. auto.
   destruct x; auto.
 Qed.
@@ -395,8 +395,8 @@ Theorem eval_longoffloat:
   Val.longoffloat x = Some y ->
   exists v, eval_expr ge sp e m le (longoffloat hf a) v /\ Val.lessdef y v.
 Proof.
-  intros; unfold longoffloat. econstructor; split. 
-  eapply eval_helper_1; eauto. UseHelper. 
+  intros; unfold longoffloat. econstructor; split.
+  eapply eval_helper_1; eauto. UseHelper.
   auto.
 Qed.
 
@@ -406,8 +406,8 @@ Theorem eval_longuoffloat:
   Val.longuoffloat x = Some y ->
   exists v, eval_expr ge sp e m le (longuoffloat hf a) v /\ Val.lessdef y v.
 Proof.
-  intros; unfold longuoffloat. econstructor; split. 
-  eapply eval_helper_1; eauto. UseHelper. 
+  intros; unfold longuoffloat. econstructor; split.
+  eapply eval_helper_1; eauto. UseHelper.
   auto.
 Qed.
 
@@ -417,8 +417,8 @@ Theorem eval_floatoflong:
   Val.floatoflong x = Some y ->
   exists v, eval_expr ge sp e m le (floatoflong hf a) v /\ Val.lessdef y v.
 Proof.
-  intros; unfold floatoflong. econstructor; split. 
-  eapply eval_helper_1; eauto. UseHelper. 
+  intros; unfold floatoflong. econstructor; split.
+  eapply eval_helper_1; eauto. UseHelper.
   auto.
 Qed.
 
@@ -428,18 +428,18 @@ Theorem eval_floatoflongu:
   Val.floatoflongu x = Some y ->
   exists v, eval_expr ge sp e m le (floatoflongu hf a) v /\ Val.lessdef y v.
 Proof.
-  intros; unfold floatoflongu. econstructor; split. 
-  eapply eval_helper_1; eauto. UseHelper. 
+  intros; unfold floatoflongu. econstructor; split.
+  eapply eval_helper_1; eauto. UseHelper.
   auto.
 Qed.
 
 Theorem eval_andl: binary_constructor_sound andl Val.andl.
 Proof.
   red; intros. unfold andl. apply eval_splitlong2; auto.
-  intros. 
+  intros.
   exploit eval_and. eexact H1. eexact H3. intros [va [A B]].
   exploit eval_and. eexact H2. eexact H4. intros [vb [C D]].
-  exists (Val.longofwords va vb); split. EvalOp. 
+  exists (Val.longofwords va vb); split. EvalOp.
   intros; subst. simpl in B; inv B. simpl in D; inv D.
   simpl. f_equal. rewrite Int64.decompose_and. auto.
   destruct x; auto. destruct y; auto.
@@ -448,10 +448,10 @@ Qed.
 Theorem eval_orl: binary_constructor_sound orl Val.orl.
 Proof.
   red; intros. unfold orl. apply eval_splitlong2; auto.
-  intros. 
+  intros.
   exploit eval_or. eexact H1. eexact H3. intros [va [A B]].
   exploit eval_or. eexact H2. eexact H4. intros [vb [C D]].
-  exists (Val.longofwords va vb); split. EvalOp. 
+  exists (Val.longofwords va vb); split. EvalOp.
   intros; subst. simpl in B; inv B. simpl in D; inv D.
   simpl. f_equal. rewrite Int64.decompose_or. auto.
   destruct x; auto. destruct y; auto.
@@ -460,10 +460,10 @@ Qed.
 Theorem eval_xorl: binary_constructor_sound xorl Val.xorl.
 Proof.
   red; intros. unfold xorl. apply eval_splitlong2; auto.
-  intros. 
+  intros.
   exploit eval_xor. eexact H1. eexact H3. intros [va [A B]].
   exploit eval_xor. eexact H2. eexact H4. intros [vb [C D]].
-  exists (Val.longofwords va vb); split. EvalOp. 
+  exists (Val.longofwords va vb); split. EvalOp.
   intros; subst. simpl in B; inv B. simpl in D; inv D.
   simpl. f_equal. rewrite Int64.decompose_xor. auto.
   destruct x; auto. destruct y; auto.
@@ -475,7 +475,7 @@ Lemma is_intconst_sound:
   eval_expr ge sp e m le a x ->
   x = Vint n.
 Proof.
-  unfold is_intconst; intros until n; intros LC. 
+  unfold is_intconst; intros until n; intros LC.
   destruct a; try discriminate. destruct o; try discriminate. destruct e0; try discriminate.
   inv LC. intros. InvEval. auto.
 Qed.
@@ -500,28 +500,28 @@ Proof.
   intros until a3; intros A0 A1 A2 A3.
   predSpec Int.eq Int.eq_spec n Int.zero.
   apply A0; auto.
-  assert (NZ: Int.unsigned n <> 0). 
+  assert (NZ: Int.unsigned n <> 0).
   { red; intros. elim H. rewrite <- (Int.repr_unsigned n). rewrite H0. auto. }
   destruct (Int.ltu n Int.iwordsize) eqn:LT.
   exploit Int.ltu_iwordsize_inv; eauto. intros RANGE.
   assert (0 <= Int.zwordsize - Int.unsigned n < Int.zwordsize) by omega.
-  apply A1. auto. auto. 
-  unfold Int.ltu, Int.sub. rewrite Int.unsigned_repr_wordsize. 
-  rewrite Int.unsigned_repr. rewrite zlt_true; auto. omega. 
-  generalize Int.wordsize_max_unsigned; omega. 
-  unfold Int.ltu. rewrite zlt_true; auto. 
+  apply A1. auto. auto.
+  unfold Int.ltu, Int.sub. rewrite Int.unsigned_repr_wordsize.
+  rewrite Int.unsigned_repr. rewrite zlt_true; auto. omega.
+  generalize Int.wordsize_max_unsigned; omega.
+  unfold Int.ltu. rewrite zlt_true; auto.
   change (Int.unsigned Int64.iwordsize') with 64.
   change Int.zwordsize with 32 in RANGE. omega.
   destruct (Int.ltu n Int64.iwordsize') eqn:LT'.
-  exploit Int.ltu_inv; eauto. 
+  exploit Int.ltu_inv; eauto.
   change (Int.unsigned Int64.iwordsize') with (Int.zwordsize * 2).
   intros RANGE.
   assert (Int.zwordsize <= Int.unsigned n).
-    unfold Int.ltu in LT. rewrite Int.unsigned_repr_wordsize in LT. 
-    destruct (zlt (Int.unsigned n) Int.zwordsize). discriminate. omega. 
-  apply A2. tauto. unfold Int.ltu, Int.sub. rewrite Int.unsigned_repr_wordsize. 
-  rewrite Int.unsigned_repr. rewrite zlt_true; auto. omega. 
-  generalize Int.wordsize_max_unsigned; omega. 
+    unfold Int.ltu in LT. rewrite Int.unsigned_repr_wordsize in LT.
+    destruct (zlt (Int.unsigned n) Int.zwordsize). discriminate. omega.
+  apply A2. tauto. unfold Int.ltu, Int.sub. rewrite Int.unsigned_repr_wordsize.
+  rewrite Int.unsigned_repr. rewrite zlt_true; auto. omega.
+  generalize Int.wordsize_max_unsigned; omega.
   auto.
 Qed.
 
@@ -532,8 +532,8 @@ Proof.
   unfold shllimm; red; intros.
   apply eval_shift_imm; intros.
   + (* n = 0 *)
-    subst n. exists x; split; auto. destruct x; simpl; auto. 
-    change (Int64.shl' i Int.zero) with (Int64.shl i Int64.zero). 
+    subst n. exists x; split; auto. destruct x; simpl; auto.
+    change (Int64.shl' i Int.zero) with (Int64.shl i Int64.zero).
     rewrite Int64.shl_zero. auto.
   + (* 0 < n < 32 *)
     apply eval_splitlong with (sem := fun x => Val.shll x (Vint n)); auto.
@@ -542,8 +542,8 @@ Proof.
     exploit eval_shlimm. eexact H5. instantiate (1 := n). intros [v2 [A2 B2]].
     exploit eval_shruimm. eexact H5. instantiate (1 := Int.sub Int.iwordsize n). intros [v3 [A3 B3]].
     exploit eval_or. eexact A1. eexact A3. intros [v4 [A4 B4]].
-    econstructor; split. EvalOp. 
-    intros. subst. simpl in *. rewrite H1 in *. rewrite H2 in *. rewrite H3. 
+    econstructor; split. EvalOp.
+    intros. subst. simpl in *. rewrite H1 in *. rewrite H2 in *. rewrite H3.
     inv B1; inv B2; inv B3. simpl in B4. inv B4.
     simpl. rewrite Int64.decompose_shl_1; auto.
     destruct x; auto.
@@ -552,9 +552,9 @@ Proof.
     exploit eval_shlimm. eexact A1. instantiate (1 := Int.sub n Int.iwordsize). intros [v2 [A2 B2]].
     econstructor; split. EvalOp.
     destruct x; simpl; auto.
-    destruct (Int.ltu n Int64.iwordsize'); auto. 
-    simpl in B1; inv B1. simpl in B2. rewrite H1 in B2. inv B2. 
-    simpl. erewrite <- Int64.decompose_shl_2. instantiate (1 := Int64.hiword i). 
+    destruct (Int.ltu n Int64.iwordsize'); auto.
+    simpl in B1; inv B1. simpl in B2. rewrite H1 in B2. inv B2.
+    simpl. erewrite <- Int64.decompose_shl_2. instantiate (1 := Int64.hiword i).
     rewrite Int64.ofwords_recompose. auto. auto.
   + (* n >= 64 *)
     econstructor; split. eapply eval_helper_2; eauto. EvalOp. UseHelper. auto.
@@ -577,8 +577,8 @@ Lemma eval_shrluimm:
 Proof.
   unfold shrluimm; red; intros. apply eval_shift_imm; intros.
   + (* n = 0 *)
-    subst n. exists x; split; auto. destruct x; simpl; auto. 
-    change (Int64.shru' i Int.zero) with (Int64.shru i Int64.zero). 
+    subst n. exists x; split; auto. destruct x; simpl; auto.
+    change (Int64.shru' i Int.zero) with (Int64.shru i Int64.zero).
     rewrite Int64.shru_zero. auto.
   + (* 0 < n < 32 *)
     apply eval_splitlong with (sem := fun x => Val.shrlu x (Vint n)); auto.
@@ -587,8 +587,8 @@ Proof.
     exploit eval_shruimm. eexact H4. instantiate (1 := n). intros [v2 [A2 B2]].
     exploit eval_shlimm. eexact H4. instantiate (1 := Int.sub Int.iwordsize n). intros [v3 [A3 B3]].
     exploit eval_or. eexact A1. eexact A3. intros [v4 [A4 B4]].
-    econstructor; split. EvalOp. 
-    intros. subst. simpl in *. rewrite H1 in *. rewrite H2 in *. rewrite H3. 
+    econstructor; split. EvalOp.
+    intros. subst. simpl in *. rewrite H1 in *. rewrite H2 in *. rewrite H3.
     inv B1; inv B2; inv B3. simpl in B4. inv B4.
     simpl. rewrite Int64.decompose_shru_1; auto.
     destruct x; auto.
@@ -597,9 +597,9 @@ Proof.
     exploit eval_shruimm. eexact A1. instantiate (1 := Int.sub n Int.iwordsize). intros [v2 [A2 B2]].
     econstructor; split. EvalOp.
     destruct x; simpl; auto.
-    destruct (Int.ltu n Int64.iwordsize'); auto. 
-    simpl in B1; inv B1. simpl in B2. rewrite H1 in B2. inv B2. 
-    simpl. erewrite <- Int64.decompose_shru_2. instantiate (1 := Int64.loword i). 
+    destruct (Int.ltu n Int64.iwordsize'); auto.
+    simpl in B1; inv B1. simpl in B2. rewrite H1 in B2. inv B2.
+    simpl. erewrite <- Int64.decompose_shru_2. instantiate (1 := Int64.loword i).
     rewrite Int64.ofwords_recompose. auto. auto.
   + (* n >= 64 *)
     econstructor; split. eapply eval_helper_2; eauto. EvalOp. UseHelper. auto.
@@ -622,8 +622,8 @@ Lemma eval_shrlimm:
 Proof.
   unfold shrlimm; red; intros. apply eval_shift_imm; intros.
   + (* n = 0 *)
-    subst n. exists x; split; auto. destruct x; simpl; auto. 
-    change (Int64.shr' i Int.zero) with (Int64.shr i Int64.zero). 
+    subst n. exists x; split; auto. destruct x; simpl; auto.
+    change (Int64.shr' i Int.zero) with (Int64.shr i Int64.zero).
     rewrite Int64.shr_zero. auto.
   + (* 0 < n < 32 *)
     apply eval_splitlong with (sem := fun x => Val.shrl x (Vint n)); auto.
@@ -632,8 +632,8 @@ Proof.
     exploit eval_shrimm. eexact H4. instantiate (1 := n). intros [v2 [A2 B2]].
     exploit eval_shlimm. eexact H4. instantiate (1 := Int.sub Int.iwordsize n). intros [v3 [A3 B3]].
     exploit eval_or. eexact A1. eexact A3. intros [v4 [A4 B4]].
-    econstructor; split. EvalOp. 
-    intros. subst. simpl in *. rewrite H1 in *. rewrite H2 in *. rewrite H3. 
+    econstructor; split. EvalOp.
+    intros. subst. simpl in *. rewrite H1 in *. rewrite H2 in *. rewrite H3.
     inv B1; inv B2; inv B3. simpl in B4. inv B4.
     simpl. rewrite Int64.decompose_shr_1; auto.
     destruct x; auto.
@@ -644,11 +644,11 @@ Proof.
     exploit eval_shrimm. eexact H2. instantiate (1 := Int.repr 31). intros [v3 [A3 B3]].
     econstructor; split. EvalOp.
     destruct x; simpl; auto.
-    destruct (Int.ltu n Int64.iwordsize'); auto. 
+    destruct (Int.ltu n Int64.iwordsize'); auto.
     simpl in B1; inv B1. simpl in B2. rewrite H1 in B2. inv B2.
     simpl in B3. inv B3.
     change (Int.ltu (Int.repr 31) Int.iwordsize) with true. simpl.
-    erewrite <- Int64.decompose_shr_2. instantiate (1 := Int64.loword i). 
+    erewrite <- Int64.decompose_shr_2. instantiate (1 := Int64.loword i).
     rewrite Int64.ofwords_recompose. auto. auto.
   + (* n >= 64 *)
     econstructor; split. eapply eval_helper_2; eauto. EvalOp. UseHelper. auto.
@@ -672,18 +672,18 @@ Proof.
   assert (DEFAULT:
     exists v, eval_expr ge sp e m le default v /\ Val.lessdef (Val.addl x y) v).
   {
-    econstructor; split. eapply eval_builtin_2; eauto. UseHelper. auto. 
+    econstructor; split. eapply eval_builtin_2; eauto. UseHelper. auto.
   }
   destruct (is_longconst a) as [p|] eqn:LC1;
   destruct (is_longconst b) as [q|] eqn:LC2.
-- exploit (is_longconst_sound le a); eauto. intros EQ; subst x. 
+- exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   econstructor; split. apply eval_longconst. simpl; auto.
 - predSpec Int64.eq Int64.eq_spec p Int64.zero; auto.
-  subst p. exploit (is_longconst_sound le a); eauto. intros EQ; subst x. 
+  subst p. exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   exists y; split; auto. simpl. destruct y; auto. rewrite Int64.add_zero_l; auto.
 - predSpec Int64.eq Int64.eq_spec q Int64.zero; auto.
-  subst q. exploit (is_longconst_sound le b); eauto. intros EQ; subst y. 
+  subst q. exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   exists x; split; auto. destruct x; simpl; auto. rewrite Int64.add_zero; auto.
 - auto.
 Qed.
@@ -695,19 +695,19 @@ Proof.
   assert (DEFAULT:
     exists v, eval_expr ge sp e m le default v /\ Val.lessdef (Val.subl x y) v).
   {
-    econstructor; split. eapply eval_builtin_2; eauto. UseHelper. auto. 
+    econstructor; split. eapply eval_builtin_2; eauto. UseHelper. auto.
   }
   destruct (is_longconst a) as [p|] eqn:LC1;
   destruct (is_longconst b) as [q|] eqn:LC2.
-- exploit (is_longconst_sound le a); eauto. intros EQ; subst x. 
+- exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   econstructor; split. apply eval_longconst. simpl; auto.
 - predSpec Int64.eq Int64.eq_spec p Int64.zero; auto.
   replace (Val.subl x y) with (Val.negl y). eapply eval_negl; eauto.
   subst p. exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
-  destruct y; simpl; auto. 
+  destruct y; simpl; auto.
 - predSpec Int64.eq Int64.eq_spec q Int64.zero; auto.
-  subst q. exploit (is_longconst_sound le b); eauto. intros EQ; subst y. 
+  subst q. exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   exists x; split; auto. destruct x; simpl; auto. rewrite Int64.sub_zero_l; auto.
 - auto.
 Qed.
@@ -715,22 +715,22 @@ Qed.
 Lemma eval_mull_base: binary_constructor_sound (mull_base hf) Val.mull.
 Proof.
   unfold mull_base; red; intros. apply eval_splitlong2; auto.
-- intros. 
+- intros.
   set (p := Val.mull' x2 y2). set (le1 := p :: le0).
   assert (E1: eval_expr ge sp e m le1 (Eop Olowlong (Eletvar O ::: Enil)) (Val.loword p)) by EvalOp.
   assert (E2: eval_expr ge sp e m le1 (Eop Ohighlong (Eletvar O ::: Enil)) (Val.hiword p)) by EvalOp.
-  exploit eval_mul. apply eval_lift. eexact H2. apply eval_lift. eexact H3. 
+  exploit eval_mul. apply eval_lift. eexact H2. apply eval_lift. eexact H3.
   instantiate (1 := p). fold le1. intros [v3 [E3 L3]].
-  exploit eval_mul. apply eval_lift. eexact H1. apply eval_lift. eexact H4. 
+  exploit eval_mul. apply eval_lift. eexact H1. apply eval_lift. eexact H4.
   instantiate (1 := p). fold le1. intros [v4 [E4 L4]].
   exploit eval_add. eexact E2. eexact E3. intros [v5 [E5 L5]].
   exploit eval_add. eexact E5. eexact E4. intros [v6 [E6 L6]].
   exists (Val.longofwords v6 (Val.loword p)); split.
-  EvalOp. eapply eval_builtin_2; eauto. UseHelper. 
+  EvalOp. eapply eval_builtin_2; eauto. UseHelper.
   intros. unfold le1, p in *; subst; simpl in *.
-  inv L3. inv L4. inv L5. simpl in L6. inv L6. 
-  simpl. f_equal. symmetry. apply Int64.decompose_mul. 
-- destruct x; auto; destruct y; auto. 
+  inv L3. inv L4. inv L5. simpl in L6. inv L6.
+  simpl. f_equal. symmetry. apply Int64.decompose_mul.
+- destruct x; auto; destruct y; auto.
 Qed.
 
 Lemma eval_mullimm:
@@ -738,30 +738,30 @@ Lemma eval_mullimm:
 Proof.
   unfold mullimm; red; intros.
   predSpec Int64.eq Int64.eq_spec n Int64.zero.
-  subst n. econstructor; split. apply eval_longconst. 
+  subst n. econstructor; split. apply eval_longconst.
   destruct x; simpl; auto. rewrite Int64.mul_zero. auto.
   predSpec Int64.eq Int64.eq_spec n Int64.one.
-  subst n. exists x; split; auto. 
+  subst n. exists x; split; auto.
   destruct x; simpl; auto. rewrite Int64.mul_one. auto.
-  destruct (Int64.is_power2 n) as [l|] eqn:P2. 
+  destruct (Int64.is_power2 n) as [l|] eqn:P2.
   exploit eval_shllimm. eauto. instantiate (1 := Int.repr (Int64.unsigned l)).
   intros [v [A B]].
-  exists v; split; auto. 
-  destruct x; simpl; auto. 
+  exists v; split; auto.
+  destruct x; simpl; auto.
   erewrite Int64.mul_pow2 by eauto.
   assert (EQ: Int.unsigned (Int.repr (Int64.unsigned l)) = Int64.unsigned l).
   { apply Int.unsigned_repr.
     exploit Int64.is_power2_rng; eauto.
-    assert (Int64.zwordsize < Int.max_unsigned) by (compute; auto). 
+    assert (Int64.zwordsize < Int.max_unsigned) by (compute; auto).
     omega.
   }
-  simpl in B. 
+  simpl in B.
   replace (Int.ltu (Int.repr (Int64.unsigned l)) Int64.iwordsize')
      with (Int64.ltu l Int64.iwordsize) in B.
-  erewrite Int64.is_power2_range in B by eauto. 
-  unfold Int64.shl' in B. rewrite EQ in B. auto. 
+  erewrite Int64.is_power2_range in B by eauto.
+  unfold Int64.shl' in B. rewrite EQ in B. auto.
   unfold Int64.ltu, Int.ltu. rewrite EQ. auto.
-  apply eval_mull_base; auto. apply eval_longconst. 
+  apply eval_mull_base; auto. apply eval_longconst.
 Qed.
 
 Theorem eval_mull: binary_constructor_sound (mull hf) Val.mull.
@@ -769,13 +769,13 @@ Proof.
   unfold mull; red; intros.
   destruct (is_longconst a) as [p|] eqn:LC1;
   destruct (is_longconst b) as [q|] eqn:LC2.
-- exploit (is_longconst_sound le a); eauto. intros EQ; subst x. 
+- exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   econstructor; split. apply eval_longconst. simpl; auto.
 - exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   replace (Val.mull (Vlong p) y) with (Val.mull y (Vlong p)) in *.
-  eapply eval_mullimm; eauto. 
-  destruct y; simpl; auto. rewrite Int64.mul_commut; auto. 
+  eapply eval_mullimm; eauto.
+  destruct y; simpl; auto. rewrite Int64.mul_commut; auto.
 - exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   eapply eval_mullimm; eauto.
 - apply eval_mull_base; auto.
@@ -789,12 +789,12 @@ Lemma eval_binop_long:
   eval_expr ge sp e m le b y ->
   exists v, eval_expr ge sp e m le (binop_long id sem a b) v /\ Val.lessdef z v.
 Proof.
-  intros. unfold binop_long. 
-  destruct (is_longconst a) as [p|] eqn:LC1. 
+  intros. unfold binop_long.
+  destruct (is_longconst a) as [p|] eqn:LC1.
   destruct (is_longconst b) as [q|] eqn:LC2.
   exploit is_longconst_sound. eexact LC1. eauto. intros EQ; subst x.
   exploit is_longconst_sound. eexact LC2. eauto. intros EQ; subst y.
-  econstructor; split. EvalOp. erewrite H by eauto. rewrite Int64.ofwords_recompose. auto. 
+  econstructor; split. EvalOp. erewrite H by eauto. rewrite Int64.ofwords_recompose. auto.
   econstructor; split. eapply eval_helper_2; eauto. auto.
   econstructor; split. eapply eval_helper_2; eauto. auto.
 Qed.
@@ -806,12 +806,12 @@ Theorem eval_divl:
   Val.divls x y = Some z ->
   exists v, eval_expr ge sp e m le (divl hf a b) v /\ Val.lessdef z v.
 Proof.
-  intros. eapply eval_binop_long; eauto. 
+  intros. eapply eval_binop_long; eauto.
   intros; subst; simpl in H1.
   destruct (Int64.eq q Int64.zero
-         || Int64.eq p (Int64.repr Int64.min_signed) && Int64.eq q Int64.mone); inv H1. 
+         || Int64.eq p (Int64.repr Int64.min_signed) && Int64.eq q Int64.mone); inv H1.
   auto.
-  UseHelper. 
+  UseHelper.
 Qed.
 
 Theorem eval_modl:
@@ -821,12 +821,12 @@ Theorem eval_modl:
   Val.modls x y = Some z ->
   exists v, eval_expr ge sp e m le (modl hf a b) v /\ Val.lessdef z v.
 Proof.
-  intros. eapply eval_binop_long; eauto. 
+  intros. eapply eval_binop_long; eauto.
   intros; subst; simpl in H1.
   destruct (Int64.eq q Int64.zero
-         || Int64.eq p (Int64.repr Int64.min_signed) && Int64.eq q Int64.mone); inv H1. 
+         || Int64.eq p (Int64.repr Int64.min_signed) && Int64.eq q Int64.mone); inv H1.
   auto.
-  UseHelper. 
+  UseHelper.
 Qed.
 
 Theorem eval_divlu:
@@ -836,38 +836,38 @@ Theorem eval_divlu:
   Val.divlu x y = Some z ->
   exists v, eval_expr ge sp e m le (divlu hf a b) v /\ Val.lessdef z v.
 Proof.
-  intros. unfold divlu. 
+  intros. unfold divlu.
   set (default := Eexternal (i64_udiv hf) sig_ll_l (a ::: b ::: Enil)).
   assert (DEFAULT:
     exists v, eval_expr ge sp e m le default v /\ Val.lessdef z v).
   {
-    econstructor; split. eapply eval_helper_2; eauto. UseHelper. auto. 
+    econstructor; split. eapply eval_helper_2; eauto. UseHelper. auto.
   }
   destruct (is_longconst a) as [p|] eqn:LC1;
   destruct (is_longconst b) as [q|] eqn:LC2.
-- exploit (is_longconst_sound le a); eauto. intros EQ; subst x. 
+- exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   econstructor; split. apply eval_longconst.
-  simpl in H1. destruct (Int64.eq q Int64.zero); inv H1. auto. 
+  simpl in H1. destruct (Int64.eq q Int64.zero); inv H1. auto.
 - auto.
 - destruct (Int64.is_power2 q) as [l|] eqn:P2; auto.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   replace z with (Val.shrlu x (Vint (Int.repr (Int64.unsigned l)))).
   apply eval_shrluimm. auto.
-  destruct x; simpl in H1; try discriminate. 
-  destruct (Int64.eq q Int64.zero); inv H1. 
-  simpl. 
+  destruct x; simpl in H1; try discriminate.
+  destruct (Int64.eq q Int64.zero); inv H1.
+  simpl.
   assert (EQ: Int.unsigned (Int.repr (Int64.unsigned l)) = Int64.unsigned l).
   { apply Int.unsigned_repr.
     exploit Int64.is_power2_rng; eauto.
-    assert (Int64.zwordsize < Int.max_unsigned) by (compute; auto). 
+    assert (Int64.zwordsize < Int.max_unsigned) by (compute; auto).
     omega.
   }
   replace (Int.ltu (Int.repr (Int64.unsigned l)) Int64.iwordsize')
      with (Int64.ltu l Int64.iwordsize).
   erewrite Int64.is_power2_range by eauto.
-  erewrite Int64.divu_pow2 by eauto. 
-  unfold Int64.shru', Int64.shru. rewrite EQ. auto. 
+  erewrite Int64.divu_pow2 by eauto.
+  unfold Int64.shru', Int64.shru. rewrite EQ. auto.
   unfold Int64.ltu, Int.ltu. rewrite EQ. auto.
 - auto.
 Qed.
@@ -879,27 +879,27 @@ Theorem eval_modlu:
   Val.modlu x y = Some z ->
   exists v, eval_expr ge sp e m le (modlu hf a b) v /\ Val.lessdef z v.
 Proof.
-  intros. unfold modlu. 
+  intros. unfold modlu.
   set (default := Eexternal (i64_umod hf) sig_ll_l (a ::: b ::: Enil)).
   assert (DEFAULT:
     exists v, eval_expr ge sp e m le default v /\ Val.lessdef z v).
   {
-    econstructor; split. eapply eval_helper_2; eauto. UseHelper. auto. 
+    econstructor; split. eapply eval_helper_2; eauto. UseHelper. auto.
   }
   destruct (is_longconst a) as [p|] eqn:LC1;
   destruct (is_longconst b) as [q|] eqn:LC2.
-- exploit (is_longconst_sound le a); eauto. intros EQ; subst x. 
+- exploit (is_longconst_sound le a); eauto. intros EQ; subst x.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   econstructor; split. apply eval_longconst.
-  simpl in H1. destruct (Int64.eq q Int64.zero); inv H1. auto. 
+  simpl in H1. destruct (Int64.eq q Int64.zero); inv H1. auto.
 - auto.
 - destruct (Int64.is_power2 q) as [l|] eqn:P2; auto.
   exploit (is_longconst_sound le b); eauto. intros EQ; subst y.
   replace z with (Val.andl x (Vlong (Int64.sub q Int64.one))).
-  apply eval_andl. auto. apply eval_longconst. 
-  destruct x; simpl in H1; try discriminate. 
-  destruct (Int64.eq q Int64.zero); inv H1. 
-  simpl. 
+  apply eval_andl. auto. apply eval_longconst.
+  destruct x; simpl in H1; try discriminate.
+  destruct (Int64.eq q Int64.zero); inv H1.
+  simpl.
   erewrite Int64.modu_and by eauto. auto.
 - auto.
 Qed.
@@ -908,26 +908,26 @@ Remark decompose_cmpl_eq_zero:
   forall h l,
   Int64.eq (Int64.ofwords h l) Int64.zero = Int.eq (Int.or h l) Int.zero.
 Proof.
-  intros. 
+  intros.
   assert (Int64.zwordsize = Int.zwordsize * 2) by reflexivity.
   predSpec Int64.eq Int64.eq_spec (Int64.ofwords h l) Int64.zero.
   replace (Int.or h l) with Int.zero. rewrite Int.eq_true. auto.
-  apply Int.same_bits_eq; intros. 
-  rewrite Int.bits_zero. rewrite Int.bits_or by auto. 
-  symmetry. apply orb_false_intro. 
+  apply Int.same_bits_eq; intros.
+  rewrite Int.bits_zero. rewrite Int.bits_or by auto.
+  symmetry. apply orb_false_intro.
   transitivity (Int64.testbit (Int64.ofwords h l) (i + Int.zwordsize)).
   rewrite Int64.bits_ofwords by omega. rewrite zlt_false by omega. f_equal; omega.
-  rewrite H0. apply Int64.bits_zero. 
-  transitivity (Int64.testbit (Int64.ofwords h l) i).
-  rewrite Int64.bits_ofwords by omega. rewrite zlt_true by omega. auto. 
   rewrite H0. apply Int64.bits_zero.
-  symmetry. apply Int.eq_false. red; intros; elim H0. 
-  apply Int64.same_bits_eq; intros. 
-  rewrite Int64.bits_zero. rewrite Int64.bits_ofwords by auto. 
+  transitivity (Int64.testbit (Int64.ofwords h l) i).
+  rewrite Int64.bits_ofwords by omega. rewrite zlt_true by omega. auto.
+  rewrite H0. apply Int64.bits_zero.
+  symmetry. apply Int.eq_false. red; intros; elim H0.
+  apply Int64.same_bits_eq; intros.
+  rewrite Int64.bits_zero. rewrite Int64.bits_ofwords by auto.
   destruct (zlt i Int.zwordsize).
-  assert (Int.testbit (Int.or h l) i = false) by (rewrite H1; apply Int.bits_zero). 
-  rewrite Int.bits_or in H3 by omega. exploit orb_false_elim; eauto. tauto. 
-  assert (Int.testbit (Int.or h l) (i - Int.zwordsize) = false) by (rewrite H1; apply Int.bits_zero). 
+  assert (Int.testbit (Int.or h l) i = false) by (rewrite H1; apply Int.bits_zero).
+  rewrite Int.bits_or in H3 by omega. exploit orb_false_elim; eauto. tauto.
+  assert (Int.testbit (Int.or h l) (i - Int.zwordsize) = false) by (rewrite H1; apply Int.bits_zero).
   rewrite Int.bits_or in H3 by omega. exploit orb_false_elim; eauto. tauto.
 Qed.
 
@@ -936,14 +936,14 @@ Lemma eval_cmpl_eq_zero:
   eval_expr ge sp e m le a (Vlong x) ->
   eval_expr ge sp e m le (cmpl_eq_zero a) (Val.of_bool (Int64.eq x Int64.zero)).
 Proof.
-  intros. unfold cmpl_eq_zero. 
+  intros. unfold cmpl_eq_zero.
   eapply eval_splitlong_strict; eauto. intros.
   exploit eval_or. eexact H0. eexact H1. intros [v1 [A1 B1]]. simpl in B1; inv B1.
   exploit eval_comp. eexact A1. instantiate (2 := Eop (Ointconst Int.zero) Enil). EvalOp.
-  instantiate (1 := Ceq). intros [v2 [A2 B2]]. 
-  unfold Val.cmp in B2; simpl in B2. 
-  rewrite <- decompose_cmpl_eq_zero in B2. 
-  rewrite Int64.ofwords_recompose in B2. 
+  instantiate (1 := Ceq). intros [v2 [A2 B2]].
+  unfold Val.cmp in B2; simpl in B2.
+  rewrite <- decompose_cmpl_eq_zero in B2.
+  rewrite Int64.ofwords_recompose in B2.
   destruct (Int64.eq x Int64.zero); inv B2; auto.
 Qed.
 
@@ -952,14 +952,14 @@ Lemma eval_cmpl_ne_zero:
   eval_expr ge sp e m le a (Vlong x) ->
   eval_expr ge sp e m le (cmpl_ne_zero a) (Val.of_bool (negb (Int64.eq x Int64.zero))).
 Proof.
-  intros. unfold cmpl_ne_zero. 
+  intros. unfold cmpl_ne_zero.
   eapply eval_splitlong_strict; eauto. intros.
   exploit eval_or. eexact H0. eexact H1. intros [v1 [A1 B1]]. simpl in B1; inv B1.
   exploit eval_comp. eexact A1. instantiate (2 := Eop (Ointconst Int.zero) Enil). EvalOp.
-  instantiate (1 := Cne). intros [v2 [A2 B2]]. 
-  unfold Val.cmp in B2; simpl in B2. 
-  rewrite <- decompose_cmpl_eq_zero in B2. 
-  rewrite Int64.ofwords_recompose in B2. 
+  instantiate (1 := Cne). intros [v2 [A2 B2]].
+  unfold Val.cmp in B2; simpl in B2.
+  rewrite <- decompose_cmpl_eq_zero in B2.
+  rewrite Int64.ofwords_recompose in B2.
   destruct (negb (Int64.eq x Int64.zero)); inv B2; auto.
 Qed.
 
@@ -973,7 +973,7 @@ Lemma eval_cmplu_gen:
                   else Int.cmpu ch (Int64.hiword x) (Int64.hiword y))).
 Proof.
   intros. unfold cmplu_gen. eapply eval_splitlong2_strict; eauto. intros.
-  econstructor. econstructor. EvalOp. simpl. eauto. 
+  econstructor. econstructor. EvalOp. simpl. eauto.
   destruct (Int.eq (Int64.hiword x) (Int64.hiword y)); EvalOp.
 Qed.
 
@@ -989,14 +989,14 @@ Proof.
 Qed.
 
 Theorem eval_cmplu:
-  forall c le a x b y v, 
+  forall c le a x b y v,
   eval_expr ge sp e m le a x ->
   eval_expr ge sp e m le b y ->
   Val.cmplu c x y = Some v ->
   eval_expr ge sp e m le (cmplu c a b) v.
 Proof.
   intros. unfold Val.cmplu in H1.
-  destruct x; simpl in H1; try discriminate. destruct y; inv H1. 
+  destruct x; simpl in H1; try discriminate. destruct y; inv H1.
   rename i into x. rename i0 into y.
   destruct c; simpl.
 - (* Ceq *)
@@ -1004,25 +1004,25 @@ Proof.
 + exploit is_longconst_zero_sound; eauto. intros EQ; inv EQ; clear H0.
   apply eval_cmpl_eq_zero; auto.
 + exploit eval_xorl. eexact H. eexact H0. intros [v1 [A B]]. simpl in B. inv B.
-  rewrite int64_eq_xor. apply eval_cmpl_eq_zero; auto.  
+  rewrite int64_eq_xor. apply eval_cmpl_eq_zero; auto.
 - (* Cne *)
   destruct (is_longconst_zero b) eqn:LC.
 + exploit is_longconst_zero_sound; eauto. intros EQ; inv EQ; clear H0.
   apply eval_cmpl_ne_zero; auto.
 + exploit eval_xorl. eexact H. eexact H0. intros [v1 [A B]]. simpl in B. inv B.
-  rewrite int64_eq_xor. apply eval_cmpl_ne_zero; auto.  
+  rewrite int64_eq_xor. apply eval_cmpl_ne_zero; auto.
 - (* Clt *)
   exploit (eval_cmplu_gen Clt Clt). eexact H. eexact H0. simpl.
   rewrite <- Int64.decompose_ltu. rewrite ! Int64.ofwords_recompose. auto.
 - (* Cle *)
-  exploit (eval_cmplu_gen Clt Cle). eexact H. eexact H0. intros. 
+  exploit (eval_cmplu_gen Clt Cle). eexact H. eexact H0. intros.
   rewrite <- (Int64.ofwords_recompose x). rewrite <- (Int64.ofwords_recompose y).
-  rewrite Int64.decompose_leu. auto. 
+  rewrite Int64.decompose_leu. auto.
 - (* Cgt *)
   exploit (eval_cmplu_gen Cgt Cgt). eexact H. eexact H0. simpl.
   rewrite Int.eq_sym. rewrite <- Int64.decompose_ltu. rewrite ! Int64.ofwords_recompose. auto.
 - (* Cge *)
-  exploit (eval_cmplu_gen Cgt Cge). eexact H. eexact H0. intros. 
+  exploit (eval_cmplu_gen Cgt Cge). eexact H. eexact H0. intros.
   rewrite <- (Int64.ofwords_recompose x). rewrite <- (Int64.ofwords_recompose y).
   rewrite Int64.decompose_leu. rewrite Int.eq_sym. auto.
 Qed.
@@ -1037,7 +1037,7 @@ Lemma eval_cmpl_gen:
                   else Int.cmp ch (Int64.hiword x) (Int64.hiword y))).
 Proof.
   intros. unfold cmpl_gen. eapply eval_splitlong2_strict; eauto. intros.
-  econstructor. econstructor. EvalOp. simpl. eauto. 
+  econstructor. econstructor. EvalOp. simpl. eauto.
   destruct (Int.eq (Int64.hiword x) (Int64.hiword y)); EvalOp.
 Qed.
 
@@ -1045,29 +1045,29 @@ Remark decompose_cmpl_lt_zero:
   forall h l,
   Int64.lt (Int64.ofwords h l) Int64.zero = Int.lt h Int.zero.
 Proof.
-  intros. 
+  intros.
   generalize (Int64.shru_lt_zero (Int64.ofwords h l)).
   change (Int64.shru (Int64.ofwords h l) (Int64.repr (Int64.zwordsize - 1)))
     with (Int64.shru' (Int64.ofwords h l) (Int.repr 63)).
-  rewrite Int64.decompose_shru_2. 
+  rewrite Int64.decompose_shru_2.
   change (Int.sub (Int.repr 63) Int.iwordsize)
-    with (Int.repr (Int.zwordsize - 1)). 
-  rewrite Int.shru_lt_zero. 
+    with (Int.repr (Int.zwordsize - 1)).
+  rewrite Int.shru_lt_zero.
   destruct (Int64.lt (Int64.ofwords h l) Int64.zero); destruct (Int.lt h Int.zero); auto; intros.
-  elim Int64.one_not_zero. auto. 
+  elim Int64.one_not_zero. auto.
   elim Int64.one_not_zero. auto.
   vm_compute. intuition congruence.
 Qed.
 
 Theorem eval_cmpl:
-  forall c le a x b y v, 
+  forall c le a x b y v,
   eval_expr ge sp e m le a x ->
   eval_expr ge sp e m le b y ->
   Val.cmpl c x y = Some v ->
   eval_expr ge sp e m le (cmpl c a b) v.
 Proof.
   intros. unfold Val.cmpl in H1.
-  destruct x; simpl in H1; try discriminate. destruct y; inv H1. 
+  destruct x; simpl in H1; try discriminate. destruct y; inv H1.
   rename i into x. rename i0 into y.
   destruct c; simpl.
 - (* Ceq *)
@@ -1085,8 +1085,8 @@ Proof.
 - (* Clt *)
   destruct (is_longconst_zero b) eqn:LC.
 + exploit is_longconst_zero_sound; eauto. intros EQ; inv EQ; clear H0.
-  exploit eval_highlong. eexact H. intros [v1 [A1 B1]]. simpl in B1. inv B1. 
-  exploit eval_comp. eexact A1. 
+  exploit eval_highlong. eexact H. intros [v1 [A1 B1]]. simpl in B1. inv B1.
+  exploit eval_comp. eexact A1.
   instantiate (2 := Eop (Ointconst Int.zero) Enil). EvalOp.
   instantiate (1 := Clt). intros [v2 [A2 B2]].
   unfold Val.cmp in B2. simpl in B2.
@@ -1095,9 +1095,9 @@ Proof.
 + exploit (eval_cmpl_gen Clt Clt). eexact H. eexact H0. simpl.
   rewrite <- Int64.decompose_lt. rewrite ! Int64.ofwords_recompose. auto.
 - (* Cle *)
-  exploit (eval_cmpl_gen Clt Cle). eexact H. eexact H0. intros. 
+  exploit (eval_cmpl_gen Clt Cle). eexact H. eexact H0. intros.
   rewrite <- (Int64.ofwords_recompose x). rewrite <- (Int64.ofwords_recompose y).
-  rewrite Int64.decompose_le. auto. 
+  rewrite Int64.decompose_le. auto.
 - (* Cgt *)
   exploit (eval_cmpl_gen Cgt Cgt). eexact H. eexact H0. simpl.
   rewrite Int.eq_sym. rewrite <- Int64.decompose_lt. rewrite ! Int64.ofwords_recompose. auto.
@@ -1105,16 +1105,15 @@ Proof.
   destruct (is_longconst_zero b) eqn:LC.
 + exploit is_longconst_zero_sound; eauto. intros EQ; inv EQ; clear H0.
   exploit eval_highlong. eexact H. intros [v1 [A1 B1]]. simpl in B1; inv B1.
-  exploit eval_comp. eexact A1. 
+  exploit eval_comp. eexact A1.
   instantiate (2 := Eop (Ointconst Int.zero) Enil). EvalOp.
   instantiate (1 := Cge). intros [v2 [A2 B2]].
-  unfold Val.cmp in B2; simpl in B2. 
+  unfold Val.cmp in B2; simpl in B2.
   rewrite <- (Int64.ofwords_recompose x). rewrite decompose_cmpl_lt_zero.
   destruct (negb (Int.lt (Int64.hiword x) Int.zero)); inv B2; auto.
-+ exploit (eval_cmpl_gen Cgt Cge). eexact H. eexact H0. intros. 
++ exploit (eval_cmpl_gen Cgt Cge). eexact H. eexact H0. intros.
   rewrite <- (Int64.ofwords_recompose x). rewrite <- (Int64.ofwords_recompose y).
   rewrite Int64.decompose_le. rewrite Int.eq_sym. auto.
 Qed.
 
 End CMCONSTR.
-

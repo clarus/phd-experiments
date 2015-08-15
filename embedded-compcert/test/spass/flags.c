@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                 FLAGS OF SPASS                         * */
 /* *                                                        * */
-/* *  $Module:   FLAGS                                      * */ 
+/* *  $Module:   FLAGS                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include <stdio.h>
@@ -58,7 +57,6 @@
 
 const int flag_CLEAN = -5;
 
-
 /**************************************************************/
 /* File Local Declarations                                    */
 /**************************************************************/
@@ -71,10 +69,8 @@ typedef struct {
   const char *name;
 } FLAG_PROPERTY;
 
-
 static FLAGARRAY     flag_DEFAULTSTORE;
 static FLAG_PROPERTY flag_PROPERTIES[flag_MAXFLAG];
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -284,7 +280,7 @@ void flag_Init(void)
   /* Amount of time (seconds) available to SPASS, -1 means arbitrary */
   flag_InitIntern(flag_TIMELIMIT, flag_UNIQUE, "TimeLimit", flag_TIMELIMITUNLIMITED,
 		  flag_TIMELIMITMIN, flag_TIMELIMITMAX);
-  
+
   /* Select: 0 -> no selection, 1 -> select if multiple maximal literals, 2 -> always select */
   flag_InitIntern(flag_SELECT, flag_UNIQUE, "Select", flag_SELECTIFSEVERALMAXIMAL,
 		  flag_SELECTMIN, flag_SELECTMAX);
@@ -316,19 +312,19 @@ void flag_Init(void)
   /* Activates the inference rule Superposition Right */
   flag_InitIntern(flag_ISPR, flag_INFERENCE, "ISpR", flag_SUPERPOSITIONRIGHTOFF,
 		  flag_SUPERPOSITIONRIGHTMIN, flag_SUPERPOSITIONRIGHTMAX);
-  
-  /* Inference rule Ordered Paramodulation not active */  
+
+  /* Inference rule Ordered Paramodulation not active */
   flag_InitIntern(flag_IOPM, flag_INFERENCE, "IOPm", flag_ORDEREDPARAMODULATIONOFF,
 		  flag_ORDEREDPARAMODULATIONMIN, flag_ORDEREDPARAMODULATIONMAX);
 
-  /*   Inference rule Paramodulation not active */  
+  /*   Inference rule Paramodulation not active */
   flag_InitIntern(flag_ISPM, flag_INFERENCE, "ISPm", flag_STANDARDPARAMODULATIONOFF,
-		  flag_STANDARDPARAMODULATIONMIN, flag_STANDARDPARAMODULATIONMAX);   
+		  flag_STANDARDPARAMODULATIONMIN, flag_STANDARDPARAMODULATIONMAX);
 
   /* Activates the inference rule Superposition Left */
   flag_InitIntern(flag_ISPL, flag_INFERENCE, "ISpL", flag_SUPERPOSITIONLEFTOFF,
 		  flag_SUPERPOSITIONLEFTMIN, flag_SUPERPOSITIONLEFTMAX);
-  
+
   /* Activates the inference rule Ordered Resolution */
   flag_InitIntern(flag_IORE, flag_INFERENCE, "IORe", flag_ORDEREDRESOLUTIONOFF,
 		  flag_ORDEREDRESOLUTIONMIN, flag_ORDEREDRESOLUTIONMAX);
@@ -340,7 +336,7 @@ void flag_Init(void)
   /* Activates the inference rule Standard Hyperresolution */
   flag_InitIntern(flag_ISHY, flag_INFERENCE, "ISHy", flag_STANDARDHYPERRESOLUTIONOFF,
 		  flag_STANDARDHYPERRESOLUTIONMIN, flag_STANDARDHYPERRESOLUTIONMAX);
-  
+
   /* Activates the inference rule Ordered Hyperresolution */
   flag_InitIntern(flag_IOHY, flag_INFERENCE, "IOHy", flag_ORDEREDHYPERRESOLUTIONOFF,
 		  flag_ORDEREDHYPERRESOLUTIONMIN, flag_ORDEREDHYPERRESOLUTIONMAX);
@@ -368,7 +364,7 @@ void flag_Init(void)
   /* Activates the inference rule  Unit Resolution */
   flag_InitIntern(flag_IUNR, flag_INFERENCE, "IUnR", flag_UNITRESOLUTIONOFF,
 		  flag_UNITRESOLUTIONMIN, flag_UNITRESOLUTIONMAX);
-  
+
   /* Activates Forward Rewriting */
   flag_InitIntern(flag_RFREW, flag_REDUCTION, "RFRew", flag_RFREWOFF,
 		  flag_RFREWMIN, flag_RFREWMAX);
@@ -456,7 +452,7 @@ void flag_Init(void)
 		  flag_WDRATIOMIN, flag_WDRATIOMAX);
 
   /* Factor to divide the weight of conjecture clauses to prefer them for selection */
-  flag_InitIntern(flag_PREFCON, flag_UNIQUE, "PrefCon", flag_PREFCONUNCHANGED, 
+  flag_InitIntern(flag_PREFCON, flag_UNIQUE, "PrefCon", flag_PREFCONUNCHANGED,
 		  flag_PREFCONMIN, flag_PREFCONMAX);
 
   /* Weight of a function symbol; weight of clause is used to select given */
@@ -516,7 +512,6 @@ void flag_Init(void)
 		  flag_TDFG2OTTEROPTIONSMIN, flag_TDFG2OTTEROPTIONSMAX);
 }
 
-
 FLAGSTORE flag_DefaultStore(void)
 /**************************************************************
   INPUT:   None.
@@ -525,7 +520,6 @@ FLAGSTORE flag_DefaultStore(void)
 {
   return flag_DEFAULTSTORE;
 }
-
 
 void flag_Print(FLAGSTORE Store)
 /**************************************************************
@@ -537,7 +531,6 @@ void flag_Print(FLAGSTORE Store)
   flag_FPrint(stdout, Store);
 }
 
-
 void flag_FPrint(FILE* File, FLAGSTORE Store)
 /**************************************************************
   INPUT:   A File to print to, and a FlagStore.
@@ -547,7 +540,7 @@ void flag_FPrint(FILE* File, FLAGSTORE Store)
 {
   FLAG_ID  i;
   char name[30];
-  
+
   fputs("list_of_settings(SPASS).{*", File);
 
   for (i = (FLAG_ID) 0; i < flag_MAXFLAG; i+= (FLAG_ID) 3) {
@@ -565,7 +558,6 @@ void flag_FPrint(FILE* File, FLAGSTORE Store)
   fputs("*}\nend_of_list.\n", File);
 }
 
-
 BOOL flag_Lookup(const char* String)
 /**************************************************************
   INPUT:   A string <String>.
@@ -574,7 +566,6 @@ BOOL flag_Lookup(const char* String)
 {
   return (flag_Id(String) != -1);
 }
-
 
 FLAG_ID flag_Id(const char* String)
 /**************************************************************
@@ -592,7 +583,6 @@ FLAG_ID flag_Id(const char* String)
   return (FLAG_ID) -1;
 }
 
-
 const char* flag_Name(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
@@ -602,36 +592,33 @@ const char* flag_Name(FLAG_ID Flag)
 ***************************************************************/
 {
   flag_CheckFlagIdInRange(Flag);
- 
+
   return(flag_PROPERTIES[Flag].name);
 }
-
 
 int flag_Minimum(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
-  RETURNS: The first integer below the minimal legal value 
+  RETURNS: The first integer below the minimal legal value
            of the flag.
 ***************************************************************/
 {
   flag_CheckFlagIdInRange(Flag);
- 
+
   return flag_PROPERTIES[Flag].minimum;
 }
-
 
 int flag_Maximum(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
-  RETURNS: The first integer above the maximal legal value 
+  RETURNS: The first integer above the maximal legal value
            of the flag.
 ***************************************************************/
 {
   flag_CheckFlagIdInRange(Flag);
- 
+
   return flag_PROPERTIES[Flag].maximum;
 }
-
 
 FLAG_TYPE flag_Type(FLAG_ID Flag)
 /**************************************************************
@@ -641,9 +628,8 @@ FLAG_TYPE flag_Type(FLAG_ID Flag)
 {
   flag_CheckFlagIdInRange(Flag);
 
-  return flag_PROPERTIES[Flag].type;  
+  return flag_PROPERTIES[Flag].type;
 }
-
 
 void flag_ClearInferenceRules(FLAGSTORE Store)
 /**************************************************************
@@ -659,7 +645,6 @@ void flag_ClearInferenceRules(FLAGSTORE Store)
       flag_SetFlagValue(Store, i, flag_OFF);
   }
 }
-
 
 void flag_ClearReductionRules(FLAGSTORE Store)
 /**************************************************************
@@ -677,7 +662,6 @@ void flag_ClearReductionRules(FLAGSTORE Store)
   }
 }
 
-
 void flag_ClearPrinting(FLAGSTORE Store)
 /**************************************************************
   INPUT:   A FlagStore.
@@ -694,7 +678,6 @@ void flag_ClearPrinting(FLAGSTORE Store)
   }
 }
 
-
 void flag_SetReductionsToDefaults(FLAGSTORE Store)
 /**************************************************************
   INPUT:   A FlagStore.
@@ -710,7 +693,6 @@ void flag_SetReductionsToDefaults(FLAGSTORE Store)
       flag_SetFlagToDefault(Store, i);
   }
 }
-
 
 void flag_InitFlotterSubproofFlags(FLAGSTORE Source, FLAGSTORE Target)
 /**************************************************************
@@ -732,9 +714,9 @@ void flag_InitFlotterSubproofFlags(FLAGSTORE Source, FLAGSTORE Target)
 
   flag_SetFlagToDefault(Target, flag_CNFFEQREDUCTIONS);
   flag_SetFlagToDefault(Target, flag_RINPUT);
- 
+
   /* Copy flag_DOCPROOF and flag_CNFPROOFSTEPS */
-  flag_TransferFlag(Source, Target, flag_DOCPROOF);  
+  flag_TransferFlag(Source, Target, flag_DOCPROOF);
   flag_TransferFlag(Source, Target, flag_CNFPROOFSTEPS);
 
   /* Activate BoundedDepthUnitResolution */
@@ -744,14 +726,13 @@ void flag_InitFlotterSubproofFlags(FLAGSTORE Source, FLAGSTORE Target)
   flag_SetFlagValue(Target, flag_ORD, flag_ORDKBO);
 
   /* Transfer Weights for Terms */
-  flag_TransferFlag(Source, Target, flag_FUNCWEIGHT);  
+  flag_TransferFlag(Source, Target, flag_FUNCWEIGHT);
   flag_TransferFlag(Source, Target, flag_VARWEIGHT);
 
   /* Transfer Selection Strategy, not needed for depth bounded */
   /* unit resolution (see above) but for other potentially useful inference rules */
-  flag_TransferFlag(Source, Target, flag_SELECT);  
+  flag_TransferFlag(Source, Target, flag_SELECT);
 }
-
 
 void flag_InitFlotterFlags(FLAGSTORE Source, FLAGSTORE Target)
 /**************************************************************
@@ -784,8 +765,7 @@ void flag_InitFlotterFlags(FLAGSTORE Source, FLAGSTORE Target)
   flag_TransferFlag(Source, Target, flag_INTERACTIVE);
 }
 
-
-void flag_CheckStore(FLAGSTORE Store) 
+void flag_CheckStore(FLAGSTORE Store)
 /**************************************************************
   INPUT:   A flag store.
   RETURNS: TRUE is the flag store is in a valid state,

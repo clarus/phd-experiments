@@ -69,7 +69,7 @@ int main(void) {
   compd(15./16, 0x.Fp0, STR(__LINE__));
   compd(15./16, 0x.fP0, STR(__LINE__));
   compd(15./16, 0X.fp0, STR(__LINE__));
-    
+
   printf("%d error(s) detected.\n", num_errors);
   return 0;
 }

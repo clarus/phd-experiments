@@ -174,4 +174,3 @@ void compute_bounding_spheres(struct object * obj)
     break;
   }
 }
-

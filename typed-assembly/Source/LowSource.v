@@ -9,7 +9,7 @@ Module BinOp.
   Inductive t : Set :=
   | add | sub | mul
   | not | and | xor.
-  
+
   Module BigStep.
     Parameter t : t -> Value.t -> Value.t -> Value.t -> Type.
   End BigStep.
@@ -19,7 +19,7 @@ Module Operand.
   Inductive t (T : Type) : Type :=
   | imm : Value.t -> t T
   | var : T -> t T.
-  
+
   Module BigStep.
     Inductive t : t Value.t -> Value.t -> Prop :=
     | imm : forall (v : Value.t), t (imm _ v) v
@@ -33,7 +33,7 @@ Module Source.
   | binop (op : BinOp.t) (x : Operand.t T) (y : Operand.t T) (s_next : T -> t T)
   | jcc (c : Operand.t T) (s_true : t T) (s_false : t T) (s_next : T -> t T)
   | iter (x : Operand.t T) (s_c : T -> t T) (s_f : T -> t T) (s_next : T -> t T).
-  
+
   Module BigStep.
     Inductive t : t Value.t -> Value.t -> Prop :=
     | final : forall x v, Operand.BigStep.t x v -> t (final x) v

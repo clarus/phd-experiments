@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                  SORTED REASONING                      * */
 /* *                                                        * */
-/* *  $Module:   SORT                                       * */ 
+/* *  $Module:   SORT                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _SORT_
@@ -52,7 +51,6 @@
 #include "unify.h"
 #include "hash.h"
 #include "subsumption.h"
-
 
 /**************************************************************/
 /* Data Structures and Constants                              */
@@ -82,7 +80,6 @@ typedef struct CONDITION_HELP {
 /* The constraint, antecedent, succedent lists contain lists of atoms used to  */
 /* derive the subsort relationship that come from clauses.                     */
 
-
 typedef struct NODE_HELP {
   LIST   links;
   NAT    mark;
@@ -99,15 +96,15 @@ typedef struct NODE_HELP {
 /* the node true.                                                              */
 
 typedef struct SLINK_HELP {
-  LIST   input;                    
-  NODE   output;                   
-  int    card;                     
+  LIST   input;
+  NODE   output;
+  int    card;
   int    fire;
   LIST   constraint;
   LIST   antecedent;
   LIST   succedent;
   SYMBOL var;
-  CLAUSE clause;                   
+  CLAUSE clause;
 } SLINK_NODE,*SLINK;
 
 /* This is a link in the subsort graph, with a list of input nodes that have   */
@@ -118,11 +115,11 @@ typedef struct SLINK_HELP {
 /* antecedent and succedent literals.                                          */
 
 typedef struct SORTTHEORY_HELP {
-  st_INDEX index;                                 
-  NODE     basesorttable[symbol__MAXSIGNATURE];   
+  st_INDEX index;
+  NODE     basesorttable[symbol__MAXSIGNATURE];
   LIST     suborigcls;
   LIST     termorigcls;
-  NAT      mark;        
+  NAT      mark;
 } SORTTHEORY_NODE,*SORTTHEORY;
 
 /* The index contains the term declarations mapped to their possibly           */
@@ -134,15 +131,12 @@ typedef struct SORTTHEORY_HELP {
 /* The lists suborigcls and termorigcls map original clauses to sort theory    */
 /* clauses to links/terms respectively. They contain triples of this kind      */
 
-
-
 /**************************************************************/
 /* Extern                                                     */
 /**************************************************************/
 
 void      sort_ConditionDelete(CONDITION);
 CONDITION sort_ConditionCopy(CONDITION);
-
 
 /**************************************************************/
 /* Macros                                                     */
@@ -466,8 +460,6 @@ static __inline__ BOOL sort_ConditionNoResidues(CONDITION C)
 	  list_Empty(sort_ConditionSuccedent(C)));
 }
 
-
-
 static __inline__ BOOL sort_LinkNoResidues(SLINK S)
 {
   return (list_Empty(sort_LinkConstraint(S)) &&
@@ -479,7 +471,6 @@ static __inline__ BOOL sort_HasEqualSort(SORT S1, SORT S2)
 {
   return S1 == S2;
 }
-
 
 static __inline__ POINTER sort_PairSort(LIST Pair)
 {
@@ -537,7 +528,7 @@ static __inline__ LIST sort_TheoryTermorigcls(SORTTHEORY Theory)
 static __inline__ void sort_TheoryIncrementMark(SORTTHEORY Theory)
 {
   if (Theory->mark == NAT_MAX) {
-    int  i;   
+    int  i;
     NODE Node;
     for (i = 0; i < symbol__MAXSIGNATURE; i++) {
       Node = Theory->basesorttable[i];
@@ -545,8 +536,8 @@ static __inline__ void sort_TheoryIncrementMark(SORTTHEORY Theory)
       Node->extra = 0;
       Node->start = 0;
     }
-    Theory->mark = 0;      
-  } 
+    Theory->mark = 0;
+  }
   ++(Theory->mark);
 }
 
@@ -554,7 +545,6 @@ static __inline__ st_INDEX sort_TheoryIndex(SORTTHEORY Theory)
 {
   return Theory->index;
 }
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -574,10 +564,8 @@ LIST sort_GetSymbolsFromSort(SORT);
 BOOL sort_ContainsSymbol(SORT, SYMBOL);
 BOOL sort_IsSort(SORT);
 
-
 SORTTHEORY sort_ApproxStaticSortTheory(LIST, FLAGSTORE, PRECEDENCE);
 SORTTHEORY sort_ApproxDynamicSortTheory(LIST);
-
 
 SORTTHEORY sort_TheoryCreate(void);
 void       sort_TheoryDelete(SORTTHEORY);
@@ -593,6 +581,5 @@ LIST       sort_TheoryComputeAllSubsortHits(SORTTHEORY, SORT, SORT);
 SOJU       sort_ComputeSortNoResidues(SORTTHEORY,TERM, CLAUSE, int, FLAGSTORE, PRECEDENCE);
 LIST       sort_ApproxMaxDeclClauses(CLAUSE, FLAGSTORE, PRECEDENCE);
 STR        sort_AnalyzeSortStructure(LIST, FLAGSTORE, PRECEDENCE);
-
 
 #endif

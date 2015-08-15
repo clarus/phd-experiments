@@ -191,7 +191,7 @@ let rec expr p (prec, e) =
     if assoc = LtoR
     then (prec', prec' + 1)
     else (prec' + 1, prec') in
-  if prec' < prec 
+  if prec' < prec
   then fprintf p "@[<hov 2>("
   else fprintf p "@[<hov 2>";
   begin match e with
@@ -488,7 +488,7 @@ let rec collect_expr e =
   | Ecast(r, _) -> collect_expr r
   | Eseqand(r1, r2, _) -> collect_expr r1; collect_expr r2
   | Eseqor(r1, r2, _) -> collect_expr r1; collect_expr r2
-  | Econdition(r1, r2, r3, _) -> 
+  | Econdition(r1, r2, r3, _) ->
       collect_expr r1; collect_expr r2; collect_expr r3
   | Esizeof(ty, _) -> collect_type ty
   | Ealignof(ty, _) -> collect_type ty

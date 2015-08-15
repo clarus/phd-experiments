@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     SUBSTITUTION                       * */
 /* *                                                        * */
-/* *  $Module:      SUBSTITUTION                            * */ 
+/* *  $Module:      SUBSTITUTION                            * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "subst.h"
@@ -55,7 +54,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 SUBST subst_Add(SYMBOL Symbol, TERM Codomain, SUBST Subst)
 {
   SUBST Result;
@@ -67,7 +65,6 @@ SUBST subst_Add(SYMBOL Symbol, TERM Codomain, SUBST Subst)
 
   return Result;
 }
-
 
 void subst_Delete(SUBST Subst)
 {
@@ -95,7 +92,6 @@ void subst_Free(SUBST Subst)
   }
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -104,7 +100,6 @@ void subst_Free(SUBST Subst)
 /* ********************************************************** */
 /**************************************************************/
 
-
 TERM subst_Term(SYMBOL Symbol, SUBST Subst)
 {
   for (; subst_Exist(Subst); Subst = subst_Next(Subst))
@@ -112,7 +107,6 @@ TERM subst_Term(SYMBOL Symbol, SUBST Subst)
       return subst_Cod(Subst);
   return (TERM)NULL;
 }
-
 
 static TERM subst_ApplyIntern(SUBST Subst, TERM Term)
 {
@@ -132,7 +126,7 @@ static TERM subst_ApplyIntern(SUBST Subst, TERM Term)
 	 !list_Empty(Arglist);
 	 Arglist = list_Cdr(Arglist))
       subst_ApplyIntern(Subst, list_Car(Arglist));
-  }     
+  }
 
   return Term;
 }
@@ -145,19 +139,18 @@ TERM subst_Apply(SUBST Subst, TERM Term)
   return subst_ApplyIntern(Subst, Term);
 }
 
-
 SUBST subst_Merge(SUBST Source, SUBST Drain)
 {
   SUBST Scan;
   BOOL  Changed;
-  
+
   for (; subst_Exist(Source); Source = subst_Next(Source)) {
-    
+
     /* Apply current assignment of Source to all  */
     /* assignments of Drain. If the current ass.  */
     /* cannot be applied to any codomain in Drain */
     /* the current assignment is added to Drain.  */
-    
+
     Changed = FALSE;
 
     for (Scan = Drain;
@@ -169,7 +162,7 @@ SUBST subst_Merge(SUBST Source, SUBST Drain)
 	Changed = TRUE;
 
     if (!Changed)
-      Drain = subst_Add(Source->dom, 
+      Drain = subst_Add(Source->dom,
 			term_Copy(Source->codomain),
 			Drain);
   }
@@ -189,8 +182,8 @@ SUBST subst_Compose(SUBST Outer, SUBST Inner)
   SUBST Scan1,Scan2,New;
 
   New = subst_Nil();
-  
-  for (Scan1=Outer; subst_Exist(Scan1); Scan1 = subst_Next(Scan1)) {    
+
+  for (Scan1=Outer; subst_Exist(Scan1); Scan1 = subst_Next(Scan1)) {
     for (Scan2 = Inner;subst_Exist(Scan2);Scan2 = subst_Next(Scan2))
       term_SubstituteVariable(subst_Dom(Scan1),subst_Cod(Scan1),&(Scan2->codomain));
     if (!subst_BindVar(subst_Dom(Scan1),Inner))
@@ -213,8 +206,6 @@ BOOL subst_BindVar(SYMBOL Var, SUBST Subst)
 
   return FALSE;
 }
-
-
 
 SUBST subst_Copy(SUBST Subst)
 {
@@ -239,7 +230,6 @@ SUBST subst_Copy(SUBST Subst)
   return Result;
 }
 
-
 BOOL subst_MatchTops(const CONTEXT Context, SUBST Subst)
 {
   for ( ; subst_Exist(Subst); Subst = subst_Next(Subst))
@@ -250,7 +240,6 @@ BOOL subst_MatchTops(const CONTEXT Context, SUBST Subst)
   return FALSE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -258,7 +247,6 @@ BOOL subst_MatchTops(const CONTEXT Context, SUBST Subst)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL subst_Unify(CONTEXT IndexContext, SUBST Subst)
 /*********************************************************
@@ -299,10 +287,10 @@ BOOL subst_IsShallow(SUBST Subst) {
     for (SubstScan = Subst; SubstScan != subst_Nil();
 	 SubstScan = subst_Next(SubstScan)) {
 	TERM Codomain = subst_Cod(SubstScan);
-	if ((!term_IsVariable(Codomain)) 
+	if ((!term_IsVariable(Codomain))
 	    && (!term_IsGround(Codomain))) {
 	  LIST Scan ;
-	  for (Scan = term_ArgumentList(Codomain); Scan != list_Nil(); 
+	  for (Scan = term_ArgumentList(Codomain); Scan != list_Nil();
 	       Scan = list_Cdr(Scan)) {
 	    if ((!term_IsVariable(list_Car(Scan))
 		 && (!term_IsGround(list_Car(Scan)))))
@@ -321,7 +309,6 @@ BOOL subst_IsShallow(SUBST Subst) {
 /* ********************************************************** */
 /**************************************************************/
 
-
 BOOL subst_Match(const CONTEXT Context, SUBST Subst)
 /*********************************************************
   INPUT:
@@ -335,13 +322,12 @@ BOOL subst_Match(const CONTEXT Context, SUBST Subst)
 		     subst_Cod(Subst),
 		     cont_ContextBindingTerm(Context, subst_Dom(Subst))))
       return FALSE;
-    
+
     Subst = subst_Next(Subst);
   }
 
   return TRUE;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -350,7 +336,6 @@ BOOL subst_Match(const CONTEXT Context, SUBST Subst)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL subst_MatchReverse(const CONTEXT IndexContext, SUBST Subst)
 /*********************************************************
@@ -382,7 +367,6 @@ BOOL subst_MatchReverse(const CONTEXT IndexContext, SUBST Subst)
   return TRUE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -390,7 +374,6 @@ BOOL subst_MatchReverse(const CONTEXT IndexContext, SUBST Subst)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL subst_Variation(const CONTEXT Context, SUBST Subst)
 /*********************************************************
@@ -406,13 +389,12 @@ BOOL subst_Variation(const CONTEXT Context, SUBST Subst)
 			 subst_Cod(Subst),
 			 cont_ContextBindingTerm(Context, subst_Dom(Subst))))
       return FALSE;
-    
+
     Subst = subst_Next(Subst);
   }
 
   return TRUE;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -421,7 +403,6 @@ BOOL subst_Variation(const CONTEXT Context, SUBST Subst)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 SUBST subst_ComGen(const CONTEXT Context, SUBST Subst, SUBST* SubstOld,
 		   SUBST* SubstNew)
@@ -432,11 +413,11 @@ SUBST subst_ComGen(const CONTEXT Context, SUBST Subst, SUBST* SubstOld,
 **********************************************************/
 {
   SUBST Result;
-  
+
   Result = *SubstOld = *SubstNew = NULL;
-  
+
   do {
-    
+
     if (!cont_VarIsBound(Context, subst_Dom(Subst)))
       *SubstOld=subst_Add(subst_Dom(Subst), term_Copy(subst_Cod(Subst)), *SubstOld);
 
@@ -475,7 +456,6 @@ SUBST subst_ComGen(const CONTEXT Context, SUBST Subst, SUBST* SubstOld,
   return Result;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -484,13 +464,11 @@ SUBST subst_ComGen(const CONTEXT Context, SUBST Subst, SUBST* SubstOld,
 /* ********************************************************** */
 /**************************************************************/
 
-
 void subst_CloseVariables(const CONTEXT Context, SUBST Subst)
 {
   for (; subst_Exist(Subst); Subst = subst_Next(Subst))
     cont_CloseBinding(Context, subst_Dom(Subst));
 }
-
 
 SUBST subst_CloseOpenVariables(SUBST Result)
 {
@@ -505,7 +483,6 @@ SUBST subst_CloseOpenVariables(SUBST Result)
   return Result;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -513,7 +490,6 @@ SUBST subst_CloseOpenVariables(SUBST Result)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 void subst_ExtractUnifier(const CONTEXT CL,
 			  SUBST* LeftSubst,
@@ -553,11 +529,10 @@ void subst_ExtractUnifier(const CONTEXT CL,
 			      cont_CopyAndApplyBindings(cont_BindingContext(Scan),
 							   cont_BindingTerm(Scan)),
 			      *RightSubst);
-    
+
     Scan = cont_BindingLink(Scan);
   }
 }
-
 
 void subst_ExtractUnifierCom(const CONTEXT Context, SUBST* Subst)
 /*********************************************************
@@ -588,7 +563,6 @@ void subst_ExtractUnifierCom(const CONTEXT Context, SUBST* Subst)
   }
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -596,7 +570,6 @@ void subst_ExtractUnifierCom(const CONTEXT Context, SUBST* Subst)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 SUBST subst_ExtractMatcher(void)
 /*********************************************************
@@ -620,7 +593,6 @@ SUBST subst_ExtractMatcher(void)
   return Result;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -628,7 +600,6 @@ SUBST subst_ExtractMatcher(void)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 void subst_Print(SUBST Subst)
 {
@@ -644,4 +615,3 @@ void subst_Print(SUBST Subst)
   }
   fputs(" }", stdout);
 }
-

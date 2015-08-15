@@ -10,7 +10,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-(** Recognition of combined operations, addressing modes and conditions 
+(** Recognition of combined operations, addressing modes and conditions
   during the [CSE] phase. *)
 
 Require Import Coqlib.
@@ -41,7 +41,7 @@ Lemma combine_compimm_ne_0_sound:
 Proof.
   intros until args. functional induction (combine_compimm_ne_0 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
   destruct (eval_condition cond (map valu args) m); simpl; auto. destruct b; auto.
 Qed.
 
@@ -53,8 +53,8 @@ Lemma combine_compimm_eq_0_sound:
 Proof.
   intros until args. functional induction (combine_compimm_eq_0 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
-  rewrite eval_negate_condition. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
+  rewrite eval_negate_condition.
   destruct (eval_condition c (map valu args) m); simpl; auto. destruct b; auto.
 Qed.
 
@@ -66,7 +66,7 @@ Lemma combine_compimm_eq_1_sound:
 Proof.
   intros until args. functional induction (combine_compimm_eq_1 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
   destruct (eval_condition cond (map valu args) m); simpl; auto. destruct b; auto.
 Qed.
 
@@ -78,7 +78,7 @@ Lemma combine_compimm_ne_1_sound:
 Proof.
   intros until args. functional induction (combine_compimm_ne_1 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
   rewrite eval_negate_condition.
   destruct (eval_condition c (map valu args) m); simpl; auto. destruct b; auto.
 Qed.
@@ -115,7 +115,7 @@ Proof.
   intros. functional inversion H; subst.
   (* indexed - addimm *)
   exploit get_sound; eauto. unfold equation_holds; simpl; intro EQ. FuncInv.
-  rewrite <- H0. rewrite Val.add_assoc. auto. 
+  rewrite <- H0. rewrite Val.add_assoc. auto.
 Qed.
 
 Theorem combine_op_sound:

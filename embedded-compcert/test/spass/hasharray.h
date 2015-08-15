@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                       HASHING                          * */
 /* *                                                        * */
-/* *  $Module:   HASHARRAY                                  * */ 
+/* *  $Module:   HASHARRAY                                  * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1998, 1999, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -41,7 +41,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -133,9 +132,9 @@ static __inline__ void hsh_PutList(HASH H, POINTER Key, LIST List)
 #endif
 }
 
-static __inline__ void hsh_PutListWithCompareFunc(HASH H, POINTER Key, 
+static __inline__ void hsh_PutListWithCompareFunc(HASH H, POINTER Key,
 						  LIST List,
-						  BOOL (*Test)(POINTER, POINTER), 
+						  BOOL (*Test)(POINTER, POINTER),
 						  unsigned long (*HashFunc)(POINTER))
 /**************************************************************
   INPUT:   A hasharray, a pointer used as key, a list of data
@@ -221,7 +220,6 @@ static __inline__ LIST hsh_GetWithCompareFunc(HASH H, POINTER Key,
   return NULL;
 }
 
-
 static __inline__ unsigned long hsh_StringHashKey(const char* Label)
 {
   unsigned long i, s;
@@ -242,5 +240,3 @@ void hsh_Delete(HASH H);
 LIST hsh_GetAllEntries(HASH H);
 
 #endif
-
-

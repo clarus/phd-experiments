@@ -61,5 +61,3 @@ int main()
   TEST2( / );
   return 0;
 }
-
-

@@ -13,7 +13,7 @@ Module Shape.
   | struct (fields : list t)
   | union (fields : list t)
   (*| pointer (target : t)*).
-  
+
 (*  Fixpoint check (s : t) (v : Value.t) : Prop :=
     match (s, v) with
     | (bits n, Value.bits bs) => length bs = n
@@ -23,7 +23,7 @@ Module Shape.
       nth_error ss i = Some s /\ check s v
     | _ => False
     end.*)
-  
+
   Module Check.
     Inductive t : t -> Value.t -> Prop :=
     | bits : forall bs,
@@ -39,7 +39,7 @@ Module Shape.
       t s v ->
       t (union ss) (Value.union i v).
   End Check.
-  
+
   Module IsBits.
     Inductive t : Value.t -> Prop :=
     | intro : forall bs, t (Value.bits bs).

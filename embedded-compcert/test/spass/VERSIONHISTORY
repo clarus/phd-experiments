@@ -9,8 +9,8 @@ Version: 1.0.1
 
 Version: 1.0.2
 
-	- Fixed inconsistencies between the DFG proof format description in 
-	  dfgsyntax.ps and the actual implementation. Proof checking is more 
+	- Fixed inconsistencies between the DFG proof format description in
+	  dfgsyntax.ps and the actual implementation. Proof checking is more
 	  more liberal, because the empty clause needs not to have the highest
 	  clause number.
 
@@ -29,7 +29,7 @@ Version: 1.0.4
 
 Version: 1.0.5
 
-	- Improved SPASS man pages: In particular, we added further detailed 
+	- Improved SPASS man pages: In particular, we added further detailed
 	  explanations of inference rule flags and soft typing flags.
 
 	- Significantly improved modularity of the code by making the flagstore
@@ -50,7 +50,7 @@ Version: 1.0.6
 
 	- Strengthened prototyping of functions in particular in the case of function
 	  arguments. This resulted in specialized extra functions.
-	  
+
 	- Improved printing efficiency by replacing (f)printf calls with (f)puts calls
 	  whenever possible.
 
@@ -63,7 +63,6 @@ Version: 1.0.6
 	- Strengthened warnings for the gcc compiler.
 
 	- Increased usage of the string module.
-
 
 Version: 2.0.0
 
@@ -121,15 +120,3 @@ Version: 2.1
 	  before printing the Otter usable list.
 
 	- Added man pages for dfg2ascii, dfg2otter and dfg2tptp.
-
-
-
-
-
-
-
-
-
-
-
-

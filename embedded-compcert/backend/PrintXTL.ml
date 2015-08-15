@@ -69,7 +69,7 @@ let liveset pp lv =
   fprintf pp "@[<hov 2>{";
   VSet.iter (function V(r, ty) -> fprintf pp "@ x%ld" (P.to_int32 r)
                     | L l -> ())
-    lv;                  
+    lv;
   fprintf pp " }@]"
 
 let print_succ pp s dfl =
@@ -142,10 +142,9 @@ let print_function pp ?alloc ?live f =
       (List.map
         (fun (pc, i) -> (P.to_int32 pc, i))
         (PTree.elements f.fn_code)) in
-  print_succ pp f.fn_entrypoint 
+  print_succ pp f.fn_entrypoint
     (match instrs with (pc1, _) :: _ -> pc1 | [] -> -1l);
   List.iter (print_block pp) instrs;
   fprintf pp "@;<0 -2>}@]@.";
   current_alloc := None;
   current_liveness := None
-

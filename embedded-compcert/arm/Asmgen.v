@@ -57,20 +57,20 @@ Definition is_immed_mem_word (x: int) : bool :=
 
 Definition mk_immed_mem_word (x: int) : int :=
   Int.sign_ext 13 x.
-  
+
 Definition is_immed_mem_small (x: int) : bool :=
   Int.lt x (Int.repr 256) && Int.lt (Int.repr (-256)) x.
-  
+
 Definition mk_immed_mem_small (x: int) : int :=
   Int.sign_ext 9 x.
-  
+
 Definition is_immed_mem_float (x: int) : bool :=
   Int.eq (Int.and x (Int.repr 3)) Int.zero
   && Int.lt x (Int.repr 1024) && Int.lt (Int.repr (-1024)) x.
-  
+
 Definition mk_immed_mem_float (x: int) : int :=
   Int.and (Int.sign_ext 11 x) (Int.repr 4294967288).  (**r 0xfffffff8 *)
-  
+
 (** Decomposition of a 32-bit integer into a list of immediate arguments,
     whose sum or "or" or "xor" equals the integer. *)
 
@@ -118,7 +118,7 @@ Definition addimm (r1 r2: ireg) (n: int) (k: code) :=
   else iterate_op (Psub r1 r2) (Psub r1 r1) d2 k.
 
 Definition andimm (r1 r2: ireg) (n: int) (k: code) :=
-  if is_immed_arith n 
+  if is_immed_arith n
   then Pand r1 r2 (SOimm n) :: k
   else iterate_op (Pbic r1 r2) (Pbic r1 r1) (decompose_int (Int.not n)) k.
 
@@ -294,7 +294,7 @@ Definition transl_op
           else if negb (ireg_eq r r2) then Pmul r r2 r1 :: k
           else Pmul IR14 r1 r2 :: Pmov r (SOreg IR14) :: k)
   | Omla, a1 :: a2 :: a3 :: nil =>
-      do r <- ireg_of res; do r1 <- ireg_of a1; 
+      do r <- ireg_of res; do r1 <- ireg_of a1;
       do r2 <- ireg_of a2; do r3 <- ireg_of a3;
       OK (if negb (ireg_eq r r1) then Pmla r r1 r2 r3 :: k
           else if negb (ireg_eq r r2) then Pmla r r2 r1 r3 :: k
@@ -667,4 +667,3 @@ Definition transf_fundef (f: Mach.fundef) : res Asm.fundef :=
 
 Definition transf_program (p: Mach.program) : res Asm.program :=
   transform_partial_program transf_fundef p.
-

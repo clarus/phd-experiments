@@ -36,4 +36,4 @@ int main (void)
   func_27 (g_21, 0);
   printf ("%d\n", g_184);
   return 0;
-} 
+}

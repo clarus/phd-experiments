@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *         EXTENDED KNUTH BENDIX ORDERING                 * */
 /* *                                                        * */
-/* *  $Module:   KBO                                        * */ 
+/* *  $Module:   KBO                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,7 +41,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _KBO_
@@ -61,7 +60,7 @@
 /**************************************************************/
 
 ord_RESULT kbo_Compare(TERM, TERM);
-ord_RESULT kbo_ContCompare(CONTEXT, TERM, CONTEXT, TERM); 
+ord_RESULT kbo_ContCompare(CONTEXT, TERM, CONTEXT, TERM);
 BOOL       kbo_ContGreater(CONTEXT, TERM, CONTEXT, TERM);
 
 #endif

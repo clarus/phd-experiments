@@ -95,7 +95,7 @@ let elab_funbody_f : (cabsloc -> C.typ -> Env.t -> Cabs.block -> C.stmt) ref
 
 (** * Elaboration of constants *)
 
-let has_suffix s suff = 
+let has_suffix s suff =
   let ls = String.length s and lsuff = String.length suff in
   ls >= lsuff && String.sub s (ls - lsuff) lsuff = suff
 
@@ -103,7 +103,7 @@ let chop_last s n =
   assert (String.length s >= n);
   String.sub s 0 (String.length s - n)
 
-let has_prefix s pref = 
+let has_prefix s pref =
   let ls = String.length s and lpref = String.length pref in
   ls >= lpref && String.sub s 0 lpref = pref
 
@@ -187,7 +187,7 @@ let elab_int_constant loc s0 =
   in
   (* Find smallest allowable type that fits *)
   let ty =
-    try List.find (fun ty -> integer_representable v ty) 
+    try List.find (fun ty -> integer_representable v ty)
                   (if base = 10 then dec_kinds else hex_kinds)
     with Not_found ->
       error loc "integer literal '%s' cannot be represented" s0;
@@ -215,7 +215,7 @@ let elab_char_constant loc sz cl =
   (* Treat multi-char constants as a number in base 2^nbits *)
   let max_val = Int64.shift_left 1L (64 - nbits) in
   let v =
-    List.fold_left 
+    List.fold_left
       (fun acc d ->
         if acc >= max_val then begin
           error loc "character literal overflows";
@@ -238,7 +238,7 @@ let elab_constant loc = function
   | CONST_CHAR cl ->
       let (v, ik) = elab_char_constant loc 1 cl in
       CInt(v, ik, "")
-  | CONST_WCHAR cl -> 
+  | CONST_WCHAR cl ->
       let (v, ik) = elab_char_constant loc !config.sizeof_wchar cl in
       CInt(v, ik, "")
   | CONST_STRING s -> CStr s
@@ -440,7 +440,7 @@ let rec elab_specifier ?(only = false) loc env specifier =
     | [Cabs.Tenum(id, optmembers, a)] ->
         let a' =
           add_attributes (get_type_attrs()) (elab_attributes loc env a) in
-        let (id', env') = 
+        let (id', env') =
           elab_enum loc id optmembers a' env in
         (!sto, !inline, TEnum(id', !attr), env')
 
@@ -519,7 +519,7 @@ and elab_parameter env (spec, name) =
 
 and elab_name env spec (id, decl, attr, loc) =
   let (sto, inl, bty, env') = elab_specifier loc env spec in
-  let (ty, env'') = elab_type_declarator loc env' bty decl in 
+  let (ty, env'') = elab_type_declarator loc env' bty decl in
   let a = elab_attributes loc env attr in
   (id, sto, inl, add_attributes_type a ty, env'')
 
@@ -530,7 +530,7 @@ and elab_name_group loc env (spec, namelist) =
     elab_specifier loc env spec in
   let elab_one_name env (id, decl, attr, loc) =
     let (ty, env1) =
-      elab_type_declarator loc env bty decl in 
+      elab_type_declarator loc env bty decl in
     let a = elab_attributes loc env attr in
     ((id, sto, add_attributes_type a ty), env1) in
   mmap elab_one_name env' namelist
@@ -542,7 +542,7 @@ and elab_init_name_group loc env (spec, namelist) =
     elab_specifier loc env spec in
   let elab_one_name env ((id, decl, attr, loc), init) =
     let (ty, env1) =
-      elab_type_declarator loc env bty decl in 
+      elab_type_declarator loc env bty decl in
     let a = elab_attributes loc env attr in
     ((id, sto, add_attributes_type a ty, init), env1) in
   mmap elab_one_name env' namelist
@@ -587,7 +587,7 @@ and elab_field_group loc env (spec, fieldlist) =
           | None ->
               error loc "bit size of '%s' is not a compile-time constant" id;
               None in
-    { fld_name = id; fld_typ = ty; fld_bitfield = optbitsize' } 
+    { fld_name = id; fld_typ = ty; fld_bitfield = optbitsize' }
   in
   (List.map2 elab_bitfield fieldlist names, env')
 
@@ -716,7 +716,7 @@ and elab_enum loc tag optmembers attrs env =
 
 let elab_type loc env spec decl =
   let (sto, inl, bty, env') = elab_specifier loc env spec in
-  let (ty, env'') = elab_type_declarator loc env' bty decl in 
+  let (ty, env'') = elab_type_declarator loc env' bty decl in
   if sto <> Storage_default || inl then
     error loc "'extern', 'static', 'register' and 'inline' are meaningless in cast";
   ty
@@ -1230,8 +1230,8 @@ let elab_expr loc env a =
     match args, params with
     | [], [] -> []
     | [], _::_ -> err "not enough arguments in function call"; []
-    | _::_, [] -> 
-        if vararg 
+    | _::_, [] ->
+        if vararg
         then args
         else (err "too many arguments in function call"; args)
     | arg1 :: argl, (_, ty_p) :: paraml ->
@@ -1330,7 +1330,7 @@ let rec elab_init loc env ty ile =
           elab_init_array (Int64.succ n) (i :: accu) rem' in
       begin match ile with
       (* char array = "string literal" *)
-      | (SINGLE_INIT (CONSTANT (CONST_STRING s)) 
+      | (SINGLE_INIT (CONSTANT (CONST_STRING s))
          | COMPOUND_INIT [_, SINGLE_INIT(CONSTANT (CONST_STRING s))]) :: ile1
         when (match unroll env ty_elt with
               | TInt((IChar|IUChar|ISChar), _) -> true
@@ -1357,7 +1357,7 @@ let rec elab_init loc env ty ile =
       let ci = wrap Env.find_struct loc env id in
       let rec elab_init_fields fld accu rem =
         match fld with
-        | [] -> 
+        | [] ->
             (Init_struct(id, List.rev accu), rem)
         | {fld_name = ""} :: fld' ->
             (* anonymous bitfields consume no initializer *)
@@ -1368,7 +1368,7 @@ let rec elab_init loc env ty ile =
       begin match ile with
       (* struct = { elt, ..., elt } *)
       | COMPOUND_INIT ile1 :: ile2 ->
-          let (ie, rem) = 
+          let (ie, rem) =
             elab_init_fields ci.ci_members [] (project_init loc ile1) in
           if rem <> [] then
             warning loc "excess elements at end of struct initializer";
@@ -1384,7 +1384,7 @@ let rec elab_init loc env ty ile =
       begin match ile with
       (* union = { elt } *)
       | COMPOUND_INIT ile1 :: ile2 ->
-          let (i, rem) = 
+          let (i, rem) =
             elab_init loc env fld1.fld_typ (project_init loc ile1) in
           if rem <> [] then
             warning loc "excess elements at end of union initializer";
@@ -1423,11 +1423,11 @@ let elab_initial loc env ty ie =
       let a' = elab_expr loc env a in
       check_init_type loc env a' ty;
       Some (Init_single a')
-  (* array = expr or 
+  (* array = expr or
      array or struct or union = { elt, ..., elt } *)
   | (TArray _, SINGLE_INIT _)
   | ((TArray _ | TStruct _ | TUnion _), COMPOUND_INIT _) ->
-      let (i, rem) = elab_init loc env ty [ie] in  
+      let (i, rem) = elab_init loc env ty [ie] in
       if rem <> [] then
         warning loc "excess elements at end of compound initializer";
       Some i
@@ -1816,7 +1816,7 @@ let rec elab_stmt env ctx s =
   | TRY_FINALLY(_, _, loc) ->
       error loc "'try ... finally' statement is not supported";
       sskip
-      
+
 and elab_block loc env ctx b =
   let b' = elab_block_body (Env.new_scope env) ctx (block_body loc b) in
   { sdesc = Sblock b'; sloc = elab_loc loc }

@@ -1,11 +1,11 @@
 (*
  *
- * Copyright (c) 2001-2002, 
+ * Copyright (c) 2001-2002,
  *  George C. Necula    <necula@cs.berkeley.edu>
  *  Scott McPeak        <smcpeak@cs.berkeley.edu>
  *  Wes Weimer          <weimer@cs.berkeley.edu>
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
@@ -35,12 +35,10 @@
  *
  *)
 
-
-(* This interface is generated manually. The corresponding .ml file is 
- * generated automatically and is placed in ../obj/clexer.ml. The reason we 
- * want this interface is to avoid confusing make with freshly generated 
+(* This interface is generated manually. The corresponding .ml file is
+ * generated automatically and is placed in ../obj/clexer.ml. The reason we
+ * want this interface is to avoid confusing make with freshly generated
  * interface files *)
-
 
 val init: filename:string -> in_channel -> Lexing.lexbuf
 val finish: unit -> unit
@@ -48,9 +46,7 @@ val finish: unit -> unit
 (* This is the main parser function *)
 val initial: Lexing.lexbuf -> Parser.token
 
-
 val push_context: unit -> unit (* Start a context  *)
 val add_type: string -> unit (* Add a new string as a type name  *)
 val add_identifier: string -> unit (* Add a new string as a variable name  *)
 val pop_context: unit -> unit (* Remove all names added in this context  *)
-

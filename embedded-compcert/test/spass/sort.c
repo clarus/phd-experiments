@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                  SORTED REASONING                      * */
 /* *                                                        * */
-/* *  $Module:   SORT                                       * */ 
+/* *  $Module:   SORT                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "sort.h"
@@ -50,7 +49,6 @@
 /**************************************************************/
 /* Global Variables                                           */
 /**************************************************************/
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -98,11 +96,10 @@ BOOL sort_Eq(SORT S1, SORT S2)
       Found = sort_NodeEqual(list_Car(Scan1),list_Car(Scan2));
     if (!Found)
       return FALSE;
-  } 
+  }
 
   return TRUE;
 }
-
 
 LIST sort_GetSymbolsFromSort(SORT Sort)
 /**************************************************************
@@ -149,8 +146,8 @@ BOOL sort_IsSort(SORT Sort)
 
 BOOL sort_TheorySortEqual(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
+  INPUT:
+  RETURNS:
 ***************************************************************/
 {
   LIST Scan;
@@ -171,8 +168,8 @@ BOOL sort_TheorySortEqual(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
 
 static BOOL sort_TheorySortMember(SORTTHEORY Theory, LIST List, SORT Sort)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
+  INPUT:
+  RETURNS:
 ***************************************************************/
 {
   while (!list_Empty(List)) {
@@ -183,23 +180,20 @@ static BOOL sort_TheorySortMember(SORTTHEORY Theory, LIST List, SORT Sort)
   return FALSE;
 }
 
-
-void sort_DeleteSortPair(SOJU Pair) 
+void sort_DeleteSortPair(SOJU Pair)
 /**************************************************************
-  INPUT:   
+  INPUT:
   RETURNS: Nothing.
 ***************************************************************/
-{                                         
-  sort_DeleteOne(sort_PairSort(Pair));   
-  sort_ConditionDelete(sort_PairCondition(Pair));  
-  list_PairFree(Pair);                 
+{
+  sort_DeleteOne(sort_PairSort(Pair));
+  sort_ConditionDelete(sort_PairCondition(Pair));
+  list_PairFree(Pair);
 }
-
-
 
 static void sort_ConditionPrint(CONDITION Cond)
 /**************************************************************
-  INPUT:   
+  INPUT:
   RETURNS: Nothing.
 ***************************************************************/
 {
@@ -225,7 +219,7 @@ static void sort_ConditionPrint(CONDITION Cond)
 
 static void sort_LinkPrint(SLINK Link)
 /**************************************************************
-  INPUT:   
+  INPUT:
   RETURNS: Nothing.
 ***************************************************************/
 {
@@ -261,12 +255,10 @@ static void sort_LinkPrint(SLINK Link)
      sort_LinkFire(Link));
   symbol_Print(sort_LinkVar(Link));
 }
-  
-    
 
 void sort_PairPrint(SOJU Pair)
 /**************************************************************
-  INPUT:   
+  INPUT:
   RETURNS: Nothing.
 ***************************************************************/
 {
@@ -275,7 +267,6 @@ void sort_PairPrint(SOJU Pair)
   sort_ConditionPrint(sort_PairCondition(Pair));
   putchar(']');
 }
-
 
 static NODE sort_NodeCreate(SYMBOL S)
 /**************************************************************
@@ -312,15 +303,14 @@ BOOL sort_NodeIsTop(SORTTHEORY Theory, NODE Node)
     if (list_Empty(sort_LinkInput(Link)) && Node == sort_LinkOutput(Link))
       return TRUE;
   }
-  return FALSE; 
+  return FALSE;
 }
-
 
 static SLINK sort_TheoryLinkCreate(SORTTHEORY Theory, CLAUSE Origin,
 				   CLAUSE Clause, LITERAL Lit)
 /**************************************************************
   INPUT:   A sort theory, a clause its origin and a subsort declaration
-           literal in the clause 
+           literal in the clause
   RETURNS: A new link in <Theory> origin <Clause> and subsort declaration <Lit>
 ***************************************************************/
 {
@@ -365,7 +355,6 @@ static SLINK sort_TheoryLinkCreate(SORTTHEORY Theory, CLAUSE Origin,
       Succedent = list_Cons(Term,Succedent);
     }
 
-
   sort_PutLinkInput(Result,Input);
   sort_PutLinkOutput(Result,sort_TheoryNode(Theory,Output));
   sort_PutLinkVar(Result,Max);
@@ -384,7 +373,6 @@ static SLINK sort_TheoryLinkCreate(SORTTHEORY Theory, CLAUSE Origin,
   return Result;
 }
 
-
 void sort_Init(void)
 /**************************************************************
   INPUT:   None.
@@ -397,15 +385,14 @@ void sort_Init(void)
   return;
 }
 
-
 void sort_Print(SORT Sort)
 /**************************************************************
-  INPUT:   
+  INPUT:
   RETURNS: Nothing.
 ***************************************************************/
 {
   putchar('(');
-  
+
   while (!list_Empty(Sort)) {
     symbol_Print(sort_NodeSymbol(list_Car(Sort)));
     Sort = list_Cdr(Sort);
@@ -414,7 +401,6 @@ void sort_Print(SORT Sort)
   }
   putchar(')');
 }
-
 
 void sort_Free(void)
 /**************************************************************
@@ -449,7 +435,7 @@ SORTTHEORY sort_TheoryCreate(void)
 	Result->basesorttable[i] = sort_NodeCreate(Symbol);
     }
   }
-  
+
   Result->index        = st_IndexCreate();
   Result->suborigcls   = list_Nil();
   Result->termorigcls  = list_Nil();
@@ -484,7 +470,7 @@ void sort_TheoryPrint(SORTTHEORY Theory)
     fputs("\n\t\t Clause:", stdout);
     clause_Print(list_Second(list_Car(Scan)));
   }
-    
+
 }
 
 void sort_TheoryDelete(SORTTHEORY Theory)
@@ -505,7 +491,7 @@ void sort_TheoryDelete(SORTTHEORY Theory)
       clause_Delete(list_Second(Tuple));
       list_Delete(Tuple);
     }
-    list_Delete(Theory->suborigcls); 
+    list_Delete(Theory->suborigcls);
     for (Scan=Theory->termorigcls;!list_Empty(Scan);Scan=list_Cdr(Scan)) {
       Tuple = (LIST)list_Car(Scan);
       Term  = (TERM)list_Third(Tuple);
@@ -552,9 +538,9 @@ void sort_TheoryInsertClause(SORTTHEORY Theory, CLAUSE Origin, CLAUSE Clause, LI
 
   /* Since currently Sort Resolution and Empty Sort require the subsort declaration clauses */
   /* also subsort clauses are introduced into the sort theory index                         */
-  
+
   Atom = clause_LiteralSignedAtom(L);
-  term_RplacSupertermList(Atom, list_List(L)); 
+  term_RplacSupertermList(Atom, list_List(L));
   term_RplacSupertermList(Term, list_List(Atom));   /* Must be empty before this operation */
   st_EntryCreate(Theory->index,Term,Term,cont_LeftContext());
   st_EntryCreate(Theory->index,Atom,Atom,cont_LeftContext());
@@ -570,7 +556,7 @@ void sort_TheoryDeleteClause(SORTTHEORY Theory, CLAUSE Origin)
 ***************************************************************/
 {
   TERM Term,Atom;
-  LIST Scan,Tuple;   
+  LIST Scan,Tuple;
 
   for (Scan=Theory->suborigcls;!list_Empty(Scan);Scan=list_Cdr(Scan)) {
     Tuple = list_Car(Scan);
@@ -580,7 +566,7 @@ void sort_TheoryDeleteClause(SORTTHEORY Theory, CLAUSE Origin)
       clause_Delete(list_Second(Tuple));
       list_Delete(Tuple);
     }
-  }        
+  }
   Theory->suborigcls = list_PointerDeleteElement(Theory->suborigcls,NULL);
   for (Scan=Theory->termorigcls;!list_Empty(Scan);Scan=list_Cdr(Scan)) {
     Tuple = list_Car(Scan);
@@ -650,7 +636,7 @@ CONDITION sort_ConditionNormalize(CONDITION Cond)
     term_ExchangeVariable(list_Car(Scan),Old,New);
 
   sort_ConditionPutVar(Cond,New);
-  
+
   return Cond;
 }
 
@@ -684,7 +670,6 @@ CONDITION sort_ExtendConditionByLink(CONDITION Cond, SLINK Link)
   LIST    Lits,Antecedent,Succedent,Constraint;
   SYMBOL  Old,New;
 
-  
   term_StartMaxRenaming(sort_ConditionVar(Cond));
   Constraint = term_CopyTermList(sort_LinkConstraint(Link));
   Antecedent = term_CopyTermList(sort_LinkAntecedent(Link));
@@ -718,7 +703,7 @@ CONDITION sort_ExtendConditionByLink(CONDITION Cond, SLINK Link)
   sort_ConditionNormalize(Cond);
 
   return Cond;
-							
+
 }
 
 CONDITION sort_ExtendConditionByCondition(CONDITION Cond, CONDITION Update)
@@ -822,7 +807,7 @@ LIST sort_ExtendConditions(LIST Conditions, SLINK Link)
 					      list_Nconc(Succedent,NewSuccedent),
 					      list_Cons(sort_LinkClause(Link),
 							list_Copy(sort_ConditionClauses(Cond))))),
-			 Result);      
+			 Result);
     }
   }
   return Result;
@@ -903,11 +888,10 @@ void sort_ConditionDelete(CONDITION C)
     term_DeleteTermList(sort_ConditionAntecedent(C));
     term_DeleteTermList(sort_ConditionSuccedent(C));
     list_Delete(sort_ConditionClauses(C));
-  
-    sort_ConditionFree(C); 
+
+    sort_ConditionFree(C);
   }
 }
-
 
 CONDITION sort_ConditionCopy(CONDITION C)
 /**************************************************************
@@ -922,8 +906,6 @@ CONDITION sort_ConditionCopy(CONDITION C)
 			      list_Copy(sort_ConditionClauses(C)));
 }
 
-
-    
 BOOL sort_IsBaseSortSymbol(SYMBOL Symbol)
 /*********************************************************
   INPUT:   A Symbol.
@@ -943,7 +925,6 @@ BOOL sort_IsBaseSortSymbol(SYMBOL Symbol)
   return(symbol_IsPredicate(Symbol) && symbol_Arity(Symbol) == 1);
 }
 
-
 SORT sort_TheorySortOfSymbol(SORTTHEORY Theory, SYMBOL Symbol)
 /*********************************************************
   INPUT:   A sort theory and a base sort symbol.
@@ -961,7 +942,6 @@ SORT sort_TheorySortOfSymbol(SORTTHEORY Theory, SYMBOL Symbol)
 
   return (list_List(sort_TheoryNode(Theory, Symbol)));
 }
-
 
 static void sort_EvalSubsortNoResidues(SORTTHEORY Theory, LIST Nodes)
 /*********************************************************
@@ -993,7 +973,7 @@ static void sort_EvalSubsortNoResidues(SORTTHEORY Theory, LIST Nodes)
 	  Clauses = list_List(sort_LinkClause(Link));
 	  for (Help=sort_LinkInput(Link);!list_Empty(Help);Help=list_Cdr(Help))
 	    if (!list_Empty(sort_NodeConditions(list_Car(Help))))
-	      Clauses = 
+	      Clauses =
 		list_Nconc(list_Copy(sort_ConditionClauses(
 		       list_Car(sort_NodeConditions(list_Car(Help))))),Clauses);
 	  sort_DeleteConditionList(sort_NodeConditions(Head));
@@ -1005,7 +985,6 @@ static void sort_EvalSubsortNoResidues(SORTTHEORY Theory, LIST Nodes)
     }
   }
 }
-
 
 static BOOL sort_TestSubsortSpecial(SORTTHEORY Theory, LIST Nodes, LIST Goal)
 /*********************************************************
@@ -1109,7 +1088,6 @@ static void sort_EvalSubsort(SORTTHEORY Theory, LIST Nodes)
   }
 }
 
-
 CONDITION sort_TheoryIsSubsortOfNoResidues(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
 /*********************************************************
   INPUT:   A sort theory and two sorts.
@@ -1128,7 +1106,7 @@ CONDITION sort_TheoryIsSubsortOfNoResidues(SORTTHEORY Theory, SORT Sort1, SORT S
     misc_ErrorReport(" Illegal sort input.\n");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   sort_TheoryIncrementMark(Theory);
 
@@ -1214,12 +1192,12 @@ BOOL sort_TheoryIsSubsortOf(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
 
   for (Scan=Sort2;!list_Empty(Scan);Scan=list_Cdr(Scan)) {
     Node = (NODE)list_Car(Scan);
-    if (!sort_NodeValue(Theory,Node)) 
+    if (!sort_NodeValue(Theory,Node))
       return FALSE;
   }
 
   return TRUE;
-    
+
 }
 
 BOOL sort_TheoryIsSubsortOfExtra(SORTTHEORY Theory, SORT Extra, SORT Sort1, SORT Sort2)
@@ -1254,12 +1232,12 @@ BOOL sort_TheoryIsSubsortOfExtra(SORTTHEORY Theory, SORT Extra, SORT Sort1, SORT
 
   for (Scan=Sort2;!list_Empty(Scan);Scan=list_Cdr(Scan)) {
     Node = (NODE)list_Car(Scan);
-    if (!sort_NodeValue(Theory,Node)) 
+    if (!sort_NodeValue(Theory,Node))
       return FALSE;
   }
 
   return sort_TestSubsortSpecial(Theory,sort_Copy(Extra),Sort2);
-    
+
 }
 
 LIST sort_TheoryComputeAllSubsortHits(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
@@ -1305,7 +1283,7 @@ LIST sort_TheoryComputeAllSubsortHits(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
     if (!sort_NodeValue(Theory,Node))
       return list_Nil();
   }
-  
+
   Result  = list_Nil();
   Search  = list_List(sort_PairCreate(sort_Copy(Sort2),sort_ConditionCreateNoResidues(list_Nil())));
   Visited = list_Nil();
@@ -1334,7 +1312,7 @@ LIST sort_TheoryComputeAllSubsortHits(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
 	    ValidStart = FALSE;
       }
       if (Valid) {
-	if (ValidStart) 
+	if (ValidStart)
 	  Result = list_Cons(sort_PairCopy(Cand),Result);
 
 	for (Scan=sort_PairSort(Cand);!list_Empty(Scan);Scan=list_Cdr(Scan)) {
@@ -1352,14 +1330,14 @@ LIST sort_TheoryComputeAllSubsortHits(SORTTHEORY Theory, SORT Sort1, SORT Sort2)
     }
   }
   list_DeleteWithElement(Visited,(void (*)(POINTER)) sort_Delete);
-      
-  return Result;    
+
+  return Result;
 }
 
 static SORT sort_VarSort(SORTTHEORY Theory, SYMBOL Var, CLAUSE Clause, int i)
 /*********************************************************
   INPUT:   A variable symbol, a clause and a literal index in the clause.
-  RETURNS: The sort of  <Var> with respect to the sort constraint 
+  RETURNS: The sort of  <Var> with respect to the sort constraint
            literals (possibly in the antecedent)
            in <Clause> except literal <i> that is not considered.
   MEMORY:  Both Sorts are destroyed.
@@ -1368,20 +1346,19 @@ static SORT sort_VarSort(SORTTHEORY Theory, SYMBOL Var, CLAUSE Clause, int i)
   SORT Result;
   int j;
   TERM Atom;
-  
+
   Result = sort_TopSort();
-  
-  for (j=clause_FirstConstraintLitIndex(Clause);j<=clause_LastAntecedentLitIndex(Clause);j++) 
+
+  for (j=clause_FirstConstraintLitIndex(Clause);j<=clause_LastAntecedentLitIndex(Clause);j++)
     if (j != i) {
       Atom = clause_LiteralAtom(clause_GetLiteral(Clause,j));
       if (symbol_IsBaseSort(term_TopSymbol(Atom)) &&
 	  term_TopSymbol(term_FirstArgument(Atom)) == Var)
 	Result = sort_Intersect(Result,sort_TheorySortOfSymbol(Theory,term_TopSymbol(Atom)));
     }
-  
+
   return Result;
 }
-
 
 static BOOL sort_MatchNoResidues(SORTTHEORY Theory, TERM Term1, TERM Term2, CLAUSE Clause, LIST* Clauses)
 /*********************************************************
@@ -1398,7 +1375,7 @@ static BOOL sort_MatchNoResidues(SORTTHEORY Theory, TERM Term1, TERM Term2, CLAU
   LIST      NewClauses;
   SOJU      Pair;
   CONDITION Cond;
-  
+
   l          = clause_Length(Clause);
   NewClauses = list_Nil();
 
@@ -1406,7 +1383,7 @@ static BOOL sort_MatchNoResidues(SORTTHEORY Theory, TERM Term1, TERM Term2, CLAU
   unify_Match(cont_LeftContext(),Term1,Term2);
   subst = subst_ExtractMatcher();
   cont_BackTrack();
-  
+
   /*putchar('\n'); term_Print(Term1);fputs("->",stdout);
     term_Print(Term2);putchar(':');subst_Print(subst);
     putchar('\n');*/
@@ -1425,15 +1402,14 @@ static BOOL sort_MatchNoResidues(SORTTHEORY Theory, TERM Term1, TERM Term2, CLAU
       sort_ConditionPutClauses(Cond,list_Nil());
       sort_ConditionDelete(Cond);
     }
-    
+
     sort_DeleteOne(varsort);
   }
-  
+
   subst_Free(subst);
   *Clauses = list_Nconc(NewClauses,*Clauses);
   return TRUE;
 }
-
 
 static SOJU sort_ComputeSortInternNoResidues(SORTTHEORY Theory, TERM Term,
 					     CLAUSE Clause, int i,
@@ -1453,10 +1429,10 @@ static SOJU sort_ComputeSortInternNoResidues(SORTTHEORY Theory, TERM Term,
   SORT Sort;
   LIST HelpList, Scan, Clauses;
   TERM QueryTerm;
-  
+
   Sort    = sort_TopSort();
   Clauses = list_Nil();
-  
+
   if (term_IsVariable(Term))
     Sort = sort_VarSort(Theory,term_TopSymbol(Term),Clause,i);
   else {
@@ -1466,10 +1442,10 @@ static SOJU sort_ComputeSortInternNoResidues(SORTTHEORY Theory, TERM Term,
       LITERAL ActLit;
       TERM    Atom;
       CLAUSE  ActClause;
-      
+
       QueryTerm = (TERM)list_First(Scan);
 
-      if (!term_IsVariable(QueryTerm)) { /* Currently also subort declarations are in the index ...*/ 
+      if (!term_IsVariable(QueryTerm)) { /* Currently also subort declarations are in the index ...*/
 	Atom      = (TERM)list_First(term_SupertermList(QueryTerm));
 	Top       = term_TopSymbol(Atom);
 	ActLit    = (LITERAL)list_First(term_SupertermList(Atom));
@@ -1487,16 +1463,15 @@ static SOJU sort_ComputeSortInternNoResidues(SORTTHEORY Theory, TERM Term,
   return (sort_PairCreate(Sort,sort_ConditionCreateNoResidues(Clauses)));
 }
 
-
 SOJU sort_ComputeSortNoResidues(SORTTHEORY Theory, TERM Term, CLAUSE Clause,
-				int i, FLAGSTORE Flags, PRECEDENCE Precedence) 
+				int i, FLAGSTORE Flags, PRECEDENCE Precedence)
 /*********************************************************
   INPUT:   A Term and an Index representing a set of
-           clauses, a clause to access 
+           clauses, a clause to access
 	   variable-sort-information where the literal <i>
 	   is discarded, a flag store and a precedence.
   RETURNS: The sort of 'Term' wrt. the sort theory of the
-           clause set and the clauses used for this 
+           clause set and the clauses used for this
 	   computation.
 	   Be careful, the Sort-entries of
 	   'Term' and its subterms are changed, if they
@@ -1510,10 +1485,9 @@ SOJU sort_ComputeSortNoResidues(SORTTHEORY Theory, TERM Term, CLAUSE Clause,
   SubtermStack = stack_Bottom();
   sharing_PushOnStack(Term);
 
-
   while (!stack_Empty(SubtermStack)){
     Term = stack_PopResult();
-    
+
     if (!(SortPair = (SOJU)hash_Get(Term))) {
       SortPair = sort_ComputeSortInternNoResidues(Theory,Term,Clause,i,
 						  Flags, Precedence);
@@ -1529,7 +1503,6 @@ SOJU sort_ComputeSortNoResidues(SORTTHEORY Theory, TERM Term, CLAUSE Clause,
   return(SortPair);
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -1537,7 +1510,6 @@ SOJU sort_ComputeSortNoResidues(SORTTHEORY Theory, TERM Term, CLAUSE Clause,
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 static BOOL sort_SortTheoryIsTrivial(SORTTHEORY Theory, LIST Clauses)
 /*********************************************************
@@ -1594,12 +1566,11 @@ static BOOL sort_SortTheoryIsTrivial(SORTTHEORY Theory, LIST Clauses)
   return (i == n);   /* All sorts are trivial */
 }
 
-
 static LIST sort_ApproxPseudoLinear(LIST Constraint, TERM Head, SYMBOL Var)
 /**************************************************************
   INPUT:   A list of constraint literals, the head literal term
            and a variable maximal for all variables.
-  RETURNS: The new list of constraint literals. 
+  RETURNS: The new list of constraint literals.
   EFFECT:  The succedent literal is made pseudo-linear.
            The function is DESTRUCTIVE.
 ***************************************************************/
@@ -1628,7 +1599,6 @@ static LIST sort_ApproxPseudoLinear(LIST Constraint, TERM Head, SYMBOL Var)
 
   return Lits;
 }
-
 
 static LIST sort_ApproxHornClauses(CLAUSE Clause, FLAGSTORE Flags,
 				   PRECEDENCE Precedence)
@@ -1659,10 +1629,10 @@ static LIST sort_ApproxHornClauses(CLAUSE Clause, FLAGSTORE Flags,
   if (clause_HasOnlyVarsInConstraint(Clause, Flags, Precedence) &&
       clause_HasSortInSuccedent(Clause, Flags, Precedence)) {
     length = clause_Length(Clause);
-    
+
     for (i = clause_FirstSuccedentLitIndex(Clause); i < length; i++) {
       LitK = clause_GetLiteral(Clause, i);
-      
+
       if (symbol_Arity(term_TopSymbol(clause_LiteralSignedAtom(LitK))) == 1) {
 	pli           = i;
 	NewSuccedent  = list_List(term_Copy(clause_LiteralSignedAtom(LitK)));
@@ -1674,12 +1644,12 @@ static LIST sort_ApproxHornClauses(CLAUSE Clause, FLAGSTORE Flags,
 	    NewConstraint = list_Cons(term_Copy(clause_LiteralAtom(
                               clause_GetLiteral(Clause, j))), NewConstraint);
 
-	if (!list_Empty(NewConstraint))  
+	if (!list_Empty(NewConstraint))
 	    NewConstraint = sort_ApproxPseudoLinear(NewConstraint,
 						    list_Car(NewSuccedent),
 						    clause_MaxVar(Clause));
-	
-	NewClause = clause_Create(NewConstraint, list_Nil(), NewSuccedent, 
+
+	NewClause = clause_Create(NewConstraint, list_Nil(), NewSuccedent,
 				  Flags, Precedence);
 	clause_SetSplitLevel(NewClause, 0);
 	clause_SetFlag(NewClause,WORKEDOFF);
@@ -1687,8 +1657,8 @@ static LIST sort_ApproxHornClauses(CLAUSE Clause, FLAGSTORE Flags,
 	clause_SetParentClauses(NewClause, list_List((POINTER)clause_Number(Clause)));
 	clause_AddParentLiteral(NewClause, pli);
 
-	list_Delete(NewConstraint); 
-	list_Delete(NewSuccedent); 
+	list_Delete(NewConstraint);
+	list_Delete(NewSuccedent);
 	Result    = list_Cons(NewClause, Result);
       }
     }
@@ -1712,7 +1682,7 @@ LIST sort_ApproxMaxDeclClauses(CLAUSE Clause, FLAGSTORE Flags,
   int     i,length,j,lc,pli;
 
 #ifdef CHECK
-  if (!clause_IsClause(Clause, Flags, Precedence) || 
+  if (!clause_IsClause(Clause, Flags, Precedence) ||
       !clause_IsDeclarationClause(Clause)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In sort_ApproxMaxDeclClauses :");
@@ -1723,10 +1693,10 @@ LIST sort_ApproxMaxDeclClauses(CLAUSE Clause, FLAGSTORE Flags,
 
   Result = list_Nil();
   length = clause_Length(Clause);
-    
+
   for (i = clause_FirstSuccedentLitIndex(Clause); i < length; i++) {
     LitK = clause_GetLiteral(Clause, i);
-      
+
     if (clause_LiteralIsMaximal(LitK) &&
 	symbol_IsBaseSort(term_TopSymbol(clause_LiteralSignedAtom(LitK)))) {
       pli           = i;
@@ -1736,14 +1706,14 @@ LIST sort_ApproxMaxDeclClauses(CLAUSE Clause, FLAGSTORE Flags,
 
       for (j = clause_FirstLitIndex(); j <= lc; j++)
 	if (clause_LitsHaveCommonVar(LitK, clause_GetLiteral(Clause, j)))
-	  NewConstraint = list_Cons(term_Copy(clause_LiteralAtom(clause_GetLiteral(Clause, j))), 
+	  NewConstraint = list_Cons(term_Copy(clause_LiteralAtom(clause_GetLiteral(Clause, j))),
 				    NewConstraint);
 
-      if (!list_Empty(NewConstraint))  
+      if (!list_Empty(NewConstraint))
 	NewConstraint = sort_ApproxPseudoLinear(NewConstraint,
 						list_Car(NewSuccedent),
 						clause_MaxVar(Clause));
-	
+
       NewClause = clause_Create(NewConstraint, list_Nil(), NewSuccedent,
 				Flags, Precedence);
       clause_SetSplitLevel(NewClause, 0);
@@ -1752,14 +1722,13 @@ LIST sort_ApproxMaxDeclClauses(CLAUSE Clause, FLAGSTORE Flags,
       clause_SetParentClauses(NewClause, list_List(Clause));  /* The clause itself is added! */
       clause_AddParentLiteral(NewClause, pli);
 
-      list_Delete(NewConstraint); 
-      list_Delete(NewSuccedent); 
+      list_Delete(NewConstraint);
+      list_Delete(NewSuccedent);
       Result    = list_Cons(NewClause, Result);
     }
   }
   return(Result);
 }
-
 
 static LIST sort_ApproxClauses(LIST Clauses, FLAGSTORE Flags,
 			       PRECEDENCE Precedence)
@@ -1811,7 +1780,6 @@ LIST sort_EliminateSubsumedClauses(LIST Clauses)
   return Clauses;
 }
 
-
 SORTTHEORY sort_ApproxStaticSortTheory(LIST Clauses, FLAGSTORE Flags,
 				       PRECEDENCE Precedence)
 /*********************************************************
@@ -1833,7 +1801,7 @@ SORTTHEORY sort_ApproxStaticSortTheory(LIST Clauses, FLAGSTORE Flags,
     for (Scan = ApproxClauses; !list_Empty(Scan);Scan=list_Cdr(Scan)) {
     fputs("\n\t",stdout); clause_Print(list_Car(Scan));
     }*/
-  
+
   for (Scan = ApproxClauses; !list_Empty(Scan);Scan=list_Cdr(Scan)) {
     Clause = (CLAUSE)list_Car(Scan);
     sort_TheoryInsertClause(Result,Clause,Clause,
@@ -1844,8 +1812,7 @@ SORTTHEORY sort_ApproxStaticSortTheory(LIST Clauses, FLAGSTORE Flags,
     sort_TheoryDelete(Result);
     Result = (SORTTHEORY)NULL;
   }
-    
-  
+
   if (flag_GetFlagValue(Flags, flag_DOCSST)) {
     fputs("\n\n Approx Sort Theory:", stdout);
     if (Result) {
@@ -1854,12 +1821,11 @@ SORTTHEORY sort_ApproxStaticSortTheory(LIST Clauses, FLAGSTORE Flags,
     }
     else
       fputs(" trivial.", stdout);
-  }    
+  }
   list_Delete(ApproxClauses);
 
   return Result;
 }
-
 
 SORTTHEORY sort_ApproxDynamicSortTheory(LIST Clauses)
 /*********************************************************
@@ -1903,7 +1869,7 @@ STR sort_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
     Clause = (CLAUSE)list_Car(Scan);
     if (clause_IsPotentialSortTheoryClause(Clause, Flags, Precedence)) {
       Copy = clause_Copy(Clause);
-      symbol_AddProperty(term_TopSymbol(clause_GetLiteralTerm(Copy, 
+      symbol_AddProperty(term_TopSymbol(clause_GetLiteralTerm(Copy,
 			 clause_FirstSuccedentLitIndex(Copy))),
 			 DECLSORT);
       list_Delete(clause_ParentClauses(Copy));
@@ -1929,7 +1895,7 @@ STR sort_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
       if (fol_IsEquality(Atom)) {
 	Left      = term_FirstArgument(Atom);
 	Right     = term_SecondArgument(Atom);
-	SojuLeft  = sort_ComputeSortNoResidues(Theory, Left, Clause, i, 
+	SojuLeft  = sort_ComputeSortNoResidues(Theory, Left, Clause, i,
 					       Flags, Precedence);
 	SojuRight = sort_ComputeSortNoResidues(Theory, Right,Clause, i,
 					       Flags, Precedence);
@@ -1942,7 +1908,7 @@ STR sort_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
 	else {
 	  if (!sort_Eq(sort_PairSort(SojuRight), sort_PairSort(SojuLeft))) {
 	    ManySorted = FALSE;
-	    Cond = sort_TheoryIsSubsortOfNoResidues(Theory, sort_PairSort(SojuRight), 
+	    Cond = sort_TheoryIsSubsortOfNoResidues(Theory, sort_PairSort(SojuRight),
 						    sort_PairSort(SojuLeft));
 	    if (Cond && !clause_LiteralIsOrientedEquality(clause_GetLiteral(Clause,i))) {
 	      sort_ConditionDelete(Cond);
@@ -1962,7 +1928,7 @@ STR sort_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
 	sort_PairDelete(SojuRight);
       }
     }
-  }    
+  }
   sort_TheoryDelete(Theory);
   if (ManySorted)
     return SORTEQMANY;
@@ -1971,4 +1937,3 @@ STR sort_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
 
   return SORTEQNONE;
 }
-

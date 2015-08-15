@@ -17,7 +17,7 @@
 #     * Neither the name of the <organization> nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,8 +36,8 @@
 
         .text
 
-## Signed remainder	
-	
+## Signed remainder
+
         .balign 16
         .globl __i64_smod
 __i64_smod:
@@ -61,5 +61,3 @@ __i64_smod:
         blr
         .type __i64_smod, @function
         .size __i64_smod, .-__i64_smod
-
-        

@@ -263,7 +263,7 @@ unsigned char DecodeRecursive(unsigned int code, FILE *fpOut)
     }
 
     fputc(c, fpOut);
-    
+
     return firstChar;
 }
 
@@ -292,7 +292,6 @@ int GetCodeWord(bit_file_t *bfpIn)
     {
         return EOF;
     }
-
 
     /* get remaining bits */
     if (BitFileGetBits(bfpIn, &byte, CODE_MS_BITS(currentCodeLen)) == EOF)

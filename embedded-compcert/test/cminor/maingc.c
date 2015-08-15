@@ -59,22 +59,21 @@ treeNode* NewTreeNode(struct rootblock * r,
   struct rootblock nr;
   treeNode* new;
   boxedInt* bitem;
-  
+
   nr.next = r; nr.numroots = 2; nr.root[0] = left; nr.root[1] = right;
-  
+
   bitem = BoxInt(&nr, item);
-  
+
   nr.numroots = 3; nr.root[2] = bitem;
-  
+
   new = (treeNode*) alloc_block(&nr, PTRDATA, sizeof(treeNode));
-  
+
   new->left = (treeNode *) nr.root[0];
   new->right = (treeNode *) nr.root[1];
   new->item = (boxedInt *) nr.root[2];
-  
+
   return new;
 }
-
 
 long ItemCheck(treeNode* tree)
 {
@@ -83,7 +82,6 @@ long ItemCheck(treeNode* tree)
   else
     return tree->item->i + ItemCheck(tree->left) - ItemCheck(tree->right);
 }
-
 
 treeNode* BottomUpTree(struct rootblock * r, long item, unsigned depth)
 {
@@ -203,7 +201,7 @@ int main(int argc, char ** argv)
     return 2;
   }
   test(N);
-}  
+}
 
 /*********************************
 
@@ -220,4 +218,3 @@ stretch tree of depth 17	 check: -1
 long lived tree of depth 16	 check: -1
 
 ***********************************/
-

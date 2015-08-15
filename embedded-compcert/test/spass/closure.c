@@ -41,13 +41,11 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /**************************************************************/
 /* Include                                                    */
 /**************************************************************/
 
 #include "closure.h"
-
 
 /**************************************************************/
 /* Global constants and variable                              */
@@ -59,7 +57,6 @@ static const int cc_RASSTDSIZE = 64;
 static const int cc_SIZELDSIZE = 384;
 /* the virtual term "true" has number 0 */
 static const ELEMENT cc_NOOFTRUE = 0;
-
 
 static struct {
   PARTITION partition;
@@ -73,7 +70,6 @@ static struct {
 /* for pending terms (the ones to be worked off) and for terms to be combined */
 /* in the same equivalence class                                              */
 
-
 /**************************************************************/
 /* Inline functions                                           */
 /**************************************************************/
@@ -83,114 +79,95 @@ static __inline__ PARTITION cc_GetPartition(void)
   return cc_CLOSURE.partition;
 }
 
-
 static __inline__ void cc_SetPartition(PARTITION partition)
 {
   cc_CLOSURE.partition = partition;
 }
-
 
 static __inline__ TABLE cc_GetTable(void)
 {
   return cc_CLOSURE.table;
 }
 
-
 static __inline__ void cc_SetTable(TABLE table)
 {
   cc_CLOSURE.table = table;
 }
-
 
 static __inline__ RAS cc_GetCars(void)
 {
   return cc_CLOSURE.car;
 }
 
-
 static __inline__ TERM cc_GetCar(int index)
 {
   return (TERM) ras_Get(cc_GetCars(), index);
 }
-
 
 static __inline__ void cc_SetCars(RAS car)
 {
   cc_CLOSURE.car = car;
 }
 
-
 static __inline__ RAS cc_GetCdrs(void)
 {
   return cc_CLOSURE.cdr;
 }
-
 
 static __inline__ int cc_GetCdr(int index)
 {
   return (int) ras_Get(cc_GetCdrs(), index);
 }
 
-
 static __inline__ void cc_SetCdrs(RAS cdr)
 {
   cc_CLOSURE.cdr = cdr;
 }
-
 
 static __inline__ void cc_SetCdr(int index, int cdr)
 {
   ras_Set(cc_GetCdrs(), index, (POINTER) cdr);
 }
 
-
 static __inline__ RAS cc_GetSizes(void)
 {
   return cc_CLOSURE.size;
 }
-
 
 static __inline__ int cc_GetSize(int index)
 {
   return (int) ras_Get(cc_GetSizes(), index);
 }
 
-
 static __inline__ void cc_SetSizes(RAS size)
 {
   cc_CLOSURE.size = size;
 }
-
 
 static __inline__ void cc_SetSize(int index, int size)
 {
   ras_Set(cc_GetSizes(), index, (POINTER) size);
 }
 
-
 static __inline__ RAS cc_GetPending(void)
 {
   return cc_CLOSURE.pending;
 }
-
 
 static __inline__ void cc_SetPending(RAS pending)
 {
   cc_CLOSURE.pending = pending;
 }
 
-
 static __inline__ RAS cc_GetCombine(void)
 {
   return cc_CLOSURE.combine;
 }
 
-
 static __inline__ void cc_SetCombine(RAS combine)
 {
   cc_CLOSURE.combine = combine;
 }
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -226,7 +203,6 @@ static int cc_Number(int actno, TERM term, TERM pred)
     actno = cc_Number(actno, list_Car(terms), term);
   return actno;
 }
-
 
 static void cc_Union(ECLASS c1, ECLASS c2)
 /***************************************************************
@@ -285,7 +261,6 @@ static void cc_Union(ECLASS c1, ECLASS c2)
     part_Union(cc_GetPartition(), c1, c2);
   }
 }
-
 
 static void cc_InitData(CLAUSE clause)
 /***************************************************************
@@ -347,7 +322,6 @@ static void cc_InitData(CLAUSE clause)
 
 }
 
-
 static BOOL cc_Outit(CLAUSE clause)
 /***************************************************************
   RETURNS: the decision, if the clause is a tautology
@@ -379,7 +353,6 @@ static BOOL cc_Outit(CLAUSE clause)
   return result;
 }
 
-
 /**************************************************************/
 /* Main functions                                             */
 /**************************************************************/
@@ -395,7 +368,6 @@ void cc_Init(void)
   cc_SetCombine(ras_CreateWithSize(cc_SIZELDSIZE));
 }
 
-
 void cc_Free(void)
 {
   part_Free(cc_GetPartition());
@@ -406,7 +378,6 @@ void cc_Free(void)
   ras_Free(cc_GetPending());
   ras_Free(cc_GetCombine());
 }
-
 
 BOOL cc_Tautology(CLAUSE clause)
 /***************************************************************
@@ -438,4 +409,3 @@ BOOL cc_Tautology(CLAUSE clause)
   }
   return cc_Outit(clause);
 }
-

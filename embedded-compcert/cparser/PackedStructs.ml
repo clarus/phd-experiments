@@ -93,7 +93,7 @@ let layout_struct mfa msa swapped loc env struct_id fields =
   let rec layout max_al pos = function
   | [] ->
       (max_al, pos)
-  | f :: rem -> 
+  | f :: rem ->
       if f.fld_bitfield <> None then
         error "%a: Error: bitfields in packed structs not allowed"
               formatloc loc;
@@ -238,7 +238,7 @@ let bswap_write loc env lhs rhs =
       let (id, fty) =
         lookup_function loc env (sprintf "__builtin_write%d_reversed" bsize) in
       let fn = {edesc = EVar id; etyp = fty} in
-      let args = [ecast_opt env (TPtr(aty,[])) (eaddrof lhs); 
+      let args = [ecast_opt env (TPtr(aty,[])) (eaddrof lhs);
                   ecast_opt env aty rhs] in
       {edesc = ECall(fn, args); etyp = TVoid[]}
     end else begin
@@ -266,7 +266,7 @@ let transf_expr loc env ctx e =
   let is_packed_access_ptr ty fieldname =
     match unroll env ty with
     | TPtr(ty', _) -> is_packed_access ty' fieldname
-    | _ -> None in 
+    | _ -> None in
 
   (* Transformation of l-values.  Return transformed expr plus
      [true] if l-value is a byte-swapped field and [false] otherwise. *)
@@ -292,7 +292,7 @@ let transf_expr loc env ctx e =
         let (e1', swap) = lvalue e1 in
         ({edesc = EBinop(Oindex, e1', e2, tyres); etyp = e.etyp}, swap)
     | _ ->
-        (texp Val e, false) 
+        (texp Val e, false)
 
   and texp ctx e =
     match e.edesc with

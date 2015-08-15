@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                ANALYSIS OF CLAUSE SETS                 * */
 /* *                                                        * */
-/* *  $Module:   ANALYZE                                    * */ 
+/* *  $Module:   ANALYZE                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -40,7 +40,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -86,7 +85,6 @@ static NAT  ana_AXIOMCLAUSES;      /* Number of axiom clauses */
 static NAT  ana_CONCLAUSES;        /* Number of conjecture clauses */
 static NAT  ana_NONHORNCLAUSES;    /* Number of Non-Horn clauses */
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -103,9 +101,9 @@ void ana_AnalyzeProblem(PROOFSEARCH Search, LIST Clauses)
 {
   CLAUSE Clause;
 
-  ana_EQUATIONS       = FALSE;  
+  ana_EQUATIONS       = FALSE;
   ana_PEQUATIONS      = FALSE;             /* Defaults for properties */
-  ana_NEQUATIONS      = FALSE; 
+  ana_NEQUATIONS      = FALSE;
   ana_FUNCTIONS       = FALSE;
   ana_FINDOMAIN       = FALSE;
   ana_NONTRIVDOMAIN   = FALSE;
@@ -118,7 +116,7 @@ void ana_AnalyzeProblem(PROOFSEARCH Search, LIST Clauses)
   ana_NONUNIT         = FALSE;
   ana_CONGROUND       = TRUE;
 
-  ana_AXIOMCLAUSES    = 0; 
+  ana_AXIOMCLAUSES    = 0;
   ana_CONCLAUSES      = 0;
   ana_NONHORNCLAUSES  = 0;
 
@@ -167,9 +165,9 @@ void ana_AnalyzeProblem(PROOFSEARCH Search, LIST Clauses)
     if (!ana_NONUNIT && clause_Length(Clause) > 1) {
       ana_NONUNIT = TRUE;
     }
-    if (!ana_SORTRES || !ana_USORTRES) 
+    if (!ana_SORTRES || !ana_USORTRES)
       clause_ContainsSortRestriction(Clause,&ana_SORTRES,&ana_USORTRES);
-    
+
     Clauses = list_Cdr(Clauses);
   }
 
@@ -179,7 +177,6 @@ void ana_AnalyzeProblem(PROOFSEARCH Search, LIST Clauses)
   ana_PUREPROPOSITIONAL = (!ana_PEQUATIONS && !ana_NEQUATIONS &&!ana_MONADIC &&
 			   !ana_NONMONADIC && ana_PROP);
 }
-
 
 void ana_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
 			      PRECEDENCE Precedence)
@@ -199,7 +196,6 @@ void ana_AnalyzeSortStructure(LIST Clauses, FLAGSTORE Flags,
   }
 }
 
-
 void ana_Print(FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A flag store and a precedence.
@@ -214,7 +210,7 @@ void ana_Print(FLAGSTORE Flags, PRECEDENCE Precedence)
     Horn = "Horn";
   else
     Horn = "Non-Horn";
-  
+
   if (ana_MONADIC && !ana_NONMONADIC) {
     printf("\n This is a monadic %s problem",Horn);
     if (ana_PEQUATIONS || ana_NEQUATIONS)
@@ -251,8 +247,7 @@ void ana_Print(FLAGSTORE Flags, PRECEDENCE Precedence)
   if (ana_NONTRIVDOMAIN)
     fputs("\n This is a problem that has, if any, a non-trivial domain model.",
 	  stdout);
-      
-  
+
   if (ana_SORTRES) {
     fputs("\n This is a problem that contains sort information.", stdout);
     if (ana_PEQUATIONS) {
@@ -316,7 +311,6 @@ void ana_Print(FLAGSTORE Flags, PRECEDENCE Precedence)
   fputs(flag_GetFlagValue(Flags, flag_ORD) == flag_ORDKBO ? "KBO" : "RPOS",
 	stdout);
 }
-
 
 void ana_AutoConfiguration(LIST Clauses, FLAGSTORE Flags,
 			   PRECEDENCE Precedence)
@@ -384,14 +378,14 @@ void ana_AutoConfiguration(LIST Clauses, FLAGSTORE Flags,
     flag_SetFlagValue(Flags, flag_ISPL, flag_SUPERPOSITIONLEFTON);
     if (ana_NONHORNCLAUSES > 0)
       flag_SetFlagValue(Flags, flag_IEQF, flag_EQUALITYFACTORINGON);
-    if (ana_NONUNIT) 
+    if (ana_NONUNIT)
       flag_SetFlagValue(Flags, flag_RCON, flag_RCONON);
     flag_SetFlagValue(Flags, flag_RFREW, flag_RFREWON);
     flag_SetFlagValue(Flags, flag_RBREW, flag_RBREWON);
     flag_SetFlagValue(Flags, flag_RFCRW, flag_RFCRWOFF); /* Here we could activate contextual rewriting */
     flag_SetFlagValue(Flags, flag_RBCRW, flag_RBCRWOFF);
   }
-  
+
   if (ana_SORTRES) {
     flag_SetFlagValue(Flags, flag_SORTS, flag_SORTSMONADICWITHVARIABLE);
     flag_SetFlagValue(Flags, flag_IEMS,  flag_EMPTYSORTON);
@@ -407,10 +401,9 @@ void ana_AutoConfiguration(LIST Clauses, FLAGSTORE Flags,
     flag_SetFlagValue(Flags, flag_IORE, flag_ORDEREDRESOLUTIONNOEQUATIONS);
     if (ana_NONHORNCLAUSES > 0)
       flag_SetFlagValue(Flags, flag_IOFC, flag_FACTORINGONLYRIGHT);
-    if (ana_NONUNIT) 
+    if (ana_NONUNIT)
       flag_SetFlagValue(Flags, flag_RCON, flag_RCONON);
   }
-
 
   if (!ana_FUNCTIONS)
     flag_SetFlagValue(Flags, flag_SELECT, flag_SELECTALWAYS);
@@ -431,7 +424,6 @@ void ana_AutoConfiguration(LIST Clauses, FLAGSTORE Flags,
     flag_SetFlagValue(Flags, flag_SPLITS, flag_SPLITSOFF);
 }
 
-
 void ana_ExploitSortAnalysis(FLAGSTORE Flags)
 /**************************************************************
   INPUT:   A flag store.
@@ -443,7 +435,6 @@ void ana_ExploitSortAnalysis(FLAGSTORE Flags)
   if (ana_SORTRES && (!ana_PEQUATIONS || ana_SORTMANYEQUATIONS))
     flag_SetFlagValue(Flags, flag_RSST, flag_RSSTON);
 }
-
 
 static LIST ana_CalculatePredicatePrecedence(LIST Predicates, LIST Clauses)
 /**************************************************************
@@ -535,13 +526,11 @@ static LIST ana_CalculatePredicatePrecedence(LIST Predicates, LIST Clauses)
   return result;
 }
 
-
 /* We use the node info to store the degree of the node */
 static __inline__ NAT ana_NodeDegree(GRAPHNODE Node)
 {
   return (NAT)graph_NodeInfo(Node);
 }
-
 
 static __inline__ void ana_IncNodeDegree(GRAPHNODE Node)
 {
@@ -559,7 +548,6 @@ static BOOL ana_NodeGreater(GRAPHNODE N1, GRAPHNODE N2)
   return (symbol_Arity(symbol_GetSigSymbol(graph_NodeNumber(N1))) >
 	  symbol_Arity(symbol_GetSigSymbol(graph_NodeNumber(N2))));
 }
-
 
 static BOOL ana_BidirectionalDistributivity(LIST SymbolPairs)
 /**************************************************************
@@ -585,11 +573,10 @@ static BOOL ana_BidirectionalDistributivity(LIST SymbolPairs)
   return FALSE;
 }
 
-
 static LIST ana_CalculateFunctionPrecedence(LIST Functions, LIST Clauses,
 					    FLAGSTORE Flags)
 /**************************************************************
-  INPUT:   A list of functions, a list of clauses and 
+  INPUT:   A list of functions, a list of clauses and
            a flag store.
   RETURNS: A list of function symbols, which should be used
            for setting the symbol precedence. The list is sorted
@@ -672,7 +659,7 @@ static LIST ana_CalculateFunctionPrecedence(LIST Functions, LIST Clauses,
       }
     }
   }
-  
+
   /* putchar('\n');
      for (scan = graph_Nodes(graph); !list_Empty(scan); scan = list_Cdr(scan)) {
      n1 = list_Car(scan);
@@ -683,11 +670,11 @@ static LIST ana_CalculateFunctionPrecedence(LIST Functions, LIST Clauses,
      graph_Print(graph); fflush(stdout); DBG */
 
   graph_DeleteDuplicateEdges(graph);
-  
+
   /* Transform the undirected graph into a directed graph. */
   for (scan = graph_Nodes(graph); !list_Empty(scan); scan = list_Cdr(scan)) {
     n1 = list_Car(scan);
-    result = list_Nil(); /* Collect edges from n1 that shall be deleted */ 
+    result = list_Nil(); /* Collect edges from n1 that shall be deleted */
     for (scan2 = graph_NodeNeighbors(n1); !list_Empty(scan2);
 	 scan2 = list_Cdr(scan2)) {
       int a1, a2;
@@ -726,7 +713,7 @@ static LIST ana_CalculateFunctionPrecedence(LIST Functions, LIST Clauses,
     n1 = graph_GetNode(graph,
 		       symbol_Index((SYMBOL)list_PairFirst(scan)));
     /* Multiplication */
-    n2 = graph_GetNode(graph, 
+    n2 = graph_GetNode(graph,
 		       symbol_Index((SYMBOL)list_PairSecond(scan)));
     /* Remove any edges between n1 and n2 */
     graph_DeleteEdge(n1, n2);

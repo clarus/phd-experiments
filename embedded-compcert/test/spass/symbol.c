@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     SYMBOLS                            * */
 /* *                                                        * */
-/* *  $Module:   SYMBOL                                     * */ 
+/* *  $Module:   SYMBOL                                     * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "symbol.h"
@@ -56,7 +55,6 @@ const int symbol_MASK         = 3;  /* 0000011 */
 const int symbol_TYPEMASK     = 3;  /* 0000011 */
 const int symbol_STATMASK     = 4;  /* 0000100 */
 const int symbol_TYPESTATMASK = 7;  /* 0000111 */
-
 
 const int symbol_TYPEBITS      = 2;
 const int symbol_STATBITS      = 1;
@@ -109,7 +107,7 @@ NAT symbol_MaxStringLength(void)
   SIGNATURE Entry;
 
   Result = 0;
-  
+
   for (Index=1; Index < symbol_ACTINDEX; Index++) {
     Entry = symbol_Signature(Index);
     if (Entry != NULL) {
@@ -132,14 +130,14 @@ static SYMBOL symbol_SignatureCreate(char* String, int Type, int Arity,
 ***************************************************************/
 {
   SIGNATURE Entry;
-  
+
 #ifdef CHECK
   if (!symbol_SignatureExists()) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In symbol_SignatureCreate:");
     misc_ErrorReport(" Module was initialized with no signature.\n");
     misc_FinishErrorReport();
-  } 
+  }
   if (Type < 0 || Type >= symbol_SIGTYPES) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In symbol_SignatureCreate: Illegal input.\n");
@@ -153,13 +151,13 @@ static SYMBOL symbol_SignatureCreate(char* String, int Type, int Arity,
     misc_UserErrorReport("\n In symbol_SignatureCreate: No more symbols available.\n");
     misc_FinishUserErrorReport();
   }
-  
+
   if (strlen(String)>=symbol__SYMBOLMAXLEN) {
     misc_StartUserErrorReport();
     misc_UserErrorReport("\n In symbol_SignatureCreate: String too long.\n");
     misc_FinishUserErrorReport();
   }
-    
+
   Entry              = symbol_GetSignature();
   Entry->weight      = 1;
   Entry->props       = 0;
@@ -167,14 +165,14 @@ static SYMBOL symbol_SignatureCreate(char* String, int Type, int Arity,
   Entry->length      = strlen(String);
   Entry->arity       = Arity;
   Entry->generatedBy = list_Nil();
-  
+
   if (list_Empty(symbol_FREEDSYMBOLS)) {
     Entry->info = symbol_SignatureSymbol(symbol_ACTINDEX, Type, Status);
     symbol_SetSignature(symbol_ACTINDEX++, Entry);
   }
   else {
     int Index;
-    
+
     Index               = (int)list_Car(symbol_FREEDSYMBOLS);
     symbol_FREEDSYMBOLS = list_PointerDeleteElement(symbol_FREEDSYMBOLS,
 						    (POINTER)Index);
@@ -188,11 +186,10 @@ static SYMBOL symbol_SignatureCreate(char* String, int Type, int Arity,
   return Entry->info;
 }
 
-
 SYMBOL symbol_CreateFunction(const char* String, int Arity, int Status,
 			     PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A string defining a symbol name, an arity, the status the 
+  INPUT:   A string defining a symbol name, an arity, the status the
            created function symbol is supposed to have and a precedence
 	   object.
   RETURNS: A new symbol for a new function.
@@ -239,7 +236,6 @@ SYMBOL symbol_CreateSkolemFunction(int Arity, PRECEDENCE Precedence)
   return Result;
 }
 
-
 SYMBOL symbol_CreatePredicate(const char* String, int Arity, int Status,
 			      PRECEDENCE Precedence)
 /**************************************************************
@@ -250,7 +246,7 @@ SYMBOL symbol_CreatePredicate(const char* String, int Arity, int Status,
   EFFECTS: Inserts the new predicate symbol into the symbol table.
            The precedence of the new symbol is set in <Precedence>.
 ***************************************************************/
-{ 
+{
   return symbol_SignatureCreate(strcpy(memory_Malloc(symbol__SYMBOLMAXLEN),
 				       String),
 				symbol_PREDICATE, Arity, Status, Precedence);
@@ -264,7 +260,7 @@ SYMBOL symbol_CreateSkolemPredicate(int Arity, PRECEDENCE Precedence)
   EFFECTS: Inserts the new predicate symbol into the symbol table.
            The precedence of the new symbol is set in <Precedence>.
 ***************************************************************/
-{ 
+{
   char   newname[10];
   SYMBOL Result;
 
@@ -282,7 +278,6 @@ SYMBOL symbol_CreateSkolemPredicate(int Arity, PRECEDENCE Precedence)
   return Result;
 }
 
-
 SYMBOL symbol_CreateJunctor(const char* String, int Arity, int Status,
 			    PRECEDENCE Precedence)
 /**************************************************************
@@ -293,12 +288,11 @@ SYMBOL symbol_CreateJunctor(const char* String, int Arity, int Status,
   EFFECTS: Inserts the new junctor symbol into the symbol table.
            The precedence of the new symbol is set in <Precedence>.
 ***************************************************************/
-{ 
+{
   return symbol_SignatureCreate(strcpy(memory_Malloc(symbol__SYMBOLMAXLEN),
 				       String),
 				symbol_JUNCTOR, Arity, Status, Precedence);
 }
-
 
 BOOL symbol_IsSymbol(SYMBOL Symbol)
 /**************************************************************
@@ -307,13 +301,12 @@ BOOL symbol_IsSymbol(SYMBOL Symbol)
            in the symbol table.
 ***************************************************************/
 {
-  return 
+  return
     (!symbol_SignatureExists() ||
      ((!symbol_Equal(Symbol, symbol__NULL)) &&
-      ((symbol_IsVariable(Symbol) && Symbol<symbol_MaxVars()) || 
+      ((symbol_IsVariable(Symbol) && Symbol<symbol_MaxVars()) ||
        (symbol_IsSignature(Symbol) && symbol_Index(Symbol)<symbol_ACTINDEX))));
 }
-
 
 void symbol_Delete(SYMBOL Symbol)
 /**************************************************************
@@ -338,7 +331,7 @@ void symbol_Delete(SYMBOL Symbol)
   if (!symbol_IsVariable(Symbol)) {
     int       Index;
     SIGNATURE Entry;
-    
+
     Index               = symbol_Index(Symbol);
     symbol_FREEDSYMBOLS = list_Cons((POINTER)Index,symbol_FREEDSYMBOLS);
     Entry               = symbol_Signature(Index);
@@ -360,7 +353,7 @@ LIST symbol_GetAllSymbols(void)
   if (symbol_SignatureExists()) {
     int       Index;
     SIGNATURE S;
-    
+
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL) {
@@ -370,7 +363,6 @@ LIST symbol_GetAllSymbols(void)
   }
   return Result;
 }
-
 
 LIST symbol_GetAllPredicates(void)
 /**************************************************************
@@ -385,7 +377,7 @@ LIST symbol_GetAllPredicates(void)
   if (symbol_SignatureExists()) {
     int       Index;
     SIGNATURE S;
-    
+
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL && symbol_IsPredicate(symbol_GetSigSymbol(Index)))
@@ -394,7 +386,6 @@ LIST symbol_GetAllPredicates(void)
   }
   return Result;
 }
-
 
 LIST symbol_GetAllFunctions(void)
 /**************************************************************
@@ -409,7 +400,7 @@ LIST symbol_GetAllFunctions(void)
   if (symbol_SignatureExists()) {
     int       Index;
     SIGNATURE S;
-    
+
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL && symbol_IsFunction(symbol_GetSigSymbol(Index)))
@@ -418,7 +409,6 @@ LIST symbol_GetAllFunctions(void)
   }
   return Result;
 }
-
 
 void symbol_FreeAllSymbols(void)
 /**************************************************************
@@ -430,7 +420,7 @@ void symbol_FreeAllSymbols(void)
   if (symbol_SignatureExists()) {
     int       Index;
     SIGNATURE S;
-    
+
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL)
@@ -438,11 +428,10 @@ void symbol_FreeAllSymbols(void)
     }
     memory_Free(symbol_SIGNATURE, sizeof(SIGNATURE[symbol__MAXSIGNATURE]));
   }
-  
+
   memory_Free(symbol_VARSTRING, symbol__SYMBOLMAXLEN);
   list_Delete(symbol_FREEDSYMBOLS);
 }
-
 
 void symbol_Init(BOOL Signature)
 /**************************************************************
@@ -461,15 +450,14 @@ void symbol_Init(BOOL Signature)
 
   symbol_STANDARDVARCOUNTER = symbol_GetInitialStandardVarCounter();
   symbol_INDEXVARCOUNTER    = symbol_GetInitialIndexVarCounter();
-  
+
   symbol_ACTINDEX           = 1;
   symbol_ORDERING           = 1;
   symbol_VARSTRING          = memory_Malloc(symbol__SYMBOLMAXLEN);
-  
+
   symbol_HASSIGNATURE       = Signature;
   symbol_FREEDSYMBOLS       = list_Nil();
 }
-
 
 BOOL symbol_SignatureExists(void)
 /**************************************************************
@@ -493,7 +481,7 @@ void symbol_ReinitGenericNameCounters(void)
     SYMBOL       Info;
     SIGNATURE    Entry;
     char         *Name,*Subname;
-  
+
     for (Index=1; Index < symbol_ACTINDEX; Index++) {
       Entry = symbol_Signature(Index);
       if (Entry != NULL) {
@@ -501,11 +489,11 @@ void symbol_ReinitGenericNameCounters(void)
 	Name   = Entry->name;
 	if (strlen(Name)>symbol_SKLENGTH) {
 	  Subname = Name + symbol_SKLENGTH;
-	
+
 	  switch (symbol_Type(Info)) {
-	  
+
 	  case symbol_CONSTANT:
-	    if (strncmp(Name,symbol_SKCNAME,symbol_SKLENGTH) == 0 && 
+	    if (strncmp(Name,symbol_SKCNAME,symbol_SKLENGTH) == 0 &&
 		string_StringIsNumber(Subname)) {
 	      Num = atoi(Subname);
 	      if (Num >= symbol_ACTSKOLEMCINDEX)
@@ -536,7 +524,7 @@ void symbol_ReinitGenericNameCounters(void)
 		if (Num >= symbol_ACTSKOLEMPINDEX)
 		  symbol_ACTSKOLEMPINDEX = Num + 1;
 	      }
-	    }    
+	    }
 	  }
 	}
       }
@@ -544,7 +532,6 @@ void symbol_ReinitGenericNameCounters(void)
   }
 }
 
-  
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -563,17 +550,16 @@ SYMBOL symbol_Lookup(const char* String)
   if (symbol_SignatureExists()) {
     int       Index;
     SIGNATURE S;
-    
+
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL && string_Equal(String, S->name))
 	return S->info;
     }
   }
-  
+
   return 0;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -600,7 +586,7 @@ void symbol_LowerSignature(void)
     Entry = symbol_Signature(Index);
     if (Entry != NULL) {
       Info = Entry->info;
-	
+
       if (symbol_IsPredicate(Info) || symbol_IsFunction(Info)) {
 	String = Entry->name;
 	if ('A' <= String[0] && String[0] <= 'Z') {
@@ -637,7 +623,6 @@ void symbol_Dump(PRECEDENCE Precedence)
   }
 }
 
-
 LIST symbol_SortByPrecedence(LIST Symbols, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A list of symbols, and a precedence.
@@ -670,7 +655,7 @@ LIST symbol_SortByPrecedence(LIST Symbols, PRECEDENCE Precedence)
 
 void symbol_RearrangePrecedence(PRECEDENCE Precedence, LIST UserPrecedence)
 /**************************************************************
-  INPUT:   A precedence and a list of symbols in the user 
+  INPUT:   A precedence and a list of symbols in the user
            specified precedence, sorted in decreasing order.
   RETURNS: Nothing.
   EFFECT:  Modifies the given precedence to comply with the
@@ -682,7 +667,7 @@ void symbol_RearrangePrecedence(PRECEDENCE Precedence, LIST UserPrecedence)
   Precedences = list_Nil();
 
   for (Scan1 = UserPrecedence; !list_Empty(Scan1); Scan1 = list_Cdr(Scan1)) {
-    Precedences = list_Cons((POINTER) symbol_Ordering(Precedence, (SYMBOL) list_Car(Scan1)), 
+    Precedences = list_Cons((POINTER) symbol_Ordering(Precedence, (SYMBOL) list_Car(Scan1)),
 			    Precedences);
   }
 
@@ -699,7 +684,7 @@ void symbol_RearrangePrecedence(PRECEDENCE Precedence, LIST UserPrecedence)
 
   list_Delete(Precedences);
 }
-  
+
 /* unused */
 void symbol_PrintPrecedence(PRECEDENCE Precedence)
 /**************************************************************
@@ -716,7 +701,7 @@ void symbol_PrintPrecedence(PRECEDENCE Precedence)
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL &&
-	  (symbol_IsPredicate(S->info) || symbol_IsFunction(S->info))) 
+	  (symbol_IsPredicate(S->info) || symbol_IsFunction(S->info)))
 	Symbols = list_Cons((POINTER)S->info, Symbols);
     }
     Symbols = symbol_SortByPrecedence(Symbols, Precedence);
@@ -730,7 +715,6 @@ void symbol_PrintPrecedence(PRECEDENCE Precedence)
     list_Delete(Symbols);
   }
 }
-
 
 void symbol_FPrintPrecedence(FILE *File, PRECEDENCE Precedence)
 /**************************************************************
@@ -749,7 +733,7 @@ void symbol_FPrintPrecedence(FILE *File, PRECEDENCE Precedence)
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       S = symbol_Signature(Index);
       if (S != NULL &&
-	  (symbol_IsPredicate(S->info) || symbol_IsFunction(S->info))) 
+	  (symbol_IsPredicate(S->info) || symbol_IsFunction(S->info)))
 	Symbols = list_Cons((POINTER)S->info, Symbols);
     }
     Symbols = symbol_SortByPrecedence(Symbols, Precedence);
@@ -776,7 +760,7 @@ void symbol_SetCount(SYMBOL Symbol, unsigned long Count)
 /**************************************************************
   INPUT:   A symbol, and a symbol count.
   RETURNS: Nothing.
-  SUMMARY: Sets the symbol count for the symbol to Count. 
+  SUMMARY: Sets the symbol count for the symbol to Count.
 ***************************************************************/
 {
   symbol_COUNT[symbol_Index(Symbol)] = Count;
@@ -787,7 +771,7 @@ unsigned long symbol_GetCount(SYMBOL Symbol)
   INPUT:   A symbol.
   RETURNS: The number of occurences of the symbol in the clause
            set.
-  SUMMARY: Gets the symbol count for the symbol. 
+  SUMMARY: Gets the symbol count for the symbol.
 ***************************************************************/
 {
   return symbol_COUNT[symbol_Index(Symbol)];
@@ -805,20 +789,19 @@ void symbol_Print(SYMBOL Symbol)
 /**************************************************************
   INPUT:   A symbol.
   RETURNS: Nothing.
-  SUMMARY: Prints a symbol to stdout. 
+  SUMMARY: Prints a symbol to stdout.
 ***************************************************************/
 {
   symbol_FPrint(stdout, Symbol);
 }
 
-
 void symbol_FPrint(FILE* File, SYMBOL Symbol)
 /**************************************************************
   INPUT:   A file and a symbol.
   RETURNS: None.
-  SUMMARY: Prints a symbol to the file. 
+  SUMMARY: Prints a symbol to the file.
 ***************************************************************/
-{ 
+{
 #ifdef CHECK
   if (!symbol_IsSymbol(Symbol)) {
     misc_StartErrorReport();
@@ -854,14 +837,13 @@ void symbol_FPrint(FILE* File, SYMBOL Symbol)
     fprintf(File, "%d", Symbol);
 }
 
-
 void symbol_FPrintOtter(FILE* File, SYMBOL Symbol)
 /**************************************************************
   INPUT:   A file and a symbol.
   RETURNS: None.
-  SUMMARY: Prints a symbol in Otter format to stdout. 
+  SUMMARY: Prints a symbol in Otter format to stdout.
 ***************************************************************/
-{ 
+{
 #ifdef CHECK
   if (!symbol_IsSymbol(Symbol)) {
     misc_StartErrorReport();
@@ -889,7 +871,7 @@ void symbol_FPrintOtter(FILE* File, SYMBOL Symbol)
 
     fputs(symbol_VARSTRING, File);
   }
-  else 
+  else
     if (symbol_SignatureExists()) {
       if (symbol_IsConstant(Symbol))
 	fprintf(File, "c%s", symbol_Name(Symbol));
@@ -906,19 +888,17 @@ void symbol_FPrintOtter(FILE* File, SYMBOL Symbol)
       fprintf(File, "%d", Symbol);
 }
 
-
 void symbol_PrintLn(SYMBOL Symbol)
 /**************************************************************
   INPUT:   A symbol.
   RETURNS: None.
-  SUMMARY: Prints a symbol and a newline to stdout. 
+  SUMMARY: Prints a symbol and a newline to stdout.
 ***************************************************************/
-{ 
+{
   symbol_Print(Symbol);
   putchar('\n');
-  
-}
 
+}
 
 void symbol_PrintAll(void)
 /**************************************************************
@@ -931,7 +911,7 @@ void symbol_PrintAll(void)
   const int symbol_TABLETYPE   = 6;  /* breadth of the columns */
   const int symbol_TABLEARITY  = 7;
   const int symbol_TABLESTAT   = 6;
-  const int symbol_TABLEPROP   = 8;  
+  const int symbol_TABLEPROP   = 8;
   const int symbol_TABLESTRING = 36;
 
   if (symbol_SignatureExists()) {
@@ -971,12 +951,12 @@ void symbol_PrintAll(void)
     misc_PrintChar(symbol_TABLESTAT,     '-'); putchar('+');
     misc_PrintChar(symbol_TABLEPROP,     '-'); putchar('+');
     misc_PrintChar(symbol_TABLESTRING,   '-'); putchar('+'); putchar('\n');
-  
+
     for (Index = 1; Index < symbol_ACTINDEX; Index++) {
       Entry  = symbol_Signature(Index);
       if (Entry != NULL) {
 	Info = Entry->info;
-	
+
 	misc_PrintChar(symbol_TABLEBLANKS,   ' '); putchar('|');
 	ActPos = TypePos + 1;
 
@@ -1017,4 +997,3 @@ void symbol_PrintAll(void)
     misc_PrintChar(symbol_TABLESTRING, '-'); putchar('+'); putchar('\n');
   }
 }
-

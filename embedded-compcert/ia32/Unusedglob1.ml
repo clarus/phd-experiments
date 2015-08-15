@@ -41,4 +41,3 @@ let referenced_instr = function
   | _ -> []
 
 let code_of_function f = f
-

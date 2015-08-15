@@ -13,7 +13,6 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-
 open Cabs
 
 let nextident = ref 0
@@ -28,15 +27,15 @@ let currentLoc_lexbuf lb =
     byteno   = p.Lexing.pos_cnum;
     ident    = getident ();}
 
-let currentLoc () = 
+let currentLoc () =
   let p = Parsing.symbol_start_pos() in
   { lineno   = p.Lexing.pos_lnum;
     filename = p.Lexing.pos_fname;
     byteno   = p.Lexing.pos_cnum;
     ident    = getident ();}
 
-let cabslu = {lineno = -10; 
-	      filename = "cabs loc unknown"; 
+let cabslu = {lineno = -10;
+	      filename = "cabs loc unknown";
 	      byteno = -10;
               ident = 0}
 
@@ -63,7 +62,6 @@ let rec isTypedef = function
     [] -> false
   | SpecTypedef :: _ -> true
   | _ :: rest -> isTypedef rest
-
 
 let get_definitionloc (d : definition) : cabsloc =
   match d with
@@ -102,16 +100,15 @@ begin
   | TRY_FINALLY(_, _, loc) -> loc
 end
 
-
-let explodeStringToInts (s: string) : int64 list =  
-  let rec allChars i acc = 
+let explodeStringToInts (s: string) : int64 list =
+  let rec allChars i acc =
     if i < 0 then acc
     else allChars (i - 1) (Int64.of_int (Char.code (String.get s i)) :: acc)
   in
   allChars (-1 + String.length s) []
 
 let valueOfDigit chr =
-  let int_value = 
+  let int_value =
     match chr with
       '0'..'9' -> (Char.code chr) - (Char.code '0')
     | 'a'..'z' -> (Char.code chr) - (Char.code 'a') + 10

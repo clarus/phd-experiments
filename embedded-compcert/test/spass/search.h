@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *          REPRESENTATION OF PROOF SEARCH                * */
 /* *                                                        * */
-/* *  $Module:   PROOF SEARCH                               * */ 
+/* *  $Module:   PROOF SEARCH                               * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1998, 1999, 2000                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _PROOFSEARCH_
@@ -58,7 +57,7 @@
 /* <blockedClauses>: list of (unshared) clauses containing the   */
 /*                   "remainder" of the clause splitted at this  */
 /*                   level and the negation of the first branch  */
-/*                   if this branch created a ground clause.     */ 
+/*                   if this branch created a ground clause.     */
 /*                   The right clause has clause number 0, and   */
 /*                   the negation clauses have number -1.        */
 /* <deletedClauses>: list of (unshared) clauses made redundant   */
@@ -74,7 +73,6 @@ typedef struct {
   LIST    blockedClauses, deletedClauses;
   CLAUSE  father;
 } *SPLIT, SPLIT_NODE;
-
 
 typedef struct PROOFSEARCH_HELP {
   LIST            definitions;
@@ -154,7 +152,6 @@ static __inline__ void prfs_SetUsedEmptyClauses(PROOFSEARCH Prf, LIST Clauses)
 {
   Prf->usedemptyclauses = Clauses;
 }
-
 
 static __inline__ LIST prfs_WorkedOffClauses(PROOFSEARCH Prf)
 {
@@ -276,11 +273,11 @@ static __inline__ BOOL prfs_IsClauseValid(CLAUSE C, int Level)
 static __inline__ SPLIT prfs_GetSplitOfLevel(int L, PROOFSEARCH Prf)
 {
   LIST Scan;
-  Scan = Prf->stack; 
+  Scan = Prf->stack;
   while (!list_Empty(Scan) &&
 	 (((SPLIT)list_Car(Scan))->splitlevel != L))
-    Scan = list_Cdr(Scan);  
-  
+    Scan = list_Cdr(Scan);
+
   return (SPLIT) list_Car(Scan);
 }
 
@@ -309,7 +306,7 @@ static __inline__ BOOL prfs_SplitStackEmpty(PROOFSEARCH Prf)
   return list_StackEmpty(prfs_SplitStack(Prf));
 }
 
-static __inline__ int prfs_TopLevel(void) 
+static __inline__ int prfs_TopLevel(void)
 {
   return 0;
 }
@@ -419,7 +416,6 @@ static __inline__ void prfs_SetNonTrivClauseNumber(PROOFSEARCH Prf, NAT Number)
   Prf->nontrivclausenumber = Number;
 }
 
-
 /**************************************************************/
 /* Functions for accessing SPLIT objects                      */
 /**************************************************************/
@@ -474,7 +470,7 @@ static __inline__ void prfs_SplitSetUsed(SPLIT S)
   S->used = TRUE;
 }
 
-static __inline__ CLAUSE prfs_SplitFatherClause(SPLIT S) 
+static __inline__ CLAUSE prfs_SplitFatherClause(SPLIT S)
 {
   return S->father;
 }
@@ -483,7 +479,6 @@ static __inline__ void prfs_SplitSetFatherClause(SPLIT S, CLAUSE C)
 {
   S->father = C;
 }
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -517,6 +512,5 @@ void        prfs_InstallFiniteMonadicPredicates(PROOFSEARCH, LIST, LIST);
 CLAUSE      prfs_PerformSplitting(PROOFSEARCH, CLAUSE);
 CLAUSE      prfs_DoSplitting(PROOFSEARCH, CLAUSE, LIST);
 NAT         prfs_GetNumberOfInstances(PROOFSEARCH, LITERAL, BOOL);
-
 
 #endif

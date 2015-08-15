@@ -47,4 +47,3 @@ int main()
   printf("k(0,2,0.00) = "); k(0,2,0.00);
   return 0;
 }
-

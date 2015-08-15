@@ -41,7 +41,7 @@ cparser.byte: $(COBJS) $(BOBJS) Main.cmo
 clean::
 	rm -f cparser.byte
 
-cparser.cma: Cparser.cmo 
+cparser.cma: Cparser.cmo
 	$(OCAMLC) -a -o cparser.cma Cparser.cmo
 
 cparser.cmxa: Cparser.cmx

@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     CLOCK                              * */
 /* *                                                        * */
-/* *  $Module:   CLOCK                                      * */ 
+/* *  $Module:   CLOCK                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1999, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,11 +42,9 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "clock.h"
-
 
 /**************************************************************/
 /* Global Variables                                           */
@@ -81,8 +79,6 @@ void clock_Init(void)
 #endif
 }
 
-
-
 void clock_InitCounter(CLOCK_CLOCKS ClockCounter)
 /*********************************************************
   INPUT:   A clock counter.
@@ -93,7 +89,6 @@ void clock_InitCounter(CLOCK_CLOCKS ClockCounter)
 {
   clock_Akku[ClockCounter] = 0;
 }
-
 
 void clock_StartCounter(CLOCK_CLOCKS ClockCounter)
 /*********************************************************
@@ -108,8 +103,7 @@ void clock_StartCounter(CLOCK_CLOCKS ClockCounter)
 #endif
 }
 
-
-void clock_StopPassedTime(CLOCK_CLOCKS ClockCounter) 
+void clock_StopPassedTime(CLOCK_CLOCKS ClockCounter)
 /*********************************************************
   INPUT:   A clock counter.
   EFFECT:  Stores the number of seconds passed since given
@@ -126,8 +120,7 @@ void clock_StopPassedTime(CLOCK_CLOCKS ClockCounter)
 #endif
 }
 
-
-void clock_StopAddPassedTime(CLOCK_CLOCKS ClockCounter) 
+void clock_StopAddPassedTime(CLOCK_CLOCKS ClockCounter)
 /*********************************************************
   INPUT:   A clock counter.
   EFFECT:  Adds the number of seconds passed since given
@@ -143,7 +136,6 @@ void clock_StopAddPassedTime(CLOCK_CLOCKS ClockCounter)
   clock_Akku[ClockCounter] += clock_GetSeconds(ClockCounter);
 #endif
 }
-
 
 float clock_GetSeconds(CLOCK_CLOCKS ClockCounter)
 /*********************************************************
@@ -185,8 +177,6 @@ void clock_PingOneSecond(void)
   }
 }
 #endif
-
-
 
 void clock_PrintTime(CLOCK_CLOCKS ClockCounter)
 /*********************************************************

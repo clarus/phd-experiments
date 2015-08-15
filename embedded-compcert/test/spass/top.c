@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *              TOP MODULE OF SPASS                       * */
 /* *                                                        * */
-/* *  $Module:   TOP                                        * */ 
+/* *  $Module:   TOP                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,11 +42,9 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /*** MAIN LOOP *************************************************/
-
 
 /**************************************************************/
 /* Includes                                                   */
@@ -72,7 +70,6 @@
 #include <errno.h>
 #include <stdlib.h>
 
-
 /**************************************************************/
 /* Types and Variables                                        */
 /**************************************************************/
@@ -82,7 +79,6 @@ static const char *top_InputFile;
 static OPTID top_RemoveFileOptId;
 
 typedef enum {top_PROOF, top_COMPLETION, top_RESOURCE} top_SEARCHRESULT;
-
 
 /**************************************************************/
 /* Catch Signals Section                                      */
@@ -95,9 +91,9 @@ static PROOFSEARCH *top_PROOFSEARCH;
 
 static void top_SigHandler(int Signal)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECT:  
+  INPUT:
+  RETURNS:
+  EFFECT:
 ***************************************************************/
 {
   if (Signal == SIGSEGV || Signal == SIGBUS) {
@@ -112,7 +108,7 @@ static void top_SigHandler(int Signal)
     clock_StopPassedTime(clock_OVERALL);
     printf("\nSPASS %s ", misc_VERSION);
     puts("\nSPASS beiseite: Ran out of time. SPASS was killed.");
-    printf("Problem: %s ", 
+    printf("Problem: %s ",
 	   (top_InputFile != (char*)NULL ? top_InputFile : "Read from stdin."));
     printf("\nSPASS derived %d clauses, backtracked %d clauses "
 	   "and kept %d clauses.",
@@ -142,7 +138,6 @@ static void top_SigHandler(int Signal)
 }
 
 #endif
-
 
 /**************************************************************/
 /* Clause Selection Functions                                 */
@@ -205,7 +200,6 @@ static CLAUSE top_SelectClauseDepth(LIST List, FLAGSTORE Flags)
 
   return Result;
 }
-
 
 static CLAUSE top_SelectMinimalWeightClause(LIST List, FLAGSTORE Flags)
 /**************************************************************
@@ -270,7 +264,6 @@ static CLAUSE top_SelectMinimalWeightClause(LIST List, FLAGSTORE Flags)
   return Result;
 }
 
-
 static CLAUSE top_SelectMinimalConWeightClause(LIST List, FLAGSTORE Flags)
 /**************************************************************
   INPUT:   A non-empty list of clauses and a flag store.
@@ -326,12 +319,11 @@ static CLAUSE top_SelectMinimalConWeightClause(LIST List, FLAGSTORE Flags)
   return Result;
 }
 
-
 /*static CLAUSE top_SelectClauseDepth(LIST List)*/
 /**************************************************************
   INPUT:   A list of clauses.
   RETURNS: A clause selected from the list.
-  EFFECT:  
+  EFFECT:
 ***************************************************************/
 /*{
   CLAUSE Result;
@@ -358,7 +350,6 @@ static CLAUSE top_SelectMinimalConWeightClause(LIST List, FLAGSTORE Flags)
 
   return Result;
 }*/
-
 
 static LIST top_GetLiteralsForSplitting(CLAUSE Clause)
 /**************************************************************
@@ -413,7 +404,7 @@ static LIST top_GetLiteralsForSplitting(CLAUSE Clause)
 	Result = list_Cons((POINTER)i, Result);
     }
   }
-  
+
   /* Cleanup */
   for (i = clause_FirstLitIndex(); i <= clause_LastLitIndex(Clause); i++)
     list_Delete(Variables[i]);
@@ -421,7 +412,6 @@ static LIST top_GetLiteralsForSplitting(CLAUSE Clause)
   list_Delete(Failed);
   return Result;
 }
-
 
 static int top_GetOptimalSplitLiteralIndex(PROOFSEARCH Search, CLAUSE Clause,
 					   BOOL Usables)
@@ -458,7 +448,6 @@ static int top_GetOptimalSplitLiteralIndex(PROOFSEARCH Search, CLAUSE Clause,
   }
   return Result;
 }
-
 
 /* EK: hier lassen oder nach search.c oder nach rules-split.c? */
 static CLAUSE top_GetPowerfulSplitClause(PROOFSEARCH Search, BOOL Usables,
@@ -545,7 +534,6 @@ static CLAUSE top_GetPowerfulSplitClause(PROOFSEARCH Search, BOOL Usables,
   return OptimalClause;
 }
 
-
 static LIST top_FullReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 							  CLAUSE *SplitClause,
 							  int *Counter)
@@ -594,7 +582,7 @@ static LIST top_FullReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
   if (*SplitClause != NULL &&
       list_PointerMember(prfs_UsableClauses(Search), *SplitClause))
     GivenClause = *SplitClause;
-  
+
   *SplitClause = NULL;
 
   if (GivenClause == NULL) {
@@ -602,12 +590,12 @@ static LIST top_FullReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
       /* 2) Try to find an "optimal" splitting clause, that doesn't share */
       /*    variables with any other literal.                             */
       GivenClause = top_GetPowerfulSplitClause(Search, FALSE, &LitIndex);
-      
+
     if (GivenClause != NULL) {
       /* Found "optimal" split clause, so apply splitting */
       SplitLits = list_List(clause_GetLiteral(GivenClause, LitIndex));
       *SplitClause = prfs_DoSplitting(Search, GivenClause, SplitLits);
-      list_Delete(SplitLits);      
+      list_Delete(SplitLits);
     } else {
       /* 3) Splitting wasn't applied, so use the other strategies */
       if ((*Counter) % flag_GetFlagValue(Flags, flag_WDRATIO) == 0)
@@ -648,7 +636,7 @@ static LIST top_FullReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
     clause_Print(GivenClause);
     fflush(stdout);
   }
-  
+
   if (*SplitClause != NULL)
     Derivables = list_List(*SplitClause);
   else {
@@ -661,7 +649,7 @@ static LIST top_FullReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 					prfs_UsableSharingIndex(Search), Flags,
 					Precedence);
       clock_StopAddPassedTime(clock_REDUCTION);
-      
+
       if (TerminatorClause != NULL) {
 	/* An empty clause was derived by the "terminator" rule */
 	Derivables = list_List(TerminatorClause);
@@ -683,7 +671,6 @@ static LIST top_FullReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 
   return Derivables;
 }
-
 
 static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 							  CLAUSE *SplitClause,
@@ -755,7 +742,7 @@ static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 
     /* Reduce the selected clause */
     clock_StartCounter(clock_REDUCTION);
-    GivenClause = red_CompleteReductionOnDerivedClause(Search, GivenClause, 
+    GivenClause = red_CompleteReductionOnDerivedClause(Search, GivenClause,
 						       red_WORKEDOFF);
     clock_StopAddPassedTime(clock_REDUCTION);
   }
@@ -764,7 +751,6 @@ static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
     /* Set of usable clauses is empty */
     return list_Nil();
 
-  
   if (clause_IsEmptyClause(GivenClause)) {
     Derivables = list_List(GivenClause);
     return Derivables;
@@ -779,9 +765,9 @@ static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
   /* Print selected clause */
   if (flag_GetFlagValue(Flags, flag_PGIVEN)) {
     fputs("\n\tGiven clause: ", stdout);
-    clause_Print(GivenClause); 
+    clause_Print(GivenClause);
     fflush(stdout);
-  }     
+  }
 
   /* Try splitting */
   if (prfs_SplitCounter(Search) != 0) {
@@ -793,14 +779,14 @@ static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 
       SplitLits = list_List(clause_GetLiteral(GivenClause, LitIndex));
       *SplitClause = prfs_DoSplitting(Search, GivenClause, SplitLits);
-      list_Delete(SplitLits);      
+      list_Delete(SplitLits);
     } else {
       /* Try the old splitting that allows negative literals   */
       /* sharing variables with the selected positive literal. */
       *SplitClause = prfs_PerformSplitting(Search, GivenClause);
     }
-  } 
-  
+  }
+
   if (*SplitClause != NULL) {
     Derivables = list_Cons(*SplitClause, Derivables);
   } else {
@@ -816,7 +802,7 @@ static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
 	prfs_InsertUsableClause(Search, GivenClause);
       }
     }
-    if (TerminatorClause == (CLAUSE)NULL) {   
+    if (TerminatorClause == (CLAUSE)NULL) {
       clause_SelectLiteral(GivenClause, Flags);
       /* clause_SetSpecialFlags(GivenClause,ana_SortDecreasing());*/
       prfs_InsertWorkedOffClause(Search, GivenClause);
@@ -826,12 +812,11 @@ static LIST top_LazyReductionSelectGivenComputeDerivables(PROOFSEARCH Search,
       clock_StopAddPassedTime(clock_INFERENCE);
     }
   }
-  
+
   prfs_IncDerivedClauses(Search, list_Length(Derivables));
 
   return Derivables;
 }
-
 
 static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
 				   FLAGSTORE InputFlags, LIST UserPrecedence, int *BoundApplied)
@@ -841,7 +826,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
            the input file, a list containing the precedence as
 	   specified by the user, and a pointer to an integer.
   RETURNS: The same proof search object
-  EFFECTS: 
+  EFFECTS:
 ***************************************************************/
 {
   LIST       Scan,EmptyClauses,Derivables;
@@ -933,7 +918,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
      Since they are shared, we have to extract them from
      the sharing before fixing them. Afterwards, we have to
      insert them in the sharing again.
-  */ 
+  */
   for (Scan = prfs_UsableClauses(Search);
        !list_Empty(Scan);
        Scan = list_Cdr(Scan)) {
@@ -956,8 +941,8 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
   }
 
   /* Sort usable set. */
-  prfs_SetUsableClauses(Search, 
-			list_Sort(prfs_UsableClauses(Search), 
+  prfs_SetUsableClauses(Search,
+			list_Sort(prfs_UsableClauses(Search),
 				  (BOOL (*) (void *, void *)) clause_CompareAbstractLEQ));
 
   if (flag_GetFlagValue(Flags, flag_SOS)) {
@@ -976,7 +961,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
     clause_ListPrint(prfs_UsableClauses(Search));
   }
 
-  while ((list_Empty(EmptyClauses) || !prfs_SplitStackEmpty(Search)) && 
+  while ((list_Empty(EmptyClauses) || !prfs_SplitStackEmpty(Search)) &&
 	 prfs_Loops(Search) != 0 &&
 	 ((*BoundApplied != -1) || !list_Empty(prfs_UsableClauses(Search))) &&
 	 (flag_GetFlagValue(Flags,flag_TIMELIMIT) == flag_TIMELIMITUNLIMITED ||
@@ -986,12 +971,12 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
     SplitClause   = (CLAUSE)NULL;
     *BoundApplied = -1;
 
-    while ((list_Empty(EmptyClauses) || !prfs_SplitStackEmpty(Search)) && 
+    while ((list_Empty(EmptyClauses) || !prfs_SplitStackEmpty(Search)) &&
 	   prfs_Loops(Search) != 0 &&
 	   (!list_Empty(prfs_UsableClauses(Search)) || !list_Empty(EmptyClauses)) &&
 	   (flag_GetFlagValue(Flags,flag_TIMELIMIT) == flag_TIMELIMITUNLIMITED ||
 	    flag_GetFlagValue(Flags,flag_TIMELIMIT) > clock_GetSeconds(clock_OVERALL))) {
-      
+
       if (!list_Empty(EmptyClauses)) {
 	/* Backtracking */
 	clock_StartCounter(clock_BACKTRACK);
@@ -999,7 +984,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
 				     &SplitClause);
 	clock_StopAddPassedTime(clock_BACKTRACK);
 	prfs_IncBacktrackedClauses(Search, list_Length(Derivables));
-      
+
 	if (prfs_SplitStackEmpty(Search))
 	  Derivables = list_Nconc(EmptyClauses, Derivables);
 	else {
@@ -1027,7 +1012,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
 	}
 	if (!ana_Equations())
 	  red_CheckSplitSubsumptionCondition(Search);
-#endif 
+#endif
 
 	if (flag_GetFlagValue(Flags, flag_FULLRED))
 	  Derivables = top_FullReductionSelectGivenComputeDerivables(Search, &SplitClause, &Counter);
@@ -1038,7 +1023,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
       /* Print the derived clauses, if required */
       if (flag_GetFlagValue(Flags, flag_PDER))
 	for (Scan=Derivables; !list_Empty(Scan); Scan=list_Cdr(Scan)) {
-	  fputs("\nDerived: ", stdout); 
+	  fputs("\nDerived: ", stdout);
 	  clause_Print(list_Car(Scan));
 	}
 
@@ -1048,7 +1033,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
       /* Apply reduction rules */
       clock_StartCounter(clock_REDUCTION);
       if (flag_GetFlagValue(Flags, flag_FULLRED)) {
-	EmptyClauses = 
+	EmptyClauses =
 	  list_Nconc(EmptyClauses,
 		     red_CompleteReductionOnDerivedClauses(Search, Derivables,
 							   red_ALL, ActBound,
@@ -1063,7 +1048,6 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
 							   BoundApplied));
       }
       clock_StopAddPassedTime(clock_REDUCTION);
-      
 
       if (!list_Empty(EmptyClauses)) {
 	HighestLevelEmptyClause = split_SmallestSplitLevelClause(EmptyClauses);
@@ -1074,7 +1058,7 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
       }
       prfs_DecLoops(Search);
     }
-  
+
     if (ActBound != flag_BOUNDSTARTUNLIMITED &&
 	BoundMode != flag_BOUNDMODEUNLIMITED) {
       BoundLoops--;
@@ -1096,12 +1080,11 @@ static PROOFSEARCH top_ProofSearch(PROOFSEARCH Search, LIST ProblemClauses,
   return Search;
 }
 
-
 static void top_Flotter(int argc, const char* argv[], LIST InputClauses)
 /**************************************************************
-  INPUT:  
+  INPUT:
   RETURNS: Nothing.
-  EFFECT:  
+  EFFECT:
 ***************************************************************/
 {
   FILE *Output;
@@ -1121,17 +1104,15 @@ static void top_Flotter(int argc, const char* argv[], LIST InputClauses)
   strncpy(description,dfg_ProblemDescription(),size-creator_size-3);
   strcpy(description+size-creator_size-3, creator);
 
-  
-  clause_FPrintCnfDFGProblem(Output, dfg_ProblemName(), dfg_ProblemAuthor(), 
+  clause_FPrintCnfDFGProblem(Output, dfg_ProblemName(), dfg_ProblemAuthor(),
 			     dfg_ProblemStatusString(), description, InputClauses);
-  
+
   fputs("\nFLOTTER needed\t", stdout);
   clock_PrintTime(clock_INPUT);
   puts(" for the input.");
   fputs("\t\t", stdout);
   clock_PrintTime(clock_CNF);
   fputs(" for the  CNF translation.", stdout);
-  
 
   if (Output != stdout)
     misc_CloseFile(Output,argv[opts_Indicator()+1]);
@@ -1145,28 +1126,26 @@ static BOOL top_CalledFlotter(const char* Call)
   return string_Equal((Call + (length > 7 ? length - 7 : 0)), "FLOTTER");
 }
 
-
-
 /**************************************************************/
 /* Main Function                                              */
 /**************************************************************/
 
 int main(int argc, const char* argv[])
 {
-  LIST              InputClauses,Scan,Axioms,Conjectures, Sorts, QueryClauses, 
-    LabelClauses, QueryPair, ProblemClauses, Labellist, Sortlabellist, 
+  LIST              InputClauses,Scan,Axioms,Conjectures, Sorts, QueryClauses,
+    LabelClauses, QueryPair, ProblemClauses, Labellist, Sortlabellist,
     Symblist, UserPrecedence;
   PROOFSEARCH       Search, FlotterSearch;
   /* <InputFlags> are the flags from the problem file and the command line. */
   FLAGSTORE         InputFlags, Flags;
   /* <InputPrecedence> is the precedence after reading the problem file. */
   PRECEDENCE        InputPrecedence, Precedence;
-  FILE*             InputStream; 
+  FILE*             InputStream;
   HASH              TermLabelToClauselist, ClauseToTermLabellist;
   top_SEARCHRESULT  Result;
 
   Search = (PROOFSEARCH)NULL;
-  
+
 #if (defined(SPASS_SIGNALS))
   top_PROOFSEARCH = &Search;
   signal(SIGINT, top_SigHandler);
@@ -1207,7 +1186,7 @@ int main(int argc, const char* argv[])
   opts_DeclareSPASSFlagsAsOptions();
   top_RemoveFileOptId = opts_Declare("rf", opts_NOARGTYPE);
 
-  if (!opts_Read(argc, argv)) 
+  if (!opts_Read(argc, argv))
     return EXIT_FAILURE;
 
    /* Check whether flag_STDIN is set in the command line */
@@ -1223,13 +1202,13 @@ int main(int argc, const char* argv[])
     else
       puts("\n\t       Usage: SPASS [options] [<input-file>] \n");
     puts("Possible options:\n");
-    opts_PrintSPASSNames(); 
+    opts_PrintSPASSNames();
     return EXIT_FAILURE;
   }
   FlotterSearch = NULL;
 
   Axioms = Conjectures = Sorts = Labellist = Sortlabellist = UserPrecedence = list_Nil();
-  
+
   if (flag_GetFlagValue(InputFlags, flag_STDIN)) {
     top_InputFile = (char*)NULL;
     InputStream   = stdin;
@@ -1237,13 +1216,13 @@ int main(int argc, const char* argv[])
     top_InputFile = argv[opts_Indicator()];
     InputStream = misc_OpenFile(top_InputFile, "r");
   }
-  
+
   clock_StartCounter(clock_INPUT);
   flag_CleanStore(InputFlags);  /* Mark all flags as unset */
 
   /* Now add flags from file to InputFlags and set precedence */
   InputClauses = dfg_DFGParser(InputStream, InputFlags, InputPrecedence, &Axioms,
-			       &Conjectures, &Sorts, &UserPrecedence); 
+			       &Conjectures, &Sorts, &UserPrecedence);
 
   /* Add/overwrite with command line flags */
   opts_SetFlags(InputFlags);
@@ -1257,7 +1236,6 @@ int main(int argc, const char* argv[])
 
   /* Transfer input precedence to search object */
   symbol_TransferPrecedence(InputPrecedence, Precedence);
-
 
   /* Complain about missing input clauses/formulae when in */
   /* non-interactive mode */
@@ -1287,10 +1265,10 @@ int main(int argc, const char* argv[])
     TermLabelToClauselist = NULL;
     ClauseToTermLabellist = NULL;
   }
-  
+
   /* Build conjecture formula and negate it: Conjectures are taken disjunctively!!*/
   for (Scan = Conjectures; !list_Empty(Scan); Scan = list_Cdr(Scan))
-    list_Rplacd(list_Car(Scan), (LIST)term_Create(fol_Not(), 
+    list_Rplacd(list_Car(Scan), (LIST)term_Create(fol_Not(),
 						  list_List(list_PairSecond(list_Car(Scan)))));
 
   clock_StopPassedTime(clock_INPUT);
@@ -1307,7 +1285,7 @@ int main(int argc, const char* argv[])
     NAT Termcount;
 
     Termcount  = 0;
-    
+
     /* Create labels for formulae without them */
     for (Scan = Axioms; !list_Empty(Scan); Scan = list_Cdr(Scan), Termcount++) {
       if (list_PairFirst(list_Car(Scan)) == NULL) {
@@ -1339,9 +1317,8 @@ int main(int argc, const char* argv[])
     }
     Axioms = list_Nconc(Axioms, Sorts);
 
-
     if (flag_GetFlagValue(Flags, flag_APPLYDEFS) != flag_APPLYDEFSOFF) {
-      def_ExtractDefsFromTermlist(Search, Axioms, Conjectures); 
+      def_ExtractDefsFromTermlist(Search, Axioms, Conjectures);
       Conjectures = def_ApplyDefinitionToTermList(prfs_Definitions(Search),
 						  Conjectures, Flags,
 						  Precedence);
@@ -1420,7 +1397,7 @@ int main(int argc, const char* argv[])
 
 	l = list_PointerDeleteDuplicates(list_Copy(l));
 	LabelClauses = list_Nconc(l, LabelClauses);
-      }	
+      }
 
       /* For labelclauses copies are introduced */
       /* So an update to the clause to term mapping is necessary */
@@ -1449,13 +1426,12 @@ int main(int argc, const char* argv[])
       InputClauses   = list_Nil();
     }
 
-
     prfs_SetSplitCounter(Search,flag_GetFlagValue(Flags, flag_SPLITS));
     prfs_SetLoops(Search,flag_GetFlagValue(Flags, flag_LOOPS));
     prfs_SetBacktrackedClauses(Search, 0);
     BoundApplied = -1;
     Search = top_ProofSearch(Search, ProblemClauses, InputFlags, UserPrecedence, &BoundApplied);
-  
+
     if ((flag_GetFlagValue(Flags, flag_TIMELIMIT) == flag_TIMELIMITUNLIMITED ||
 	 flag_GetFlagValue(Flags, flag_TIMELIMIT) > clock_GetSeconds(clock_OVERALL)) &&
 	prfs_Loops(Search) != 0 &&
@@ -1465,7 +1441,7 @@ int main(int argc, const char* argv[])
       else
 	Result = top_PROOF;
     }
-   
+
     if (flag_GetFlagValue(Flags, flag_TIMELIMIT) != 0) {
       /* Stop SPASS immediately */
       printf("\nSPASS %s ", misc_VERSION);
@@ -1541,7 +1517,7 @@ int main(int argc, const char* argv[])
 	else
 	  printf("\nClauses printed to: %s\n", name);
       }
-    
+
       if (flag_GetFlagValue(Flags, flag_DOCPROOF) && Result != top_RESOURCE) {
 	if (Result == top_COMPLETION) {
 	  puts("\n\n The saturated set of worked-off clauses is :");
@@ -1567,7 +1543,7 @@ int main(int argc, const char* argv[])
 	  list_Delete(UsedClauses);
 	  UsedTerms = cnf_DeleteDuplicateLabelsFromList(UsedTerms);
 	  fputs("\nFormulae used in the proof :", stdout);
-	  for (Scan = UsedTerms; !list_Empty(Scan); Scan = list_Cdr(Scan)) 
+	  for (Scan = UsedTerms; !list_Empty(Scan); Scan = list_Cdr(Scan))
 	    if (!(strncmp((char*) list_Car(Scan), "_SORT_", 6) == 0))
 	      printf(" %s", (char*) list_Car(Scan));
 	  putchar('\n');
@@ -1575,13 +1551,13 @@ int main(int argc, const char* argv[])
 	}
       }
     }
-    
+
     /* Delete mapping for the clause copies of the labelclauses */
     for (Scan = LabelClauses; !list_Empty(Scan); Scan=list_Cdr(Scan))
       hsh_DelItem(ClauseToTermLabellist, list_Car(Scan));
-    
+
     list_Delete(ProblemClauses);
- 
+
     fflush(stdout);
 
     /* Keep definitions */
@@ -1603,10 +1579,10 @@ int main(int argc, const char* argv[])
   if (flag_GetFlagValue(Flags, flag_INTERACTIVE)) {
     if (flag_GetFlagValue(Flags, flag_DOCPROOF))
       list_Delete(Symblist);
-    else 
+    else
       symbol_DeleteSymbolList(Symblist);
     /*  symbol_ResetSkolemIndex(); */
-    if (FlotterSearch != NULL) 
+    if (FlotterSearch != NULL)
       prfs_Delete(FlotterSearch);
   }
   if (flag_GetFlagValue(Flags, flag_PFLAGS)) {

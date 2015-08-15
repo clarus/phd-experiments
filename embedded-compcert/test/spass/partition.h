@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             PARTITION                                  * */
 /* *                                                        * */
-/* *  $Module:   PARTITION                                  * */ 
+/* *  $Module:   PARTITION                                  * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -47,13 +47,11 @@
 #ifndef _PARTITION_
 #define _PARTITION_
 
-
 /**************************************************************/
 /* Include                                                    */
 /**************************************************************/
 
 #include "memory.h"
-
 
 /**************************************************************/
 /* Constants and types                                        */
@@ -63,7 +61,6 @@
 #define part_ALLOC        -2  /* index of size of allocated space */
 #define part_STAMPCOUNTER -3  /* index of stampcounter */
 #define part_HEAD          3  /* length of head for management purposes */
-
 
 typedef int ELEMENT;
 typedef ELEMENT ECLASS, *PARTITION;
@@ -77,7 +74,6 @@ typedef ELEMENT ECLASS, *PARTITION;
 /* -size - 3, ..., -4, -3, -2, -1, 0, ..., size - 1, size, ..., 2 * size - 1 */
 /* <--- stamp[] ----|              |--- class[] -->  |---- classsize[] ----> */
 
-
 /**************************************************************/
 /* Prototypes                                                 */
 /**************************************************************/
@@ -89,7 +85,6 @@ ECLASS part_Find(PARTITION, ELEMENT);
 PARTITION part_Union(PARTITION, ECLASS, ECLASS);
   /* unions the classes, the representative of the first class is the */
   /* representative of the union                                      */
-
 
 /**************************************************************/
 /* Inline functions                                           */
@@ -104,24 +99,19 @@ static __inline__ void part_Free(PARTITION p)
     );
 }
 
-
 static __inline__ int part_Size(PARTITION p)
 {
   return p[part_CARD];
 }
-
 
 static __inline__ BOOL part_Element(PARTITION p, ELEMENT e)
 {
   return 0 <= e && e < part_Size(p);
 }
 
-
 static __inline__ BOOL part_Equivalent(PARTITION p, ELEMENT e1, ELEMENT e2)
 {
   return part_Find(p, e1) == part_Find(p, e2);
 }
 
-
 #endif
-

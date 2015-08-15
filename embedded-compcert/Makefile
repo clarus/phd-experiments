@@ -262,7 +262,7 @@ check-admitted: $(FILES)
 # UnionFind.UF.elt gives "Anomaly: Uncaught exception Reduction.NotConvertible"
 
 check-proof: $(FILES)
-	$(COQCHK) -admit Integers -admit Floats -admit AST -admit Asm -admit Mach -admit UnionFind Complements 
+	$(COQCHK) -admit Integers -admit Floats -admit AST -admit Asm -admit Mach -admit UnionFind Complements
 
 print-includes:
 	@echo $(COQINCLUDES)

@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             GLOBAL SYSTEM VECTOR                       * */
 /* *                                                        * */
-/* *  $Module:   VECTOR                                     * */ 
+/* *  $Module:   VECTOR                                     * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1998, 1999, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,15 +42,12 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #ifndef _VECTOR_
 #define _VECTOR_
 
 #include "misc.h"
-
 
 /**************************************************************/
 /* Type and Variable Definitions                              */
@@ -87,7 +84,6 @@ static __inline__ void vec_Push(POINTER Value)
   vec_VECTOR[vec_MAX++] = Value;
 }
 
-
 static __inline__ POINTER vec_GetNth(NAT Index)
 {
 #ifdef CHECK
@@ -101,7 +97,6 @@ static __inline__ POINTER vec_GetNth(NAT Index)
   return vec_VECTOR[Index];
 }
 
-
 static __inline__ void vec_PutNth(NAT Index, POINTER Value)
 {
 #ifdef CHECK
@@ -114,7 +109,6 @@ static __inline__ void vec_PutNth(NAT Index, POINTER Value)
 
   vec_VECTOR[Index] = Value;
 }
-
 
 static __inline__ void vec_Pop(void)
 {
@@ -145,7 +139,6 @@ static __inline__ POINTER vec_NthTop(int N)
 {
   return vec_VECTOR[vec_MAX-(1+N)];
 }
-
 
 static __inline__ void vec_RplacTop(POINTER Value)
 {

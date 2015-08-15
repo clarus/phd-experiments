@@ -10,7 +10,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-(** Recognition of combined operations, addressing modes and conditions 
+(** Recognition of combined operations, addressing modes and conditions
   during the [CSE] phase. *)
 
 Require Import Coqlib.
@@ -39,12 +39,12 @@ Lemma combine_compimm_ne_0_sound:
 Proof.
   intros until args. functional induction (combine_compimm_ne_0 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
   destruct (eval_condition cond (map valu args) m); simpl; auto. destruct b; auto.
   (* of and *)
-  exploit get_sound; eauto. unfold equation_holds; simpl. 
-  destruct args; try discriminate. destruct args; try discriminate. simpl. 
-  intros EQ; inv EQ. destruct (valu v); simpl; auto. 
+  exploit get_sound; eauto. unfold equation_holds; simpl.
+  destruct args; try discriminate. destruct args; try discriminate. simpl.
+  intros EQ; inv EQ. destruct (valu v); simpl; auto.
 Qed.
 
 Lemma combine_compimm_eq_0_sound:
@@ -55,13 +55,13 @@ Lemma combine_compimm_eq_0_sound:
 Proof.
   intros until args. functional induction (combine_compimm_eq_0 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
-  rewrite eval_negate_condition. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
+  rewrite eval_negate_condition.
   destruct (eval_condition c (map valu args) m); simpl; auto. destruct b; auto.
   (* of and *)
-  exploit get_sound; eauto. unfold equation_holds; simpl. 
-  destruct args; try discriminate. destruct args; try discriminate. simpl. 
-  intros EQ; inv EQ. destruct (valu v); simpl; auto. 
+  exploit get_sound; eauto. unfold equation_holds; simpl.
+  destruct args; try discriminate. destruct args; try discriminate. simpl.
+  intros EQ; inv EQ. destruct (valu v); simpl; auto.
 Qed.
 
 Lemma combine_compimm_eq_1_sound:
@@ -72,7 +72,7 @@ Lemma combine_compimm_eq_1_sound:
 Proof.
   intros until args. functional induction (combine_compimm_eq_1 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
   destruct (eval_condition cond (map valu args) m); simpl; auto. destruct b; auto.
 Qed.
 
@@ -84,7 +84,7 @@ Lemma combine_compimm_ne_1_sound:
 Proof.
   intros until args. functional induction (combine_compimm_ne_1 get x); intros EQ; inv EQ.
   (* of cmp *)
-  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ. 
+  exploit get_sound; eauto. unfold equation_holds. simpl. intro EQ; inv EQ.
   rewrite eval_negate_condition.
   destruct (eval_condition c (map valu args) m); simpl; auto. destruct b; auto.
 Qed.
@@ -123,18 +123,18 @@ Proof.
   assert (forall vl,
          eval_addressing ge sp (SelectOp.offset_addressing a n) vl =
          option_map (fun v => Val.add v (Vint n)) (eval_addressing ge sp a vl)).
-    intros. destruct a; simpl; repeat (destruct vl; auto); simpl. 
-    rewrite Val.add_assoc. auto. 
+    intros. destruct a; simpl; repeat (destruct vl; auto); simpl.
+    rewrite Val.add_assoc. auto.
     repeat rewrite Val.add_assoc. auto.
     rewrite Val.add_assoc. auto.
     repeat rewrite Val.add_assoc. auto.
-    unfold symbol_address. destruct (Globalenvs.Genv.find_symbol ge i); auto. 
     unfold symbol_address. destruct (Globalenvs.Genv.find_symbol ge i); auto.
-      repeat rewrite <- (Val.add_commut v). rewrite Val.add_assoc. auto. 
+    unfold symbol_address. destruct (Globalenvs.Genv.find_symbol ge i); auto.
+      repeat rewrite <- (Val.add_commut v). rewrite Val.add_assoc. auto.
     unfold symbol_address. destruct (Globalenvs.Genv.find_symbol ge i0); auto.
       repeat rewrite <- (Val.add_commut (Val.mul v (Vint i))). rewrite Val.add_assoc. auto.
     rewrite Val.add_assoc; auto.
-  rewrite H0. rewrite EQ. auto. 
+  rewrite H0. rewrite EQ. auto.
 Qed.
 
 Theorem combine_op_sound:
@@ -144,7 +144,7 @@ Theorem combine_op_sound:
 Proof.
   intros. functional inversion H; subst.
 (* lea *)
-  simpl. eapply combine_addr_sound; eauto. 
+  simpl. eapply combine_addr_sound; eauto.
 (* cmp *)
   simpl. decEq; decEq. eapply combine_cond_sound; eauto.
 Qed.

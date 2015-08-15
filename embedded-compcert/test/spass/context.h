@@ -42,15 +42,12 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #define SHOWBINDINGS 0
 
 #ifndef _CONTEXT_
 #define _CONTEXT_
-
 
 /**************************************************************/
 /* Includes                                                   */
@@ -95,7 +92,6 @@ extern CONTEXT cont_LEFTCONTEXT;
 extern CONTEXT cont_RIGHTCONTEXT;
 extern CONTEXT cont_INSTANCECONTEXT; /* This context is used as a label only (dummy context) */
 
-
 static __inline__ CONTEXT cont_LeftContext(void)
 {
   return cont_LEFTCONTEXT;
@@ -138,7 +134,7 @@ static __inline__ void cont_StackPush(int Entry)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   cont_STACK[cont_STACKPOINTER++] = Entry;
 }
 
@@ -196,7 +192,6 @@ static __inline__ BOOL cont_StackEmpty(int Pointer)
 {
   return cont_STACKPOINTER == Pointer;
 }
-
 
 static __inline__ void cont_StartBinding(void)
 {
@@ -464,7 +459,7 @@ static __inline__ CONTEXT cont_Create(void)
 
   return Result;
 }
-    
+
 static __inline__ void cont_Delete(CONTEXT C)
 {
 #ifdef CHECK
@@ -529,8 +524,8 @@ static __inline__ void cont_BindingOutput(CONTEXT C, SYMBOL Var)
     symbol_Print(Var);
     fputs(" -> ", stdout);
     symbol_Print(cont_ContextBindingRenaming(C, Var));
-  } 
-  
+  }
+
   fflush(stdout);
 }
 
@@ -814,7 +809,7 @@ static __inline__ void cont_CheckStackPush(POINTER Entry)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   cont_CHECKSTACK[cont_CHECKSTACKPOINTER++] = Entry;
 }
 
@@ -961,9 +956,9 @@ static __inline__ SYMBOL cont_NextIndexVariable(const CONTEXT IndexContext)
   else
     for (;;) {
       cont_INDEXVARSCANNER = symbol_NextIndexVariable(cont_INDEXVARSCANNER);
-      if (!cont_VarIsUsed(IndexContext, cont_INDEXVARSCANNER)) 
+      if (!cont_VarIsUsed(IndexContext, cont_INDEXVARSCANNER))
 	break;
-      else 
+      else
 	if (symbol_Equal(cont_INDEXVARSCANNER, symbol_LastIndexVariable())) {
 	  cont_INDEXVARSCANNER = symbol_CreateIndexVariable();
 	  break;
@@ -997,7 +992,7 @@ static __inline__ TERM cont_Deref(CONTEXT* Context, TERM Term)
       HelpContext = cont_ContextBindingContext(*Context, TermTop);
       Term        = cont_ContextBindingTerm(*Context, TermTop);
       *Context    = HelpContext;
-    } 
+    }
     else
       return Term;
   }
@@ -1008,7 +1003,7 @@ static __inline__ TERM cont_Deref(CONTEXT* Context, TERM Term)
 /**************************************************************/
 /* Functions for Initialization and Controlling               */
 /**************************************************************/
-           
+
 void cont_Init(void);
 void cont_Check(void);
 void cont_Free(void);

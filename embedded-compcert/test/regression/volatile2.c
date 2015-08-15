@@ -46,4 +46,3 @@ int main()
   TEST("global long long", long long, gll, 0x123456789ABCDEFLL, 0x789ABCDEF1234567LL);
   return 0;
 }
-

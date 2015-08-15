@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     SUBSUMPTION                        * */
 /* *                                                        * */
-/* *  $Module:   SUBSUMPTION                                * */ 
+/* *  $Module:   SUBSUMPTION                                * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1999, 2000                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,9 +42,7 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #ifndef _SUBSUMPTION_
 #define _SUBSUMPTION_
@@ -84,4 +82,3 @@ BOOL subs_IdcEqMatch(CLAUSE, CLAUSE, SUBST);
 BOOL subs_IdcEqMatchExcept(CLAUSE, int, CLAUSE, int, SUBST);
 
 #endif
-

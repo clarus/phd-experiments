@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                 SIMPLE HASHING                         * */
 /* *                                                        * */
-/* *  $Module:   HASH                                       * */ 
+/* *  $Module:   HASH                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1999, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "hash.h"
@@ -53,7 +52,6 @@
 
 LIST hash_TABLE[hash__SIZE];
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -61,7 +59,7 @@ LIST hash_TABLE[hash__SIZE];
 void hash_Init(void)
 {
   int i;
-  
+
   for (i = 0; i < hash__SIZE; i++)
     hash_PutList(i, list_Nil());
 }
@@ -70,7 +68,7 @@ void hash_Reset(void)
 {
   int  i;
   LIST Scan;
-  
+
   for (i = 0; i < hash__SIZE; i++) {
     Scan = hash_List(i);
     while (!list_Empty(Scan)) {
@@ -86,7 +84,7 @@ void hash_ResetWithValue(void (*ValueDelete)(POINTER))
 {
   int  i;
   LIST Scan;
-  
+
   for (i = 0; i < hash__SIZE; i++) {
     Scan = hash_List(i);
     while (!list_Empty(Scan)) {
@@ -104,7 +102,7 @@ POINTER hash_Get(POINTER key)
   LIST Scan;
 
   Scan = hash_List(hash_Index(key));
-  
+
   while (!list_Empty(Scan)) {
     if (list_PairFirst(list_Car(Scan)) == key)
       return list_PairSecond(list_Car(Scan));

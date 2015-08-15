@@ -44,7 +44,7 @@ option) any later version:
   backend/CMtypecheck.ml
   backend/CMtypecheck.mli
 
-  all files in the cparser/ directory 
+  all files in the cparser/ directory
         (except those listed below which are under a BSD license)
 
   all files in the exportclight/ directory
@@ -549,7 +549,6 @@ POSSIBILITY OF SUCH DAMAGE.
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
-
 
   This version of the GNU Lesser General Public License incorporates
 the terms and conditions of version 3 of the GNU General Public

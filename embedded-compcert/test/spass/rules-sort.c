@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *           INFERENCE RULES FOR SORTS                    * */
 /* *                                                        * */
-/* *  $Module:   SORTRULES                                  * */ 
+/* *  $Module:   SORTRULES                                  * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /**************************************************************/
@@ -51,14 +50,12 @@
 
 #include "rules-sort.h"
 
-     
 /**************************************************************/
 /* Functions                                                  */
-/**************************************************************/ 
+/**************************************************************/
 
 static LIST inf_GetForwardPartnerLits(LITERAL, st_INDEX);
 static SORT inf_GetSortFromLits(LIST, SORTTHEORY);
-
 
 static BOOL inf_SubsortPrecheck(CLAUSE Clause, LIST TLits, LITERAL Special,
 				st_INDEX Index, SORTTHEORY SortTheory)
@@ -100,7 +97,7 @@ static BOOL inf_SubsortPrecheck(CLAUSE Clause, LIST TLits, LITERAL Special,
 
   return result;
 }
-     
+
 static LIST inf_GetSortResolutionPartnerLits(TERM Atom, st_INDEX Index)
 /**************************************************************
   INPUT:   A clause, and an Index of clauses.
@@ -112,7 +109,7 @@ static LIST inf_GetSortResolutionPartnerLits(TERM Atom, st_INDEX Index)
   LITERAL NextLit;
   CLAUSE  Clause;
 
-#ifdef CHECK  
+#ifdef CHECK
   if (!term_IsAtom(Atom)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In inf_GetSortResolutionPartnerLits: Variable as atom input.\n");
@@ -122,30 +119,29 @@ static LIST inf_GetSortResolutionPartnerLits(TERM Atom, st_INDEX Index)
 
   Result   = list_Nil();
   TermList = st_GetUnifier(cont_LeftContext(), Index, cont_RightContext(), Atom);
-  
+
   for ( ; !list_Empty(TermList); TermList = list_Pop(TermList)) {
-    
+
     if (term_IsAtom(list_Car(TermList))) {
-      
-      for (LitScan = sharing_NAtomDataList(list_Car(TermList)); 
-	   !list_Empty(LitScan); 
+
+      for (LitScan = sharing_NAtomDataList(list_Car(TermList));
+	   !list_Empty(LitScan);
 	   LitScan = list_Cdr(LitScan)){
 	NextLit = list_Car(LitScan);
 	Clause  = clause_LiteralOwningClause(NextLit);
-	
-	if (clause_LiteralIsPositive(NextLit) && 
+
+	if (clause_LiteralIsPositive(NextLit) &&
 	    clause_LiteralGetFlag(NextLit,STRICTMAXIMAL) &&
 	    clause_GetFlag(Clause, WORKEDOFF) &&
 	    clause_HasSolvedConstraint(Clause) &&
-	    !list_PointerMember(Result, NextLit)) 
+	    !list_PointerMember(Result, NextLit))
 	  Result = list_Cons(NextLit, Result);
       }
     }
   }
-  
+
   return Result;
 }
-
 
 static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
 						SUBST Subst, LIST Foundlits,
@@ -168,7 +164,7 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
   int    i,bound, depth;
   BOOL   IsFromEmptySort;
   LIST   Partners;
-  
+
   ParentCls   = list_Nil();
   ParentLits  = list_Nil();
   Constraint  = list_Nil();
@@ -194,7 +190,7 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
     if (!list_PointerMember(Lits, (POINTER)i)) {
       Atom  = term_Copy(clause_GetLiteralAtom(ClauseCopy, i));
       Constraint = list_Cons(Atom, Constraint);
-    } 
+    }
     else {
       ParentCls  = list_Cons((POINTER)clause_Number(ClauseCopy), ParentCls);
       ParentLits = list_Cons((POINTER)i, ParentLits);
@@ -211,7 +207,7 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
     Succedent = list_Cons(Atom, Succedent);
   }
   bound = clause_LastConstraintLitIndex(Clause);
-  for (i = clause_FirstLitIndex(); i <= bound; i++) {			
+  for (i = clause_FirstLitIndex(); i <= bound; i++) {
     /* Hier sollen die gematchten Constraintliterale dazu fuehren, dass die */
     /* c,a und s- literale der Partnerclauses in die Listen kommen...       */
 
@@ -233,9 +229,9 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
       Succedent   = list_Nil();
 
       /* Find corresponding Foundlit: */
-      for (Scan = Foundlits; 
+      for (Scan = Foundlits;
 	   term_TopSymbol(Atom) !=
-	     term_TopSymbol(clause_LiteralAtom(list_Car(Scan))); 
+	     term_TopSymbol(clause_LiteralAtom(list_Car(Scan)));
 	   Scan = list_Cdr(Scan));
       PLit        = list_Car(Scan);
       PLitInd     = clause_LiteralGetIndex(PLit);
@@ -245,14 +241,14 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
       ParentLits  = list_Cons((POINTER)PLitInd, ParentLits);
       MaxVar      = clause_SearchMaxVar(ClauseCopy);
       MaxCand     = clause_SearchMaxVar(NewClause);
-      MaxVar      = ((MaxVar > MaxCand) ? MaxVar : MaxCand);   
+      MaxVar      = ((MaxVar > MaxCand) ? MaxVar : MaxCand);
       /* MaxVar is the maximal variable in the new clause or the ClauseCopy, */
       /* the latter to guarantee the stability of variable names.            */
 
       clause_RenameVarsBiggerThan(PartnerCopy, MaxVar);
       PLit  = clause_GetLiteral(PartnerCopy, PLitInd);
       PAtom = clause_LiteralAtom(PLit);
-      
+
       cont_Check();
       if (!unify_UnifyNoOC(cont_LeftContext(), PAtom, cont_RightContext(), Atom)) {
 	misc_StartErrorReport();
@@ -265,16 +261,16 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
       clause_SubstApply(NewSubst, NewClause);
       clause_SubstApply(NewSubst, ClauseCopy);
       subst_Delete(NewSubst);
-      
+
       n  = clause_Length(PartnerCopy);
       lc = clause_LastConstraintLitIndex(PartnerCopy);
       la = clause_LastAntecedentLitIndex(PartnerCopy);
       for (j = clause_FirstLitIndex(); j < n; j++) {
-	if (j <= lc) 
+	if (j <= lc)
 	  Constraint  = list_Cons(subst_Apply(RightSubst,
 	    term_Copy(clause_GetLiteralAtom(PartnerCopy, j))),
 	      Constraint);
-	else if (j <= la) 
+	else if (j <= la)
 	  Antecedent  = list_Cons(subst_Apply(RightSubst,
             term_Copy(clause_GetLiteralAtom(PartnerCopy, j))),
                Antecedent);
@@ -285,31 +281,31 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
       }
 
       subst_Delete(RightSubst);
-      
+
       n  = clause_Length(NewClause);
       lc = clause_LastConstraintLitIndex(NewClause);
       la = clause_LastAntecedentLitIndex(NewClause);
-      
+
       for (j = clause_FirstLitIndex(); j < n; j++) {
-	if (j <= lc) 
+	if (j <= lc)
 	  Constraint  = list_Cons(term_Copy(clause_GetLiteralAtom(NewClause, j)),
 				  Constraint);
-	else if (j <= la) 
+	else if (j <= la)
 	  Antecedent  = list_Cons(term_Copy(clause_GetLiteralAtom(NewClause, j)),
 				  Antecedent);
-	else 
+	else
 	  Succedent  = list_Cons(term_Copy(clause_GetLiteralAtom(NewClause, j)),
 				 Succedent);
-      }      
+      }
       clause_Delete(NewClause);
       clause_DecreaseCounter();
     }
   }
   NewClause = clause_Create(Constraint, Antecedent, Succedent, Flags,Precedence);
 
-  list_Delete(Constraint); 
-  list_Delete(Antecedent); 
-  list_Delete(Succedent); 
+  list_Delete(Constraint);
+  list_Delete(Antecedent);
+  list_Delete(Succedent);
 
   if (IsFromEmptySort)
     clause_SetFromEmptySort(NewClause);
@@ -326,7 +322,6 @@ static CLAUSE inf_BuildConstraintHyperResolvent(CLAUSE Clause, LIST Lits,
 
   return NewClause;
 }
-
 
 static LIST inf_ConstraintHyperResolvents(CLAUSE Clause, LIST Lits,
 					  SUBST Subst, LIST Restlits,
@@ -364,7 +359,7 @@ static LIST inf_ConstraintHyperResolvents(CLAUSE Clause, LIST Lits,
     MaxVar   = clause_MaxVar(Clause);
     MaxCand  = clause_AtomMaxVar(AtomCopy);
     MaxVar   = (symbol_GreaterVariable(MaxVar, MaxCand) ? MaxVar : MaxCand);
-      
+
     for ( ; !list_Empty(NextLits); NextLits = list_Pop(NextLits)) {
       PLit        = list_Car(NextLits);
       PLitInd     = clause_LiteralGetIndex(PLit);
@@ -401,7 +396,6 @@ static LIST inf_ConstraintHyperResolvents(CLAUSE Clause, LIST Lits,
   }
 }
 
-
 LIST inf_BackwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
 				SORTTHEORY SortTheory, BOOL Precheck,
 				FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -437,11 +431,11 @@ LIST inf_BackwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
     pLit  = clause_GetLiteral(GivenClause, i);
     pAtom = clause_LiteralAtom(pLit);
 
-    if (clause_LiteralGetFlag(pLit,STRICTMAXIMAL) && 
+    if (clause_LiteralGetFlag(pLit,STRICTMAXIMAL) &&
 	clause_LiteralIsSort(pLit)) {
       LIST termList;
       termList = st_GetUnifier(cont_LeftContext(),Index,cont_RightContext(),pAtom);
-      
+
       for ( ; !list_Empty(termList); termList = list_Pop(termList)){
 	if (term_IsAtom(list_Car(termList)) &&
 	    !term_IsVariable(term_FirstArgument(list_Car(termList)))) {
@@ -453,7 +447,7 @@ LIST inf_BackwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
 	    CLAUSE gClause;
 	    gLit    = list_Car(litScan);
 	    gClause = clause_LiteralOwningClause(gLit);
-	    if (clause_LiteralGetIndex(gLit) < clause_FirstAntecedentLitIndex(gClause) && 
+	    if (clause_LiteralGetIndex(gLit) < clause_FirstAntecedentLitIndex(gClause) &&
 		clause_GetFlag(gClause,WORKEDOFF)) {
 	      TERM   gAtom;
 	      int    lc, gi, j;
@@ -520,7 +514,6 @@ LIST inf_BackwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
   return result;
 }
 
-
 LIST inf_ForwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
 			       SORTTHEORY SortTheory, BOOL Precheck,
 			       FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -575,7 +568,7 @@ LIST inf_ForwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
       TLits    = list_Cons((POINTER)j, TLits);
   }
   RestLits = list_Copy(TLits);
-  
+
   if (!Precheck ||
       inf_SubsortPrecheck(GivenClause, TLits, NULL, Index, SortTheory)) {
 
@@ -589,7 +582,6 @@ LIST inf_ForwardSortResolution(CLAUSE GivenClause, st_INDEX Index,
 
   return Result;
 }
-
 
 LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 			   SORTTHEORY SortTheory, BOOL Precheck,
@@ -617,26 +609,26 @@ LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 #endif
 
   result = list_Nil();
-  
+
   ls = clause_LastSuccedentLitIndex(GivenClause);
 
   for (i = clause_FirstSuccedentLitIndex(GivenClause); i <= ls; i++) {
     LITERAL pLit  = clause_GetLiteral(GivenClause, i);
     TERM    pAtom = clause_LiteralAtom(pLit);
-      
-    if (clause_LiteralGetFlag(pLit,STRICTMAXIMAL) && 
+
+    if (clause_LiteralGetFlag(pLit,STRICTMAXIMAL) &&
 	clause_LiteralIsSort(pLit)) {
       LIST unifiers = st_GetUnifier(cont_LeftContext(),Index,cont_RightContext(),pAtom);
-	
+
       for ( ; !list_Empty(unifiers); unifiers = list_Pop(unifiers)){
 	if (term_IsAtom(list_Car(unifiers)) &&
 	    term_IsVariable(term_FirstArgument(list_Car(unifiers)))) {
 	  LIST litScan = sharing_NAtomDataList(list_Car(unifiers));
-	    
+
 	  for ( ; !list_Empty(litScan); litScan = list_Cdr(litScan)){
 	    LITERAL gLit   = list_Car(litScan);
 	    CLAUSE gClause = clause_LiteralOwningClause(gLit);
-	      
+
 	    if (clause_LiteralGetIndex(gLit) < clause_FirstAntecedentLitIndex(gClause) &&
 		clause_GetFlag(gClause,WORKEDOFF) &&
 		clause_HasOnlyVarsInConstraint(gClause, Flags, Precedence)) {
@@ -649,20 +641,20 @@ LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 
 	      varOccursNoMore = TRUE;
 	      bound           = clause_LastSuccedentLitIndex(gClause);
-		
+
 	      for (j = clause_FirstAntecedentLitIndex(gClause);
 		   (j <= bound) && varOccursNoMore;
 		   j++) {
 		if (term_ContainsSymbol(clause_GetLiteralAtom(gClause, j), var))
 		  varOccursNoMore = FALSE;
 	      }
-		
+
 	      if (varOccursNoMore) {
 		LIST tLits, restLits;
 
 		/* Search the other T_i from <gClause> */
 		tLits     = list_List((POINTER)gi);
-		restLits  = list_Nil();		
+		restLits  = list_Nil();
 		for (j = clause_FirstLitIndex(); j <= lc; j++) {
 		  LITERAL tCand = clause_GetLiteral(gClause, j);
 
@@ -684,7 +676,7 @@ LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 		  clause_RenameVarsBiggerThan(pCopy, minVar);
 		  pAtom = clause_GetLiteralAtom(pCopy, i);
 		  /* set, to adress the renamed term! */
-		  
+
 		  cont_Check();
 		  unify_UnifyNoOC(cont_LeftContext(), gAtom, cont_RightContext(), pAtom);
 		  subst_ExtractUnifier(cont_LeftContext(),  &leftSubst,
@@ -692,7 +684,7 @@ LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 		  cont_Reset();
 
 		  subst_Delete(rightSubst);
-		  
+
 		  result =
 		    list_Nconc(inf_ConstraintHyperResolvents(gClause, tLits,
 							     leftSubst,restLits,
@@ -703,7 +695,7 @@ LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 		  list_Delete(foundLits);
 		  subst_Delete(leftSubst);
 		  clause_Delete(pCopy);
-		  
+
 		  pAtom = clause_LiteralAtom(pLit);
 		  /* reset to original clauses literal! */
 		} /* if Precheck */
@@ -718,7 +710,6 @@ LIST inf_BackwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
   }
   return result;
 }
-
 
 LIST inf_ForwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
 			  SORTTHEORY SortTheory, BOOL Precheck, FLAGSTORE Flags,
@@ -748,11 +739,11 @@ LIST inf_ForwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
     misc_FinishErrorReport();
   }
 #endif
-  
+
   Result = list_Nil();
   lc     = clause_LastConstraintLitIndex(GivenClause);
   Hit    = FALSE;
-  
+
   i = clause_FirstLitIndex();
   while (i <= lc && !Hit) {
     TAtom = clause_GetLiteralAtom(GivenClause, i);
@@ -771,7 +762,7 @@ LIST inf_ForwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
     if (!Hit)
       i++;
   }
-  
+
   if (!Hit)
     return list_Nil();
 
@@ -782,17 +773,17 @@ LIST inf_ForwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
   TLits    = list_List((POINTER)i);
   for (j = i+1; j <= lc; j++) {
     TERM TCand;
-    
+
     TCand = clause_GetLiteralAtom(GivenClause, j);
-    
+
     if (symbol_Equal(term_TopSymbol(term_FirstArgument(TCand)), Var))
       TLits    = list_Cons((POINTER)j, TLits);
   }
   RestLits = list_Copy(TLits);
-  
+
   if (!Precheck ||
       inf_SubsortPrecheck(GivenClause, TLits, NULL, Index, SortTheory)) {
-    
+
     Result = inf_ConstraintHyperResolvents(GivenClause, TLits, subst_Nil(),
 					   RestLits, list_Nil(), Index, Flags,
 					   Precedence);
@@ -800,7 +791,7 @@ LIST inf_ForwardEmptySort(CLAUSE GivenClause, st_INDEX Index,
   }
   list_Delete(RestLits);
   list_Delete(TLits);
-  
+
   return Result;
 }
 
@@ -829,13 +820,13 @@ static LIST inf_GetForwardPartnerLits(LITERAL Literal, st_INDEX Index)
   /* Search unifiers for the literal's subterm */
   unifiers = st_GetUnifier(cont_LeftContext(), Index, cont_RightContext(),
 			   term_FirstArgument(clause_LiteralAtom(Literal)));
-  
+
   for ( ; !list_Empty(unifiers); unifiers = list_Pop(unifiers)) {
 
     if (!term_IsAtom(list_Car(unifiers))) { /* Can happen if arg is variable */
-      
-      for (atomScan = term_SupertermList(list_Car(unifiers)); 
-	   !list_Empty(atomScan); 
+
+      for (atomScan = term_SupertermList(list_Car(unifiers));
+	   !list_Empty(atomScan);
 	   atomScan = list_Cdr(atomScan)) {
 	TERM atomCand;
 	atomCand = (TERM) list_Car(atomScan);
@@ -850,7 +841,7 @@ static LIST inf_GetForwardPartnerLits(LITERAL Literal, st_INDEX Index)
 	    nextLit    = list_Car(litScan);
 	    nextClause = clause_LiteralOwningClause(nextLit);
 
-	    if (clause_LiteralIsPositive(nextLit) && 
+	    if (clause_LiteralIsPositive(nextLit) &&
 		clause_LiteralGetFlag(nextLit,STRICTMAXIMAL) &&
 		clause_GetFlag(nextClause, WORKEDOFF) &&
 		(!term_IsVariable(list_Car(unifiers)) ||
@@ -911,8 +902,8 @@ static void inf_GetBackwardPartnerLits(LITERAL Literal, st_INDEX Index,
   for ( ; !list_Empty(candidates); candidates = list_Pop(candidates)) {
     if (!term_IsAtom(list_Car(candidates))) { /* May happen if arg is variable */
       /* Consider variable unifiers only if called from BackwardEmptySort */
-      for (atomScan = term_SupertermList(list_Car(candidates)); 
-	   !list_Empty(atomScan); 
+      for (atomScan = term_SupertermList(list_Car(candidates));
+	   !list_Empty(atomScan);
 	   atomScan = list_Cdr(atomScan)) {
 	TERM atomCand;
 	atomCand = (TERM) list_Car(atomScan);
@@ -924,7 +915,7 @@ static void inf_GetBackwardPartnerLits(LITERAL Literal, st_INDEX Index,
 	       litScan = list_Cdr(litScan)) {
 	    nextLit    = list_Car(litScan);
 	    nextClause = clause_LiteralOwningClause(nextLit);
-	    
+
 	    if (clause_GetFlag(nextClause, WORKEDOFF)) {
 	      if (clause_LiteralIsPositive(nextLit)) {
 		if (clause_LiteralGetFlag(nextLit,STRICTMAXIMAL) &&
@@ -976,7 +967,7 @@ static void inf_MakeClausesDisjoint(CLAUSE GClause, LIST Literals)
     CLAUSE actClause;
 
     clause_UpdateMaxVar(lastClause);
-    maxCand = clause_MaxVar(lastClause);    
+    maxCand = clause_MaxVar(lastClause);
     maxVar = (symbol_GreaterVariable(maxVar,maxCand)? maxVar : maxCand);
 
     actClause = clause_LiteralOwningClause(list_Car(Literals));
@@ -1025,7 +1016,7 @@ static SORT inf_GetSortFromLits(LIST Literals, SORTTHEORY SortTheory)
   for ( ; !list_Empty(Literals); Literals = list_Cdr(Literals)) {
     SORT newSort = sort_TheorySortOfSymbol(SortTheory,
 					   clause_LiteralPredicate(list_Car(Literals)));
-    
+
     result = sort_Intersect(newSort, result);
   }
 
@@ -1088,11 +1079,11 @@ static LIST inf_ApplyWeakening(CLAUSE Clause, LIST TLits, LIST Partners,
     term_ReplaceVariable(termCopy, sort_ConditionVar(Condition), tSubterm);
     antecedent = list_Cons(cont_CopyAndApplyBindings(cont_LeftContext(), termCopy),
 			   antecedent);
-    term_Delete(termCopy);   /* antecedent contains a copy */ 
+    term_Delete(termCopy);   /* antecedent contains a copy */
   }
   for (scan=sort_ConditionSuccedent(Condition); !list_Empty(scan); scan=list_Cdr(scan)) {
     TERM termCopy;
-    
+
     termCopy = term_Copy(list_Car(scan));
     term_ReplaceVariable(termCopy, sort_ConditionVar(Condition), tSubterm);
     succedent = list_Cons(cont_CopyAndApplyBindings(cont_LeftContext(), termCopy),
@@ -1173,28 +1164,28 @@ static LIST inf_ApplyWeakening(CLAUSE Clause, LIST TLits, LIST Partners,
   }
 
   parents = list_Cons(Clause, parents);
-  
+
   /* Now we've got all data we need */
   newClause = clause_Create(constraint, antecedent, succedent, Flags,Precedence);
-  
+
   list_Delete(constraint);
   list_Delete(antecedent);
   list_Delete(succedent);
-  
+
   if (term_IsVariable(tSubterm))
     clause_SetFromEmptySort(newClause);
   else
     clause_SetFromSortResolution(newClause);
-  
+
   clause_SetDepth(newClause, depth+1);
   clause_SetFlag(newClause, DOCCLAUSE);
-  
+
   clause_SetSplitDataFromList(newClause, parents);
   list_Delete(parents);
-  
+
   clause_SetParentClauses(newClause, parentClauses);
   clause_SetParentLiterals(newClause, parentLits);
- 
+
   return list_List(newClause);
 }
 
@@ -1220,7 +1211,7 @@ static LIST inf_InternWeakening(CLAUSE Clause, LIST TLits, LIST Unifiers,
 ***************************************************************/
 {
   LIST result, myUnifiers;
-  TERM searchTerm; 
+  TERM searchTerm;
   int  stack;
 
   LIST scan;
@@ -1272,7 +1263,7 @@ static LIST inf_InternWeakening(CLAUSE Clause, LIST TLits, LIST Unifiers,
 
     if (Special == NULL ||
 	sort_ContainsSymbol(sort_PairSort(actSoju),
-			    clause_LiteralPredicate(Special))) { 
+			    clause_LiteralPredicate(Special))) {
       LIST actSortSymbols, symbolScan, unifierScan, subset;
 
       actSortSymbols = sort_GetSymbolsFromSort(sort_PairSort(actSoju));
@@ -1354,7 +1345,7 @@ LIST inf_ForwardWeakening(CLAUSE GivenClause, st_INDEX Index,
   INPUT:   A clause, an index of clauses, a sort theory, a flag store
            and a precedence.
            The sort constraint of the clause must contain a non-variable term
-	   (this implies the sort constraint is unsolved). 
+	   (this implies the sort constraint is unsolved).
   RETURNS: A list of clauses derived from the GivenClause by
            the Weakening rule.
   MEMORY:  Memory is allocated for the returned list and the clauses.
@@ -1377,7 +1368,7 @@ LIST inf_ForwardWeakening(CLAUSE GivenClause, st_INDEX Index,
   hit    = FALSE;
 
   for (i = clause_FirstLitIndex(); i <= lc && !hit; i++) {
-    
+
     if (!term_IsVariable(term_FirstArgument(clause_GetLiteralAtom(GivenClause, i)))) {
       /* Condition implies that constraint is unsolved */
       LITERAL tLit;
@@ -1462,7 +1453,7 @@ LIST inf_BackwardWeakening(CLAUSE GivenClause, st_INDEX Index,
 
     sLit  = clause_GetLiteral(GivenClause, i);
     sAtom = clause_LiteralAtom(sLit);
-    if (clause_LiteralGetFlag(sLit, STRICTMAXIMAL) && 
+    if (clause_LiteralGetFlag(sLit, STRICTMAXIMAL) &&
 	clause_LiteralIsSort(sLit) &&
 	(!term_IsVariable(term_FirstArgument(sAtom)) ||
 	 clause_HasEmptyConstraint(GivenClause))) {
@@ -1476,7 +1467,7 @@ LIST inf_BackwardWeakening(CLAUSE GivenClause, st_INDEX Index,
       /* <partners> holds monadic constraint literals */
       /* <unifiers> holds monadic, maximal succedent literals */
       unifierSort = inf_GetSortFromLits(unifiers, SortTheory);
-      
+
       for ( ; !list_Empty(partners); partners = list_Pop(partners)) {
 	LITERAL tLit;
 	CLAUSE  tClause;
@@ -1552,7 +1543,7 @@ LIST inf_ForwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
   LIST     result;
   int      i, lc;
   BOOL     hit;
-  
+
 #ifdef CHECK
   if (clause_HasTermSortConstraintLits(GivenClause) ||
       clause_HasSolvedConstraint(GivenClause)) {
@@ -1561,11 +1552,11 @@ LIST inf_ForwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
     misc_FinishErrorReport();
   }
 #endif
-  
+
   result = list_Nil();
   lc     = clause_LastConstraintLitIndex(GivenClause);
   hit    = FALSE;
-  
+
   for (i = clause_FirstLitIndex(); i <= lc && !hit; i++) {
 
     if (term_IsVariable(term_FirstArgument(clause_GetLiteralAtom(GivenClause,i)))) {
@@ -1579,13 +1570,13 @@ LIST inf_ForwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
       ls              = clause_LastSuccedentLitIndex(GivenClause);
       varOccursNoMore = TRUE;
       /* Check if the variable occurs in antecedent or succedent literals */
-      for (j = clause_FirstAntecedentLitIndex(GivenClause); 
+      for (j = clause_FirstAntecedentLitIndex(GivenClause);
 	   (j <= ls) && varOccursNoMore; j++) {
 	if (term_ContainsSymbol(clause_GetLiteralAtom(GivenClause,j),
 				term_TopSymbol(var)))
 	  varOccursNoMore = FALSE;
       }
-		
+
       if (varOccursNoMore) {
 	/* Condition implies that constraint is unsolved */
 	LIST unifiers;
@@ -1660,7 +1651,7 @@ LIST inf_BackwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
   }
 #endif
 
-  result = list_Nil();  
+  result = list_Nil();
   ls     = clause_LastSuccedentLitIndex(GivenClause);
 
   for (i = clause_FirstSuccedentLitIndex(GivenClause); i <= ls; i++) {
@@ -1669,7 +1660,7 @@ LIST inf_BackwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
 
     sLit  = clause_GetLiteral(GivenClause, i);
     sAtom = clause_LiteralAtom(sLit);
-    if (clause_LiteralGetFlag(sLit,STRICTMAXIMAL) && 
+    if (clause_LiteralGetFlag(sLit,STRICTMAXIMAL) &&
 	clause_LiteralIsSort(sLit) &&
 	(!term_IsVariable(term_FirstArgument(sAtom)) ||
 	 clause_HasEmptyConstraint(GivenClause))) {
@@ -1709,7 +1700,7 @@ LIST inf_BackwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
 				  term_TopSymbol(var)))
 	    varOccursNoMore = FALSE;
 	}
- 
+
 	if (varOccursNoMore) {
 	  /* Condition implies that constraint is unsolved */
 	  int  lc;
@@ -1723,7 +1714,7 @@ LIST inf_BackwardEmptySortPlusPlus(CLAUSE GivenClause, st_INDEX Index,
 	  tSort = sort_TopSort();
 	  for (j = lc; j >= clause_FirstLitIndex(); j--) {
 	    TERM actAtom;
-	    
+
 	    actAtom = clause_GetLiteralAtom(tClause, j);
 	    if (j != ti &&
 		term_TopSymbol(term_FirstArgument(actAtom)) == term_TopSymbol(var)) {

@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *               NAIVE CNF TRANSLATOR                     * */
 /* *                                                        * */
-/* *  $Module:   CNF                                        * */ 
+/* *  $Module:   CNF                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /**************************************************************/
@@ -73,7 +72,6 @@ static __inline__ BOOL cnf_LabelEqual(const char* l1, const char* l2)
   return string_Equal(l1, l2);
 }
 
-
 static __inline__ LIST cnf_DeleteDuplicateLabelsFromList(LIST Labels)
 /********************************************************
   INPUT:   A list of labels.
@@ -83,7 +81,6 @@ static __inline__ LIST cnf_DeleteDuplicateLabelsFromList(LIST Labels)
 {
   return list_DeleteDuplicates(Labels, (BOOL (*)(POINTER,POINTER))cnf_LabelEqual);
 }
-
 
 TERM        cnf_ApplyDefinitionOnce(TERM, TERM, TERM, TERM, FLAGSTORE);
 LIST        cnf_ApplyDefinitionToClause(CLAUSE, TERM, TERM,FLAGSTORE,PRECEDENCE);
@@ -115,6 +112,5 @@ void        cnf_StdoutPrint(TERM);
 BOOL        cnf_PropagateSubstEquations(TERM);
 
 BOOL        cnf_HaveProof(LIST, TERM, FLAGSTORE, PRECEDENCE);
-
 
 #endif

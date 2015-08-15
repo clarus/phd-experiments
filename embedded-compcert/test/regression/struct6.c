@@ -13,5 +13,3 @@ void print_value(struct value * s)
 {
   printf ("%d\n", s->u.i);
 }
-
-    

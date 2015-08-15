@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /**************************************************************/
@@ -51,7 +50,6 @@
 
 #include "rules-inf.h"
 
-
 /**************************************************************/
 /* Some auxiliary functions for testing postconditions        */
 /**************************************************************/
@@ -59,18 +57,18 @@
 static BOOL inf_LitMax(CLAUSE Clause, int i, int j, SUBST Subst, BOOL Strict,
 		       FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, the index of a maximal literal, another 
-           literal index, a substitution, a boolean flag, a 
+  INPUT:   A clause, the index of a maximal literal, another
+           literal index, a substitution, a boolean flag, a
 	   flag store and a precedence.
   RETURNS: If <Strict>=FALSE the function returns TRUE iff the
-           literal at index <i> is still maximal in the 
+           literal at index <i> is still maximal in the
 	   instantiated clause.
 	   If <Strict>=TRUE the function returns TRUE iff the
-	   literal is STRICTLY maximal in the instantiated 
-	   clause. The literal at index j is omitted at literal 
+	   literal is STRICTLY maximal in the instantiated
+	   clause. The literal at index j is omitted at literal
 	   comparison.
 	   However, setting j to a negative number ensures that
-	   all literals are compared with the literal at 
+	   all literals are compared with the literal at
 	   index <i>.
   CAUTION: DON'T call this function with a clause with selected
            literals!
@@ -98,12 +96,12 @@ static BOOL inf_LitMax(CLAUSE Clause, int i, int j, SUBST Subst, BOOL Strict,
   }
   /* If literal <i> is selected, there's no need to check for maximality, */
   /* if <i> isn't selected, but there're other literals selected,         */
-  /* inferences with literal <i> are forbidden.                           */ 
+  /* inferences with literal <i> are forbidden.                           */
   if (clause_GetFlag(Clause, CLAUSESELECT)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In inf_LitMax: There're selected literals.", i);
     misc_FinishErrorReport();
-  }    
+  }
 #endif
 
   Lit = clause_GetLiteral(Clause, i);
@@ -145,13 +143,12 @@ static BOOL inf_LitMax(CLAUSE Clause, int i, int j, SUBST Subst, BOOL Strict,
   return TRUE;
 }
 
-
 static BOOL inf_LiteralsMax(CLAUSE Clause, int i, SUBST Subst,
 			    CLAUSE PartnerClause, int j, SUBST PartnerSubst,
 			    FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   The parents of a resolution inference, the respective
-           literal indices and substitutions, a flag store and 
+           literal indices and substitutions, a flag store and
 	   a precedence.
   RETURNS: TRUE iff the positive/negative literals are still
            strictly maximal/maximal in the instantiated clause.
@@ -182,27 +179,26 @@ static BOOL inf_LiteralsMax(CLAUSE Clause, int i, SUBST Subst,
   return TRUE;
 }
 
-
 static BOOL inf_LitMaxWith2Subst(CLAUSE Clause, int i, int j, SUBST Subst2,
 				 SUBST Subst1, BOOL Strict, FLAGSTORE Flags,
 				 PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, the index of a maximal literal, another 
-           literal index, two substitutions, a boolean flag, 
+  INPUT:   A clause, the index of a maximal literal, another
+           literal index, two substitutions, a boolean flag,
 	   a flag store and a precedence.
-  RETURNS: In contrast to the function inf_LitMax this function 
-           compares the literals with respect to the composition 
+  RETURNS: In contrast to the function inf_LitMax this function
+           compares the literals with respect to the composition
 	   of the two substitutions Subst2 ° Subst1.
 	   If <Strict>=FALSE the function returns TRUE iff the
-           literal at index <i> is still maximal in the 
+           literal at index <i> is still maximal in the
 	   instantiated clause.
 	   If <Strict>=TRUE the function returns TRUE iff the
-	   literal is STRICTLY maximal in the instantiated 
+	   literal is STRICTLY maximal in the instantiated
 	   clause.
-	   The literal at index j is omitted at literal 
+	   The literal at index j is omitted at literal
 	   comparison.
 	   However, setting j to a negative number ensures that
-	   all literals are compared with the literal at 
+	   all literals are compared with the literal at
 	   index <i>.
   CAUTION: DON'T call this function with a clause with selected
            literals!
@@ -230,12 +226,12 @@ static BOOL inf_LitMaxWith2Subst(CLAUSE Clause, int i, int j, SUBST Subst2,
   }
   /* If literal <i> is selected, there's no need to check for maximality, */
   /* if <i> isn't selected, but there're other literals selected,         */
-  /* inferences with literal <i> are forbidden.                           */ 
+  /* inferences with literal <i> are forbidden.                           */
   if (clause_GetFlag(Clause, CLAUSESELECT)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In inf_LitMaxWith2Subst: There're selected literals.", i);
     misc_FinishErrorReport();
-  }    
+  }
 #endif
 
   Lit = clause_GetLiteral(Clause, i);
@@ -279,19 +275,18 @@ static BOOL inf_LitMaxWith2Subst(CLAUSE Clause, int i, int j, SUBST Subst2,
   return TRUE;
 }
 
-
 static BOOL inf_LiteralsMaxWith2Subst(CLAUSE Clause, int i, CLAUSE PartnerClause,
 				      int j, SUBST Subst2, SUBST Subst1,
 				      FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   The parents of a resolution inference, the 
-           respective literal indices and substitutions, a 
+  INPUT:   The parents of a resolution inference, the
+           respective literal indices and substitutions, a
 	   flag store and a precedence.
   RETURNS: In contrast to the function inf_LiteralsMax
            the composition Subst2 ° Subst1 is applied to both
 	   clauses.
-	   The function returns TRUE iff the positive/negative 
-	   literals are still strictly maximal/maximal in the 
+	   The function returns TRUE iff the positive/negative
+	   literals are still strictly maximal/maximal in the
 	   instantiated clause.
 	   If a negative literal is selected, no comparison
 	   is made.
@@ -319,7 +314,6 @@ static BOOL inf_LiteralsMaxWith2Subst(CLAUSE Clause, int i, CLAUSE PartnerClause
 
   return TRUE;
 }
-
 
 /**************************************************************/
 /* Inference rules                                            */
@@ -360,43 +354,43 @@ LIST inf_EqualityResolution(CLAUSE GivenClause, BOOL Ordered, FLAGSTORE Flags,
 
   Result          = list_Nil();
   last            = clause_LastAntecedentLitIndex(GivenClause);
-  
+
   for (i = clause_FirstAntecedentLitIndex(GivenClause); i <= last; i++) {
     ActLit = clause_GetLiteral(GivenClause, i);
-    
+
     if (clause_LiteralIsEquality(ActLit) &&
 	(clause_LiteralGetFlag(ActLit,LITSELECT) ||
 	 (!clause_GetFlag(GivenClause,CLAUSESELECT) &&
 	  (!Ordered || clause_LiteralIsMaximal(ActLit))))) {
       TERM Atom;
-      
+
       Atom = clause_GetLiteralAtom(GivenClause, i);
-      
+
       cont_Check();
       if (unify_UnifyCom(cont_LeftContext(),
-			 term_FirstArgument(Atom), 
+			 term_FirstArgument(Atom),
 			 term_SecondArgument(Atom))) {
 	SUBST  mgu;
 	CLAUSE NewClause;
 	int    j, k, bound;
-	
+
 	subst_ExtractUnifierCom(cont_LeftContext(), &mgu);
 	/* Check postcondition */
 	if (clause_LiteralGetFlag(ActLit,LITSELECT) ||
-	    !Ordered || inf_LitMax(GivenClause, i, -1, mgu, 
+	    !Ordered || inf_LitMax(GivenClause, i, -1, mgu,
 				   FALSE, Flags, Precedence)) {
-	  
+
 	  NewClause = clause_CreateBody(clause_Length(GivenClause) - 1);
 	  clause_SetNumOfConsLits(NewClause, clause_NumOfConsLits(GivenClause));
 	  clause_SetNumOfAnteLits(NewClause,
 				  (clause_NumOfAnteLits(GivenClause) - 1));
 	  clause_SetNumOfSuccLits(NewClause, clause_NumOfSuccLits(GivenClause));
-	  
+
 	  bound = clause_LastLitIndex(GivenClause);
 	  /* j iterates over the given clause, k iterates over the new one */
 	  for (j = k = clause_FirstLitIndex(); j <= bound; j++) {
 	    if (j != i) {
-	      clause_SetLiteral(NewClause, k, 
+	      clause_SetLiteral(NewClause, k,
 	        clause_LiteralCreate(subst_Apply(mgu,
 	          term_Copy(clause_GetLiteralTerm(GivenClause,j))),NewClause));
 	      k++;
@@ -404,7 +398,7 @@ LIST inf_EqualityResolution(CLAUSE GivenClause, BOOL Ordered, FLAGSTORE Flags,
 	  }
 	  clause_SetDataFromFather(NewClause, GivenClause, i, Flags, Precedence);
 	  clause_SetFromEqualityResolution(NewClause);
-	  
+
 	  Result = list_Cons(NewClause, Result);
 	}
 	subst_Delete(mgu);
@@ -440,13 +434,13 @@ static CLAUSE inf_ApplyEqualityFactoring(CLAUSE Clause, TERM Left, TERM Right,
   clause_SetNumOfSuccLits(NewClause, clause_NumOfSuccLits(Clause) - 1);
 
   for (k = clause_FirstLitIndex(); k <= c; k++) {
-    clause_SetLiteral(NewClause, k, 
+    clause_SetLiteral(NewClause, k,
       clause_LiteralCreate(subst_Apply(Subst,
 	term_Copy(clause_GetLiteralTerm(Clause, k))),NewClause));
   }
 
   for ( ; k <= a; k++) {
-    clause_SetLiteral(NewClause, k, 
+    clause_SetLiteral(NewClause, k,
       clause_LiteralCreate(subst_Apply(Subst,
         term_Copy(clause_GetLiteralTerm(Clause, k))),NewClause));
   }
@@ -478,21 +472,20 @@ static CLAUSE inf_ApplyEqualityFactoring(CLAUSE Clause, TERM Left, TERM Right,
   return NewClause;
 }
 
-
 static BOOL inf_EqualityFactoringApplicable(CLAUSE Clause, int i, TERM Left,
 					    TERM Right, SUBST Subst,
 					    FLAGSTORE Flags,
 					    PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause <Clause>, the index <i> of a maximal 
-           equality literal in <Clause> <j>, <Left> and 
-	   <Right> are the left and right side of the literal, 
-	   where <Right> is not greater than <Left> wrt the 
-	   ordering, a unifier <Subst>, a flag store and a 
+  INPUT:   A clause <Clause>, the index <i> of a maximal
+           equality literal in <Clause> <j>, <Left> and
+	   <Right> are the left and right side of the literal,
+	   where <Right> is not greater than <Left> wrt the
+	   ordering, a unifier <Subst>, a flag store and a
 	   precedence.
-  RETURNS: TRUE iff the literal at index <i> is strictly 
-           maximal in the instantiated clause and <Right> is 
-	   not greater than or equal to <Left> after 
+  RETURNS: TRUE iff the literal at index <i> is strictly
+           maximal in the instantiated clause and <Right> is
+	   not greater than or equal to <Left> after
 	   application of the substitution.
 	   Otherwise, the function returns FALSE.
 ***************************************************************/
@@ -516,7 +509,6 @@ static BOOL inf_EqualityFactoringApplicable(CLAUSE Clause, int i, TERM Left,
   /* Literal maximal? */
   return inf_LitMax(Clause, i, -1, Subst, FALSE, Flags, Precedence);
 }
-
 
 LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
 			   PRECEDENCE Precedence)
@@ -545,22 +537,22 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
   }
 
   Result = list_Nil();
-  
+
   last = clause_LastSuccedentLitIndex(GivenClause);
-  
+
   for (i = clause_FirstSuccedentLitIndex(GivenClause); i <= last; i++) {
-    
+
     ActLit = clause_GetLiteral(GivenClause, i);
-    
+
     if (clause_LiteralIsMaximal(ActLit) &&
 	clause_LiteralIsEquality(ActLit)) {
       TERM    Atom, Left, Right;
       LITERAL PartnerLit;
-      
+
       Atom  = clause_LiteralAtom(ActLit);
       Left  = term_FirstArgument(Atom);
       Right = term_SecondArgument(Atom);
-      
+
       for (j = clause_FirstSuccedentLitIndex(GivenClause); j <= last; j++) {
 	PartnerLit = clause_GetLiteral(GivenClause, j);
 	if (i != j && clause_LiteralIsEquality(PartnerLit)) {
@@ -569,7 +561,7 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
 	  /* unified with itself), or generate a tautology (if different     */
 	  /* sides of the equality are unified).                             */
 	  TERM PartnerAtom, PartnerLeft, PartnerRight;
-	  
+
 	  PartnerAtom  = clause_LiteralAtom(PartnerLit);
 	  PartnerLeft  = term_FirstArgument(PartnerAtom);
 	  PartnerRight = term_SecondArgument(PartnerAtom);
@@ -582,7 +574,7 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
 						mgu, Flags, Precedence))
 	      Result = list_Cons(inf_ApplyEqualityFactoring(GivenClause,Right,
 							    PartnerRight,i,j,
-							    mgu,Flags, 
+							    mgu,Flags,
 							    Precedence),
 				 Result);
 	    subst_Delete(mgu);
@@ -593,12 +585,12 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
 	  cont_Check();
 	  if (unify_UnifyCom(cont_LeftContext(), Left, PartnerRight)) {
 	    subst_ExtractUnifierCom(cont_LeftContext(), &mgu);
-	    
+
 	    if (inf_EqualityFactoringApplicable(GivenClause, i, Left, Right,
 						mgu, Flags, Precedence))
 	      Result = list_Cons(inf_ApplyEqualityFactoring(GivenClause,Right,
 							    PartnerLeft,i,j,
-							    mgu,Flags, 
+							    mgu,Flags,
 							    Precedence),
 				 Result);
 	    subst_Delete(mgu);
@@ -610,7 +602,7 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
 	    cont_Check();
 	    if (unify_UnifyCom(cont_LeftContext(), Right, PartnerLeft)) {
 	      subst_ExtractUnifierCom(cont_LeftContext(), &mgu);
-	      
+
 	      if (inf_EqualityFactoringApplicable(GivenClause, i, Right, Left,
 						  mgu, Flags, Precedence))
 		Result = list_Cons(inf_ApplyEqualityFactoring(GivenClause,Left,
@@ -621,12 +613,12 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
 	      subst_Delete(mgu);
 	    }
 	    cont_Reset();
-	    
+
 	    /* try <Right> and <PartnerRight> */
 	    cont_Check();
 	    if (unify_UnifyCom(cont_LeftContext(), Right, PartnerRight)) {
 	      subst_ExtractUnifierCom(cont_LeftContext(), &mgu);
-	      
+
 	      if (inf_EqualityFactoringApplicable(GivenClause, i, Right, Left,
 						  mgu, Flags, Precedence))
 		Result = list_Cons(inf_ApplyEqualityFactoring(GivenClause,Left,
@@ -644,7 +636,6 @@ LIST inf_EqualityFactoring(CLAUSE GivenClause, FLAGSTORE Flags,
   }
   return Result;
 }
-
 
 /* START of block with new term replacement */
 
@@ -692,7 +683,7 @@ static BOOL inf_NAllTermsRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
 	Replaced = TRUE;
 	list_Rplaca(ArgListNode, term_Copy(RplacTerm));
 	term_Delete(Term);
-      }      
+      }
       else {
 	if (term_IsComplex(Term))
 	  stack_Push(term_ArgumentList(Term));
@@ -708,13 +699,12 @@ static BOOL inf_NAllTermsRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
   return Replaced;
 }
 
-
 static TERM inf_AllTermsRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
 			      SUBST Subst)
 /**************************************************************
   INPUT:   Three terms, a substitution.
            All occurrences of <TestTerm> in A COPY of <Term> are replaced
-           by <RplacTerm>. The substitution <Subst> is applied to 
+           by <RplacTerm>. The substitution <Subst> is applied to
 	   the copy of <Term>. If no occurrence is found,
 	   NULL is returned.
 	   This function is not destructive
@@ -722,21 +712,21 @@ static TERM inf_AllTermsRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
   RETURNS: TRUE, if TestTerm was replaced by RplacTerm,
            FALSE otherwise.
 ***************************************************************/
-{ 
+{
   TERM ActTerm = term_Copy(Term);
-  
+
   if (!inf_NAllTermsRplac(ActTerm,TestTerm, RplacTerm, Subst )) {
     term_Delete(ActTerm);
     ActTerm = NULL;
   }
- 
+
   return(ActTerm);
 }
 
 static TERM inf_AllTermsSideRplacs(TERM Term, TERM TestTerm, TERM RplacTerm,
 				   SUBST Subst, BOOL Right)
 /**************************************************************
-  INPUT:   Three terms, a substitution and a boolean flag. 
+  INPUT:   Three terms, a substitution and a boolean flag.
            <Term> is typically an equality term.
   RETURNS: If <TestTerm> occurs in the right (Right=TRUE) or
            left side (Right=FALSE) of <Term>:
@@ -748,19 +738,19 @@ static TERM inf_AllTermsSideRplacs(TERM Term, TERM TestTerm, TERM RplacTerm,
 	   If <TestTerm> does not occur in the right/left side of
 	   <Term>, NULL is returned.
 
-	   In non-equality terms, The 'sides' correspond to the 
+	   In non-equality terms, The 'sides' correspond to the
 	   first and second argument of the term.
 ***************************************************************/
 {
-  TERM   ActTerm = term_Copy(Term); 
+  TERM   ActTerm = term_Copy(Term);
   TERM   ReplSide, OtherSide; /* ReplSide is the side in which terms are
 				 replaced */
 
-  if (Right) { 
+  if (Right) {
     ReplSide  = term_SecondArgument(ActTerm);
     OtherSide = term_FirstArgument(ActTerm);
   }
-  else { 
+  else {
     ReplSide  = term_FirstArgument(ActTerm);
     OtherSide = term_SecondArgument(ActTerm);
   }
@@ -768,14 +758,13 @@ static TERM inf_AllTermsSideRplacs(TERM Term, TERM TestTerm, TERM RplacTerm,
   if (inf_NAllTermsRplac(ReplSide, TestTerm, RplacTerm, Subst))
     /* If <TestTerm> occurs in <ReplSide> also replace it in <OtherSide>. */
     inf_NAllTermsRplac(OtherSide, TestTerm, RplacTerm, Subst);
-  else { 
+  else {
      term_Delete(ActTerm);
      ActTerm = NULL;
   }
 
   return ActTerm;
 }
-
 
 static TERM inf_AllTermsRightRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
 				   SUBST Subst)
@@ -789,7 +778,6 @@ static TERM inf_AllTermsRightRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
   return(inf_AllTermsSideRplacs(Term, TestTerm, RplacTerm, Subst, TRUE));
 }
 
-
 static TERM inf_AllTermsLeftRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
 				  SUBST Subst)
 /**************************************************************
@@ -802,16 +790,14 @@ static TERM inf_AllTermsLeftRplac(TERM Term, TERM TestTerm, TERM RplacTerm,
   return(inf_AllTermsSideRplacs(Term, TestTerm, RplacTerm, Subst, FALSE));
 }
 
-
 /*  END of block with new term replacement */
-
 
 static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
 					CLAUSE PartnerClause, int pci,
 					SUBST PartnerSubst, TERM SupAtom,
 					BOOL Right, BOOL OrdPara, BOOL MaxPara,
 					FLAGSTORE Flags, PRECEDENCE Precedence)
-/************************************************************** 
+/**************************************************************
   INPUT:  Two clauses where a generalized superposition inference can be
           applied using the positive equality literal <i> from <Clause> with
           subst <Subst> using the literal <j> from <PartnerClause> with subst
@@ -823,8 +809,8 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
 
 	   where the inference is selected by MaxPara and OrdPara:
 	   (see also inf_GenSuperpositionLeft)
-	   
-	   OrdPara=TRUE, MaxPara=TRUE 
+
+	   OrdPara=TRUE, MaxPara=TRUE
 	   -> Superposition (Left or Right)
 
 	   OrdPara=TRUE, MaxPara=FALSE
@@ -868,7 +854,6 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
   la  = clause_LastAntecedentLitIndex(Clause);
   lc  = clause_LastConstraintLitIndex(Clause);
 
-
   NewClause = clause_CreateBody(clause_Length(Clause) - 1 +
 				clause_Length(PartnerClause));
 
@@ -880,9 +865,9 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
 				      clause_NumOfSuccLits(PartnerClause)));
 
   /* First set the literals from the Clause : */
-    
+
   for (j = clause_FirstLitIndex(); j <= lc; j++) {
-    clause_SetLiteral(NewClause, j, 
+    clause_SetLiteral(NewClause, j,
       clause_LiteralCreate(subst_Apply(Subst, term_Copy(
        	clause_GetLiteralTerm(Clause, j))),NewClause));
   }
@@ -891,7 +876,7 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
   help = clause_NumOfConsLits(PartnerClause);
 
   for ( ; j <= la; j++) {
-    clause_SetLiteral(NewClause, (j + help), 
+    clause_SetLiteral(NewClause, (j + help),
       clause_LiteralCreate(subst_Apply(Subst, term_Copy(
     	clause_GetLiteralTerm(Clause, j))),NewClause));
   }
@@ -902,7 +887,7 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
   for ( ; j <= ls; j++) {
     if (j != ci) {
       /* The literal used in the inference isn't copied */
-      clause_SetLiteral(NewClause, (j + help), 
+      clause_SetLiteral(NewClause, (j + help),
        	clause_LiteralCreate(subst_Apply(Subst,
 	  term_Copy(clause_GetLiteralTerm(Clause, j))),NewClause));
 
@@ -918,7 +903,7 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
   help = clause_NumOfConsLits(Clause);
 
   for (j = clause_FirstLitIndex(); j <= plc; j++) {
-    clause_SetLiteral(NewClause, (j + help), 
+    clause_SetLiteral(NewClause, (j + help),
       clause_LiteralCreate(subst_Apply(PartnerSubst,
         term_Copy(clause_GetLiteralTerm(PartnerClause, j))),NewClause));
   }
@@ -928,7 +913,7 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
 
   for ( ; j <= pla; j++) {
     if (j != pci) {
-      clause_SetLiteral(NewClause, (j + help), 
+      clause_SetLiteral(NewClause, (j + help),
 	clause_LiteralCreate(subst_Apply(PartnerSubst,
 	  term_Copy(clause_GetLiteralTerm(PartnerClause, j))),NewClause));
     } else {
@@ -938,14 +923,13 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
     }
   }
 
-
   /* help = number of already set Given-literals */
   help = clause_Length(Clause) - 1;
 
   for ( ; j <= pls; j++) {
     if (j != pci) {
       /* The PartnerLit isn't copied! */
-      clause_SetLiteral(NewClause, (j + help), 
+      clause_SetLiteral(NewClause, (j + help),
 	clause_LiteralCreate(subst_Apply(PartnerSubst,
 	  term_Copy(clause_GetLiteralTerm(PartnerClause, j))),NewClause));
 
@@ -955,11 +939,11 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
 			clause_LiteralCreate(SupAtom, NewClause));
     }
   }
-    
-  /* 
+
+  /*
    *  Set inference type. Note that, in the case of (ordered) paramodulation,
    *  we do not distinguish which side was paramodulated into, as compared
-   *  to the case of superposition. 
+   *  to the case of superposition.
    */
 
   if (OrdPara && MaxPara) {
@@ -967,10 +951,10 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
       clause_SetFromSuperpositionRight(NewClause);
     else
       clause_SetFromSuperpositionLeft(NewClause);
-  } 
+  }
   else if (OrdPara && !MaxPara)
     clause_SetFromOrderedParamodulation(NewClause);
-  else 
+  else
     clause_SetFromParamodulation(NewClause);
 
   clause_SetDataFromParents(NewClause, PartnerClause, pci, Clause, ci, Flags,
@@ -978,7 +962,6 @@ static CLAUSE inf_ApplyGenSuperposition(CLAUSE Clause, int ci, SUBST Subst,
 
   return NewClause;
 }
-
 
 /* START of block with new superposition right rule */
 
@@ -1069,10 +1052,10 @@ static LIST inf_GenLitSPRight(CLAUSE Clause, TERM Left, TERM Right, int i,
 		else {
 		  TERM NewPartnerLeft,NewPartnerRight;
 		  NewPartnerLeft  =
-		    subst_Apply(PartnerSubst, 
+		    subst_Apply(PartnerSubst,
 				term_Copy(term_FirstArgument(PartnerAtom)));
 		  NewPartnerRight =
-		    subst_Apply(PartnerSubst, 
+		    subst_Apply(PartnerSubst,
 				term_Copy(term_SecondArgument(PartnerAtom)));
 		  switch (ord_Compare(NewPartnerLeft,NewPartnerRight,
 				      Flags, Precedence)) {
@@ -1099,7 +1082,7 @@ static LIST inf_GenLitSPRight(CLAUSE Clause, TERM Left, TERM Right, int i,
 						      PartnerClause, pli,
 						      PartnerSubst, SupAtom,
 						      TRUE, OrdPara, MaxPara,
-						      Flags, Precedence), 
+						      Flags, Precedence),
 			    Result);
 	    }
 	    if (NewLeft != Left)
@@ -1114,7 +1097,6 @@ static LIST inf_GenLitSPRight(CLAUSE Clause, TERM Left, TERM Right, int i,
   }
   return Result;
 }
-
 
 static LIST inf_GenSPRightEqToGiven(CLAUSE Clause, int i, BOOL Left,
 				    SHARED_INDEX ShIndex, BOOL OrdPara,
@@ -1158,7 +1140,7 @@ static LIST inf_GenSPRightEqToGiven(CLAUSE Clause, int i, BOOL Left,
 #endif
 
   Bottom = stack_Bottom();
-  if (Left) /* Top Level considered in inf_LitSPRight */ 
+  if (Left) /* Top Level considered in inf_LitSPRight */
     sharing_PushListOnStack(term_ArgumentList(term_FirstArgument(Atom)));
   else
     sharing_PushListOnStack(term_ArgumentList(term_SecondArgument(Atom)));
@@ -1261,7 +1243,7 @@ static LIST inf_GenSPRightEqToGiven(CLAUSE Clause, int i, BOOL Left,
 		    if (Left)
 		      SupAtom = inf_AllTermsLeftRplac(Atom, Term,
 						      PartnerRight, Subst);
-		    else 
+		    else
 		      SupAtom = inf_AllTermsRightRplac(Atom, Term,
 						       PartnerRight, Subst);
 #ifdef CHECK
@@ -1277,7 +1259,7 @@ static LIST inf_GenSPRightEqToGiven(CLAUSE Clause, int i, BOOL Left,
 							  PartnerSubst, Clause,
 							  i, Subst, SupAtom,
 							  TRUE,OrdPara,MaxPara,
-							  Flags, Precedence), 
+							  Flags, Precedence),
 				Result);
 		  }
 		  if (PartnerLeft != term_Null())
@@ -1296,7 +1278,6 @@ static LIST inf_GenSPRightEqToGiven(CLAUSE Clause, int i, BOOL Left,
   }
   return Result;
 }
-
 
 static LIST inf_GenSPRightLitToGiven(CLAUSE Clause, int i, TERM Atom,
 				     SHARED_INDEX ShIndex, BOOL OrdPara,
@@ -1352,7 +1333,7 @@ static LIST inf_GenSPRightLitToGiven(CLAUSE Clause, int i, TERM Atom,
 		  (!OrdPara || PartnerTerm==term_FirstArgument(PartnerEq) ||
 		   !clause_LiteralIsOrientedEquality(PartnerLit)) &&
 		  clause_LiteralIsPositive(PartnerLit) &&
-		  clause_Number(PartnerClause) != clause_Number(Clause) && 
+		  clause_Number(PartnerClause) != clause_Number(Clause) &&
 		  (!Unit || clause_Length(PartnerClause) == 1) &&
 		  clause_HasSolvedConstraint(PartnerClause)) {
 		/* We exclude the same clause since that inference will be */
@@ -1406,7 +1387,7 @@ static LIST inf_GenSPRightLitToGiven(CLAUSE Clause, int i, TERM Atom,
 							  TRUE,OrdPara,MaxPara,
 							  Flags, Precedence),
 				Result);
-		  
+
 		  }
 		  term_Delete(PartnerLeft);
 		  term_Delete(PartnerRight);
@@ -1423,8 +1404,7 @@ static LIST inf_GenSPRightLitToGiven(CLAUSE Clause, int i, TERM Atom,
   return Result;
 }
 
-
-static LIST inf_GenSPRightToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex, 
+static LIST inf_GenSPRightToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
 				  BOOL OrdPara, BOOL MaxPara, BOOL Unit,
 				  FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -1443,7 +1423,7 @@ static LIST inf_GenSPRightToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
 {
   TERM Atom;
   LIST Result;
-  
+
 #ifdef CHECK
   if (clause_GetFlag(Clause, NOPARAINTO) ||
       clause_GetFlag(Clause, CLAUSESELECT) ||
@@ -1457,12 +1437,12 @@ static LIST inf_GenSPRightToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
 
   Result  = list_Nil();
   Atom    = clause_LiteralAtom(clause_GetLiteral(Clause,i));
-  
+
   if (fol_IsEquality(Atom)) {
     Result = list_Nconc(inf_GenSPRightEqToGiven(Clause,i,TRUE,ShIndex,OrdPara,
 						MaxPara,Unit,Flags, Precedence),
 			Result);
-    
+
     if (!MaxPara ||
 	!clause_LiteralIsOrientedEquality(clause_GetLiteral(Clause,i)))
       /* For SPm and OPm always try other direction, for SpR try it */
@@ -1476,10 +1456,9 @@ static LIST inf_GenSPRightToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
 						 OrdPara,MaxPara,Unit,
 						 Flags, Precedence),
 			Result);
-  
+
   return Result;
 }
-
 
 LIST inf_GenSuperpositionRight(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 			       BOOL OrdPara, BOOL MaxPara, BOOL Unit,
@@ -1488,10 +1467,10 @@ LIST inf_GenSuperpositionRight(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   INPUT:   A clause and an Index, usually the WorkedOffIndex,
            three boolean flags for controlling inference
            preconditions, a flag store and a precedence.
-  RETURNS: A list of clauses derivable from the given clause by 
+  RETURNS: A list of clauses derivable from the given clause by
            superposition right wrt. the Index.
 
-	   OrdPara=TRUE, MaxPara=TRUE 
+	   OrdPara=TRUE, MaxPara=TRUE
 	   -> Superposition Right
 
 	   OrdPara=TRUE, MaxPara=FALSE
@@ -1503,7 +1482,7 @@ LIST inf_GenSuperpositionRight(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 	   OrdPara=FALSE, MaxPara=TRUE
 	   -> not defined
 
-	   If <Unit>==TRUE the clause with the maximal equality 
+	   If <Unit>==TRUE the clause with the maximal equality
 	   additionally must be a unit clause.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
@@ -1538,27 +1517,27 @@ LIST inf_GenSuperpositionRight(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 
   Copy = clause_Copy(GivenClause);
   n    = clause_LastSuccedentLitIndex(Copy);
-  
+
   for (i = clause_FirstSuccedentLitIndex(Copy); i <= n; i++) {
-    
+
     ActLit = clause_GetLiteral(Copy, i);
     Atom   = clause_LiteralSignedAtom(ActLit);
-    
+
     if (!MaxPara ||
 	clause_LiteralGetFlag(ActLit,STRICTMAXIMAL)) {
       if (fol_IsEquality(Atom) &&
 	  (!Unit || clause_Length(GivenClause) == 1)) {
-	
-	Result = list_Nconc(inf_GenLitSPRight(Copy, term_FirstArgument(Atom), 
+
+	Result = list_Nconc(inf_GenLitSPRight(Copy, term_FirstArgument(Atom),
 					      term_SecondArgument(Atom), i,
 					      ShIndex,OrdPara,MaxPara,Flags,
-					      Precedence), 
+					      Precedence),
 			    Result);
-	
+
 	if (!OrdPara ||
 	    !clause_LiteralIsOrientedEquality(ActLit))
 	  Result = list_Nconc(inf_GenLitSPRight(Copy,
-						term_SecondArgument(Atom), 
+						term_SecondArgument(Atom),
 						term_FirstArgument(Atom), i,
 						ShIndex,OrdPara,MaxPara,Flags,
 						Precedence),
@@ -1575,10 +1554,7 @@ LIST inf_GenSuperpositionRight(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   return Result;
 }
 
-
-
 /* END of block with new superposition right rule */
-
 
 static LIST inf_ApplyMParamod(CLAUSE C1, CLAUSE C2, int i, int j, int k,
 			      TERM u_tau, TERM v, TERM s2, TERM t,
@@ -1639,7 +1615,7 @@ static LIST inf_ApplyMParamod(CLAUSE C1, CLAUSE C2, int i, int j, int k,
   for ( ; m <= ls; m++) {
     if (m != i)
       /* The literal used in the inference isn't copied */
-      clause_SetLiteral(newClause, (m + help), 
+      clause_SetLiteral(newClause, (m + help),
 	clause_LiteralCreate(subst_Apply(rho, subst_Apply(tau,
 	  term_Copy(clause_GetLiteralTerm(C1, m)))),newClause));
     else
@@ -1648,20 +1624,20 @@ static LIST inf_ApplyMParamod(CLAUSE C1, CLAUSE C2, int i, int j, int k,
   }
 
   /* Now we consider the PartnerClause : */
-  
+
   /* help = number of already set constraint (Clause) literals */
   help = clause_NumOfConsLits(C1);
-  
+
   for (m = clause_FirstLitIndex(); m <= plc; m++)
-    clause_SetLiteral(newClause, (m + help), 
+    clause_SetLiteral(newClause, (m + help),
       clause_LiteralCreate(subst_Apply(rho, subst_Apply(tau,
 	term_Copy(clause_GetLiteralTerm(C2, m)))),newClause));
-  
+
   /* help = number of already set constraint and antecedent Given-literals */
   help += clause_NumOfAnteLits(C1);
-  
+
   for ( ; m <= pla; m++)
-    clause_SetLiteral(newClause, (m + help), 
+    clause_SetLiteral(newClause, (m + help),
       clause_LiteralCreate(subst_Apply(rho, subst_Apply(tau,
         term_Copy(clause_GetLiteralTerm(C2, m)))),newClause));
 
@@ -1683,7 +1659,7 @@ static LIST inf_ApplyMParamod(CLAUSE C1, CLAUSE C2, int i, int j, int k,
       else {
 	right = term_Copy(v);
 	term_ReplaceSubtermBy(right, s2, t);
-      }		
+      }
       newAtom = term_Create(fol_Equality(), list_Cons(term_Copy(u_sigma),
 		  list_List(subst_Apply(rho, subst_Apply(tau, right)))));
     } else if (m == k) {
@@ -1710,7 +1686,6 @@ static LIST inf_ApplyMParamod(CLAUSE C1, CLAUSE C2, int i, int j, int k,
 
   return list_List(newClause);
 }
-
 
 static LIST inf_Lit2MParamod(CLAUSE C1, CLAUSE C2, int i, int j, TERM s, TERM t,
 			     TERM s2, TERM v, TERM u_tau, SUBST tau,
@@ -1749,7 +1724,7 @@ static LIST inf_Lit2MParamod(CLAUSE C1, CLAUSE C2, int i, int j, TERM s, TERM t,
 
       pLeft2  = subst_Apply(tau, term_Copy(term_FirstArgument(partnerAtom2)));
       pRight2 = subst_Apply(tau, term_Copy(term_SecondArgument(partnerAtom2)));
-      
+
       /* First try unification with left side */
       cont_Check();
 
@@ -1824,17 +1799,16 @@ static LIST inf_Lit2MParamod(CLAUSE C1, CLAUSE C2, int i, int j, TERM s, TERM t,
       term_Delete(pRight2);
     }   /* k != j */
   }     /* for k */
-  
+
   return result;
-}  
-  
+}
 
 static LIST inf_LitMParamod(CLAUSE Clause, int i, BOOL Turn,
 			    SHARED_INDEX ShIndex, FLAGSTORE Flags,
 			    PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause with a strict maximal equality literal at 
-           position <i>, a boolean value, a shared index, a 
+  INPUT:   A clause with a strict maximal equality literal at
+           position <i>, a boolean value, a shared index, a
 	   flag store and a precedence.
 	   If <Turn> is TRUE, the left and right term of the
 	   equality are exchanged.
@@ -1863,7 +1837,7 @@ static LIST inf_LitMParamod(CLAUSE Clause, int i, BOOL Turn,
 
   unifiers = st_GetUnifier(cont_LeftContext(), sharing_Index(ShIndex),
 			   cont_RightContext(), s);
-  
+
   for ( ; !list_Empty(unifiers); unifiers = list_Pop(unifiers)) {
     TERM s2 = (TERM) list_Car(unifiers);     /* Unifiable with s */
 
@@ -1937,13 +1911,12 @@ static LIST inf_LitMParamod(CLAUSE Clause, int i, BOOL Turn,
   return result;
 }
 
-
 static LIST inf_MParamodLitToGiven(CLAUSE Clause, int j, BOOL Turn,
 				   SHARED_INDEX ShIndex, FLAGSTORE Flags,
 				   PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause with a strict maximal equality literal at
-           position <j>, a boolean value, a shared index a 
+           position <j>, a boolean value, a shared index a
 	   flag store and a precedence.
 	   If <Turn> is TRUE, the left and right term of the
 	   equality are exchanged.
@@ -2065,11 +2038,10 @@ static LIST inf_MParamodLitToGiven(CLAUSE Clause, int j, BOOL Turn,
   return result;
 }
 
-
 LIST inf_MergingParamodulation(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 			       FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, a shared index, a flag store and a 
+  INPUT:   A clause, a shared index, a flag store and a
            precedence.
   RETURNS: A list of clauses derivable from the given clause
            by merging paramodulation.
@@ -2079,7 +2051,7 @@ LIST inf_MergingParamodulation(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   LIST   result;
   CLAUSE copy;
   int    last, i;
-  
+
 #ifdef CHECK
   if (!clause_IsClause(GivenClause, Flags, Precedence)) {
     misc_StartErrorReport();
@@ -2100,21 +2072,21 @@ LIST inf_MergingParamodulation(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   for (i = clause_FirstSuccedentLitIndex(copy); i <= last; i++) {
     LITERAL actLit = clause_GetLiteral(copy, i);
     TERM    atom   = clause_LiteralSignedAtom(actLit);
-    
+
     if (clause_LiteralGetFlag(actLit, STRICTMAXIMAL) &&
 	fol_IsEquality(atom)) {
-      
+
       result = list_Nconc(inf_LitMParamod(copy,i,FALSE,ShIndex,
-					  Flags, Precedence), 
+					  Flags, Precedence),
 			  result);
       /* Assume GivenClause is the second clause of the rule */
       result = list_Nconc(inf_MParamodLitToGiven(copy,i,FALSE,ShIndex,
 						 Flags, Precedence),
 			  result);
-      
+
       if (!clause_LiteralIsOrientedEquality(actLit)) {
 	/* First check rule with left and right side exchanged */
-	result = list_Nconc(inf_LitMParamod(copy, i, TRUE, ShIndex, 
+	result = list_Nconc(inf_LitMParamod(copy, i, TRUE, ShIndex,
 					    Flags, Precedence),
 			    result);
 	/* Now assume GivenClause is the second clause of the rule */
@@ -2130,14 +2102,13 @@ LIST inf_MergingParamodulation(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   return result;
 }
 
-
 static CLAUSE inf_ApplyGenRes(LITERAL PosLit, LITERAL NegLit, SUBST SubstTermS,
-			      SUBST SubstPartnerTermS, FLAGSTORE Flags, 
+			      SUBST SubstPartnerTermS, FLAGSTORE Flags,
 			      PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause to use for Resolution, the index of a 
+  INPUT:   A clause to use for Resolution, the index of a
            positive non-equality literal, a unifiable literal,
-           the substitutions for the terms to unify, a flag 
+           the substitutions for the terms to unify, a flag
 	   store and a precedence.
   RETURNS: A clause derivable from the literals owning
            clause by Resolution wrt. the Index.
@@ -2177,41 +2148,38 @@ static CLAUSE inf_ApplyGenRes(LITERAL PosLit, LITERAL NegLit, SUBST SubstTermS,
   clause_SetNumOfConsLits(NewClause,
 			    (clause_NumOfConsLits(GivenClause) +
 			     (clause_NumOfConsLits(PartnerClause)-ConNeg)));
-  
+
   clause_SetNumOfAnteLits(NewClause,
 			    (clause_NumOfAnteLits(GivenClause) +
 			     (clause_NumOfAnteLits(PartnerClause)-AntNeg)));
-  
+
   clause_SetNumOfSuccLits(NewClause,
 			  ((clause_NumOfSuccLits(GivenClause) -1)+
 			   clause_NumOfSuccLits(PartnerClause)));
 
-
   /* First set the literals from the GivenClause : */
   for (j = clause_FirstLitIndex(); j <= lc; j++) {
-    clause_SetLiteral(NewClause, j, 
+    clause_SetLiteral(NewClause, j,
       clause_LiteralCreate(subst_Apply(SubstTermS,
 	term_Copy(clause_GetLiteralTerm(GivenClause, j))),NewClause));
   }
 
   /* help = number of literals to leave empty */
   help = clause_NumOfConsLits(PartnerClause)-ConNeg;
-    
+
   for ( ; j <= la; j++) {
-    clause_SetLiteral(NewClause, (j + help), 
+    clause_SetLiteral(NewClause, (j + help),
       clause_LiteralCreate(subst_Apply(SubstTermS,
 	term_Copy(clause_GetLiteralTerm(GivenClause, j))),NewClause));
   }
 
   /* help = number of literals to leave empty */
   help += clause_NumOfAnteLits(PartnerClause)-AntNeg;
-    
-  
 
   for ( ; j <= ls; j++) {
     if (j != i) {
       /* The ActLit isn't copied! */
-      clause_SetLiteral(NewClause, (j + help), 
+      clause_SetLiteral(NewClause, (j + help),
 	clause_LiteralCreate(subst_Apply(SubstTermS,
 	  term_Copy(clause_GetLiteralTerm(GivenClause, j))),NewClause));
 
@@ -2228,7 +2196,7 @@ static CLAUSE inf_ApplyGenRes(LITERAL PosLit, LITERAL NegLit, SUBST SubstTermS,
 
   for (j = clause_FirstLitIndex(); j <= plc; j++) {
     if (j != pi) {
-    clause_SetLiteral(NewClause, (j + help), 
+    clause_SetLiteral(NewClause, (j + help),
       clause_LiteralCreate(subst_Apply(SubstPartnerTermS,
 	term_Copy(clause_GetLiteralTerm(PartnerClause, j))),NewClause));
     } else {
@@ -2243,7 +2211,7 @@ static CLAUSE inf_ApplyGenRes(LITERAL PosLit, LITERAL NegLit, SUBST SubstTermS,
 
     if (j != pi) {
       /* The NegLit isn't copied! */
-      clause_SetLiteral(NewClause, (j + help), 
+      clause_SetLiteral(NewClause, (j + help),
 	clause_LiteralCreate(subst_Apply(SubstPartnerTermS,
 	  term_Copy(clause_GetLiteralTerm(PartnerClause, j))),NewClause));
 
@@ -2257,11 +2225,10 @@ static CLAUSE inf_ApplyGenRes(LITERAL PosLit, LITERAL NegLit, SUBST SubstTermS,
   help += clause_NumOfSuccLits(GivenClause) - 1;
 
   for ( ; j <= pls; j++) {
-    clause_SetLiteral(NewClause, (j + help), 
+    clause_SetLiteral(NewClause, (j + help),
       clause_LiteralCreate(subst_Apply(SubstPartnerTermS,
 	term_Copy(clause_GetLiteralTerm(PartnerClause, j))),NewClause));
   } /* end of NewClause creation (last for loop). */
-
 
   clause_SetDataFromParents(NewClause,PartnerClause,pi,GivenClause,i,
 			    Flags, Precedence);
@@ -2270,14 +2237,13 @@ static CLAUSE inf_ApplyGenRes(LITERAL PosLit, LITERAL NegLit, SUBST SubstTermS,
   return(NewClause);
 }
 
-
 LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
-			   BOOL Ordered, BOOL Equations, 
+			   BOOL Ordered, BOOL Equations,
 			   FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause and an Index, usually the WorkedOffIndex,
            two boolean flags, a flag store and a precedence.
-  RETURNS: A list of clauses derivable from the GivenClause by 
+  RETURNS: A list of clauses derivable from the GivenClause by
            GeneralResolution wrt. the Index.
 	   If <Ordered>=TRUE, this function generates ordered
 	   resolution inferences (the literals must be selected or
@@ -2306,25 +2272,25 @@ LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 
   if (!clause_HasSolvedConstraint(GivenClause))
     return list_Nil();
-  
+
   Result = list_Nil();
   GivenCopy = clause_Copy(GivenClause);
-  
+
   if (clause_GetFlag(GivenCopy,CLAUSESELECT))
     n = clause_LastAntecedentLitIndex(GivenCopy);
   else
     n = clause_LastSuccedentLitIndex(GivenCopy);
-  
+
   for (i = clause_FirstAntecedentLitIndex(GivenCopy); i <= n; i++) {
-    
+
     ActLit = clause_GetLiteral(GivenCopy, i);
     Atom   = clause_LiteralAtom(ActLit);
-    
+
     if ((Equations || !fol_IsEquality(Atom)) &&
 	(clause_LiteralGetFlag(ActLit,LITSELECT) ||
 	 (!clause_GetFlag(GivenCopy,CLAUSESELECT) &&
-	  (!Ordered || clause_LiteralIsMaximal(ActLit)))) &&	
-	(!Ordered || clause_LiteralIsFromAntecedent(ActLit) || 
+	  (!Ordered || clause_LiteralIsMaximal(ActLit)))) &&
+	(!Ordered || clause_LiteralIsFromAntecedent(ActLit) ||
 	 clause_LiteralGetFlag(ActLit,STRICTMAXIMAL))) {
       /* Positive literals must be strict maximal for ORe,     */
       /* negative literals must be either selected or maximal. */
@@ -2337,24 +2303,24 @@ LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
       while (TRUE) {
 	TermList = st_GetUnifier(cont_LeftContext(), sharing_Index(ShIndex),
 				 cont_RightContext(), Atom);
-	
+
 	for ( ; !list_Empty(TermList); TermList = list_Pop(TermList)) {
 	  LIST LitList;
 	  TERM PartnerAtom;
-	  
+
 	  PartnerAtom = list_First(TermList);
-	  
-	  if (!term_IsVariable(PartnerAtom)) {	  
+
+	  if (!term_IsVariable(PartnerAtom)) {
 	    LITERAL PartnerLit;
 	    int     j;
 	    CLAUSE  PartnerClause;
-	    
-	    for (LitList =  sharing_NAtomDataList(PartnerAtom); 
+
+	    for (LitList =  sharing_NAtomDataList(PartnerAtom);
 		 !list_Empty(LitList);  LitList = list_Cdr(LitList)) {
 	      PartnerLit    = list_Car(LitList);
 	      j             = clause_LiteralGetIndex(PartnerLit);
 	      PartnerClause = clause_LiteralOwningClause(PartnerLit);
-	      
+
 	      if (clause_LiteralsAreComplementary(PartnerLit,ActLit) &&
 		  clause_HasSolvedConstraint(PartnerClause) &&
 		  /* Negative literals must be from the antecedent */
@@ -2364,15 +2330,15 @@ LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 		  (clause_LiteralGetFlag(PartnerLit,LITSELECT) ||
 		   (!clause_GetFlag(PartnerClause,CLAUSESELECT) &&
 		    (!Ordered || clause_LiteralIsMaximal(PartnerLit)))) &&
-		  /* Positive literals must be strict maximal for ORe */ 
-		  (!Ordered || clause_LiteralIsNegative(PartnerLit) || 
+		  /* Positive literals must be strict maximal for ORe */
+		  (!Ordered || clause_LiteralIsNegative(PartnerLit) ||
 		   clause_LiteralGetFlag(PartnerLit,STRICTMAXIMAL)) &&
 		  /* Avoid duplicate self-inferences */
 		  (clause_LiteralIsPositive(PartnerLit) ||
 		   clause_Number(GivenClause) != clause_Number(PartnerClause))) {
 		SUBST  Subst, PartnerSubst;
 		SYMBOL MaxVar;
-		
+
 		MaxVar = clause_MaxVar(PartnerClause);
 		clause_RenameVarsBiggerThan(GivenCopy, MaxVar);
 
@@ -2386,7 +2352,7 @@ LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 		subst_ExtractUnifier(cont_LeftContext(), &Subst,
 				     cont_RightContext(), &PartnerSubst);
 		cont_Reset();
-		
+
 		if (!Ordered ||
 		    inf_LiteralsMax(GivenCopy, i, Subst, PartnerClause, j,
 				    PartnerSubst, Flags, Precedence)) {
@@ -2396,7 +2362,7 @@ LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 						       Flags, Precedence),
 				       Result);
 		  else
-		    Result = list_Cons(inf_ApplyGenRes(PartnerLit, ActLit, 
+		    Result = list_Cons(inf_ApplyGenRes(PartnerLit, ActLit,
 						       PartnerSubst,Subst,
 						       Flags, Precedence),
 				       Result);
@@ -2415,12 +2381,11 @@ LIST inf_GeneralResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
       } /* end of 'endless' loop */
     } /* end of if (clause_LiteralIsMaximal(ActLit)). */
   } /* end of for 'all antecedent and succedent literals'. */
-  
+
   clause_Delete(GivenCopy);
-  
+
   return Result;
 }
-
 
 LIST inf_UnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 			BOOL Equations, FLAGSTORE Flags,
@@ -2428,7 +2393,7 @@ LIST inf_UnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 /**************************************************************
   INPUT:   A clause and an Index, usually the WorkedOffIndex,
            a boolean flag, a flag store and a precedence.
-  RETURNS: A list of clauses derivable from the Givenclause by 
+  RETURNS: A list of clauses derivable from the Givenclause by
            Unit Resolution wrt. the Index.
 	   This function does the same inferences as standard resolution,
 	   except that at least one of the clauses must be a unit clause.
@@ -2457,50 +2422,50 @@ LIST inf_UnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 
   if (!clause_HasSolvedConstraint(GivenClause))
     return list_Nil();
-    
+
   Result = list_Nil();
-  
+
   GivenCopy   = clause_Copy(GivenClause);
   GivenIsUnit = (clause_Length(GivenCopy) == 1);
-  
+
   if (clause_GetFlag(GivenCopy,CLAUSESELECT))
     n = clause_LastAntecedentLitIndex(GivenCopy);
   else
     n = clause_LastSuccedentLitIndex(GivenCopy);
-  
+
   for (i=clause_FirstAntecedentLitIndex(GivenCopy); i <= n; i++) {
-    
+
     ActLit = clause_GetLiteral(GivenCopy, i);
     Atom   = clause_LiteralAtom(ActLit);
-    
+
     if ((Equations || !fol_IsEquality(Atom)) &&
 	(clause_LiteralGetFlag(ActLit,LITSELECT) ||
 	 !clause_GetFlag(GivenCopy,CLAUSESELECT))) {
       LIST TermList;
       BOOL Swapped;
-      
+
       Swapped = FALSE;
 
       /* The 'endless' loop runs twice for equations, once for other atoms */
       while (TRUE) {
 	TermList = st_GetUnifier(cont_LeftContext(), sharing_Index(ShIndex),
 				 cont_RightContext(), Atom);
-	
+
 	for ( ; !list_Empty(TermList); TermList = list_Pop(TermList)) {
 	  LIST LitList;
 	  TERM PartnerAtom;
-	  
+
 	  PartnerAtom = list_First(TermList);
-	  
+
 	  if (!term_IsVariable(PartnerAtom)) {
 	    LITERAL PartnerLit;
 	    CLAUSE  PartnerClause;
-	    
-	    for (LitList =  sharing_NAtomDataList(PartnerAtom); 
+
+	    for (LitList =  sharing_NAtomDataList(PartnerAtom);
 		 !list_Empty(LitList);  LitList = list_Cdr(LitList)) {
 	      PartnerLit    = list_Car(LitList);
 	      PartnerClause = clause_LiteralOwningClause(PartnerLit);
-	      
+
 	      if ((GivenIsUnit || clause_Length(PartnerClause) == 1) &&
 		  clause_LiteralsAreComplementary(PartnerLit,ActLit) &&
 		  clause_HasSolvedConstraint(PartnerClause) &&
@@ -2515,10 +2480,10 @@ LIST inf_UnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 		/* negative.                                                   */
 		SUBST  Subst, PartnerSubst;
 		SYMBOL MaxVar;
-		
+
 		MaxVar = clause_MaxVar(PartnerClause);
 		clause_RenameVarsBiggerThan(GivenCopy, MaxVar);
-		
+
 		cont_Check();
 		if (!unify_UnifyNoOC(cont_LeftContext(), Atom,
 				     cont_RightContext(), PartnerAtom)) {
@@ -2529,14 +2494,14 @@ LIST inf_UnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 		subst_ExtractUnifier(cont_LeftContext(), &Subst,
 				     cont_RightContext(), &PartnerSubst);
 		cont_Reset();
-		
+
 		if (clause_LiteralIsNegative(PartnerLit))
 		  Result = list_Cons(inf_ApplyGenRes(ActLit, PartnerLit, Subst,
 						     PartnerSubst,
 						     Flags, Precedence),
 				     Result);
 		else
-		  Result = list_Cons(inf_ApplyGenRes(PartnerLit, ActLit, 
+		  Result = list_Cons(inf_ApplyGenRes(PartnerLit, ActLit,
 						     PartnerSubst,Subst,
 						     Flags, Precedence),
 				     Result);
@@ -2554,9 +2519,9 @@ LIST inf_UnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
       } /* end of 'endless' loop */
     } /* end of if (clause_LiteralIsMaximal(ActLit)). */
   } /* end of for 'all antecedent and succedent literals'. */
-  
+
   clause_Delete(GivenCopy);
-  
+
   return Result;
 }
 
@@ -2567,12 +2532,12 @@ LIST inf_BoundedDepthUnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   INPUT:   A clause and an Index, usually the WorkedOffIndex,
            a flag indicating whether the partner clause must be
 	   a conjecture clause, a flag store and a precedence.
-  RETURNS: A list of clauses derivable from the Givenclause by 
+  RETURNS: A list of clauses derivable from the Givenclause by
            bounded depth unit resolution wrt. the Index.
 	   This acts similar to inf_UnitResolution, except that
-	   it limits the depth of resolvents to the maximum 
+	   it limits the depth of resolvents to the maximum
 	   depth of its parent clauses.
-  MEMORY:  A list of clauses is produced, where memory for the 
+  MEMORY:  A list of clauses is produced, where memory for the
            list and the clauses is allocated.
 ***************************************************************/
      /* GivenClause is always a CONCLAUSE */
@@ -2613,18 +2578,18 @@ LIST inf_BoundedDepthUnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
       for ( ; !list_Empty(TermList); TermList = list_Pop(TermList)) {
 	LIST LitList;
 	TERM PartnerAtom;
-	
+
 	PartnerAtom = list_First(TermList);
-	
+
 	if (!term_IsVariable(PartnerAtom)) {
 	  LITERAL PartnerLit;
 	  CLAUSE  PartnerClause;
-	  
+
 	  for (LitList = sharing_NAtomDataList(PartnerAtom);
 	       !list_Empty(LitList); LitList = list_Cdr(LitList)) {
 	    PartnerLit    = list_Car(LitList);
 	    PartnerClause = clause_LiteralOwningClause(PartnerLit);
-	    
+
 	    if (clause_LiteralsAreComplementary(PartnerLit,ActLit) &&
 		(clause_Length(GivenCopy)==1 || clause_Length(PartnerClause)==1) &&
 		(clause_GetFlag(GivenCopy,CONCLAUSE) ||
@@ -2634,11 +2599,11 @@ LIST inf_BoundedDepthUnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 	      SYMBOL MaxVar;
 	      int    maxdepth;
 	      CLAUSE Resolvent;
-	      
+
 	      maxdepth = misc_Max(depth, clause_ComputeTermDepth(PartnerClause));
 	      MaxVar   = clause_MaxVar(PartnerClause);
 	      clause_RenameVarsBiggerThan(GivenCopy, MaxVar);
-	      
+
 	      cont_Check();
 	      if (!unify_UnifyNoOC(cont_LeftContext(), Atom,
 				   cont_RightContext(), PartnerAtom)) {
@@ -2649,7 +2614,7 @@ LIST inf_BoundedDepthUnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 	      subst_ExtractUnifier(cont_LeftContext(), &Subst,
 				   cont_RightContext(), &PartnerSubst);
 	      cont_Reset();
-	      
+
 	      if (clause_LiteralIsNegative(PartnerLit))
 		Resolvent = inf_ApplyGenRes(ActLit, PartnerLit, Subst,
 					    PartnerSubst, Flags, Precedence);
@@ -2673,7 +2638,7 @@ LIST inf_BoundedDepthUnitResolution(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 	Swapped = TRUE;
       } else
 	break;
-    } /* end of 'endless' loop */ 
+    } /* end of 'endless' loop */
   }
 
   clause_Delete(GivenCopy);
@@ -2685,7 +2650,7 @@ static CLAUSE inf_ApplyGeneralFactoring(CLAUSE Clause, NAT i, NAT j,
 					SUBST Subst, FLAGSTORE Flags,
 					PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause an index in the clause, a substitution a 
+  INPUT:   A clause an index in the clause, a substitution a
            flag store and a precedence.
   RETURNS: A new clause obtained from <Clause> by applying <Subst>
            and deleting literal <j> keeping literal <i>
@@ -2695,11 +2660,11 @@ static CLAUSE inf_ApplyGeneralFactoring(CLAUSE Clause, NAT i, NAT j,
 
   NewClause = clause_Copy(Clause);
   clause_ClearFlags(NewClause);
-  clause_SubstApply(Subst, NewClause); 
+  clause_SubstApply(Subst, NewClause);
 
   clause_DeleteLiteral(NewClause, i, Flags, Precedence);
 
-  list_Delete(clause_ParentClauses(NewClause)); 
+  list_Delete(clause_ParentClauses(NewClause));
   list_Delete(clause_ParentLiterals(NewClause));
   clause_SetParentLiterals(NewClause,list_Nil());
   clause_SetParentClauses(NewClause,list_Nil());
@@ -2714,7 +2679,6 @@ static CLAUSE inf_ApplyGeneralFactoring(CLAUSE Clause, NAT i, NAT j,
 
   return NewClause;
 }
-
 
 LIST inf_GeneralFactoring(CLAUSE GivenClause, BOOL Ordered, BOOL Left,
 			  BOOL Equations, FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -2774,7 +2738,7 @@ LIST inf_GeneralFactoring(CLAUSE GivenClause, BOOL Ordered, BOOL Left,
 		if (!Ordered || inf_LitMax(GivenClause,i,j,mgu,FALSE,
 					   Flags, Precedence))
 		  Result = list_Cons(inf_ApplyGeneralFactoring(GivenClause,i,j,
-							       mgu,Flags, 
+							       mgu,Flags,
 							       Precedence),
 				     Result);
 		subst_Delete(mgu);
@@ -2782,24 +2746,24 @@ LIST inf_GeneralFactoring(CLAUSE GivenClause, BOOL Ordered, BOOL Left,
 	      cont_Reset();
 	      if (fol_IsEquality(Atom) &&  /* PartnerAtom is equality, too */
 		  unify_UnifyCom(cont_LeftContext(),
-				 term_SecondArgument(Atom), 
+				 term_SecondArgument(Atom),
 				 term_FirstArgument(PartnerAtom)) &&
 		  unify_UnifyCom(cont_LeftContext(),
-				 term_FirstArgument(Atom), 
+				 term_FirstArgument(Atom),
 				 term_SecondArgument(PartnerAtom))) {
 		SUBST mgu;
 		subst_ExtractUnifierCom(cont_LeftContext(), &mgu);
 		if (!Ordered || inf_LitMax(GivenClause,i,j,mgu,FALSE,
 					   Flags, Precedence))
 		  Result = list_Cons(inf_ApplyGeneralFactoring(GivenClause,i,j,
-							       mgu,Flags, 
+							       mgu,Flags,
 							       Precedence),
 				     Result);
 		subst_Delete(mgu);
 	      }
 	      cont_Reset();
 	    }
-	  } 
+	  }
 	}
       }
     }
@@ -2845,10 +2809,10 @@ LIST inf_GeneralFactoring(CLAUSE GivenClause, BOOL Ordered, BOOL Left,
 	      cont_Reset();
 	      if (fol_IsEquality(Atom) && /* PartnerAtom is equality, too */
 		  unify_UnifyCom(cont_LeftContext(),
-				 term_SecondArgument(Atom), 
+				 term_SecondArgument(Atom),
 				 term_FirstArgument(PartnerAtom)) &&
 		  unify_UnifyCom(cont_LeftContext(),
-				 term_FirstArgument(Atom), 
+				 term_FirstArgument(Atom),
 				 term_SecondArgument(PartnerAtom))) {
 		SUBST mgu;
 		subst_ExtractUnifierCom(cont_LeftContext(), &mgu);
@@ -2862,7 +2826,7 @@ LIST inf_GeneralFactoring(CLAUSE GivenClause, BOOL Ordered, BOOL Left,
 	      }
 	      cont_Reset();
 	    }
-	  } 
+	  }
 	}
       }
     }
@@ -2872,19 +2836,17 @@ LIST inf_GeneralFactoring(CLAUSE GivenClause, BOOL Ordered, BOOL Left,
   return Result;
 }
 
-
 /***************************************************************/
 /* START of code for new Superposition Left rule               */
 /***************************************************************/
-
 
 static LIST inf_GenLitSPLeft(CLAUSE Clause, TERM Left, TERM Right, int i,
 			     SHARED_INDEX ShIndex,BOOL OrdPara, BOOL MaxPara,
 			     FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause (unshared) with a positive equality literal
-           at position <i> where <Left> and <Right> are the 
-	   arguments of just that literal, two boolean flags, 
+           at position <i> where <Left> and <Right> are the
+	   arguments of just that literal, two boolean flags,
 	   a flag store and a precedence.
 	   For Ordered Paramodulation and Superposition <Right>
            mustn't be greater wrt. the ordering than <Left>.
@@ -2932,7 +2894,7 @@ static LIST inf_GenLitSPLeft(CLAUSE Clause, TERM Left, TERM Right, int i,
 	int     pli;
 
 	PartnerLit        = (LITERAL)list_Car(Lits); /* Antecedent Literal ! */
-	PartnerAtom       = clause_LiteralAtom(PartnerLit);  
+	PartnerAtom       = clause_LiteralAtom(PartnerLit);
 	pli               = clause_LiteralGetIndex(PartnerLit);
 	PartnerClause     = clause_LiteralOwningClause(PartnerLit);
 
@@ -2948,7 +2910,7 @@ static LIST inf_GenLitSPLeft(CLAUSE Clause, TERM Left, TERM Right, int i,
 	  SUBST  Subst, PartnerSubst;
 	  TERM   NewLeft,NewRight;
 	  SYMBOL PartnerMaxVar;
-	  TERM   SupAtom; 
+	  TERM   SupAtom;
 
 	  SupAtom = (TERM)NULL;
 	  PartnerMaxVar = clause_MaxVar(PartnerClause);
@@ -2981,9 +2943,9 @@ static LIST inf_GenLitSPLeft(CLAUSE Clause, TERM Left, TERM Right, int i,
 						   PartnerSubst);
 		else {
 		  TERM NewPartnerLeft,NewPartnerRight;
-		  NewPartnerLeft  = subst_Apply(PartnerSubst, 
+		  NewPartnerLeft  = subst_Apply(PartnerSubst,
 		       	    term_Copy(term_FirstArgument(PartnerAtom)));
-		  NewPartnerRight = subst_Apply(PartnerSubst, 
+		  NewPartnerRight = subst_Apply(PartnerSubst,
 			    term_Copy(term_SecondArgument(PartnerAtom)));
 		  switch (ord_Compare(NewPartnerLeft,NewPartnerRight,
 				      Flags, Precedence)) {
@@ -3005,9 +2967,9 @@ static LIST inf_GenLitSPLeft(CLAUSE Clause, TERM Left, TERM Right, int i,
 	      }
 
 	      if (SupAtom != NULL)
-		Result = list_Cons(inf_ApplyGenSuperposition(Clause, i, Subst, 
+		Result = list_Cons(inf_ApplyGenSuperposition(Clause, i, Subst,
 							     PartnerClause, pli,
-							     PartnerSubst, 
+							     PartnerSubst,
 							     SupAtom, FALSE,
 							     OrdPara, MaxPara,
 							     Flags, Precedence),
@@ -3026,23 +2988,22 @@ static LIST inf_GenLitSPLeft(CLAUSE Clause, TERM Left, TERM Right, int i,
   return Result;
 }
 
-
 static LIST inf_GenSPLeftEqToGiven(CLAUSE Clause, int i, BOOL Left,
 				   SHARED_INDEX ShIndex, BOOL OrdPara,
 				   BOOL MaxPara, BOOL Unit, FLAGSTORE Flags,
 				   PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   An unshared clause, the index of an antecedent 
-           literal that is an equality literal, a boolean 
-	   value, a shared index, three boolean flags 
-	   controlling inference preconditions, a flag store 
+  INPUT:   An unshared clause, the index of an antecedent
+           literal that is an equality literal, a boolean
+	   value, a shared index, three boolean flags
+	   controlling inference preconditions, a flag store
 	   and a precedence.
            If Left==TRUE then the left argument of the literal is used
 	   otherwise the right argument.
 	   OrdPara and MaxPara control inference conditions.
 	   If <Unit>==TRUE the clause with the maximal, positive
 	   equality must be a unit clause.
-  RETURNS: A list of clauses derivable from generalized 
+  RETURNS: A list of clauses derivable from generalized
            superposition Left on the
            GivenCopy  wrt. the Index. See GenSuperpositionLeft
 	   for effects of OrdPara and MaxPara
@@ -3074,7 +3035,7 @@ static LIST inf_GenSPLeftEqToGiven(CLAUSE Clause, int i, BOOL Left,
 #endif
 
   Bottom = stack_Bottom();
-  if (Left) 
+  if (Left)
     sharing_PushOnStack(term_FirstArgument(Atom));
   else
     sharing_PushOnStack(term_SecondArgument(Atom));
@@ -3177,7 +3138,7 @@ static LIST inf_GenSPLeftEqToGiven(CLAUSE Clause, int i, BOOL Left,
 		    if (Left)
 		      SupAtom = inf_AllTermsLeftRplac(Atom, Term,
 						      PartnerRight, Subst);
-		    else 
+		    else
 		      SupAtom = inf_AllTermsRightRplac(Atom, Term,
 						       PartnerRight, Subst);
 #ifdef CHECK
@@ -3194,7 +3155,7 @@ static LIST inf_GenSPLeftEqToGiven(CLAUSE Clause, int i, BOOL Left,
 							  i,Subst,SupAtom,
 							  FALSE,OrdPara,
 							  MaxPara,Flags,
-							  Precedence), 
+							  Precedence),
 				Result);
 		  }
 		  if (PartnerLeft != term_Null())
@@ -3214,16 +3175,15 @@ static LIST inf_GenSPLeftEqToGiven(CLAUSE Clause, int i, BOOL Left,
   return Result;
 }
 
-
 static LIST inf_GenSPLeftLitToGiven(CLAUSE Clause, int i, TERM Atom,
 				    SHARED_INDEX ShIndex, BOOL OrdPara,
 				    BOOL MaxPara, BOOL Unit, FLAGSTORE Flags,
 				    PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   An unshared clause, the index of an antecedent 
-           literal that is not an equality literal and its 
-	   atom, a shared index, three boolean flags 
-	   controlling inference preconditions (see also 
+  INPUT:   An unshared clause, the index of an antecedent
+           literal that is not an equality literal and its
+	   atom, a shared index, three boolean flags
+	   controlling inference preconditions (see also
 	   inf_GenSuperpositionLeft), a flag store and a
 	   precedence.
   RETURNS: A list of clauses derivable from superposition left on the
@@ -3329,7 +3289,7 @@ static LIST inf_GenSPLeftLitToGiven(CLAUSE Clause, int i, TERM Atom,
 							  i, Subst, SupAtom,
 							  FALSE, OrdPara,
 							  MaxPara, Flags,
-							  Precedence), 
+							  Precedence),
 				Result);
 
 		  }
@@ -3348,8 +3308,7 @@ static LIST inf_GenSPLeftLitToGiven(CLAUSE Clause, int i, TERM Atom,
   return Result;
 }
 
-
-static LIST inf_GenSPLeftToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex, 
+static LIST inf_GenSPLeftToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
 				 BOOL OrdPara, BOOL MaxPara, BOOL Unit,
 				 FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -3383,7 +3342,7 @@ static LIST inf_GenSPLeftToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
 
   if (fol_IsEquality(Atom)) {
     Result = list_Nconc(inf_GenSPLeftEqToGiven(Clause,i, TRUE,ShIndex, OrdPara,
-					       MaxPara, Unit, Flags,Precedence), 
+					       MaxPara, Unit, Flags,Precedence),
 			Result);
     if (!MaxPara ||
 	!clause_LiteralIsOrientedEquality(clause_GetLiteral(Clause,i)))
@@ -3400,18 +3359,17 @@ static LIST inf_GenSPLeftToGiven(CLAUSE Clause, int i, SHARED_INDEX ShIndex,
   return Result;
 }
 
-
-LIST inf_GenSuperpositionLeft(CLAUSE GivenClause, SHARED_INDEX ShIndex, 
+LIST inf_GenSuperpositionLeft(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 			      BOOL OrdPara, BOOL MaxPara, BOOL Unit,
 			      FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause and an Index, usually the WorkedOffIndex,
            two boolean flags for controlling inference
            preconditions, a flag store and a precedence.
-  RETURNS: A list of clauses derivable from the Givenclause by 
+  RETURNS: A list of clauses derivable from the Givenclause by
            one of the following inference rules wrt. the Index:
 
-	   OrdPara=TRUE, MaxPara=TRUE 
+	   OrdPara=TRUE, MaxPara=TRUE
 	   -> Superposition Left
 
 	   OrdPara=TRUE, MaxPara=FALSE
@@ -3423,7 +3381,7 @@ LIST inf_GenSuperpositionLeft(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 	   OrdPara=FALSE, MaxPara=TRUE
 	   -> not defined
 
-	   If <Unit>==TRUE the clause with the maximal equality 
+	   If <Unit>==TRUE the clause with the maximal equality
 	   additionally must be a unit clause.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
@@ -3453,42 +3411,42 @@ LIST inf_GenSuperpositionLeft(CLAUSE GivenClause, SHARED_INDEX ShIndex,
 
   if (!clause_HasSolvedConstraint(GivenClause))
     return Result;
-  
+
   Copy = clause_Copy(GivenClause);
   n    = clause_LastSuccedentLitIndex(Copy);
-  
+
   if (!clause_GetFlag(Copy, CLAUSESELECT) &&
       (!Unit || clause_Length(Copy) == 1)) {
     for (i = clause_FirstSuccedentLitIndex(Copy); i <= n; i++) {
       ActLit = clause_GetLiteral(Copy, i);
       Atom   = clause_LiteralSignedAtom(ActLit);
-      
+
       if (fol_IsEquality(Atom) &&
 	  (!MaxPara ||
 	   clause_LiteralGetFlag(ActLit,STRICTMAXIMAL))) {
-	
+
 	Result =
-	  list_Nconc(inf_GenLitSPLeft(Copy, term_FirstArgument(Atom), 
+	  list_Nconc(inf_GenLitSPLeft(Copy, term_FirstArgument(Atom),
 				      term_SecondArgument(Atom), i, ShIndex,
-				      OrdPara, MaxPara, Flags, Precedence), 
+				      OrdPara, MaxPara, Flags, Precedence),
 		     Result);
 	if (!OrdPara || !clause_LiteralIsOrientedEquality(ActLit))
 	  /* For SPm always try the other direction, for OPm and SpL */
 	  /* only try it if the literal is not oriented.             */
 	  Result =
-	    list_Nconc(inf_GenLitSPLeft(Copy, term_SecondArgument(Atom), 
+	    list_Nconc(inf_GenLitSPLeft(Copy, term_SecondArgument(Atom),
 					term_FirstArgument(Atom), i, ShIndex,
-					OrdPara, MaxPara, Flags, Precedence), 
+					OrdPara, MaxPara, Flags, Precedence),
 		       Result);
       }
     }
   }
 
-  n = clause_LastAntecedentLitIndex(Copy);  
+  n = clause_LastAntecedentLitIndex(Copy);
   if (!clause_GetFlag(Copy,NOPARAINTO)) {
     for (i = clause_FirstAntecedentLitIndex(Copy); i <= n; i++) {
       ActLit = clause_GetLiteral(Copy, i);
-      
+
       if (clause_LiteralGetFlag(ActLit, LITSELECT) ||
 	  (!clause_GetFlag(Copy, CLAUSESELECT) &&
 	   (!MaxPara || clause_LiteralIsMaximal(ActLit))))
@@ -3502,14 +3460,12 @@ LIST inf_GenSuperpositionLeft(CLAUSE GivenClause, SHARED_INDEX ShIndex,
   return(Result);
 }
 
-
-
 LIST inf_ApplyDefinition(PROOFSEARCH Search, CLAUSE Clause,
 			 FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A proof search object, a clause, a flag store and a
            precedence.
-  RETURNS: A list of clauses derivable from the given clause by 
+  RETURNS: A list of clauses derivable from the given clause by
            applying the (potential) definitions in <Search>.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
@@ -3517,7 +3473,7 @@ LIST inf_ApplyDefinition(PROOFSEARCH Search, CLAUSE Clause,
 {
   LIST Result, Defs;
   DEF  Def;
-  
+
   Result = list_Nil();
   for (Defs=prfs_Definitions(Search); !list_Empty(Defs); Defs=list_Cdr(Defs)) {
     Def = (DEF)list_Car(Defs);
@@ -3526,7 +3482,6 @@ LIST inf_ApplyDefinition(PROOFSEARCH Search, CLAUSE Clause,
   }
   return Result;
 }
-
 
 /**************************************************************
   block with hyperresolution code starts here
@@ -3537,7 +3492,6 @@ typedef struct {
   LITERAL ElectronLit;
   SUBST   ElectronSubst;
 } INF_MAPNODE, *INF_MAPITEM;
-
 
 static void inf_CopyHyperElectron(CLAUSE Clause, SUBST Subst2, SUBST Subst1,
 				  int PLitInd, LIST* Constraint,
@@ -3573,14 +3527,13 @@ static void inf_CopyHyperElectron(CLAUSE Clause, SUBST Subst2, SUBST Subst1,
     if (j != PLitInd) {
       Atom = subst_Apply(Subst1, term_Copy(clause_GetLiteralAtom(Clause, j)));
       Atom = subst_Apply(Subst2, Atom);
-      if (j <= lc) 
+      if (j <= lc)
 	*Constraint = list_Cons(Atom, *Constraint);
       else /* Literal must be from succedent */
 	*Succedent  = list_Cons(Atom, *Succedent);
     }
   }
 }
-
 
 static CLAUSE inf_BuildHyperResolvent(CLAUSE Nucleus, SUBST Subst,
 				      LIST FoundMap, BOOL StrictlyMaximal,
@@ -3606,7 +3559,7 @@ static CLAUSE inf_BuildHyperResolvent(CLAUSE Nucleus, SUBST Subst,
   ParentNum  = list_Nil();              /* parent clause numbers */
   ParentLits = list_Nil();              /* literal indices */
   Constraint = Succedent = list_Nil();  /* literals of the new clause */
-  
+
   /* Get constraint literals from nucleus */
   bound = clause_LastConstraintLitIndex(Nucleus);
   for (i = clause_FirstConstraintLitIndex(Nucleus); i <= bound; i++)
@@ -3678,7 +3631,6 @@ static CLAUSE inf_BuildHyperResolvent(CLAUSE Nucleus, SUBST Subst,
   return NewClause;
 }
 
-
 static LIST inf_GetHyperResolutionPartnerLits(TERM Atom, SHARED_INDEX Index,
 					      BOOL StrictlyMaximal)
 /**************************************************************
@@ -3693,7 +3645,7 @@ static LIST inf_GetHyperResolutionPartnerLits(TERM Atom, SHARED_INDEX Index,
   LITERAL NextLit;
   CLAUSE  Clause;
 
-#ifdef CHECK  
+#ifdef CHECK
   if (!term_IsAtom(Atom)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In inf_GetHyperResolutionPartnerLits: Illegal input.");
@@ -3704,18 +3656,18 @@ static LIST inf_GetHyperResolutionPartnerLits(TERM Atom, SHARED_INDEX Index,
   Result   = list_Nil();
   TermList = st_GetUnifier(cont_LeftContext(), sharing_Index(Index),
 			   cont_RightContext(), Atom);
-  
+
   for (; !list_Empty(TermList); TermList = list_Pop(TermList)) {
     if (!term_IsVariable(list_Car(TermList))) {
-      for (LitScan = sharing_NAtomDataList(list_Car(TermList)); 
-	   !list_Empty(LitScan); 
+      for (LitScan = sharing_NAtomDataList(list_Car(TermList));
+	   !list_Empty(LitScan);
 	   LitScan = list_Cdr(LitScan)) {
 	NextLit = list_Car(LitScan);
 	Clause  = clause_LiteralOwningClause(NextLit);
 	if (clause_LiteralIsFromSuccedent(NextLit) &&
 	    (!StrictlyMaximal || clause_LiteralGetFlag(NextLit, STRICTMAXIMAL)) &&
 	    clause_HasSolvedConstraint(Clause) &&
-	    clause_HasEmptyAntecedent(Clause)) 
+	    clause_HasEmptyAntecedent(Clause))
 	  Result = list_Cons(NextLit, Result);
       }
     }
@@ -3724,7 +3676,7 @@ static LIST inf_GetHyperResolutionPartnerLits(TERM Atom, SHARED_INDEX Index,
 }
 
 static LIST inf_HyperResolvents(CLAUSE Clause, SUBST Subst, LIST Restlits,
-				int GlobalMaxVar, LIST FoundMap, 
+				int GlobalMaxVar, LIST FoundMap,
 				BOOL StrictlyMaximal, SHARED_INDEX Index,
 				FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -3790,25 +3742,25 @@ static LIST inf_HyperResolvents(CLAUSE Clause, SUBST Subst, LIST Restlits,
     AtomCopy = subst_Apply(Subst, term_Copy(clause_LiteralAtom(Lit)));
 
     Swapped = FALSE;
-    
+
     /* The 'endless' loop may run twice for equations, once for other atoms */
     while (TRUE) {
       NextLits = inf_GetHyperResolutionPartnerLits(AtomCopy,Index,
 						   StrictlyMaximal);
-      
+
       for ( ; !list_Empty(NextLits); NextLits = list_Pop(NextLits)) {
-	
+
 	PLit        = list_Car(NextLits);
 	PLitInd     = clause_LiteralGetIndex(PLit);
 	PartnerCopy = clause_Copy(clause_LiteralOwningClause(PLit));
-	
+
 	clause_RenameVarsBiggerThan(PartnerCopy, GlobalMaxVar);
 	PLit        = clause_GetLiteral(PartnerCopy, PLitInd);
-	
+
 	NewMaxVar   = term_MaxVar(clause_LiteralAtom(PLit));
 	NewMaxVar   = symbol_GreaterVariable(GlobalMaxVar, NewMaxVar) ?
 	  GlobalMaxVar : NewMaxVar;
-	
+
 	cont_Check();
 	if (!unify_UnifyNoOC(cont_LeftContext(), AtomCopy, cont_RightContext(),
 			     clause_LiteralAtom(PLit))) {
@@ -3819,22 +3771,22 @@ static LIST inf_HyperResolvents(CLAUSE Clause, SUBST Subst, LIST Restlits,
 	subst_ExtractUnifier(cont_LeftContext(), &NewSubst,
 			     cont_RightContext(), &RightSubst);
 	cont_Reset();
-	
+
 	HelpSubst = NewSubst;
 	NewSubst  = subst_Compose(NewSubst, subst_Copy(Subst));
 	subst_Delete(HelpSubst);
-	
+
 	MapNode.NucleusLit    = Lit;
 	MapNode.ElectronLit   = PLit;
 	MapNode.ElectronSubst = RightSubst;
 	FoundMap = list_Cons(&MapNode, FoundMap);
-	
+
 	Result = list_Nconc(inf_HyperResolvents(Clause, NewSubst, Restlits,
 						NewMaxVar, FoundMap,
 						StrictlyMaximal, Index, Flags,
 						Precedence),
 			    Result);
-	
+
 	subst_Delete(NewSubst);
 	subst_Delete(RightSubst);
 	clause_Delete(PartnerCopy);
@@ -3854,16 +3806,15 @@ static LIST inf_HyperResolvents(CLAUSE Clause, SUBST Subst, LIST Restlits,
   }
 }
 
-
 static LIST inf_GetAntecedentLiterals(CLAUSE Clause)
 /**************************************************************
-  INPUT:   A clause 
+  INPUT:   A clause
   RETURNS: The list of all antecedent literals of the clause.
 ***************************************************************/
-{ 
+{
   int  lc, i;
   LIST Result;
-  
+
   Result = list_Nil();
   lc     = clause_LastAntecedentLitIndex(Clause);
   for (i = clause_FirstAntecedentLitIndex(Clause); i <= lc ; i++) {
@@ -3871,7 +3822,6 @@ static LIST inf_GetAntecedentLiterals(CLAUSE Clause)
   }
   return Result;
 }
-
 
 static LIST inf_ForwardHyperResolution(CLAUSE GivenClause, SHARED_INDEX Index,
 				       BOOL StrictlyMaximal, FLAGSTORE Flags,
@@ -3881,7 +3831,7 @@ static LIST inf_ForwardHyperResolution(CLAUSE GivenClause, SHARED_INDEX Index,
            of clauses, a boolean flag, a flag store and a
 	   precedence.
   RETURNS: A list of clauses inferred from  <GivenClause> by
-           hyper resolution wrt. the index. 
+           hyper resolution wrt. the index.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
 ***************************************************************/
@@ -3896,25 +3846,24 @@ static LIST inf_ForwardHyperResolution(CLAUSE GivenClause, SHARED_INDEX Index,
     misc_FinishErrorReport();
   }
 #endif
-  
+
   if (clause_HasEmptyAntecedent(GivenClause))
     return list_Nil();
 
   Result = list_Nil();
-  
+
   /* Build up list of all antecedent literals. */
   RestLits = inf_GetAntecedentLiterals(GivenClause);
-  
+
   Result =  list_Nconc(inf_HyperResolvents(GivenClause, subst_Nil(),
 					   RestLits,clause_MaxVar(GivenClause),
 					   list_Nil(),StrictlyMaximal,Index,
-					   Flags, Precedence), 
+					   Flags, Precedence),
 		       Result);
   list_Delete(RestLits);
 
   return Result;
 }
-
 
 static LIST inf_BackwardHyperResolution(CLAUSE Electron, SHARED_INDEX Index,
 					BOOL StrictlyMaximal, FLAGSTORE Flags,
@@ -3923,7 +3872,7 @@ static LIST inf_BackwardHyperResolution(CLAUSE Electron, SHARED_INDEX Index,
   INPUT:   A clause with an solved sort constraint,
            an 'Index' of clauses, a boolean flag, a flag store,
 	   and a precedence.
-  RETURNS: A list of clauses inferred by hyper resolution 
+  RETURNS: A list of clauses inferred by hyper resolution
            wrt. the index with <Electron> as an electron.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
@@ -3961,29 +3910,29 @@ static LIST inf_BackwardHyperResolution(CLAUSE Electron, SHARED_INDEX Index,
 	/* Get unifiable antecedent literals in nucleus */
 	CandAtoms = st_GetUnifier(cont_LeftContext(), sharing_Index(Index),
 				  cont_RightContext(), ElecAtom);
-	
+
 	for ( ; !list_Empty(CandAtoms); CandAtoms = list_Pop(CandAtoms)) {
 	  if (!term_IsVariable(list_Car(CandAtoms))) {
 	    LIST CandLits;
-	    
+
 	    CandLits = sharing_NAtomDataList(list_Car(CandAtoms));
-	    
+
 	    for (; !list_Empty(CandLits); CandLits = list_Cdr(CandLits)) {
 	      LITERAL   NucLit;
 	      TERM      NucAtom;
 	      CLAUSE    Nucleus;
-	      
+
 	      NucLit    = list_Car(CandLits);
 	      NucAtom   = clause_LiteralAtom(NucLit);
 	      Nucleus   = clause_LiteralOwningClause(NucLit);
-	      
+
 	      if (clause_LiteralIsFromAntecedent(NucLit) &&
 		  clause_HasSolvedConstraint(Nucleus)) {
 		LIST    FoundMap, RestLits;
 		SUBST   LeftSubst, RightSubst;
 		SYMBOL  GlobalMaxVar, MaxVar;
 		INF_MAPNODE MapNode;
-		
+
 		GlobalMaxVar = clause_MaxVar(Nucleus);
 		clause_RenameVarsBiggerThan(ElectronCopy, GlobalMaxVar);
 		MaxVar       = clause_SearchMaxVar(ElectronCopy);
@@ -4005,23 +3954,23 @@ static LIST inf_BackwardHyperResolution(CLAUSE Electron, SHARED_INDEX Index,
 		subst_ExtractUnifier(cont_LeftContext(), &LeftSubst,
 				     cont_RightContext(), &RightSubst);
 		cont_Reset();
-		
+
 		MapNode.NucleusLit    = NucLit;
 		MapNode.ElectronLit   = ElecLit;
 		MapNode.ElectronSubst = RightSubst;
 		FoundMap = list_List(&MapNode);
-		
+
 		Result = list_Nconc(inf_HyperResolvents(Nucleus, LeftSubst,
 							RestLits, GlobalMaxVar,
 							FoundMap,StrictlyMaximal,
 							Index, Flags,Precedence),
 				    Result);
-		
+
 		/* clean up */
 		subst_Delete(LeftSubst);
 		subst_Delete(RightSubst);
 		list_Delete(RestLits);
-		list_Free(FoundMap);	    
+		list_Free(FoundMap);
 	      } /* if a nucleus has been found */
 	    } /* for all nucleus candidate literals */
 	  } /* if term is atom */
@@ -4035,10 +3984,9 @@ static LIST inf_BackwardHyperResolution(CLAUSE Electron, SHARED_INDEX Index,
     } /* for all lits usable in electron for hyper resolution */
   } /* for all lits in succedent */
   clause_Delete(ElectronCopy);
-    
+
   return Result;
 }
-
 
 LIST inf_GeneralHyperResolution(CLAUSE GivenClause, SHARED_INDEX Index,
 				BOOL Ordered, FLAGSTORE Flags,
@@ -4054,20 +4002,19 @@ LIST inf_GeneralHyperResolution(CLAUSE GivenClause, SHARED_INDEX Index,
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
 ***************************************************************/
-{ 
+{
   LIST Result;
 
   Result = list_Nil();
   if (clause_HasSolvedConstraint(GivenClause)) {
     Result = inf_ForwardHyperResolution(GivenClause, Index, Ordered,
-					Flags, Precedence); 
+					Flags, Precedence);
     Result = list_Nconc(inf_BackwardHyperResolution(GivenClause, Index, Ordered,
 						    Flags, Precedence),
-			Result); 
+			Result);
   }
   return Result;
-} 
-
+}
 
 LIST inf_DerivableClauses(PROOFSEARCH Search, CLAUSE GivenClause)
 /**************************************************************
@@ -4108,19 +4055,19 @@ LIST inf_DerivableClauses(PROOFSEARCH Search, CLAUSE GivenClause)
 		     ListOfDerivedClauses);
     }
     else
-      if (flag_GetFlagValue(Flags, flag_IEMS))	
+      if (flag_GetFlagValue(Flags, flag_IEMS))
 	ListOfDerivedClauses =
 	  list_Nconc(inf_ForwardEmptySort(GivenClause,
 					  sort_TheoryIndex(Dynamic), Dynamic,
-					  FALSE, Flags, Precedence), 
-		     ListOfDerivedClauses); 
+					  FALSE, Flags, Precedence),
+		     ListOfDerivedClauses);
   } else { /* Given with solved Constraint! */
 
     if (Dynamic && flag_GetFlagValue(Flags, flag_IEMS))
       ListOfDerivedClauses =
 	list_Nconc(inf_BackwardEmptySort(GivenClause, sharing_Index(ShIndex),
 					 Dynamic, FALSE, Flags, Precedence),
-		   ListOfDerivedClauses); 
+		   ListOfDerivedClauses);
 
     if (Dynamic && flag_GetFlagValue(Flags, flag_ISOR))
       ListOfDerivedClauses =
@@ -4191,12 +4138,12 @@ LIST inf_DerivableClauses(PROOFSEARCH Search, CLAUSE GivenClause)
       ListOfDerivedClauses =
 	list_Nconc(inf_OrderedParamodulation(GivenClause, ShIndex, Flags,
 					     Precedence),
-		   ListOfDerivedClauses);  
+		   ListOfDerivedClauses);
 
-    if (flag_GetFlagValue(Flags, flag_ISPL)) 
+    if (flag_GetFlagValue(Flags, flag_ISPL))
       ListOfDerivedClauses =
 	list_Nconc(inf_SuperpositionLeft(GivenClause, ShIndex, Flags,Precedence),
-		   ListOfDerivedClauses);  
+		   ListOfDerivedClauses);
 
     switch (flag_GetFlagValue(Flags, flag_IORE)) {
     case flag_ORDEREDRESOLUTIONOFF:
@@ -4219,7 +4166,6 @@ LIST inf_DerivableClauses(PROOFSEARCH Search, CLAUSE GivenClause)
       misc_UserErrorReport("\n Error: Flag \"IORE\" has invalid value.\n");
       misc_FinishUserErrorReport();
     }
-      
 
     switch (flag_GetFlagValue(Flags, flag_ISRE)) {
     case flag_STANDARDRESOLUTIONOFF:

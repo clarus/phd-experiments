@@ -25,7 +25,7 @@ open Asm
 
 type target = Linux | Diab
 
-let target = 
+let target =
   match Configuration.system with
   | "linux"  -> Linux
   | "diab"   -> Diab
@@ -207,7 +207,7 @@ module DebugLinux = struct
   let reset () = Hashtbl.clear filename_num
   let print_file_line oc file line =
     if !Clflags.option_g && file <> "" then begin
-      let filenum = 
+      let filenum =
         try
           Hashtbl.find filename_num file
         with Not_found ->
@@ -291,7 +291,7 @@ let rolm_mask n =
   assert (!count = 2 || (!count = 0 && !last));
   (!mb, !me-1)
 
-(* Built-ins.  They come in three flavors: 
+(* Built-ins.  They come in three flavors:
    - annotation statements: take their arguments in registers or stack
      locations; generate no code;
    - inlined by the compiler: take their arguments in arbitrary
@@ -318,9 +318,9 @@ let print_annot_val oc txt args res =
   PrintAnnot.print_annot_val preg oc txt args;
   match args, res with
   | [IR src], [IR dst] ->
-      if dst <> src then fprintf oc "	mr	%a, %a\n" ireg dst ireg src 
+      if dst <> src then fprintf oc "	mr	%a, %a\n" ireg dst ireg src
   | [FR src], [FR dst] ->
-      if dst <> src then fprintf oc "	fmr	%a, %a\n" freg dst freg src 
+      if dst <> src then fprintf oc "	fmr	%a, %a\n" freg dst freg src
   | _, _ ->
       assert false
 
@@ -620,7 +620,7 @@ let print_builtin_inline oc name args res =
 let short_cond_branch tbl pc lbl_dest =
   match PTree.get lbl_dest tbl with
   | None -> assert false
-  | Some pc_dest -> 
+  | Some pc_dest ->
       let disp = pc_dest - pc in -0x2000 <= disp && disp < 0x2000
 
 (* Printing of instructions *)
@@ -1103,7 +1103,7 @@ let print_init oc = function
       if Z.gt n Z.zero then
         fprintf oc "	.space	%s\n" (Z.to_string n)
   | Init_addrof(symb, ofs) ->
-      fprintf oc "	.long	%a\n" 
+      fprintf oc "	.long	%a\n"
                  symbol_offset (symb, camlint_of_coqint ofs)
 
 let print_init_data oc name id =
@@ -1167,4 +1167,3 @@ let print_program oc p =
   reset_file_line();
   print_prologue oc;
   List.iter (print_globdef oc) p.prog_defs
-

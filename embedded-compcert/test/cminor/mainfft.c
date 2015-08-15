@@ -28,8 +28,8 @@ int main(int argc, char ** argv)
 
   if (argc >= 2) n = atoi(argv[1]); else n = 12;
   np = 1 << n;
-  enp = np; 
-  npm = np / 2  - 1;  
+  enp = np;
+  npm = np / 2  - 1;
   t = PI / enp;
   xr = calloc(np, sizeof(double));
   xi = calloc(np, sizeof(double));
@@ -37,14 +37,14 @@ int main(int argc, char ** argv)
   pxi = xi;
   *pxr = (enp - 1.0) * 0.5;
   *pxi = 0.0;
-  n2 = np / 2;  
+  n2 = np / 2;
   *(pxr+n2) = -0.5;
   *(pxi+n2) =  0.0;
   for (i = 1; i <= npm; i++) {
     j = np - i;
     *(pxr+i) = -0.5;
     *(pxr+j) = -0.5;
-    z = t * (double)i;  
+    z = t * (double)i;
     y = -0.5*(cos(z)/sin(z));
     *(pxi+i) =  y;
     *(pxi+j) = -y;
@@ -56,8 +56,8 @@ int main(int argc, char ** argv)
 #ifdef DEBUG
   trace();
 #endif
-  zr = 0.0; 
-  zi = 0.0; 
+  zr = 0.0;
+  zi = 0.0;
   npm = np-1;
   for (i = 0; i <= npm; i++ ) {
     a = fabs(pxr[i] - i);

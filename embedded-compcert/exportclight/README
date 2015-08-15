@@ -8,13 +8,11 @@ into Clight abstract syntax, pretty-printed in Coq format in .v files.
 These generated .v files can be loaded in a Coq session for
 interactive verification, typically.
 
-
 HOW TO BUILD
 
 Change to the top-level CompCert directory and issue
 
           make clightgen
-
 
 USAGE
 
@@ -31,4 +29,3 @@ The options recognized are a subset of those of the CompCert compiler ccomp
    -U<symbol>  undefine preprocessor macro
    -Wp,<opts>  pass options to C preprocessor
    -f<feature> activate emulation of the given C feature
-

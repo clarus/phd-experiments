@@ -1,11 +1,11 @@
-(* 
+(*
  *
- * Copyright (c) 2001-2002, 
+ * Copyright (c) 2001-2002,
  *  George C. Necula    <necula@cs.berkeley.edu>
  *  Scott McPeak        <smcpeak@cs.berkeley.edu>
  *  Wes Weimer          <weimer@cs.berkeley.edu>
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
@@ -35,8 +35,8 @@
  *
  *)
 
-(** This file was originally part of Hugues Casee's frontc 2.0, and has been 
- * extensively changed since. 
+(** This file was originally part of Hugues Casee's frontc 2.0, and has been
+ * extensively changed since.
 **
 ** 1.0	3.22.99	Hugues Cassé	First version.
 ** 2.0  George Necula 12/12/00: Many extensions
@@ -66,7 +66,7 @@ type typeSpecifier = (* Merge all specifiers into one type *)
   | Tsigned
   | Tunsigned
   | Tnamed of string
-  (* each of the following three kinds of specifiers contains a field 
+  (* each of the following three kinds of specifiers contains a field
    * or item list iff it corresponds to a definition (as opposed to
    * a forward declaration or simple reference to the type); they
    * also have a list of __attribute__s that appeared between the
@@ -80,7 +80,7 @@ type typeSpecifier = (* Merge all specifiers into one type *)
 and storage =
     NO_STORAGE | AUTO | STATIC | EXTERN | REGISTER
 
-and funspec = 
+and funspec =
     INLINE | VIRTUAL | EXPLICIT
 
 and cvspec =
@@ -92,7 +92,7 @@ and cvspec =
 (* on to the compiler.  Thus, we can represent e.g. 'int long float x' even *)
 (* though the compiler will of course choke. *)
 and spec_elem =
-    SpecTypedef          
+    SpecTypedef
   | SpecCV of cvspec            (* const/volatile *)
   | SpecAttr of attribute       (* __attribute__ *)
   | SpecStorage of storage
@@ -101,7 +101,6 @@ and spec_elem =
 
 (* decided to go ahead and replace 'spec_elem list' with specifier *)
 and specifier = spec_elem list
-
 
 (* Declarator type. They modify the base type given in the specifier. Keep
  * them in the order as they are printed (this means that the top level
@@ -122,7 +121,7 @@ and decl_type =
                                           (* Prints "decl [ attrs exp ]".
                                            * decl is never a PTR. *)
  | PTR of attribute list * decl_type      (* Prints "* attrs decl" *)
- | PROTO of decl_type * single_name list * bool 
+ | PROTO of decl_type * single_name list * bool
                                           (* Prints "decl (args[, ...])".
                                            * decl is never a PTR.*)
 
@@ -152,7 +151,6 @@ and init_name = name * init_expression
  * function parameters and functions *)
 and single_name = specifier * name
 
-
 and enum_item = string * expression * cabsloc
 
 (*
@@ -170,18 +168,17 @@ and definition =
 (* the string is a file name, and then the list of toplevel forms *)
 and file = string * definition list
 
-
 (*
 ** statements
 *)
 
-(* A block contains a list of local label declarations ( GCC's ({ __label__ 
+(* A block contains a list of local label declarations ( GCC's ({ __label__
  * l1, l2; ... }) ) , a list of definitions and a list of statements  *)
-and block = 
+and block =
     { blabels: string list;
       battrs: attribute list;
       bstmts: statement list
-    } 
+    }
 
 (* GCC asm directives have lots of extra information to guide the optimizer *)
 and asm_details =
@@ -219,8 +216,8 @@ and statement =
    (** MS SEH *)
  | TRY_EXCEPT of block * expression * block * cabsloc
  | TRY_FINALLY of block * block * cabsloc
- 
-and for_clause = 
+
+and for_clause =
    FC_EXP of expression
  | FC_DECL of definition
 
@@ -251,7 +248,7 @@ and expression =
   | CAST of (specifier * decl_type) * init_expression
 
     (* There is a special form of CALL in which the function called is
-       __builtin_va_arg and the second argument is sizeof(T). This 
+       __builtin_va_arg and the second argument is sizeof(T). This
        should be printed as just T *)
   | CALL of expression * expression list
   | COMMA of expression list
@@ -281,12 +278,12 @@ and constant =
   | CONST_CHAR of int64 list
   | CONST_WCHAR of int64 list
   | CONST_STRING of string
-  | CONST_WSTRING of int64 list 
+  | CONST_WSTRING of int64 list
     (* ww: wstrings are stored as an int64 list at this point because
-     * we might need to feed the wide characters piece-wise into an 
+     * we might need to feed the wide characters piece-wise into an
      * array initializer (e.g., wchar_t foo[] = L"E\xabcd";). If that
      * doesn't happen we will convert it to an (escaped) string before
-     * passing it to Cil. *) 
+     * passing it to Cil. *)
 
 and init_expression =
   | NO_INIT
@@ -298,10 +295,7 @@ and initwhat =
   | INFIELD_INIT of string * initwhat
   | ATINDEX_INIT of expression * initwhat
   | ATINDEXRANGE_INIT of expression * expression
- 
 
                                         (* Each attribute has a name and some
                                          * optional arguments *)
 and attribute = string * expression list
-                                              
-

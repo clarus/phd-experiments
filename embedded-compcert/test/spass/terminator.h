@@ -46,7 +46,6 @@
 #ifndef _TERMINATOR_
 #define _TERMINATOR_
 
-
 #include "misc.h"
 #include "symbol.h"
 #include "clause.h"

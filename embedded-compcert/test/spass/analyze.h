@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                ANALYSIS OF CLAUSE SETS                 * */
 /* *                                                        * */
-/* *  $Module:   ANALYZE                                    * */ 
+/* *  $Module:   ANALYZE                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,9 +42,8 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
- 
+
 #ifndef _ANALYZE_
 #define _ANALYZE_
 
@@ -103,10 +102,6 @@ static __inline__ LIST ana_FinMonPredList(void)
 {
   return ana_FINITEMONADICPREDICATES;
 }
-
-
-
-
 
 /**************************************************************/
 /* Inline Functions                                           */

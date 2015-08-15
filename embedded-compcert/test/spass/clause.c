@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "clause.h"
@@ -71,7 +70,6 @@ static __inline__ void clause_FreeLitArray(CLAUSE Clause)
   if (Length > 0)
     memory_Free(Clause->literals, sizeof(LITERAL) * Length);
 }
-
 
 /**************************************************************/
 /* Primitive literal functions                                */
@@ -111,7 +109,7 @@ NAT clause_LiteralComputeWeight(LITERAL Literal, FLAGSTORE Flags)
   Term = clause_LiteralSignedAtom(Literal);
   Bottom = stack_Bottom();
   Number = 0;
-  
+
   do {
     if (term_IsComplex(Term)) {
       Number += flag_GetFlagValue(Flags, flag_FUNCWEIGHT);
@@ -122,7 +120,7 @@ NAT clause_LiteralComputeWeight(LITERAL Literal, FLAGSTORE Flags)
 	Number += flag_GetFlagValue(Flags, flag_VARWEIGHT);
       else
 	Number += flag_GetFlagValue(Flags, flag_FUNCWEIGHT);
-    
+
     while (!stack_Empty(Bottom) && list_Empty(stack_Top()))
       stack_Pop();
     if (!stack_Empty(Bottom)) {
@@ -164,7 +162,7 @@ LITERAL clause_LiteralCreate(TERM Atom, CLAUSE Clause)
 #endif
 
   Result                = (LITERAL)memory_Malloc(sizeof(LITERAL_NODE));
-  
+
   Result->atomWithSign  = Atom;
   Result->oriented      = FALSE;
   Result->weight        = clause_WEIGHTUNDEFINED;
@@ -173,7 +171,6 @@ LITERAL clause_LiteralCreate(TERM Atom, CLAUSE Clause)
 
   return Result;
 }
-
 
 LITERAL clause_LiteralCreateNegative(TERM Atom, CLAUSE Clause)
 /**********************************************************
@@ -204,7 +201,7 @@ LITERAL clause_LiteralCreateNegative(TERM Atom, CLAUSE Clause)
 #endif
 
   Result                = (LITERAL)memory_Malloc(sizeof(LITERAL_NODE));
-  
+
   term_RplacSupertermList(Atom, list_Nil());
 
   Result->atomWithSign  = term_Create(fol_Not(), list_List(Atom));
@@ -215,7 +212,6 @@ LITERAL clause_LiteralCreateNegative(TERM Atom, CLAUSE Clause)
 
   return Result;
 }
-
 
 void clause_LiteralDelete(LITERAL Literal)
 /*********************************************************
@@ -241,7 +237,6 @@ void clause_LiteralDelete(LITERAL Literal)
   clause_LiteralFree(Literal);
 }
 
-
 void clause_LiteralInsertIntoSharing(LITERAL Lit, SHARED_INDEX ShIndex)
 /**********************************************************
   INPUT:   A Literal with an unshared Atom and an Index.
@@ -254,7 +249,7 @@ void clause_LiteralInsertIntoSharing(LITERAL Lit, SHARED_INDEX ShIndex)
 {
 
   TERM Atom;
-  
+
 #ifdef CHECK
   if (!clause_LiteralIsLiteral(Lit)) {
     misc_StartErrorReport();
@@ -263,14 +258,13 @@ void clause_LiteralInsertIntoSharing(LITERAL Lit, SHARED_INDEX ShIndex)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   Atom = clause_LiteralAtom(Lit);
-  
+
   clause_LiteralSetAtom(Lit, sharing_Insert(Lit, Atom, ShIndex));
-  
+
   term_Delete(Atom);
 }
-
 
 void clause_LiteralDeleteFromSharing(LITERAL Lit, SHARED_INDEX ShIndex)
 /**********************************************************
@@ -298,13 +292,12 @@ void clause_LiteralDeleteFromSharing(LITERAL Lit, SHARED_INDEX ShIndex)
     list_Free(term_ArgumentList(clause_LiteralSignedAtom(Lit)));
     term_Free(clause_LiteralSignedAtom(Lit));
   }
- 
+
   sharing_Delete(Lit, Atom, ShIndex);
 
   clause_LiteralFree(Lit);
 
 }
-
 
 static LIST clause_CopyLitInterval(CLAUSE Clause, int Start, int End)
 /**************************************************************
@@ -324,10 +317,9 @@ static LIST clause_CopyLitInterval(CLAUSE Clause, int Start, int End)
     Atom = term_Copy(clause_GetLiteralAtom(Clause, Start));
     List = list_Cons(Atom, List);
   }
-  
+
   return List;
 }
-
 
 static LIST clause_CopyLitIntervalExcept(CLAUSE Clause, int Start, int End,
 					 int i)
@@ -341,7 +333,7 @@ static LIST clause_CopyLitIntervalExcept(CLAUSE Clause, int Start, int End,
 {
   TERM Atom;
   LIST Result;
-  
+
   Result = list_Nil();
   for ( ; End >= Start; End--)
     if (End != i) {
@@ -350,7 +342,6 @@ static LIST clause_CopyLitIntervalExcept(CLAUSE Clause, int Start, int End,
     }
   return Result;
 }
-
 
 LIST clause_CopyConstraint(CLAUSE Clause)
 /**************************************************************
@@ -362,7 +353,6 @@ LIST clause_CopyConstraint(CLAUSE Clause)
 				clause_FirstConstraintLitIndex(Clause),
 				clause_LastConstraintLitIndex(Clause));
 }
-
 
 LIST clause_CopyAntecedentExcept(CLAUSE Clause, int i)
 /**************************************************************
@@ -388,7 +378,6 @@ LIST clause_CopySuccedent(CLAUSE Clause)
 				clause_LastSuccedentLitIndex(Clause));
 }
 
-
 LIST clause_CopySuccedentExcept(CLAUSE Clause, int i)
 /**************************************************************
  INPUT:   A clause.
@@ -401,7 +390,6 @@ LIST clause_CopySuccedentExcept(CLAUSE Clause, int i)
 				      clause_LastSuccedentLitIndex(Clause),
 				      i);
 }
-
 
 /**************************************************************/
 /* Specials                                                   */
@@ -423,7 +411,6 @@ BOOL clause_IsUnorderedClause(CLAUSE Clause)
 	  clause_DependsOnSplitLevel(Clause,clause_SplitLevel(Clause)));
 }
 
-
 BOOL clause_IsClause(CLAUSE Clause, FLAGSTORE FlagStore, PRECEDENCE Precedence)
 /*********************************************************
   INPUT:   A clause, a flag store and a precedence.
@@ -441,12 +428,12 @@ BOOL clause_IsClause(CLAUSE Clause, FLAGSTORE FlagStore, PRECEDENCE Precedence)
     ActLit = clause_GetLiteral(Clause,i);
     if (fol_IsEquality(clause_LiteralSignedAtom(ActLit))) {
       ord_RESULT HelpRes;
-	
+
       HelpRes =
 	ord_Compare(term_FirstArgument(clause_LiteralSignedAtom(ActLit)),
 		    term_SecondArgument(clause_LiteralSignedAtom(ActLit)),
 		    FlagStore, Precedence);
-	
+
       if (ord_IsSmallerThan(HelpRes))
 	return FALSE;
     }
@@ -455,7 +442,6 @@ BOOL clause_IsClause(CLAUSE Clause, FLAGSTORE FlagStore, PRECEDENCE Precedence)
   return TRUE;
 }
 
-
 BOOL clause_ContainsPositiveEquations(CLAUSE Clause)
 /*********************************************************
   INPUT:   A clause.
@@ -463,7 +449,7 @@ BOOL clause_ContainsPositiveEquations(CLAUSE Clause)
 **********************************************************/
 {
   int i;
-  
+
   for (i = clause_FirstSuccedentLitIndex(Clause);
        i < clause_Length(Clause);
        i++)
@@ -473,7 +459,6 @@ BOOL clause_ContainsPositiveEquations(CLAUSE Clause)
   return FALSE;
 }
 
-
 BOOL clause_ContainsNegativeEquations(CLAUSE Clause)
 /*********************************************************
   INPUT:   A clause.
@@ -481,7 +466,7 @@ BOOL clause_ContainsNegativeEquations(CLAUSE Clause)
 **********************************************************/
 {
   int i;
-  
+
   for (i = clause_FirstAntecedentLitIndex(Clause);
        i < clause_FirstSuccedentLitIndex(Clause);
        i++)
@@ -490,7 +475,6 @@ BOOL clause_ContainsNegativeEquations(CLAUSE Clause)
 
   return FALSE;
 }
-
 
 int clause_ContainsFolAtom(CLAUSE Clause, BOOL *Prop, BOOL *Grd, BOOL *Monadic,
 			   BOOL *NonMonadic)
@@ -541,7 +525,6 @@ int clause_ContainsFolAtom(CLAUSE Clause, BOOL *Prop, BOOL *Grd, BOOL *Monadic,
   return Result;
 }
 
-
 BOOL clause_ContainsVariables(CLAUSE Clause)
 /*********************************************************
   INPUT:   A clause.
@@ -559,7 +542,6 @@ BOOL clause_ContainsVariables(CLAUSE Clause)
 
   return FALSE;
 }
-
 
 void clause_ContainsSortRestriction(CLAUSE Clause, BOOL *Sortres, BOOL *USortres)
 /*********************************************************
@@ -674,7 +656,7 @@ BOOL clause_ImpliesNonTrivialDomain(CLAUSE Clause)
       !term_Equal(term_FirstArgument(clause_LiteralAtom(clause_FirstAntecedentLit(Clause))),
 		  term_SecondArgument(clause_LiteralAtom(clause_FirstAntecedentLit(Clause)))))
     return TRUE;
-  
+
   return FALSE;
 }
 
@@ -735,10 +717,9 @@ NAT clause_NumberOfVarOccs(CLAUSE Clause)
 
   for (i = clause_FirstLitIndex(); i < n; i++)
     Result += term_NumberOfVarOccs(clause_GetLiteralTerm(Clause,i));
-  
+
   return Result;
 }
-
 
 NAT clause_ComputeWeight(CLAUSE Clause, FLAGSTORE Flags)
 /**************************************************************
@@ -764,7 +745,6 @@ NAT clause_ComputeWeight(CLAUSE Clause, FLAGSTORE Flags)
   }
   return Weight;
 }
-
 
 NAT clause_ComputeTermDepth(CLAUSE Clause)
 /**************************************************************
@@ -815,7 +795,6 @@ NAT clause_MaxTermDepthClauseList(LIST Clauses)
   return Depth;
 }
 
-
 NAT clause_ComputeSize(CLAUSE Clause)
 /**************************************************************
   INPUT:   A Clause.
@@ -840,10 +819,9 @@ NAT clause_ComputeSize(CLAUSE Clause)
 
   for (i = clause_FirstLitIndex();i < n;i++)
     Size += term_ComputeSize(clause_GetLiteralTerm(Clause,i));
-  
+
   return Size;
 }
-
 
 BOOL clause_WeightCorrect(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
 /*********************************************************
@@ -878,7 +856,6 @@ BOOL clause_WeightCorrect(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
 
   return (clause_Weight(Clause) == Weight);
 }
-
 
 LIST clause_InsertWeighed(CLAUSE Clause, LIST UsList, FLAGSTORE Flags,
 			  PRECEDENCE Precedence)
@@ -920,7 +897,6 @@ LIST clause_InsertWeighed(CLAUSE Clause, LIST UsList, FLAGSTORE Flags,
   }
 }
 
-
 LIST clause_ListSortWeighed(LIST Clauses)
 /*********************************************************
   INPUT:   A list of clauses.
@@ -958,7 +934,6 @@ LIST clause_ListSortWeighed(LIST Clauses)
   return Scan;
 }
 
-
 LITERAL clause_LiteralCopy(LITERAL Literal)
 /*********************************************************
   INPUT:   A literal.
@@ -981,7 +956,7 @@ LITERAL clause_LiteralCopy(LITERAL Literal)
 #endif
 
   Result                = (LITERAL)memory_Malloc(sizeof(LITERAL_NODE));
-  
+
   Result->atomWithSign  = term_Copy(clause_LiteralSignedAtom(Literal));
   Result->oriented      = clause_LiteralIsOrientedEquality(Literal);
 
@@ -991,7 +966,6 @@ LITERAL clause_LiteralCopy(LITERAL Literal)
 
   return Result;
 }
-
 
 CLAUSE clause_Copy(CLAUSE Clause)
 /*********************************************************
@@ -1036,7 +1010,6 @@ CLAUSE clause_Copy(CLAUSE Clause)
   return Result;
 }
 
-
 SYMBOL clause_LiteralMaxVar(LITERAL Literal)
 /*********************************************************
   INPUT:   A literal.
@@ -1080,7 +1053,6 @@ SYMBOL clause_LiteralMaxVar(LITERAL Literal)
   return MaxSym;
 }
 
-
 SYMBOL clause_AtomMaxVar(TERM Term)
 /*********************************************************
   INPUT:   A term.
@@ -1112,7 +1084,6 @@ SYMBOL clause_AtomMaxVar(TERM Term)
   return VarSym;
 }
 
-
 void clause_SetMaxLitFlags(CLAUSE Clause, FLAGSTORE FlagStore,
 			   PRECEDENCE Precedence)
 /**********************************************************
@@ -1125,7 +1096,7 @@ void clause_SetMaxLitFlags(CLAUSE Clause, FLAGSTORE FlagStore,
   LITERAL    ActLit,CompareLit;
   BOOL       Result, Twin;
   ord_RESULT HelpRes;
-  
+
   n   = clause_Length(Clause);
   fa  = clause_FirstAntecedentLitIndex(Clause);
   clause_RemoveFlag(Clause,CLAUSESELECT);
@@ -1151,7 +1122,7 @@ void clause_SetMaxLitFlags(CLAUSE Clause, FLAGSTORE FlagStore,
 					  clause_LiteralSignedAtom(CompareLit),
 					  clause_LiteralIsOrientedEquality(CompareLit),
 					  FALSE, FlagStore, Precedence);
-	  
+
 	  /*printf("\n\tWe compare: ");
 	    fol_PrintDFG(clause_LiteralAtom(ActLit));
 	    putchar(' ');
@@ -1176,7 +1147,6 @@ void clause_SetMaxLitFlags(CLAUSE Clause, FLAGSTORE FlagStore,
   /*printf("\n End: "); clause_Print(Clause);*/
 }
 
-
 SYMBOL clause_SearchMaxVar(CLAUSE Clause)
 /**********************************************************
   INPUT:   A clause.
@@ -1186,7 +1156,7 @@ SYMBOL clause_SearchMaxVar(CLAUSE Clause)
 {
   int i, n;
   SYMBOL Help, MaxSym;
-  
+
   n = clause_Length(Clause);
 
   MaxSym = symbol_GetInitialStandardVarCounter();
@@ -1199,7 +1169,6 @@ SYMBOL clause_SearchMaxVar(CLAUSE Clause)
   return MaxSym;
 }
 
-
 void clause_RenameVarsBiggerThan(CLAUSE Clause, SYMBOL MinVar)
 /**********************************************************
   INPUT:   A clause and a variable symbol.
@@ -1208,7 +1177,7 @@ void clause_RenameVarsBiggerThan(CLAUSE Clause, SYMBOL MinVar)
 ***********************************************************/
 {
   int i,n;
-  
+
 #ifdef CHECK
   if (!clause_IsUnorderedClause(Clause)) {
     misc_StartErrorReport();
@@ -1236,7 +1205,7 @@ void clause_Normalize(CLAUSE Clause)
 ***********************************************************/
 {
   int i,n;
-  
+
   n = clause_Length(Clause);
 
   term_StartMinRenaming();
@@ -1244,7 +1213,6 @@ void clause_Normalize(CLAUSE Clause)
   for (i = clause_FirstLitIndex(); i < n; i++)
     term_Rename(clause_GetLiteralTerm(Clause, i));
 }
-
 
 void clause_SubstApply(SUBST Subst, CLAUSE Clause)
 /**********************************************************
@@ -1271,7 +1239,6 @@ void clause_SubstApply(SUBST Subst, CLAUSE Clause)
 			  subst_Apply(Subst,clause_GetLiteralAtom(Clause,i)));
 }
 
-
 void clause_ReplaceVariable(CLAUSE Clause, SYMBOL Var, TERM Term)
 /**********************************************************
   INPUT:   A clause, a variable symbol, and a term.
@@ -1296,7 +1263,6 @@ void clause_ReplaceVariable(CLAUSE Clause, SYMBOL Var, TERM Term)
     term_ReplaceVariable(clause_GetLiteralAtom(Clause,i), Var, Term);
 }
 
-
 void clause_UpdateMaxVar(CLAUSE Clause)
 /**********************************************************
   INPUT:   A clause.
@@ -1307,9 +1273,7 @@ void clause_UpdateMaxVar(CLAUSE Clause)
   clause_SetMaxVar(Clause, clause_SearchMaxVar(Clause));
 }
 
-
-
-void clause_OrientEqualities(CLAUSE Clause, FLAGSTORE FlagStore, 
+void clause_OrientEqualities(CLAUSE Clause, FLAGSTORE FlagStore,
 			     PRECEDENCE Precedence)
 /**********************************************************
   INPUT:   An unshared clause, a flag store and a precedence.
@@ -1334,7 +1298,7 @@ void clause_OrientEqualities(CLAUSE Clause, FLAGSTORE FlagStore,
       HelpRes = ord_Compare(term_FirstArgument(clause_LiteralAtom(EqLit)),
 			    term_SecondArgument(clause_LiteralAtom(EqLit)),
 			    FlagStore, Precedence);
-      
+
       /*printf("\n\tWe compare: ");
       fol_PrintDFG(term_FirstArgument(clause_LiteralAtom(EqLit)));
       putchar(' ');
@@ -1362,7 +1326,6 @@ void clause_OrientEqualities(CLAUSE Clause, FLAGSTORE FlagStore,
       clause_LiteralSetNoOrientedEquality(EqLit);
   }
 }
-
 
 void  clause_InsertFlatIntoIndex(CLAUSE Clause, st_INDEX Index)
 /**********************************************************
@@ -1408,7 +1371,6 @@ void  clause_DeleteFlatFromIndex(CLAUSE Clause, st_INDEX Index)
   clause_Delete(Clause);
 }
 
-
 void  clause_DeleteClauseListFlatFromIndex(LIST Clauses, st_INDEX Index)
 /**********************************************************
   INPUT:   An list of unshared clause and an index.
@@ -1420,10 +1382,9 @@ void  clause_DeleteClauseListFlatFromIndex(LIST Clauses, st_INDEX Index)
 
   for (Scan=Clauses;!list_Empty(Scan);Scan=list_Cdr(Scan))
     clause_DeleteFlatFromIndex(list_Car(Scan), Index);
-  
+
   list_Delete(Clauses);
 }
-
 
 /******************************************************************/
 /* Some special functions used by hyper inference/reduction rules */
@@ -1456,7 +1417,6 @@ static void clause_VarToSizeMap(SUBST Subst, NAT* Map, NAT MaxIndex)
   for ( ; !subst_Empty(Subst); Subst = subst_Next(Subst))
     Map[subst_Dom(Subst)] = term_ComputeSize(subst_Cod(Subst));
 }
-
 
 static NAT clause_ComputeTermSize(TERM Term, NAT* VarMap)
 /**************************************************************
@@ -1506,7 +1466,6 @@ static NAT clause_ComputeTermSize(TERM Term, NAT* VarMap)
 
   return Size;
 }
-
 
 LIST clause_MoveBestLiteralToFront(LIST Literals, SUBST Subst, SYMBOL MaxVar,
 				   BOOL (*Better)(LITERAL, NAT, LITERAL, NAT))
@@ -1571,7 +1530,6 @@ LIST clause_MoveBestLiteralToFront(LIST Literals, SUBST Subst, SYMBOL MaxVar,
   return Literals;
 }
 
-
 /**************************************************************/
 /* Literal Output Functions                                   */
 /**************************************************************/
@@ -1594,7 +1552,6 @@ void clause_LiteralPrint(LITERAL Literal)
   term_PrintPrefix(clause_LiteralSignedAtom(Literal));
 }
 
-
 void clause_LiteralListPrint(LIST LitList)
 /**************************************************************
   INPUT:   A list of literals.
@@ -1610,7 +1567,6 @@ void clause_LiteralListPrint(LIST LitList)
       putchar(' ');
   }
 }
-
 
 void clause_LiteralPrintUnsigned(LITERAL Literal)
 /**************************************************************
@@ -1632,7 +1588,6 @@ void clause_LiteralPrintUnsigned(LITERAL Literal)
   fflush(stdout);
 }
 
-
 void clause_LiteralPrintSigned(LITERAL Literal)
 /**************************************************************
   INPUT:   A Literal.
@@ -1653,7 +1608,6 @@ void clause_LiteralPrintSigned(LITERAL Literal)
   fflush(stdout);
 }
 
-
 void clause_LiteralFPrint(FILE* File, LITERAL Lit)
 /**************************************************************
   INPUT:   A file and a literal.
@@ -1663,14 +1617,13 @@ void clause_LiteralFPrint(FILE* File, LITERAL Lit)
   term_FPrintPrefix(File, clause_LiteralSignedAtom(Lit));
 }
 
-
-LIST clause_GetLiteralSubSetList(CLAUSE Clause, int StartIndex, int EndIndex, 
+LIST clause_GetLiteralSubSetList(CLAUSE Clause, int StartIndex, int EndIndex,
 				 FLAGSTORE FlagStore, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause, a start literal index, an end index, a
            flag store and a precedence.
-  RETURNS: The list of literals between the start and the end 
-           index. 
+  RETURNS: The list of literals between the start and the end
+           index.
 	   It is a list of pointers, not a list of indices.
 **************************************************************/
 {
@@ -1705,15 +1658,14 @@ LIST clause_GetLiteralSubSetList(CLAUSE Clause, int StartIndex, int EndIndex,
   return Result;
 }
 
-
-void clause_ReplaceLiteralSubSet(CLAUSE Clause, int StartIndex, 
+void clause_ReplaceLiteralSubSet(CLAUSE Clause, int StartIndex,
 				 int EndIndex, LIST Replacement,
 				 FLAGSTORE FlagStore, PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, a start literal index, an end literal 
+  INPUT:   A clause, a start literal index, an end literal
            index, a flag store and a precedence.
   RETURNS: None.
-  EFFECT:  Replaces the subset of literals in <Clause> with 
+  EFFECT:  Replaces the subset of literals in <Clause> with
            indices between (and including) <StartIndex> and
 	   <EndIndex> with literals from the <Replacement>
 	   list.
@@ -1746,11 +1698,11 @@ void clause_ReplaceLiteralSubSet(CLAUSE Clause, int StartIndex,
   }
 #endif
 
-  for (i = StartIndex, Scan = Replacement; 
-       i <= EndIndex; 
+  for (i = StartIndex, Scan = Replacement;
+       i <= EndIndex;
        i++, Scan = list_Cdr(Scan)) {
     clause_SetLiteral(Clause, i, list_Car(Scan));
-  } 
+  }
 }
 
 static __inline__ BOOL clause_LiteralsCompare(LITERAL Left, LITERAL Right)
@@ -1773,11 +1725,11 @@ static __inline__ BOOL clause_LiteralsCompare(LITERAL Left, LITERAL Right)
 				 clause_LiteralSignedAtom(Right));
 }
 
-static __inline__ void clause_FixLiteralSubsetOrder(CLAUSE Clause, 
-						    int StartIndex, 
+static __inline__ void clause_FixLiteralSubsetOrder(CLAUSE Clause,
+						    int StartIndex,
 						    int EndIndex,
 						    FLAGSTORE FlagStore,
-						    PRECEDENCE Precedence) 
+						    PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A clause, a start index, an end index a flag store
            and a precedence.
@@ -1832,21 +1784,21 @@ void clause_FixLiteralOrder(CLAUSE Clause, FLAGSTORE FlagStore, PRECEDENCE Prece
 
   /* Fix antecedent literal order */
   clause_FixLiteralSubsetOrder(Clause,
-			       clause_FirstAntecedentLitIndex(Clause), 
+			       clause_FirstAntecedentLitIndex(Clause),
 			       clause_LastAntecedentLitIndex(Clause),
 			       FlagStore, Precedence);
 
   /* Fix succedent literal order */
   clause_FixLiteralSubsetOrder(Clause,
-			       clause_FirstSuccedentLitIndex(Clause), 
+			       clause_FirstSuccedentLitIndex(Clause),
 			       clause_LastSuccedentLitIndex(Clause),
 			       FlagStore, Precedence);
 
   /* Fix constraint literal order */
   clause_FixLiteralSubsetOrder(Clause,
-			       clause_FirstConstraintLitIndex(Clause), 
+			       clause_FirstConstraintLitIndex(Clause),
 			       clause_LastConstraintLitIndex(Clause),
-			       FlagStore, Precedence);  
+			       FlagStore, Precedence);
 
   /* Normalize clause, to get variable names right. */
   clause_Normalize(Clause);
@@ -1878,7 +1830,7 @@ static int clause_CompareByWeight(CLAUSE Left, CLAUSE Right)
   return result;
 }
 
-static int clause_CompareByClausePartSize(CLAUSE Left, CLAUSE Right) 
+static int clause_CompareByClausePartSize(CLAUSE Left, CLAUSE Right)
 /**************************************************************
   INPUT:   Two clauses.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
@@ -1887,30 +1839,30 @@ static int clause_CompareByClausePartSize(CLAUSE Left, CLAUSE Right)
 ***************************************************************/
 {
   int lsize, rsize;
-  
+
   lsize = clause_NumOfAnteLits(Left);
   rsize = clause_NumOfAnteLits(Right);
   if (lsize < rsize)
     return -1;
   else if (lsize > rsize)
     return 1;
-  
+
   lsize = clause_NumOfSuccLits(Left);
   rsize = clause_NumOfSuccLits(Right);
-  
+
   if (lsize < rsize)
     return -1;
   else if (lsize > rsize)
     return 1;
-  
+
   lsize = clause_NumOfConsLits(Left);
   rsize = clause_NumOfConsLits(Right);
-  
+
   if (lsize < rsize)
     return -1;
   else if (lsize > rsize)
     return 1;
-  
+
   return 0;
 }
 
@@ -1918,7 +1870,7 @@ void clause_CountSymbols(CLAUSE Clause)
 /**************************************************************
   INPUT:   A clause.
   RETURNS: None.
-  EFFECT:  Counts the non-variable symbols in the clause, and 
+  EFFECT:  Counts the non-variable symbols in the clause, and
            increases their counts accordingly.
 ***************************************************************/
 {
@@ -1942,13 +1894,12 @@ void clause_CountSymbols(CLAUSE Clause)
   }
 }
 
-
 LIST clause_ListOfPredicates(CLAUSE Clause)
 /**************************************************************
   INPUT:   A clause.
   RETURNS: A list of symbols.
   EFFECT:  Creates a list of predicates occurring in the clause.
-           A predicate occurs several times in the list, if 
+           A predicate occurs several times in the list, if
 	   it does so in the clause.
 ***************************************************************/
 {
@@ -1959,7 +1910,7 @@ LIST clause_ListOfPredicates(CLAUSE Clause)
 
   for (i=clause_FirstLitIndex(); i<=clause_LastLitIndex(Clause); i++) {
     LITERAL l;
-	
+
     l = clause_GetLiteral(Clause, i);
     if (clause_LiteralIsPredicate(l)) {
       preds = list_Cons((POINTER) clause_LiteralPredicate(l), preds);
@@ -1974,7 +1925,7 @@ LIST clause_ListOfConstants(CLAUSE Clause)
   INPUT:   A clause.
   RETURNS: A list of symbols.
   EFFECT:  Creates a list of constants occurring in the clause.
-           A constant occurs several times in the list, if 
+           A constant occurs several times in the list, if
 	   it does so in the clause.
 ***************************************************************/
 {
@@ -1985,7 +1936,7 @@ LIST clause_ListOfConstants(CLAUSE Clause)
 
   for (i=clause_FirstLitIndex(); i<=clause_LastLitIndex(Clause); i++) {
     TERM t;
-	
+
     t = clause_GetLiteralAtom(Clause, i);
 
     consts = list_Nconc(term_ListOfConstants(t), consts);
@@ -1999,7 +1950,7 @@ LIST clause_ListOfVariables(CLAUSE Clause)
   INPUT:   A clause.
   RETURNS: A list of variables.
   EFFECT:  Creates a list of variables occurring in the clause.
-           A variable occurs several times in the list, if 
+           A variable occurs several times in the list, if
 	   it does so in the clause.
 ***************************************************************/
 {
@@ -2010,7 +1961,7 @@ LIST clause_ListOfVariables(CLAUSE Clause)
 
   for (i=clause_FirstLitIndex(); i<=clause_LastLitIndex(Clause); i++) {
     TERM t;
-	
+
     t = clause_GetLiteralAtom(Clause, i);
 
     vars = list_Nconc(term_ListOfVariables(t), vars);
@@ -2024,7 +1975,7 @@ LIST clause_ListOfFunctions(CLAUSE Clause)
   INPUT:   A clause.
   RETURNS: A list of symbols.
   EFFECT:  Creates a list of functions occurring in the clause.
-           A function occurs several times in the list, if 
+           A function occurs several times in the list, if
 	   it does so in the clause.
 ***************************************************************/
 {
@@ -2035,7 +1986,7 @@ LIST clause_ListOfFunctions(CLAUSE Clause)
 
   for (i=clause_FirstLitIndex(); i<=clause_LastLitIndex(Clause); i++) {
     TERM t;
-	
+
     t = clause_GetLiteralAtom(Clause, i);
 
     funs = list_Nconc(term_ListOfFunctions(t), funs);
@@ -2128,7 +2079,7 @@ static int clause_CompareByFunctionDistribution(CLAUSE Left, CLAUSE Right)
   return result;
 }
 
-static int clause_CompareByDepth(CLAUSE Left, CLAUSE Right) 
+static int clause_CompareByDepth(CLAUSE Left, CLAUSE Right)
 /**************************************************************
   INPUT:   Two clauses.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
@@ -2148,7 +2099,7 @@ static int clause_CompareByMaxVar(CLAUSE Left, CLAUSE Right)
   INPUT:   Two clauses.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
   EFFECT:  Compares two clauses by their maximal variable.
-***************************************************************/ 
+***************************************************************/
 {
   if (clause_MaxVar(Left) < clause_MaxVar(Right))
     return -1;
@@ -2158,11 +2109,11 @@ static int clause_CompareByMaxVar(CLAUSE Left, CLAUSE Right)
   return 0;
 }
 
-static int clause_CompareByLiterals(CLAUSE Left, CLAUSE Right) 
+static int clause_CompareByLiterals(CLAUSE Left, CLAUSE Right)
 /**************************************************************
   INPUT:   Two clauses.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
-  EFFECT:  Compares two clauses by comparing their literals 
+  EFFECT:  Compares two clauses by comparing their literals
            from left to right.
 ***************************************************************/
 {
@@ -2174,28 +2125,28 @@ static int clause_CompareByLiterals(CLAUSE Left, CLAUSE Right)
   result = 0;
 
   /* Compare sorted literals from right to left */
-  
+
   firstlitleft  = clause_FirstLitIndex();
   lastlitleft   = clause_LastLitIndex(Left);
   firstlitright = clause_FirstLitIndex();
   lastlitright  = clause_LastLitIndex(Right);
-  
+
   for (i = lastlitleft, j = lastlitright;
        i >= firstlitleft && j >= firstlitright;
        --i, --j) {
     TERM lterm, rterm;
-    
+
     lterm = clause_GetLiteralTerm(Left, i);
     rterm = clause_GetLiteralTerm(Right, j);
-    
+
     result = term_CompareAbstract(lterm, rterm);
-    
+
     if (result != 0)
       break;
   }
 
   if (result == 0) {
-    /* All literals compared equal, so check if someone has 
+    /* All literals compared equal, so check if someone has
        uncompared literals left over.
     */
     if ( i > j) {
@@ -2211,12 +2162,12 @@ static int clause_CompareByLiterals(CLAUSE Left, CLAUSE Right)
   return result;
 }
 
-static int clause_CompareBySymbolOccurences(CLAUSE Left, CLAUSE Right) 
+static int clause_CompareBySymbolOccurences(CLAUSE Left, CLAUSE Right)
 /**************************************************************
   INPUT:   Two clauses.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
   EFFECT:  Compares two clauses by comparing the occurrences of
-           symbols in their respective literals from left to 
+           symbols in their respective literals from left to
 	   right. If a symbol occurs less frequently than
 	   its positional equivalent in the other clause,
 	   then the first clause is smaller.
@@ -2230,39 +2181,39 @@ static int clause_CompareBySymbolOccurences(CLAUSE Left, CLAUSE Right)
   result = 0;
 
   /* Compare sorted literals from right to left */
-  
+
   firstlitleft  = clause_FirstLitIndex();
   lastlitleft   = clause_LastLitIndex(Left);
   firstlitright = clause_FirstLitIndex();
   lastlitright  = clause_LastLitIndex(Right);
-  
+
   for (i = lastlitleft, j = lastlitright;
        i >= firstlitleft && j >= firstlitright;
        --i, --j) {
     TERM lterm, rterm;
     LITERAL llit, rlit;
-	
+
     llit = clause_GetLiteral(Left, i);
     rlit = clause_GetLiteral(Right, j);
 
     if (clause_LiteralIsPredicate(llit)) {
       if (clause_LiteralIsPredicate(rlit)) {
-	if (symbol_GetCount(clause_LiteralPredicate(llit)) 
+	if (symbol_GetCount(clause_LiteralPredicate(llit))
 	    < symbol_GetCount(clause_LiteralPredicate(rlit))) {
 	  return -1;
 	}
-	else if (symbol_GetCount(clause_LiteralPredicate(llit)) 
+	else if (symbol_GetCount(clause_LiteralPredicate(llit))
 	    > symbol_GetCount(clause_LiteralPredicate(rlit))) {
 	  return 1;
 	}
       }
     }
-    
+
     lterm = clause_GetLiteralTerm(Left, i);
     rterm = clause_GetLiteralTerm(Right, j);
-    
+
     result = term_CompareBySymbolOccurences(lterm, rterm);
-    
+
     if (result != 0)
       break;
   }
@@ -2314,7 +2265,6 @@ int clause_CompareAbstract(CLAUSE Left, CLAUSE Right)
   return 0;
 }
 
-
 /**************************************************************/
 /* Clause functions                                           */
 /**************************************************************/
@@ -2333,7 +2283,6 @@ void clause_Init(void)
   for (i = 0; i <= clause_MAXWEIGHT; i++)
     clause_SORT[i] = list_Nil();
 }
-
 
 CLAUSE clause_CreateBody(int ClauseLength)
 /**************************************************************
@@ -2368,11 +2317,10 @@ CLAUSE clause_CreateBody(int ClauseLength)
   return Result;
 }
 
-
 CLAUSE clause_Create(LIST Constraint, LIST Antecedent, LIST Succedent,
 		     FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   Three lists of pointers to atoms, a flag store and 
+  INPUT:   Three lists of pointers to atoms, a flag store and
            a precedence.
   RETURNS: The new generated clause.
   MEMORY:  Allocates a CLAUSE_NODE and the needed LITERAL_NODEs,
@@ -2382,9 +2330,9 @@ CLAUSE clause_Create(LIST Constraint, LIST Antecedent, LIST Succedent,
 {
   CLAUSE Result;
   int    i, c, a, s;
-  
+
   Result                = (CLAUSE)memory_Malloc(sizeof(CLAUSE_NODE));
-  
+
   Result->clausenumber  = clause_IncreaseCounter();
   Result->flags         = 0;
   Result->depth         = 0;
@@ -2400,14 +2348,14 @@ CLAUSE clause_Create(LIST Constraint, LIST Antecedent, LIST Succedent,
   if (!clause_IsEmptyClause(Result))
     Result->literals =
       (LITERAL *) memory_Malloc((c+a+s) * sizeof(LITERAL));
-  
+
   for (i = 0; i < c; i++) {
     Result->literals[i] =
       clause_LiteralCreate(term_Create(fol_Not(),
 	list_List((TERM)list_Car(Constraint))),Result);
     Constraint = list_Cdr(Constraint);
   }
-  
+
   a += c;
   for ( ; i < a; i++) {
     Result->literals[i] =
@@ -2415,20 +2363,19 @@ CLAUSE clause_Create(LIST Constraint, LIST Antecedent, LIST Succedent,
 	list_List((TERM)list_Car(Antecedent))), Result);
     Antecedent = list_Cdr(Antecedent);
   }
-  
+
   s += a;
   for ( ; i < s; i++) {
     Result->literals[i] =
       clause_LiteralCreate((TERM) list_Car(Succedent), Result);
     Succedent = list_Cdr(Succedent);
   }
-  
+
   clause_OrientAndReInit(Result, Flags, Precedence);
   clause_SetFromInput(Result);
-  
+
   return Result;
 }
-
 
 CLAUSE clause_CreateCrude(LIST Constraint, LIST Antecedent, LIST Succedent,
 			  BOOL Con)
@@ -2447,9 +2394,9 @@ CLAUSE clause_CreateCrude(LIST Constraint, LIST Antecedent, LIST Succedent,
 {
   CLAUSE Result;
   int i,c,a,s;
-  
+
   Result                = (CLAUSE)memory_Malloc(sizeof(CLAUSE_NODE));
-  
+
   Result->clausenumber  = clause_IncreaseCounter();
   Result->flags         = 0;
   if (Con)
@@ -2467,31 +2414,30 @@ CLAUSE clause_CreateCrude(LIST Constraint, LIST Antecedent, LIST Succedent,
 
   if (!clause_IsEmptyClause(Result))
     Result->literals = (LITERAL *)memory_Malloc((c+a+s) * sizeof(LITERAL));
-  
+
   for (i = 0; i < c; i++) {
     Result->literals[i] =
       clause_LiteralCreate(list_Car(Constraint),Result);
     Constraint = list_Cdr(Constraint);
   }
-  
+
   a += c;
   for ( ; i < a; i++) {
     Result->literals[i] =
       clause_LiteralCreate(list_Car(Antecedent), Result);
     Antecedent = list_Cdr(Antecedent);
   }
-  
+
   s += a;
   for ( ; i < s; i++) {
     Result->literals[i] = clause_LiteralCreate(list_Car(Succedent), Result);
     Succedent = list_Cdr(Succedent);
   }
-  
+
   clause_SetFromInput(Result);
-  
+
   return Result;
 }
-
 
 CLAUSE clause_CreateUnnormalized(LIST Constraint, LIST Antecedent,
 				 LIST Succedent)
@@ -2524,7 +2470,7 @@ CLAUSE clause_CreateUnnormalized(LIST Constraint, LIST Antecedent,
 
   if (!clause_IsEmptyClause(Result)) {
     Result->literals = (LITERAL *)memory_Malloc((c+a+s) * sizeof(LITERAL));
-  
+
     for (i = 0; i < c; i++) {
       Result->literals[i] =
 	clause_LiteralCreate(term_Create(fol_Not(),
@@ -2553,7 +2499,6 @@ CLAUSE clause_CreateUnnormalized(LIST Constraint, LIST Antecedent,
 
   return Result;
 }
-
 
 CLAUSE clause_CreateFromLiterals(LIST LitList, BOOL Sorts, BOOL Conclause,
 				 BOOL Ordering, FLAGSTORE Flags,
@@ -2596,7 +2541,7 @@ CLAUSE clause_CreateFromLiterals(LIST LitList, BOOL Sorts, BOOL Conclause,
       Succedent = list_Cons(list_Car(LitList),Succedent);
     LitList = list_Cdr(LitList);
   }
-  
+
   Constraint = list_NReverse(Constraint);
   Antecedent = list_NReverse(Antecedent);
   Succedent  = list_NReverse(Succedent);
@@ -2612,7 +2557,7 @@ CLAUSE clause_CreateFromLiterals(LIST LitList, BOOL Sorts, BOOL Conclause,
     clause_Normalize(Result);
     clause_UpdateMaxVar(Result);
   }
-  
+
   return Result;
 }
 
@@ -2629,7 +2574,6 @@ void clause_SetSortConstraint(CLAUSE Clause, BOOL Strong, FLAGSTORE Flags,
   LITERAL ActLit,Help;
   TERM    ActAtom;
   int     i,k,NewConLits;
-
 
 #ifdef CHECK
   if (!clause_IsUnorderedClause(Clause)) {
@@ -2672,8 +2616,6 @@ void clause_SetSortConstraint(CLAUSE Clause, BOOL Strong, FLAGSTORE Flags,
 
 }
 
-
-
 void clause_Delete(CLAUSE Clause)
 /**************************************************************
   INPUT:   A Clause.
@@ -2693,12 +2635,12 @@ void clause_Delete(CLAUSE Clause)
 #endif
 
   n = clause_Length(Clause);
-  
+
   for (i = 0; i < n; i++)
     clause_LiteralDelete(clause_GetLiteral(Clause,i));
 
   clause_FreeLitArray(Clause);
-  
+
   list_Delete(clause_ParentClauses(Clause));
   list_Delete(clause_ParentLiterals(Clause));
 #ifdef CHECK
@@ -2718,13 +2660,12 @@ void clause_Delete(CLAUSE Clause)
     }
 #endif
   if (Clause->splitfield != NULL) {
-    
+
     memory_Free(Clause->splitfield,
 		sizeof(SPLITFIELDENTRY) * Clause->splitfield_length);
   }
   clause_Free(Clause);
 }
-
 
 /**************************************************************/
 /* Functions to use the sharing for clauses.                  */
@@ -2757,7 +2698,6 @@ void clause_InsertIntoSharing(CLAUSE Clause, SHARED_INDEX ShIndex,
   }
 }
 
-
 void clause_DeleteFromSharing(CLAUSE Clause, SHARED_INDEX ShIndex,
 			      FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -2779,12 +2719,12 @@ void clause_DeleteFromSharing(CLAUSE Clause, SHARED_INDEX ShIndex,
 #endif
 
   length = clause_Length(Clause);
-  
+
   for (i = 0; i < length; i++)
     clause_LiteralDeleteFromSharing(clause_GetLiteral(Clause,i),ShIndex);
-  
+
   clause_FreeLitArray(Clause);
-  
+
   list_Delete(clause_ParentClauses(Clause));
   list_Delete(clause_ParentLiterals(Clause));
 #ifdef CHECK
@@ -2809,7 +2749,6 @@ void clause_DeleteFromSharing(CLAUSE Clause, SHARED_INDEX ShIndex,
   }
   clause_Free(Clause);
 }
-
 
 void clause_MakeUnshared(CLAUSE Clause, SHARED_INDEX ShIndex)
 /**************************************************************
@@ -2858,7 +2797,7 @@ void clause_MoveSharedClause(CLAUSE Clause, SHARED_INDEX Source,
 /**************************************************************
   INPUT:   A Clause, two indexes, a flag store, and a precedence.
   RETURNS: Nothing.
-  EFFECT:  Deletes <Clause> from <Source> and inserts it into 
+  EFFECT:  Deletes <Clause> from <Source> and inserts it into
            <Destination>.
 ***************************************************************/
 {
@@ -2887,8 +2826,7 @@ void clause_MoveSharedClause(CLAUSE Clause, SHARED_INDEX Source,
   }
 }
 
-
-void clause_DeleteSharedLiteral(CLAUSE Clause, int Indice, SHARED_INDEX ShIndex, 
+void clause_DeleteSharedLiteral(CLAUSE Clause, int Indice, SHARED_INDEX ShIndex,
 				FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A Clause, a literals indice, an Index, a flag store
@@ -2913,7 +2851,6 @@ void clause_DeleteSharedLiteral(CLAUSE Clause, int Indice, SHARED_INDEX ShIndex,
   clause_InsertIntoSharing(Clause, ShIndex, Flags, Precedence);
 }
 
-
 void clause_DeleteClauseList(LIST ClauseList)
 /**************************************************************
   INPUT:   A list of unshared clauses.
@@ -2931,11 +2868,10 @@ void clause_DeleteClauseList(LIST ClauseList)
   list_Delete(ClauseList);
 }
 
-
 void clause_DeleteSharedClauseList(LIST ClauseList, SHARED_INDEX ShIndex,
 				   FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A list of clauses, an index, a flag store and 
+  INPUT:   A list of clauses, an index, a flag store and
            a precedence.
   RETURNS: Nothing.
   SUMMARY: Deletes all clauses in the list from the sharing.
@@ -2949,7 +2885,6 @@ void clause_DeleteSharedClauseList(LIST ClauseList, SHARED_INDEX ShIndex,
 
   list_Delete(ClauseList);
 }
-
 
 void clause_DeleteAllIndexedClauses(SHARED_INDEX ShIndex, FLAGSTORE Flags,
 				    PRECEDENCE Precedence)
@@ -2998,7 +2933,6 @@ void clause_DeleteAllIndexedClauses(SHARED_INDEX ShIndex, FLAGSTORE Flags,
   symbol_Delete(NewVarSymbol);
 }
 
-
 void clause_PrintAllIndexedClauses(SHARED_INDEX ShIndex)
 /**************************************************************
   INPUT:   An Index.
@@ -3042,7 +2976,6 @@ void clause_PrintAllIndexedClauses(SHARED_INDEX ShIndex)
   symbol_Delete(NewVarSymbol);
 }
 
-
 LIST clause_AllIndexedClauses(SHARED_INDEX ShIndex)
 /**************************************************************
   INPUT:   An index
@@ -3058,7 +2991,6 @@ LIST clause_AllIndexedClauses(SHARED_INDEX ShIndex)
   return clauselist;
 }
 
-
 /**************************************************************/
 /* Clause Access Functions                                    */
 /**************************************************************/
@@ -3069,7 +3001,7 @@ void clause_DeleteLiteralNN(CLAUSE Clause, int Indice)
   RETURNS: Nothing.
   EFFECT:  The literal is position <Indice> is deleted from <Clause>.
            The clause isn't reinitialized afterwards.
-  MEMORY:  The memory of the literal with the 'Indice' and 
+  MEMORY:  The memory of the literal with the 'Indice' and
            memory of its atom is freed.
 ***************************************************************/
 {
@@ -3121,7 +3053,6 @@ void clause_DeleteLiteralNN(CLAUSE Clause, int Indice)
   Clause->weight = clause_WEIGHTUNDEFINED;
 }
 
-
 void clause_DeleteLiteral(CLAUSE Clause, int Indice, FLAGSTORE Flags,
 			  PRECEDENCE Precedence)
 /**************************************************************
@@ -3138,7 +3069,6 @@ void clause_DeleteLiteral(CLAUSE Clause, int Indice, FLAGSTORE Flags,
   clause_DeleteLiteralNN(Clause, Indice);
   clause_ReInit(Clause, Flags, Precedence);
 }
-
 
 void clause_DeleteLiterals(CLAUSE Clause, LIST Indices, FLAGSTORE Flags,
 			   PRECEDENCE Precedence)
@@ -3191,7 +3121,7 @@ void clause_DeleteLiterals(CLAUSE Clause, LIST Indices, FLAGSTORE Flags,
     NewLits = (LITERAL*) NULL;
 
   for (i=clause_FirstLitIndex(), j=clause_FirstLitIndex(); i < olength; i++)
- 
+
     if (list_PointerMember(Indices, (POINTER) i))
       clause_LiteralDelete(clause_GetLiteral(Clause,i));
     else {
@@ -3215,7 +3145,6 @@ void clause_DeleteLiterals(CLAUSE Clause, LIST Indices, FLAGSTORE Flags,
   clause_ReInit(Clause, Flags, Precedence);
 }
 
-
 /**************************************************************/
 /* Clause Comparisons                                         */
 /**************************************************************/
@@ -3238,7 +3167,6 @@ BOOL clause_IsHornClause(CLAUSE Clause)
   return (clause_NumOfSuccLits(Clause) <= 1);
 }
 
-
 BOOL clause_HasTermSortConstraintLits(CLAUSE Clause)
 /**************************************************************
   INPUT:   A clause,
@@ -3256,7 +3184,7 @@ BOOL clause_HasTermSortConstraintLits(CLAUSE Clause)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   n = clause_LastConstraintLitIndex(Clause);
 
   for (i = clause_FirstConstraintLitIndex(Clause); i <= n; i++)
@@ -3265,7 +3193,6 @@ BOOL clause_HasTermSortConstraintLits(CLAUSE Clause)
 
   return FALSE;
 }
-
 
 BOOL clause_HasSolvedConstraint(CLAUSE Clause)
 /**************************************************************
@@ -3305,7 +3232,7 @@ BOOL clause_HasSolvedConstraint(CLAUSE Clause)
 
     for ( ; i < c; i++)
       LitVars = list_NPointerUnion(LitVars, term_VariableSymbols(clause_GetLiteralAtom(Clause, i)));
-    
+
     if (list_Empty(CVars = list_NPointerDifference(CVars, LitVars))) {
       list_Delete(LitVars);
       return TRUE;
@@ -3317,7 +3244,6 @@ BOOL clause_HasSolvedConstraint(CLAUSE Clause)
 
   return FALSE;
 }
-
 
 BOOL clause_HasSelectedLiteral(CLAUSE Clause, FLAGSTORE Flags,
 			       PRECEDENCE Precedence)
@@ -3346,7 +3272,6 @@ BOOL clause_HasSelectedLiteral(CLAUSE Clause, FLAGSTORE Flags,
   return FALSE;
 }
 
-
 BOOL clause_IsDeclarationClause(CLAUSE Clause)
 /**************************************************************
   INPUT:   A clause.
@@ -3365,7 +3290,7 @@ BOOL clause_IsDeclarationClause(CLAUSE Clause)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   if (!clause_HasSolvedConstraint(Clause))
     return FALSE;
 
@@ -3380,7 +3305,6 @@ BOOL clause_IsDeclarationClause(CLAUSE Clause)
 
   return FALSE;
 }
-
 
 BOOL clause_IsSortTheoryClause(CLAUSE Clause, FLAGSTORE Flags,
 			       PRECEDENCE Precedence)
@@ -3401,7 +3325,7 @@ BOOL clause_IsSortTheoryClause(CLAUSE Clause, FLAGSTORE Flags,
     misc_FinishErrorReport();
   }
 #endif
-  
+
   if (clause_NumOfAnteLits(Clause) > 0 ||
       clause_NumOfSuccLits(Clause) > 1 ||
       !clause_HasSolvedConstraint(Clause))
@@ -3435,7 +3359,7 @@ BOOL clause_IsPotentialSortTheoryClause(CLAUSE Clause, FLAGSTORE Flags,
     misc_FinishErrorReport();
   }
 #endif
-  
+
   if (clause_NumOfSuccLits(Clause) != 1)
     return FALSE;
 
@@ -3452,7 +3376,6 @@ BOOL clause_IsPotentialSortTheoryClause(CLAUSE Clause, FLAGSTORE Flags,
 
   return FALSE;
 }
-
 
 BOOL clause_HasOnlyVarsInConstraint(CLAUSE Clause, FLAGSTORE Flags,
 				    PRECEDENCE Precedence)
@@ -3481,7 +3404,6 @@ BOOL clause_HasOnlyVarsInConstraint(CLAUSE Clause, FLAGSTORE Flags,
   return (i == nc);
 }
 
-
 BOOL clause_HasSortInSuccedent(CLAUSE Clause, FLAGSTORE Flags,
 			       PRECEDENCE Precedence)
 /**************************************************************
@@ -3502,7 +3424,7 @@ BOOL clause_HasSortInSuccedent(CLAUSE Clause, FLAGSTORE Flags,
     misc_FinishErrorReport();
   }
 #endif
- 
+
   l  = clause_Length(Clause);
 
   for (i = clause_FirstSuccedentLitIndex(Clause); i < l && !result ; i++) {
@@ -3511,7 +3433,6 @@ BOOL clause_HasSortInSuccedent(CLAUSE Clause, FLAGSTORE Flags,
   }
   return result;
 }
-
 
 BOOL clause_LitsHaveCommonVar(LITERAL Lit1, LITERAL Lit2)
 /**************************************************************
@@ -3531,7 +3452,6 @@ BOOL clause_LitsHaveCommonVar(LITERAL Lit1, LITERAL Lit2)
 
   return Result;
 }
-
 
 /**************************************************************/
 /* Clause Input and Output Functions                          */
@@ -3561,7 +3481,7 @@ void clause_Print(CLAUSE Clause)
     fputs("(CLAUSE)NULL", stdout);
   else {
     printf("%d",clause_Number(Clause));
-    
+
     Origin = clause_Origin(Clause);
     printf("[%d:", clause_SplitLevel(Clause));
 
@@ -3580,12 +3500,12 @@ void clause_Print(CLAUSE Clause)
 	   clause_GetFlag(Clause, NOPARAINTO) ? 'N' : 'P',
 	   clause_Weight(Clause), clause_Depth(Clause));
 #endif
-    
+
     clause_PrintOrigin(Clause);
-    
+
     if (Origin == INPUT) {
       ;
-    } else  {      
+    } else  {
       putchar(':');
       clause_PrintParentClauses(Clause);
     }
@@ -3643,7 +3563,6 @@ void clause_Print(CLAUSE Clause)
   }
 }
 
-
 void clause_PrintMaxLitsOnly(CLAUSE Clause, FLAGSTORE Flags,
 			     PRECEDENCE Precedence)
 /**************************************************************
@@ -3676,7 +3595,7 @@ void clause_PrintMaxLitsOnly(CLAUSE Clause, FLAGSTORE Flags,
     }
   }
   fputs(" || ", stdout);
-  
+
   a += c;
   for ( ; i < a; i++) {
     if (clause_LiteralIsMaximal(clause_GetLiteral(Clause, i)))
@@ -3699,7 +3618,6 @@ void clause_PrintMaxLitsOnly(CLAUSE Clause, FLAGSTORE Flags,
   }
   puts(".");  /* with newline */
 }
-
 
 void clause_FPrint(FILE* File, CLAUSE Clause)
 /**************************************************************
@@ -3729,10 +3647,9 @@ void clause_FPrint(FILE* File, CLAUSE Clause)
   s += a;
   for ( ; i < s; i++)
     term_FPrint(File, clause_GetLiteralAtom(Clause, i));
-  
+
   putc('.', File);
 }
-
 
 void clause_ListPrint(LIST ClauseList)
 /**************************************************************
@@ -3750,7 +3667,6 @@ void clause_ListPrint(LIST ClauseList)
   }
 }
 
-
 void clause_PrintParentClauses(CLAUSE Clause)
 /**************************************************************
   INPUT:   A Clause.
@@ -3759,20 +3675,19 @@ void clause_PrintParentClauses(CLAUSE Clause)
 ***************************************************************/
 {
   LIST Scan1,Scan2;
-  
+
   if (!list_Empty(clause_ParentClauses(Clause))) {
-    
+
     Scan1 = clause_ParentClauses(Clause);
     Scan2 = clause_ParentLiterals(Clause);
     printf("%d.%d", (int)list_Car(Scan1), (int)list_Car(Scan2));
-    
+
     for (Scan1 = list_Cdr(Scan1), Scan2 = list_Cdr(Scan2);
 	 !list_Empty(Scan1);
 	 Scan1 = list_Cdr(Scan1), Scan2 = list_Cdr(Scan2))
       printf(",%d.%d", (int)list_Car(Scan1), (int)list_Car(Scan2));
   }
 }
-
 
 RULE clause_GetOriginFromString(const char* RuleName)
 /**************************************************************
@@ -3862,7 +3777,6 @@ void clause_FPrintOrigin(FILE* File, CLAUSE Clause)
   }
 }
 
-
 void clause_PrintOrigin(CLAUSE Clause)
 /**************************************************************
   INPUT:   A Clause.
@@ -3872,7 +3786,6 @@ void clause_PrintOrigin(CLAUSE Clause)
 {
   clause_FPrintOrigin(stdout, Clause);
 }
-
 
 void clause_PrintVerbose(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -3907,18 +3820,17 @@ void clause_PrintVerbose(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
   clause_Print(Clause);
 }
 
-
 CLAUSE clause_GetNumberedCl(int number, LIST ClList)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  CAUTION: 
+  INPUT:
+  RETURNS:
+  CAUTION:
 ***************************************************************/
 {
   while (!list_Empty(ClList) &&
 	 clause_Number((CLAUSE)list_Car(ClList)) != number)
     ClList = list_Cdr(ClList);
-  
+
   if (list_Empty(ClList))
     return NULL;
   else
@@ -3940,7 +3852,6 @@ LIST clause_NumberSort(LIST List)
   return list_Sort(List, (BOOL (*) (POINTER, POINTER)) clause_NumberLower);
 }
 
-
 LIST clause_NumberDelete(LIST List, int Number)
 /**************************************************************
   INPUT:   A list of clauses and an integer.
@@ -3949,10 +3860,10 @@ LIST clause_NumberDelete(LIST List, int Number)
 ***************************************************************/
 {
   LIST Scan1,Scan2;
-  
+
   for (Scan1 = List; !list_Empty(Scan1); )
     if (clause_Number(list_Car(Scan1))==Number) {
-      
+
       Scan2 = Scan1;
       Scan1 = list_Cdr(Scan1);
       List  = list_PointerDeleteOneElement(List, list_Car(Scan2));
@@ -3961,7 +3872,6 @@ LIST clause_NumberDelete(LIST List, int Number)
 
   return List;
 }
-
 
 static NAT clause_NumberOfMaxLits(CLAUSE Clause)
 /**************************************************************
@@ -4000,7 +3910,6 @@ NAT clause_NumberOfMaxAntecedentLits(CLAUSE Clause)
   return Result;
 }
 
-
 void clause_SelectLiteral(CLAUSE Clause, FLAGSTORE Flags)
 /**************************************************************
   INPUT:   A clause and a flag store.
@@ -4018,22 +3927,21 @@ void clause_SelectLiteral(CLAUSE Clause, FLAGSTORE Flags)
 	clause_NumberOfMaxLits(Clause) > 1))) {
     NAT     i,n;
     LITERAL Lit;
-    
+
     n   = clause_LastAntecedentLitIndex(Clause);
     i   = clause_FirstAntecedentLitIndex(Clause);
     Lit = clause_GetLiteral(Clause,i);
     i++;
-    
+
     for ( ; i <= n; i++)
       if (clause_LiteralWeight(Lit)
 	  < clause_LiteralWeight(clause_GetLiteral(Clause,i)))
 	Lit = clause_GetLiteral(Clause,i);
-    
+
     clause_LiteralSetFlag(Lit,LITSELECT);
     clause_SetFlag(Clause,CLAUSESELECT);
   }
 }
-
 
 void clause_SetSpecialFlags(CLAUSE Clause, BOOL SortDecreasing, FLAGSTORE Flags,
 			    PRECEDENCE Precedence)
@@ -4054,7 +3962,6 @@ void clause_SetSpecialFlags(CLAUSE Clause, BOOL SortDecreasing, FLAGSTORE Flags,
 			 DECLSORT))
     clause_SetFlag(Clause,NOPARAINTO);
 }
-
 
 BOOL clause_ContainsPotPredDef(CLAUSE Clause, FLAGSTORE Flags,
 			       PRECEDENCE Precedence, NAT* Index, LIST* Pair)
@@ -4094,7 +4001,7 @@ BOOL clause_ContainsPotPredDef(CLAUSE Clause, FLAGSTORE Flags,
       BOOL ok;
       ok = TRUE;
       pair = list_PairCreate(list_Nil(), list_Nil());
-      
+
       /* Make sure all arguments of predicate are variables */
       for (l=term_ArgumentList(atom); !list_Empty(l); l=list_Cdr(l)) {
 	if (!term_IsStandardVariable((TERM) list_Car(l))) {
@@ -4122,7 +4029,7 @@ BOOL clause_ContainsPotPredDef(CLAUSE Clause, FLAGSTORE Flags,
 	NAT j;
 	LIST predvars, vars;
 	predvars = fol_FreeVariables(atom);
-	
+
 	/* Build list of literals for which positive occurrences are required */
 	for (j=0; (j < clause_FirstSuccedentLitIndex(Clause)) && ok; j++) {
 	  list_Rplaca(pair, list_Cons(clause_GetLiteralAtom(Clause, j), list_PairFirst(pair)));
@@ -4135,7 +4042,7 @@ BOOL clause_ContainsPotPredDef(CLAUSE Clause, FLAGSTORE Flags,
 	  }
 	  list_Delete(vars);
 	}
-	
+
 	/* Build list of literals for which negative occurrences are required */
 	for (j = clause_FirstSuccedentLitIndex(Clause);
 	     (j < clause_Length(Clause)) && ok; j++) {
@@ -4210,7 +4117,7 @@ BOOL clause_IsPartOfDefinition(CLAUSE Clause, TERM Predicate, int *Index,
     if (!term_ListContainsTerm((LIST) list_PairFirst(Pair),
 			       clause_GetLiteralAtom(Clause, i)))
       ok = FALSE;
-  
+
   if (!ok)
     return FALSE;
   else {
@@ -4278,12 +4185,11 @@ void clause_FPrintRule(FILE* File, CLAUSE Clause)
     term_FPrint(File,list_Car(scan));
   }
   fputs(".\n", File);
-  
+
   list_Delete(antecedent);
   list_Delete(succedent);
   list_Delete(constraints);
 }
-
 
 void clause_FPrintOtter(FILE* File, CLAUSE clause)
 /**************************************************************
@@ -4296,7 +4202,7 @@ void clause_FPrintOtter(FILE* File, CLAUSE clause)
   int     n,j;
   LITERAL Lit;
   TERM    Atom;
-  
+
   n = clause_Length(clause);
 
   if (n == 0)
@@ -4325,7 +4231,6 @@ void clause_FPrintOtter(FILE* File, CLAUSE clause)
 
   fputs(".\n", File);
 }
-
 
 void clause_FPrintCnfDFG(FILE* File, BOOL OnlyProductive, LIST Axioms,
 			 LIST Conjectures, FLAGSTORE Flags,
@@ -4369,7 +4274,6 @@ void clause_FPrintCnfDFG(FILE* File, BOOL OnlyProductive, LIST Axioms,
   }
 }
 
-
 static void clause_FPrintDescription(FILE* File, const char* Name,
 				     const char* Author, const char* Status,
 				     const char* Description)
@@ -4402,22 +4306,21 @@ void clause_FPrintCnfDFGProblem(FILE* File, const char* Name,
   fol_FPrintDFGSignature(File);
   fputs("end_of_list.\n\n", File);
   fputs("list_of_clauses(axioms, cnf).\n", File);
-  
+
   for (Scan=Clauses;!list_Empty(Scan);Scan=list_Cdr(Scan))
     if (!clause_GetFlag(list_Car(Scan),CONCLAUSE))
       clause_FPrintDFG(File,list_Car(Scan),FALSE);
 
   fputs("end_of_list.\n\n", File);
   fputs("list_of_clauses(conjectures, cnf).\n", File);
-  
+
   for (Scan=Clauses; !list_Empty(Scan); Scan=list_Cdr(Scan))
     if (clause_GetFlag(list_Car(Scan),CONCLAUSE))
       clause_FPrintDFG(File,list_Car(Scan),FALSE);
- 
+
   fputs("end_of_list.\n\n", File);
   fputs("\nend_problem.\n\n", File);
 }
-
 
 void clause_FPrintCnfFormulasDFGProblem(FILE* File, BOOL OnlyProductive,
 					const char* Name, const char* Author,
@@ -4511,7 +4414,6 @@ void clause_FPrintCnfOtter(FILE* File, LIST Clauses, FLAGSTORE Flags)
   }
 }
 
-
 void clause_FPrintCnfDFGDerivables(FILE* File, LIST Clauses, BOOL Type)
 /**************************************************************
   INPUT:   A file, a list of clauses and a bool flag Type.
@@ -4532,7 +4434,6 @@ void clause_FPrintCnfDFGDerivables(FILE* File, LIST Clauses, BOOL Type)
   }
 }
 
-
 void clause_FPrintDFGStep(FILE* File, CLAUSE Clause, BOOL Justif)
 /**************************************************************
   INPUT:   A file, a clause and a boolean value.
@@ -4547,7 +4448,7 @@ void clause_FPrintDFGStep(FILE* File, CLAUSE Clause, BOOL Justif)
   LITERAL Lit;
   TERM    Atom;
   LIST    Variables,Iter;
-  
+
   n = clause_Length(Clause);
 
   fputs("  step(", File);
@@ -4570,7 +4471,7 @@ void clause_FPrintDFGStep(FILE* File, CLAUSE Clause, BOOL Justif)
     }
     fputs("],", File);
   }
-  
+
   symbol_FPrint(File, fol_Or());
   putc('(', File);
 
@@ -4601,7 +4502,7 @@ void clause_FPrintDFGStep(FILE* File, CLAUSE Clause, BOOL Justif)
   }
   putc(']', File);
   fprintf(File, ",[splitlevel:%d]", clause_SplitLevel(Clause));
-  
+
   fputs(").\n", File);
 }
 
@@ -4619,7 +4520,7 @@ void clause_FPrintDFG(FILE* File, CLAUSE Clause, BOOL Justif)
   LITERAL Lit;
   TERM    Atom;
   LIST    Variables,Iter;
-  
+
   n = clause_Length(Clause);
 
   fputs("  clause(", File);
@@ -4640,7 +4541,7 @@ void clause_FPrintDFG(FILE* File, CLAUSE Clause, BOOL Justif)
     }
     fputs("],", File);
   }
-  
+
   symbol_FPrint(File, fol_Or());
   putc('(', File);
 
@@ -4674,7 +4575,7 @@ void clause_FPrintDFG(FILE* File, CLAUSE Clause, BOOL Justif)
     putc(']', File);
     fprintf(File, ",%d", clause_SplitLevel(Clause));
   }
-  
+
   fputs(").\n", File);
 }
 
@@ -4692,7 +4593,7 @@ void clause_FPrintFormulaDFG(FILE* File, CLAUSE Clause, BOOL Justif)
   LITERAL Lit;
   TERM    Atom;
   LIST    Variables,Iter;
-  
+
   n = clause_Length(Clause);
 
   fputs("  formula(", File);
@@ -4713,7 +4614,7 @@ void clause_FPrintFormulaDFG(FILE* File, CLAUSE Clause, BOOL Justif)
     }
     fputs("],", File);
   }
-  
+
   if (n>1) {
     symbol_FPrint(File, fol_Or());
     putc('(', File);
@@ -4753,10 +4654,9 @@ void clause_FPrintFormulaDFG(FILE* File, CLAUSE Clause, BOOL Justif)
     putc(']', File);
     fprintf(File, ",%d", clause_SplitLevel(Clause));
   }
-  
+
   fputs(").\n", File);
 }
-
 
 void clause_Check(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
@@ -4769,7 +4669,7 @@ void clause_Check(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
   CLAUSE Copy;
   if (!clause_Exists(Clause))
     return;
-  
+
   if (!clause_IsClause(Clause, Flags, Precedence)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In clause_Check: Clause not consistent !\n");
@@ -4789,7 +4689,6 @@ void clause_Check(CLAUSE Clause, FLAGSTORE Flags, PRECEDENCE Precedence)
 
 /* The following are output procedures for clauses with parent pointers */
 
-
 void clause_PParentsFPrintParentClauses(FILE* File, CLAUSE Clause, BOOL ParentPts)
 /**************************************************************
   INPUT:   A file, a clause and a boolean flag indicating whether
@@ -4803,39 +4702,39 @@ void clause_PParentsFPrintParentClauses(FILE* File, CLAUSE Clause, BOOL ParentPt
   LIST Scan1,Scan2;
   int  length;
   int  ParentNum;
-  
+
   if (!list_Empty(clause_ParentClauses(Clause))) {
-    
+
     Scan1 = clause_ParentClauses(Clause);
     Scan2 = clause_ParentLiterals(Clause);
-    
+
     if (ParentPts)
       ParentNum = clause_Number(list_Car(Scan1));
     else
       ParentNum = (int)list_Car(Scan1);
 
     fprintf(File, "%d.%d", ParentNum, (int)list_Car(Scan2));
-    
+
     if (!list_Empty(list_Cdr(Scan1))) {
-      
+
       length = list_Length(Scan1) - 2;
       putc(',', File);
       Scan1 = list_Cdr(Scan1);
       Scan2 = list_Cdr(Scan2);
-      
+
       if (ParentPts)
 	ParentNum = clause_Number(list_Car(Scan1));
       else
 	ParentNum = (int)list_Car(Scan1);
 
       fprintf(File, "%d.%d", ParentNum, (int)list_Car(Scan2));
-      
+
       for (Scan1 = list_Cdr(Scan1), Scan2 = list_Cdr(Scan2);
 	   !list_Empty(Scan1);
 	   Scan1 = list_Cdr(Scan1), Scan2 = list_Cdr(Scan2)) {
-	
+
 	length -= 2;
-	
+
 	if (ParentPts)
 	  ParentNum = clause_Number(list_Car(Scan1));
 	else
@@ -4882,7 +4781,7 @@ void clause_PParentsFPrintGen(FILE* File, CLAUSE Clause, BOOL ParentPts)
     fputs("(CLAUSE)NULL", File);
   else {
     fprintf(File, "%d",clause_Number(Clause));
-    
+
     fprintf(File, "[%d:", clause_SplitLevel(Clause));
 
 #ifdef CHECK
@@ -4900,9 +4799,9 @@ void clause_PParentsFPrintGen(FILE* File, CLAUSE Clause, BOOL ParentPts)
 	   clause_GetFlag(Clause, NOPARAINTO) ? 'N' : 'P',
 	   clause_Weight(Clause), clause_Depth(Clause));
 #endif
-    
+
     clause_FPrintOrigin(File, Clause);
-    
+
     if (!list_Empty(clause_ParentClauses(Clause))) {
       putc(':', File);
       clause_PParentsFPrintParentClauses(File, Clause, ParentPts);
@@ -4985,7 +4884,6 @@ void clause_PParentsListFPrint(FILE* File, LIST L)
     L = list_Cdr(L);
   }
 }
-
 
 void clause_PParentsPrint(CLAUSE Clause)
 /**************************************************************

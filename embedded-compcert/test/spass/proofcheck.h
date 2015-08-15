@@ -61,7 +61,6 @@
 #include "search.h"
 #include "dfg.h"
 
-
 LIST  pcheck_ReduceSPASSProof(LIST);
 char* pcheck_GenericFilename(const char*, const char*);
 int   pcheck_SeqProofDepth(LIST);
@@ -72,11 +71,8 @@ void  pcheck_TableauToProofTask(TABLEAU, const char*, const char*);
 BOOL  pcheck_TableauProof(TABLEAU*, LIST);
 LIST  pcheck_ParentPointersToParentNumbers(LIST);
 LIST  pcheck_ConvertParentsInSPASSProof(PROOFSEARCH, LIST);
-void  pcheck_MarkRecursive(LIST); 
+void  pcheck_MarkRecursive(LIST);
 LIST  pcheck_ClauseNumberMergeSort(LIST);
 void  pcheck_ClauseListRemoveFlag(LIST, CLAUSE_FLAGS);
 
 #endif
-
-
-

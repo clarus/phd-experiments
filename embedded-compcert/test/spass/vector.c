@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             GLOBAL SYSTEM VECTOR                       * */
 /* *                                                        * */
-/* *  $Module:   VECTOR                                     * */ 
+/* *  $Module:   VECTOR                                     * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,7 +41,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "vector.h"
@@ -52,7 +51,6 @@
 
 VECTOR vec_VECTOR;
 int    vec_MAX;
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -72,9 +70,8 @@ void vec_Swap(int i, int j)
   help  = vec_GetNth(i);
   vec_PutNth(i, vec_GetNth(j));
   vec_PutNth(j, help);
- 
-}
 
+}
 
 void vec_PrintSel(int beg, int end, void (*ElementPrint)(POINTER))
 /**********************************************************
@@ -97,7 +94,6 @@ void vec_PrintSel(int beg, int end, void (*ElementPrint)(POINTER))
   } else
     puts("Vector is empty");
 }
-
 
 void vec_PrintAll(void (*ElementPrint)(POINTER))
 /**********************************************************

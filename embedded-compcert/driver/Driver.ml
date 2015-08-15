@@ -52,7 +52,7 @@ let print_error oc msg =
 let output_filename ?(final = false) source_file source_suffix output_suffix =
   match !option_o with
   | Some file when final -> option_o := None; file
-  | _ -> 
+  | _ ->
     Filename.basename (Filename.chop_suffix source_file source_suffix)
     ^ output_suffix
 
@@ -159,7 +159,7 @@ let compile_c_ast sourcename csyntax ofile =
     | Errors.Error msg ->
         print_error stderr msg;
         exit 2 in
-  (* Dump Asm in binary format *)  
+  (* Dump Asm in binary format *)
   if !option_sdump then
     dump_asm asm (output_filename sourcename ".c" ".sdump");
   (* Print Asm in text form *)
@@ -193,7 +193,7 @@ let compile_cminor_file ifile ofile =
          eprintf "File %s, character %d: Syntax error\n"
                  ifile (Lexing.lexeme_start lb);
          exit 2
-     | CMlexer.Error msg ->  
+     | CMlexer.Error msg ->
          eprintf "File %s, character %d: %s\n"
                  ifile (Lexing.lexeme_start lb) msg;
          exit 2
@@ -325,7 +325,7 @@ let parse_cmdline spec usage =
       let s = Sys.argv.(i) in
       match find_action s acts with
       | None ->
-          if s <> "-help" && s <> "--help" 
+          if s <> "-help" && s <> "--help"
           then eprintf "Unknown argument `%s'\n" s
           else printf "%s" usage;
           exit 2
@@ -522,7 +522,7 @@ let _ =
   Builtins.set C2C.builtins;
   CPragmas.initialize();
   parse_cmdline cmdline_actions usage_string;
-  if !linker_options <> [] 
+  if !linker_options <> []
   && not (!option_c || !option_S || !option_E || !option_interp)
   then begin
     linker (output_filename_default "a.out") !linker_options

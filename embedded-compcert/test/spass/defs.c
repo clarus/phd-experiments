@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                       DEFINITIONS                      * */
 /* *                                                        * */
-/* *  $Module:   DEFS                                       * */ 
+/* *  $Module:   DEFS                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1998, 1999, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "cnf.h"
@@ -56,7 +55,7 @@ DEF def_CreateFromClauses(TERM ExpTerm, TERM PredTerm, LIST Clauses, LIST Lits,
 			  BOOL Con)
 /**********************************************************
   INPUT:   Two terms, a list of clausenumbers, a list of literal indices and
-           a boolean saying whether all clauses derived by expanding the 
+           a boolean saying whether all clauses derived by expanding the
 	   predicate should be conclauses.
   RETURNS: A definition consisting of the 2 terms as expansion term and
            predicate term and the list of parent clause numbers and a list
@@ -94,7 +93,7 @@ DEF def_CreateFromTerm(TERM ExpTerm, TERM PredTerm, TERM ToProve, const char* La
 /**********************************************************
   INPUT:   3 terms and a term label.
   RETURNS: A definition consisting of the 3 terms as expansion term,
-           predicate term and term to prove before applying the 
+           predicate term and term to prove before applying the
 	   definition and the label of the parent term.
 	   The list of clausenumbers is set to NULL.
 ********************************************************/
@@ -106,7 +105,7 @@ DEF def_CreateFromTerm(TERM ExpTerm, TERM PredTerm, TERM ToProve, const char* La
     misc_StartErrorReport();
     misc_ErrorReport("\n In def_CreateFromTerm: Illegal input.");
     misc_FinishErrorReport();
-  }  
+  }
   if (Label ==  NULL) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In def_CreateFromTerm: No parent clause given.");
@@ -125,12 +124,12 @@ DEF def_CreateFromTerm(TERM ExpTerm, TERM PredTerm, TERM ToProve, const char* La
   return result;
 }
 
-static void def_DeleteFromClauses(DEF D) 
+static void def_DeleteFromClauses(DEF D)
 /**********************************************************
   INPUT:   A definition derived from clauses.
   EFFECT:  The definition is deleted, INCLUDING THE TERMS AND
            THE LIST OF CLAUSE NUMBERS.
-********************************************************/  
+********************************************************/
 {
 #ifdef CHECK
   if (!term_IsTerm(def_Expansion(D)) || !term_IsTerm(def_Predicate(D))) {
@@ -150,12 +149,12 @@ static void def_DeleteFromClauses(DEF D)
   memory_Free(D, sizeof(DEF_NODE));
 }
 
-static void def_DeleteFromTerm(DEF D) 
+static void def_DeleteFromTerm(DEF D)
 /**********************************************************
   INPUT:   A definition derived from a term.
   EFFECT:  The definition is deleted, INCLUDING THE TERMS.
            THE LABEL IS NOT FREED.
-********************************************************/  
+********************************************************/
 {
 #ifdef CHECK
   if (!term_IsTerm(def_Expansion(D)) || !term_IsTerm(def_Predicate(D))) {
@@ -179,7 +178,7 @@ void def_Delete(DEF D)
   INPUT:   A definition derived from a term.
   EFFECT:  The definition is deleted.
   CAUTION: All elements of the definition except of the label are freed.
-********************************************************/  
+********************************************************/
 {
   if (!list_Empty(def_ClauseNumberList(D)))
     def_DeleteFromClauses(D);
@@ -191,7 +190,7 @@ int def_PredicateOccurrences(TERM Term, SYMBOL P)
 /****************************************************
   INPUT:   A term and a predicate symbol.
   RETURNS: The number of occurrences of the predicate symbol in Term
-**************************************************/			       
+**************************************************/
 {
   /* Quantifiers */
   if (fol_IsQuantifier(term_TopSymbol(Term)))
@@ -211,13 +210,13 @@ int def_PredicateOccurrences(TERM Term, SYMBOL P)
     }
     return count;
   }
-  
+
   if (symbol_Equal(term_TopSymbol(Term), P))
     return 1;
   return 0;
-} 
+}
 
-LIST def_ExtractDefsFromTerm(TERM Term, const char* Label) 
+LIST def_ExtractDefsFromTerm(TERM Term, const char* Label)
 /**************************************************************
   INPUT:   A term and its label.
   RETURNS: A list of definitions found in the term.
@@ -228,7 +227,7 @@ LIST def_ExtractDefsFromTerm(TERM Term, const char* Label)
   BOOL found;
   int  pol;
   LIST univars, termlist, defslist, scan;
-  
+
   /* First check if there is a top level and() so that the Term may
      contain several definitions */
 
@@ -274,7 +273,7 @@ LIST def_ExtractDefsFromTerm(TERM Term, const char* Label)
   }
   else
     termlist = list_List(term_Copy(Term));
-  
+
   list_Delete(univars);
 
   /* Now we have a list of terms that may contain definitions */
@@ -304,12 +303,12 @@ LIST def_ExtractDefsFromTerm(TERM Term, const char* Label)
 	misc_FinishErrorReport();
       }
 #endif
-      def  = def_CreateFromTerm(term_Copy(term_SecondArgument(term_Superterm(foundpred))), 
+      def  = def_CreateFromTerm(term_Copy(term_SecondArgument(term_Superterm(foundpred))),
 				term_Copy(foundpred), toprove, Label);
 
       if (def_PredicateOccurrences(cand, term_TopSymbol(foundpred)) > 1)
 	def_RemoveAttribute(def, PREDOCCURONCE);
-      else 
+      else
 	def_AddAttribute(def, PREDOCCURONCE);
       if (symbol_Equal(term_TopSymbol(foundpred), fol_Equality()))
 	def_AddAttribute(def, ISEQUALITY);
@@ -320,7 +319,7 @@ LIST def_ExtractDefsFromTerm(TERM Term, const char* Label)
     }
     term_Delete(cand);
   }
-  
+
   list_Delete(termlist);
   return defslist;
 }
@@ -332,7 +331,7 @@ void def_ExtractDefsFromClauselist(PROOFSEARCH Search, LIST Clauselist)
   EFFECT:  The definitions found in the clauselist object are stored in
            the proofsearch object.
   NOTE:    The clause list is not changed.
-           The old list of definitions in the proofsearch object is 
+           The old list of definitions in the proofsearch object is
 	   overwritten.
 ***************************************************************/
 {
@@ -357,23 +356,23 @@ void def_ExtractDefsFromClauselist(PROOFSEARCH Search, LIST Clauselist)
 
       compl = compllits = list_Nil();
       done = FALSE;
-      
+
       /* Search for complement clauses */
       for (l=Clauselist; !list_Empty(l) && !done; l=list_Cdr(l)) {
 	int predindex;
-	if (clause_IsPartOfDefinition((CLAUSE) list_Car(l), 
-				      clause_GetLiteralTerm(Clause, index), 
+	if (clause_IsPartOfDefinition((CLAUSE) list_Car(l),
+				      clause_GetLiteralTerm(Clause, index),
 				      &predindex, pair)) {
 	  compl     = list_Cons(list_Car(l), compl);
 	  compllits = list_Cons((POINTER) predindex, compllits);
-	  
+
 	  if (list_Empty(list_PairFirst(pair)) &&
 	      list_Empty(list_PairSecond(pair)))
 	    done = TRUE;
 	}
       }
-      
-      /* All complements found ? */ 
+
+      /* All complements found ? */
       if (done) {
 	LIST l2, clausenumbers, args;
 	DEF  def;
@@ -385,19 +384,19 @@ void def_ExtractDefsFromClauselist(PROOFSEARCH Search, LIST Clauselist)
 	con           = clause_GetFlag(Clause, CONCLAUSE);
 
 	for (l2=compl; !list_Empty(l2); l2=list_Cdr(l2)) {
-	  clausenumbers = list_Cons((POINTER) clause_Number((CLAUSE) list_Car(l2)), 
-				    clausenumbers);	    
+	  clausenumbers = list_Cons((POINTER) clause_Number((CLAUSE) list_Car(l2)),
+				    clausenumbers);
 	  if (clause_GetFlag((CLAUSE) list_Car(l2), CONCLAUSE))
 	    con = TRUE;
 	}
-	clausenumbers = list_Cons((POINTER) clause_Number(Clause), 
+	clausenumbers = list_Cons((POINTER) clause_Number(Clause),
 				  clausenumbers);
 	compllits = list_Cons((POINTER) index, compllits);
 
 	/* Build definition term */
 	predterm = term_Copy(clause_GetLiteralTerm(Clause, index));
 	args     = list_Nil();
-	for (i = 0; i < clause_Length(Clause); i++) 
+	for (i = 0; i < clause_Length(Clause); i++)
 	  if (i != index)
 	    args = list_Cons(term_Copy(clause_GetLiteralTerm(Clause, i)), args);
 	defterm  = term_CreateAddFather(fol_Or(), args);
@@ -433,7 +432,7 @@ void def_ExtractDefsFromClauselist(PROOFSEARCH Search, LIST Clauselist)
 
   for (scan=defslist; !list_Empty(scan); scan=list_Cdr(scan))
     symbol_AddProperty(term_TopSymbol(def_Predicate((DEF) list_Car(scan))), ISDEF);
-  
+
   prfs_SetDefinitions(Search, list_Nconc(prfs_Definitions(Search), defslist));
 }
 
@@ -461,12 +460,12 @@ TERM def_ApplyDefToTermOnce(DEF Def, TERM Term, FLAGSTORE FlagStore,
     targettermvars = varsfortoplevel = list_Nil();
 
     if (cnf_ContainsPredicate(newtarget, term_TopSymbol(def_Predicate(Def)),
-			      &targetpredicate, &totoplevel, &targettermvars, 
+			      &targetpredicate, &totoplevel, &targettermvars,
 			      &varsfortoplevel)) {
       *Complete  = FALSE;
       applicable = FALSE;
       /* Check if definition is not always applicable */
-      if (term_Equal(def_ToProve(Def), term_Null())) { 
+      if (term_Equal(def_ToProve(Def), term_Null())) {
 	applicable = TRUE;
 	newtarget = cnf_ApplyDefinitionOnce(def_Predicate(Def), term_Copy(def_Expansion(Def)),
 					 newtarget, targetpredicate, FlagStore);
@@ -474,7 +473,7 @@ TERM def_ApplyDefToTermOnce(DEF Def, TERM Term, FLAGSTORE FlagStore,
 	  term_Delete(oldtarget);
 	oldtarget = newtarget;
       	list_Delete(targettermvars);
-	list_Delete(varsfortoplevel); 	
+	list_Delete(varsfortoplevel);
       }
       else {
 	toprove = term_Copy(def_ToProve(Def));
@@ -485,7 +484,7 @@ TERM def_ApplyDefToTermOnce(DEF Def, TERM Term, FLAGSTORE FlagStore,
 					 FlagStore, Precedence,
 					 &applicable);
 	list_Delete(targettermvars);
-	list_Delete(varsfortoplevel); 	
+	list_Delete(varsfortoplevel);
 	if (applicable) {
 	  newtarget = cnf_ApplyDefinitionOnce(def_Predicate(Def), term_Copy(def_Expansion(Def)),
 					   newtarget, targetpredicate, FlagStore);
@@ -520,7 +519,7 @@ TERM def_ApplyDefToTermOnce(DEF Def, TERM Term, FLAGSTORE FlagStore,
   }
   return NULL; /* Unreachable */
 }
-    
+
 TERM def_ApplyDefToTermExhaustive(PROOFSEARCH Search, TERM Term)
 /**************************************************************
   INPUT:   A proofsearch object and a term.
@@ -573,14 +572,14 @@ LIST def_ApplyDefToClauseOnce(DEF Def, CLAUSE Clause,
 ***************************************************************/
 {
   LIST result, l;
-  
+
   result = list_List(Clause);
 
   for (l = result; !list_Empty(l); l = list_Cdr(l)) {
-    if (clause_ContainsSymbol((CLAUSE) list_Car(l), 
+    if (clause_ContainsSymbol((CLAUSE) list_Car(l),
 			      term_TopSymbol(def_Predicate(Def)))) {
-      result = list_Nconc(result, 
-			  cnf_ApplyDefinitionToClause((CLAUSE) list_Car(l), 
+      result = list_Nconc(result,
+			  cnf_ApplyDefinitionToClause((CLAUSE) list_Car(l),
 						      def_Predicate(Def),
 						      def_Expansion(Def),
 						      FlagStore, Precedence));
@@ -596,18 +595,18 @@ LIST def_ApplyDefToClauseOnce(DEF Def, CLAUSE Clause,
   if (!list_Empty(result))
     if (list_First(result) == Clause)
       result = list_Pop(result);
-  
+
   for (l = result; !list_Empty(l); l=list_Cdr(l)) {
     CLAUSE c;
     c = (CLAUSE) list_Car(l);
     if (def_Conjecture(Def))
       clause_SetFlag((CLAUSE) list_Car(l), CONCLAUSE);
     clause_SetFromDefApplication(c);
-    clause_SetParentClauses(c, list_Cons((POINTER) clause_Number(Clause), 
+    clause_SetParentClauses(c, list_Cons((POINTER) clause_Number(Clause),
 					 list_Copy(def_ClauseNumberList(Def))));
-    /* Parent literal is not available, as the predicate may occur several 
+    /* Parent literal is not available, as the predicate may occur several
        times in the target clause */
-    clause_SetParentLiterals(c, list_Cons((POINTER) 0, 
+    clause_SetParentLiterals(c, list_Cons((POINTER) 0,
 					  list_Copy(def_ClauseLitsList(Def))));
   }
   return result;
@@ -643,7 +642,7 @@ LIST def_ApplyDefToClauseExhaustive(PROOFSEARCH Search, CLAUSE Clause)
     for (l=newclauses; !list_Empty(l); l=list_Cdr(l)) {
       LIST clauses;
       CLAUSE c;
-      
+
       c = (CLAUSE) list_Car(l);
 
       /* Apply all definitions to the clause */
@@ -654,7 +653,7 @@ LIST def_ApplyDefToClauseExhaustive(PROOFSEARCH Search, CLAUSE Clause)
 
       for (scan=prfs_Definitions(Search); !list_Empty(scan); scan=list_Cdr(scan))
 	clauses = list_Nconc(clauses, def_ApplyDefToClauseOnce((DEF) list_Car(scan), c, FlagStore, Precedence));
-      
+
       /* If expansions were made delete old clause */
       if (!list_Empty(clauses)) {
 	/* DOCPROOF ? */
@@ -677,16 +676,15 @@ LIST def_ApplyDefToClauseExhaustive(PROOFSEARCH Search, CLAUSE Clause)
     list_Delete(newclauses);
     newclauses = nextlist;
   }
-      
+
   return result;
 }
-  
 
 void def_Print(DEF D)
 /**************************************************************
   INPUT:   A DEF structure.
   RETURNS: None.
-  EFFECT:  Prints the definition to stdout. 
+  EFFECT:  Prints the definition to stdout.
 ***************************************************************/
 {
   LIST scan, scan2;
@@ -696,8 +694,8 @@ void def_Print(DEF D)
   fol_PrettyPrint(def_Expansion(D));
   if (!list_Empty(def_ClauseNumberList(D))) {
     fputs("\nParent clauses: ", stdout);
-    for (scan = def_ClauseNumberList(D), scan2 = def_ClauseLitsList(D); 
-	 !list_Empty(scan); scan = list_Cdr(scan), scan2 = list_Cdr(scan2)) 
+    for (scan = def_ClauseNumberList(D), scan2 = def_ClauseLitsList(D);
+	 !list_Empty(scan); scan = list_Cdr(scan), scan2 = list_Cdr(scan2))
       printf("%d.%d ", (NAT) list_Car(scan), (NAT) list_Car(scan2));
     if (D->conjecture)
       fputs("\nDerived from conjecture clauses.", stdout);
@@ -708,7 +706,7 @@ void def_Print(DEF D)
     fputs("\nLabel: ", stdout);
     fputs(def_Label(D), stdout);
     puts("\nGuard:");
-    if (def_ToProve(D) != NULL) 
+    if (def_ToProve(D) != NULL)
       fol_PrettyPrint(def_ToProve(D));
     else
       fputs("Nothing.", stdout);
@@ -723,10 +721,10 @@ void def_Print(DEF D)
   }
   else {
     fputs(" None ", stdout);
-  }    
-} 
+  }
+}
 
-LIST def_ApplyDefToClauselist(PROOFSEARCH Search, DEF Def, 
+LIST def_ApplyDefToClauselist(PROOFSEARCH Search, DEF Def,
 			      LIST Clauselist, BOOL Destructive)
 /**************************************************************
   INPUT:   A proofsearch object, a DEF structure, a list of unshared clauses
@@ -761,7 +759,6 @@ LIST def_ApplyDefToClauselist(PROOFSEARCH Search, DEF Def,
   if (Destructive)
     Clauselist = list_PointerDeleteElement(Clauselist, NULL);
 
-
   if (flag_GetFlagValue(FlagStore, flag_PAPPLYDEFS)) {
     if (!list_Empty(allnew)) {
       fputs("\nNew clauses after applying definitions : \n", stdout);
@@ -791,7 +788,7 @@ LIST def_ApplyDefToTermlist(DEF Def, LIST Termlist,
 ***************************************************************/
 {
   LIST l, newterms;
-  
+
   newterms = list_Nil();
 
   *Complete = TRUE;
@@ -812,7 +809,7 @@ LIST def_ApplyDefToTermlist(DEF Def, LIST Termlist,
 	term_Delete(list_PairSecond(list_Car(l)));
 	if (list_PairFirst(list_Car(l)) != NULL)
 	  string_StringFree(list_PairFirst(list_Car(l)));
-	
+
 	list_PairFree(list_Car(l));
 	list_Rplaca(l, NULL);
       }
@@ -829,7 +826,7 @@ LIST def_ApplyDefToTermlist(DEF Def, LIST Termlist,
       }
     }
   }
-  
+
   Termlist = list_Nconc(Termlist, newterms);
   return Termlist;
 }
@@ -839,10 +836,10 @@ void def_ExtractDefsFromTermlist(PROOFSEARCH Search, LIST Axioms, LIST Conj)
   INPUT:   A proofsearch object and 2 lists of pairs label/term.
   RETURNS: None.
   EFFECT:  Add all found definitions to the proofsearch object.
-           The old list of definitions in the proofsearch object is 
+           The old list of definitions in the proofsearch object is
 	   overwritten.
 ***************************************************************/
-{ 
+{
   LIST      l, deflist;
   FLAGSTORE FlagStore;
 
@@ -864,7 +861,7 @@ void def_ExtractDefsFromTermlist(PROOFSEARCH Search, LIST Axioms, LIST Conj)
   for (l=deflist; !list_Empty(l); l=list_Cdr(l))
     symbol_AddProperty(term_TopSymbol(def_Predicate(list_Car(l))), ISDEF);
 
-  prfs_SetDefinitions(Search, list_Nconc(prfs_Definitions(Search), deflist));  
+  prfs_SetDefinitions(Search, list_Nconc(prfs_Definitions(Search), deflist));
 
   if (flag_GetFlagValue(FlagStore, flag_PAPPLYDEFS)) {
     if (!list_Empty(deflist)) {
@@ -883,8 +880,8 @@ LIST def_FlattenWithOneDefinition(PROOFSEARCH Search, DEF Def)
   RETURNS: The list of new definitions.
   EFFECT:  For every occurrence of the defined predicate among the other
            definitions an expansion is attempted.
-	   A new definition is only created if the result of the expansion is 
-	   again a definition. 
+	   A new definition is only created if the result of the expansion is
+	   again a definition.
 	   The proofsearch object is not changed.
 ***************************************************************/
 {
@@ -904,7 +901,7 @@ LIST def_FlattenWithOneDefinition(PROOFSEARCH Search, DEF Def)
     for (l = definitions; !list_Empty(l); l=list_Cdr(l)) {
       DEF d;
 
-      d = (DEF) list_Car(l);      
+      d = (DEF) list_Car(l);
       if (d != Def) {
 	/* Expansion possible */
 	if (term_ContainsSymbol(def_Expansion(d), term_TopSymbol(def_Predicate(Def)))) {
@@ -916,31 +913,30 @@ LIST def_FlattenWithOneDefinition(PROOFSEARCH Search, DEF Def)
 	    newexpansion = def_ApplyDefToTermOnce(Def, def_Expansion(d),
 						  FlagStore, Precedence,
 						  &complete);
-	    
+
 	    newdef = def_CreateFromTerm(newexpansion,
-					term_Copy(def_Predicate(d)), 
+					term_Copy(def_Predicate(d)),
 					term_Copy(def_ToProve(d)), def_Label(d));
 	    newdefinitions = list_Cons(newdef, newdefinitions);
 	  }
 	}
       }
-      
+
     }
   }
   return newdefinitions;
 }
 
-
 void def_FlattenWithOneDefinitionDestructive(PROOFSEARCH Search, DEF Def)
 /**************************************************************
   INPUT:   A proofsearch object and one definition.
   RETURNS: None.
-  EFFECT:  If the definition is always applicable, every occurrence of the 
+  EFFECT:  If the definition is always applicable, every occurrence of the
            defined predicate among the other definitions is expanded in place.
 	   If the resulting term is no longer a definition, it is deleted from
 	   the proofsearch object.
 	   Def is deleted.
-  CAUTION: This function changes the list entries in the list of definitions 
+  CAUTION: This function changes the list entries in the list of definitions
            in the proofsearch object, so do not call it from a loop over
            all definitions.
 ***************************************************************/
@@ -954,11 +950,11 @@ void def_FlattenWithOneDefinitionDestructive(PROOFSEARCH Search, DEF Def)
   if (def_ToProve(Def) == NULL) {
     LIST definitions, l;
 
-    definitions = prfs_Definitions(Search);    
+    definitions = prfs_Definitions(Search);
     for (l = definitions; !list_Empty(l); l = list_Cdr(l)) {
       DEF d;
 
-      d = (DEF) list_Car(l);      
+      d = (DEF) list_Car(l);
       if (d != Def) {
 	/* Expansion possible */
 	if (term_ContainsSymbol(def_Expansion(d), term_TopSymbol(def_Predicate(Def)))) {
@@ -1008,15 +1004,15 @@ void def_FlattenWithOneDefinitionSemiDestructive(PROOFSEARCH Search, DEF Def)
 
   FlagStore  = prfs_Store(Search);
   Precedence = prfs_Precedence(Search);
-  
+
   if (def_ToProve(Def) == NULL) {
     LIST definitions, l;
 
-    definitions = prfs_Definitions(Search);    
+    definitions = prfs_Definitions(Search);
     for (l = definitions; !list_Empty(l); l=list_Cdr(l)) {
       DEF d;
 
-      d = (DEF) list_Car(l);      
+      d = (DEF) list_Car(l);
       if (d != Def) {
 	/* Expansion possible */
 	if (term_ContainsSymbol(def_Expansion(d), term_TopSymbol(def_Predicate(Def)))) {
@@ -1046,7 +1042,7 @@ void def_FlattenDefinitionsDestructive(PROOFSEARCH Search)
 /**************************************************************
   INPUT:   A proofsearch object.
   RETURNS: None.
-  EFFECT:  For every definition that is always applicable try to 
+  EFFECT:  For every definition that is always applicable try to
            expand the predicate in other
            definitions if possible.
 ***************************************************************/
@@ -1087,7 +1083,7 @@ LIST def_GetTermsForProof(TERM Term, TERM SubTerm, int Polarity)
     misc_StartErrorReport();
     misc_ErrorReport("\n In def_GetTermsForProof: Illegal input Term.");
     misc_FinishErrorReport();
-  } 
+  }
 #endif
 
   if (Term == SubTerm)
@@ -1154,7 +1150,7 @@ LIST def_GetTermsForProof(TERM Term, TERM SubTerm, int Polarity)
     if (term_HasPointerSubterm(term_SecondArgument(SuperTerm), SubTerm) && Polarity == -1) {
       AddToList = term_Copy(term_FirstArgument(SuperTerm));
       AddToList = term_Create(fol_Not(), list_List(AddToList));
-      return list_Cons(AddToList, def_GetTermsForProof(Term, SuperTerm, -1*Polarity)); 
+      return list_Cons(AddToList, def_GetTermsForProof(Term, SuperTerm, -1*Polarity));
     }
     if (term_HasPointerSubterm(term_FirstArgument(SuperTerm), SubTerm) && Polarity == 1) {
       AddToList = term_Copy(term_SecondArgument(SuperTerm));
@@ -1171,7 +1167,7 @@ LIST def_GetTermsForProof(TERM Term, TERM SubTerm, int Polarity)
 
 BOOL def_FindProofForGuard(TERM Term, TERM Atom, TERM Guard, FLAGSTORE FlagStore, PRECEDENCE Precedence)
 /**************************************************************************
-  INPUT:   A formula Term, an atom Atom, a term Guard a flag store and a 
+  INPUT:   A formula Term, an atom Atom, a term Guard a flag store and a
            precedence.
   RETURNS: True iff a proof can be found for Guard in Term.
 ***************************************************************************/
@@ -1197,7 +1193,7 @@ BOOL def_FindProofForGuard(TERM Term, TERM Atom, TERM Guard, FLAGSTORE FlagStore
     misc_FinishErrorReport();
   }
 #endif
-  
+
   ArgList = def_GetTermsForProof(Term, Atom, 1);
 
   if (!list_Empty(ArgList)) {
@@ -1245,7 +1241,7 @@ LIST def_ApplyDefinitionToTermList(LIST Defs, LIST Terms,
   RETURNS: The possibly destructively changed list <Terms>.
   EFFECT:  In all formulas of Terms any definition of Defs is applied exactly
            once if possible.
-           The terms are changed destructively if the expanded def_predicate 
+           The terms are changed destructively if the expanded def_predicate
 	   is not an equality.
 **************************************************************************/
 {
@@ -1263,7 +1259,7 @@ LIST def_ApplyDefinitionToTermList(LIST Defs, LIST Terms,
 
   while (Apply && Applics != 0) {
     Apply = FALSE;
-    
+
     for (Scan1=Defs; !list_Empty(Scan1) && Applics != 0; Scan1=list_Cdr(Scan1)) {
       DefPredicate = term_Copy(def_Predicate(list_Car(Scan1)));
 
@@ -1273,7 +1269,7 @@ LIST def_ApplyDefinitionToTermList(LIST Defs, LIST Terms,
 	ActTerm   = list_PairSecond(list_Car(Scan2));
 	TargetList = term_FindAllAtoms(ActTerm, term_TopSymbol(DefPredicate));
 	term_AddFatherLinks(ActTerm);
-	
+
 	/*	puts("\nActTerm:"); fol_PrettyPrintDFG(ActTerm);*/
 
 	for (Scan3=TargetList; !list_Empty(Scan3) && Applics != 0; Scan3=list_Cdr(Scan3)) {
@@ -1317,7 +1313,7 @@ LIST def_ApplyDefinitionToTermList(LIST Defs, LIST Terms,
 		TERM Guard;
 		Guard = term_Copy(def_ToProve(list_Car(Scan1)));
 		if (fol_ApplyContextToTerm(cont_LeftContext(), Guard)) {
-		  cont_BackTrack(); 
+		  cont_BackTrack();
 		  if (def_FindProofForGuard(ActTerm, Target,Guard,
 					    Flags, Precedence)) {
 		    Applics--;
@@ -1346,7 +1342,7 @@ LIST def_ApplyDefinitionToTermList(LIST Defs, LIST Terms,
 		term_Delete(Guard);
 	      }
 	    }
-	    term_Delete(Expansion);	    
+	    term_Delete(Expansion);
 	  }
 	  cont_BackTrack();
 	}

@@ -38,7 +38,7 @@ let rec local_initializer loc env path init k =
       let ty_elt =
         match unroll env path.etyp with
         | TArray(ty_elt, _, _) -> ty_elt
-        | _ -> fatal_error "%aWrong type for array initializer" 
+        | _ -> fatal_error "%aWrong type for array initializer"
                            formatloc loc in
       let rec array_init pos = function
         | [] -> k
@@ -52,7 +52,7 @@ let rec local_initializer loc env path init k =
   | Init_struct(id, fil) ->
       let field_init (fld, i) k =
         local_initializer loc env
-          { edesc = EUnop(Odot fld.fld_name, path); etyp = fld.fld_typ } 
+          { edesc = EUnop(Odot fld.fld_name, path); etyp = fld.fld_typ }
           i k in
       List.fold_right field_init fil k
   | Init_union(id, fld, i) ->
@@ -64,7 +64,7 @@ let rec local_initializer loc env path init k =
 
 let local_variables = ref ([]: decl list)
 
-(* Note: "const int x = y - 1;" is legal, but we turn it into 
+(* Note: "const int x = y - 1;" is legal, but we turn it into
    "const int x; x = y - 1;", which is not.  Therefore, remove
    top-level 'const' attribute.  Also remove it on element type of
    array type. *)
@@ -92,9 +92,9 @@ let rec unblock_stmt env s =
   | Sdo e -> s
   | Sseq(s1, s2) ->
       {s with sdesc = Sseq(unblock_stmt env s1, unblock_stmt env s2)}
-  | Sif(e, s1, s2) -> 
+  | Sif(e, s1, s2) ->
       {s with sdesc = Sif(e, unblock_stmt env s1, unblock_stmt env s2)}
-  | Swhile(e, s1) -> 
+  | Swhile(e, s1) ->
       {s with sdesc = Swhile(e, unblock_stmt env s1)}
   | Sdowhile(s1, e) ->
       {s with sdesc = Sdowhile(unblock_stmt env s1, e)}
@@ -104,7 +104,7 @@ let rec unblock_stmt env s =
   | Scontinue -> s
   | Sswitch(e, s1) ->
       {s with sdesc = Sswitch(e, unblock_stmt env s1)}
-  | Slabeled(lbl, s1) -> 
+  | Slabeled(lbl, s1) ->
       {s with sdesc = Slabeled(lbl, unblock_stmt env s1)}
   | Sgoto lbl -> s
   | Sreturn opte -> s

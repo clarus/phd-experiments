@@ -18,14 +18,14 @@ Module Asm.
     t L -> t L -> t L
   | ret :
     t L.
-  
+
   Fixpoint eval (S : Set) (L : S -> Type) (a : t L) (s : S) (l : L s) {struct a} : {s : S & L s}.
     destruct a as [fs fl n | c fl nnc n | xs xl ys yl f n | ].
       exact (
         let l := fl s l in
         let s := fs s in
         eval _ _ n s l).
-      
+
       exact (
         let l := fl s l in
         if c s then
@@ -33,7 +33,7 @@ Module Asm.
         else
           let (s, l) := eval _ _ nnc s l in
           eval _ _ n s l).
-      
+
       exact (
         let l := xl s l in
         let s := xs s in
@@ -41,7 +41,7 @@ Module Asm.
         let l := yl s l in
         let s := ys s in
         eval _ _ n s l).
-      
+
       exact (existT _ s l).
   Defined.
 End Asm.
@@ -60,20 +60,3 @@ Definition test1 : t (fun n => 3 <= n).
 Defined.
 
 Compute eval test1 3 (leb_complete 3 3 eq_refl).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -145,4 +145,3 @@ void surface_coords(struct object * obj, struct point * p,
     assert(0);
   }
 }
-

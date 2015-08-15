@@ -121,4 +121,3 @@ void color_from_lights(struct object * scene,
   for (i = 0; lights[i] != NULL; i++)
     color_from_light(scene, p, v, n, kd, ks, phong, lights[i], il);
 }
-

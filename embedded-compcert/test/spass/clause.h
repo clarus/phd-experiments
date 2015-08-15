@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _CLAUSE_
@@ -88,7 +87,6 @@ typedef SPLITFIELDENTRY* SPLITFIELD;
 typedef enum  {WORKEDOFF=1,CLAUSESELECT=2,DOCCLAUSE=4,CONCLAUSE=8,BLOCKED=16,
 	       NOPARAINTO=32, MARKED=64, HIDDEN=128} CLAUSE_FLAGS;
 
-
 /* As there are a lot of implications a clauses properties may have */
 /* for the prover, this information should be kept with the clause. */
 /* That for a flagfield is foreseen, most likely an integer used    */
@@ -101,7 +99,7 @@ typedef struct CLAUSE_HELP{
   NAT      validlevel; /* Level of splitting where clause is valid. */
   SPLITFIELD splitfield;
   unsigned splitfield_length;
-  
+
   LIST     parentCls, parentLits; /* Parents clauses' clause and lit numbers.*/
   NAT      flags;
   SYMBOL   maxVar;     /* The maximal variable symbol in the clause */
@@ -122,7 +120,6 @@ typedef struct CLAUSE_HELP{
 } *CLAUSE, CLAUSE_NODE;
 
 typedef struct LITERAL_HELP *LITERAL, LITERAL_NODE;
-
 
 /**************************************************************/
 /* Functions Prototypes                                       */
@@ -149,7 +146,6 @@ LIST    clause_CopyConstraint(CLAUSE);
 LIST    clause_CopyAntecedentExcept(CLAUSE, int);
 LIST    clause_CopySuccedent(CLAUSE);
 LIST    clause_CopySuccedentExcept(CLAUSE, int);
-
 
 /**************************************************************/
 /* Functions to use the sharing for clauses and literals.     */
@@ -252,7 +248,6 @@ BOOL    clause_WeightCorrect(CLAUSE, FLAGSTORE, PRECEDENCE);   /* Unused */
 LIST    clause_MoveBestLiteralToFront(LIST, SUBST, SYMBOL,
 				      BOOL (*)(LITERAL, NAT, LITERAL, NAT));
 
-
 LIST    clause_InsertWeighed(CLAUSE, LIST, FLAGSTORE, PRECEDENCE);
 LIST    clause_ListSortWeighed(LIST);
 
@@ -309,7 +304,6 @@ void clause_PParentsPrint(CLAUSE);
 void clause_PParentsListPrint(LIST);
 void clause_PParentsFPrintGen(FILE*, CLAUSE, BOOL);
 
-
 /**************************************************************/
 /* Inline Functions                                           */
 /**************************************************************/
@@ -323,7 +317,6 @@ static __inline__ TERM clause_LiteralSignedAtom(LITERAL L)
   return L->atomWithSign;
 }
 
-
 static __inline__ CLAUSE clause_LiteralOwningClause(LITERAL L)
 {
   return L->owningClause;
@@ -334,7 +327,6 @@ static __inline__ void clause_LiteralSetOwningClause(LITERAL L, CLAUSE C)
   L->owningClause = C;
 }
 
-
 static __inline__ void clause_LiteralSetOrientedEquality(LITERAL L)
 {
   L->oriented = TRUE;
@@ -344,7 +336,6 @@ static __inline__ void clause_LiteralSetNoOrientedEquality(LITERAL L)
 {
   L->oriented = FALSE;
 }
-
 
 static __inline__ NAT clause_LiteralWeight(LITERAL L)
 {
@@ -359,12 +350,10 @@ static __inline__ NAT clause_LiteralWeight(LITERAL L)
   return L->weight;
 }
 
-
 static __inline__ void clause_UpdateLiteralWeight(LITERAL L, FLAGSTORE Flags)
 {
   L->weight = clause_LiteralComputeWeight(L, Flags);
 }
-
 
 static __inline__ void clause_LiteralFlagReset(LITERAL L)
 {
@@ -386,19 +375,15 @@ static __inline__ BOOL clause_LiteralIsMaximal(LITERAL L)
   return clause_LiteralGetFlag(L, MAXIMAL);
 }
 
-
-
 static __inline__ BOOL clause_LiteralIsOrientedEquality(LITERAL L)
 {
   return L->oriented;
 }
 
-
 static __inline__ BOOL clause_LiteralIsNotOrientedEquality(LITERAL L)
 {
   return !(L->oriented);
 }
-
 
 /**************************************************************/
 /* Literal Comparison 1                                       */
@@ -413,7 +398,6 @@ static __inline__ BOOL clause_LiteralIsPositive(LITERAL L)
 {
   return !clause_LiteralIsNegative(L);
 }
-
 
 static __inline__ BOOL clause_LiteralsAreComplementary(LITERAL L1, LITERAL L2)
 {
@@ -445,7 +429,6 @@ static __inline__ BOOL clause_HyperLiteralIsBetter(LITERAL Dummy1, NAT S1,
   return (S1 > S2);
 }
 
-
 /**************************************************************/
 /* Accessing Literals 2                                       */
 /**************************************************************/
@@ -457,7 +440,6 @@ static __inline__ TERM clause_LiteralAtom(LITERAL L)
   else
     return clause_LiteralSignedAtom(L);
 }
-
 
 static __inline__ SYMBOL clause_LiteralPredicate(LITERAL L)
 {
@@ -481,7 +463,6 @@ static __inline__ BOOL clause_LiteralIsSort(LITERAL L)
   return (symbol_IsPredicate(S) &&
 	  (symbol_Arity(S) == 1));
 }
-
 
 static __inline__ void clause_LiteralSetAtom(LITERAL L, TERM A)
 {
@@ -514,7 +495,6 @@ static __inline__ void clause_LiteralFree(LITERAL L)
 {
   memory_Free(L, sizeof(LITERAL_NODE));
 }
-
 
 /**************************************************************/
 /* Functions to access literals.                                 */
@@ -577,7 +557,6 @@ static __inline__ int clause_Length(CLAUSE Clause)
 	  clause_NumOfSuccLits(Clause));
 }
 
-
 static __inline__ int clause_LastLitIndex(CLAUSE Clause)
 {
   return clause_Length(Clause) - 1;
@@ -602,7 +581,6 @@ static __inline__ int clause_FirstSuccedentLitIndex(CLAUSE Clause)
 {
   return (clause_NumOfAnteLits(Clause) + clause_NumOfConsLits(Clause));
 }
-
 
 static __inline__ int clause_LastConstraintLitIndex(CLAUSE Clause)
 {
@@ -635,7 +613,6 @@ static __inline__ LIST clause_GetLiteralList(CLAUSE Clause)
   return Result;
 }
 
-
 static __inline__ LIST clause_GetLiteralListExcept(CLAUSE Clause, int Index)
 /**************************************************************
   INPUT:   A clause.
@@ -653,7 +630,6 @@ static __inline__ LIST clause_GetLiteralListExcept(CLAUSE Clause, int Index)
       Result = list_Cons(clause_GetLiteral(Clause, i), Result);
   return Result;
 }
-
 
 /**************************************************************/
 /* Clause Access Macros                                       */
@@ -710,7 +686,6 @@ static __inline__ void clause_SetDepth(CLAUSE Clause, NAT NewDepth)
   Clause->depth = NewDepth;
 }
 
-
 static __inline__ NAT clause_Weight(CLAUSE Clause)
 {
 #ifdef CHECK
@@ -728,7 +703,6 @@ static __inline__ void clause_UpdateWeight(CLAUSE Clause, FLAGSTORE Flags)
   Clause->weight = clause_ComputeWeight(Clause, Flags);
 }
 
-
 static __inline__ int clause_Number(const CLAUSE Clause)
 {
   return Clause->clausenumber;
@@ -743,7 +717,6 @@ static __inline__ void clause_NewNumber(CLAUSE Clause)
 {
   Clause->clausenumber = clause_IncreaseCounter();
 }
-
 
 static __inline__ NAT clause_SplitLevel(CLAUSE Clause)
 {
@@ -783,7 +756,6 @@ static __inline__ LIST clause_ParentLiterals(CLAUSE Clause)
   return Clause->parentLits;
 }
 
-
 static __inline__ SYMBOL clause_MaxVar(CLAUSE Clause)
 {
   return Clause->maxVar;
@@ -793,7 +765,6 @@ static __inline__ void clause_SetMaxVar(CLAUSE Clause, SYMBOL Variable)
 {
   Clause->maxVar = Variable;
 }
-
 
 static __inline__ RULE clause_Origin(CLAUSE Clause)
 {
@@ -847,7 +818,6 @@ static __inline__ void clause_SetSplitField(CLAUSE Clause, SPLITFIELD B,
     Clause->splitfield[i] = B[i];
 }
 
-
 static __inline__ NAT  clause_ComputeSplitFieldAddress(NAT n, NAT* field)
 {
   *field = 0;
@@ -894,11 +864,11 @@ static __inline__ void clause_ClearSplitField(CLAUSE C)
   for (i=C->splitfield_length-1; i >=0; i--)
     C->splitfield[i] = 0;
 }
-	
+
 static __inline__ void clause_SetSplitFieldBit(CLAUSE Clause, NAT n)
 {
   unsigned field;
-  
+
   n = clause_ComputeSplitFieldAddress(n, &field);
   if (field >= Clause->splitfield_length)
     clause_ExpandSplitField(Clause, field + 1);
@@ -926,7 +896,6 @@ static __inline__ void clause_ClearFlags(CLAUSE Clause)
 {
   Clause->flags = 0;
 }
-
 
 static __inline__ BOOL clause_DependsOnSplitLevel(CLAUSE C, NAT N)
 {
@@ -957,7 +926,7 @@ static __inline__ void clause_UpdateSplitDataFromNewSplitting(CLAUSE Result,
 {
   unsigned field;
   NAT i;
-  
+
   clause_SetSplitLevel(Result, Level);
   Level = clause_ComputeSplitFieldAddress(Level, &field);
 
@@ -1017,10 +986,10 @@ static __inline__ void clause_SetSplitDataFromList(CLAUSE Result, LIST List)
     Result->splitfield = memory_Malloc(sizeof(SPLITFIELDENTRY) * l);
     Result->splitfield_length = l;
   }
-  
+
   for (l=0; l < Result->splitfield_length; l++)
     Result->splitfield[l] = 0;
-  
+
   while (!list_Empty(List)) {
     TempClause= (CLAUSE) list_Top(List);
     List = list_Cdr(List);
@@ -1028,7 +997,6 @@ static __inline__ void clause_SetSplitDataFromList(CLAUSE Result, LIST List)
       Result->splitfield[l] = Result->splitfield[l] | TempClause->splitfield[l];
   }
 }
-
 
 static __inline__ void clause_SetSplitDataFromParents(CLAUSE Result,
 						      CLAUSE Mother,
@@ -1042,7 +1010,7 @@ static __inline__ void clause_SetSplitDataFromParents(CLAUSE Result,
   clause_SetSplitLevel(Result, clause_SplitLevel(Mother) > clause_SplitLevel(Father)
 		       ? clause_SplitLevel(Mother)
 		       : clause_SplitLevel(Father));
-  
+
   if (Mother->splitfield_length > Father->splitfield_length) {
     if (Result->splitfield != NULL)
       memory_Free(Result->splitfield,
@@ -1091,7 +1059,6 @@ static __inline__ void clause_AddParentLiteral(CLAUSE Clause, int PLit)
   Clause->parentLits = list_Cons((POINTER) PLit, Clause->parentLits);
 }
 
-
 static __inline__ BOOL clause_ValidityIsNotSmaller(CLAUSE C1, CLAUSE C2)
 {
   return (C1->validlevel <= C2->validlevel);
@@ -1102,8 +1069,7 @@ static __inline__ BOOL clause_IsMoreValid(CLAUSE C1, CLAUSE C2)
   return (C1->validlevel < C2->validlevel);
 }
 
-
-static __inline__ BOOL  clause_CompareAbstractLEQ (CLAUSE Left, CLAUSE Right) 
+static __inline__ BOOL  clause_CompareAbstractLEQ (CLAUSE Left, CLAUSE Right)
 /**************************************************************
   INPUT:   Two clauses.
   RETURNS: TRUE if left <= right, FALSE otherwise.
@@ -1114,7 +1080,6 @@ static __inline__ BOOL  clause_CompareAbstractLEQ (CLAUSE Left, CLAUSE Right)
 {
   return (BOOL) (clause_CompareAbstract(Left, Right) <= 0);
 }
-
 
 static __inline__ BOOL clause_IsFromRewriting(CLAUSE Clause)
 {
@@ -1221,7 +1186,6 @@ static __inline__ BOOL clause_IsFromInput(CLAUSE Clause)
   return Clause->origin == INPUT;
 }
 
-
 static __inline__ BOOL clause_HasReducedPredecessor(CLAUSE Clause)
 {
   RULE origin = clause_Origin(Clause);
@@ -1238,7 +1202,6 @@ static __inline__ BOOL clause_IsSplitFather(CLAUSE C1, CLAUSE C2)
 {
   return (C1->clausenumber == (int)list_Car(C2->parentCls));
 }
-
 
 static __inline__ void clause_SetFromRewriting(CLAUSE Clause)
 {
@@ -1373,12 +1336,10 @@ static __inline__ void clause_SetTemporary(CLAUSE Clause)
   Clause->origin = TEMPORARY;
 }
 
-
 static __inline__ void clause_SetFromInput(CLAUSE Clause)
 {
   Clause->origin = INPUT;
 }
-
 
 static __inline__ LITERAL clause_FirstConstraintLit(CLAUSE Clause)
 {
@@ -1410,7 +1371,6 @@ static __inline__ LITERAL clause_LastSuccedentLit(CLAUSE Clause)
   return Clause->literals[clause_LastSuccedentLitIndex(Clause)];
 }
 
-
 static __inline__ BOOL clause_HasEmptyConstraint(CLAUSE Clause)
 {
   return clause_NumOfConsLits(Clause) == 0;
@@ -1425,7 +1385,6 @@ static __inline__ BOOL clause_HasEmptySuccedent(CLAUSE Clause)
 {
   return clause_NumOfSuccLits(Clause) == 0;
 }
-
 
 static __inline__ BOOL clause_IsGround(CLAUSE Clause)
 {
@@ -1503,7 +1462,6 @@ static __inline__ BOOL clause_IsSubsortClause(CLAUSE Clause)
 	      clause_GetLiteral(Clause, clause_NumOfConsLits(Clause))))));
 }
 
-
 static __inline__ BOOL clause_HasSuccLits(CLAUSE Clause)
 {
   return (clause_NumOfSuccLits(Clause) > 1);
@@ -1517,7 +1475,7 @@ static __inline__ BOOL clause_HasGroundSuccLit(CLAUSE Clause)
   for (i = clause_FirstSuccedentLitIndex(Clause); i < l; i++)
     if (term_IsGround(Clause->literals[i]->atomWithSign))
       return TRUE;
-  
+
   return FALSE;
 }
 
@@ -1533,12 +1491,10 @@ static __inline__ LITERAL clause_GetGroundSuccLit(CLAUSE Clause)
   return (LITERAL)NULL;
 }
 
-
 static __inline__ void clause_Free(CLAUSE Clause)
 {
   memory_Free(Clause, sizeof(CLAUSE_NODE));
 }
-
 
 static __inline__ void clause_ReInit(CLAUSE Clause,
 				     FLAGSTORE Flags,
@@ -1568,7 +1524,6 @@ static __inline__ void clause_SetDataFromFather(CLAUSE Result, CLAUSE Father,
   clause_AddParentLiteral(Result, i);
 }
 
-
 static __inline__ void clause_SetDataFromParents(CLAUSE Result, CLAUSE Father,
 						 int i, CLAUSE Mother, int j,
 						 FLAGSTORE Flags,
@@ -1584,6 +1539,4 @@ static __inline__ void clause_SetDataFromParents(CLAUSE Result, CLAUSE Father,
   clause_AddParentLiteral(Result, j);
 }
 
-
 #endif
-

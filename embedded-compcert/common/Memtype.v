@@ -322,7 +322,6 @@ Axiom load_int16_signed_unsigned:
   forall m b ofs,
   load Mint16signed m b ofs = option_map (Val.sign_ext 16) (load Mint16unsigned m b ofs).
 
-
 (** ** Properties of [loadbytes]. *)
 
 (** [loadbytes] succeeds if and only if we have read permissions on the accessed
@@ -377,7 +376,7 @@ Axiom loadbytes_split:
   loadbytes m b ofs (n1 + n2) = Some bytes ->
   n1 >= 0 -> n2 >= 0 ->
   exists bytes1, exists bytes2,
-     loadbytes m b ofs n1 = Some bytes1 
+     loadbytes m b ofs n1 = Some bytes1
   /\ loadbytes m b (ofs + n1) n2 = Some bytes2
   /\ bytes = bytes1 ++ bytes2.
 
@@ -634,7 +633,7 @@ Axiom perm_alloc_4:
   forall b' ofs k p, perm m2 b' ofs k p -> b' <> b -> perm m1 b' ofs k p.
 Axiom perm_alloc_inv:
   forall m1 lo hi m2 b, alloc m1 lo hi = (m2, b) ->
-  forall b' ofs k p, 
+  forall b' ofs k p,
   perm m2 b' ofs k p ->
   if eq_block b' b then lo <= ofs < hi else perm m1 b' ofs k p.
 
@@ -727,7 +726,7 @@ Axiom perm_free_3:
 Axiom valid_access_free_1:
   forall m1 bf lo hi m2, free m1 bf lo hi = Some m2 ->
   forall chunk b ofs p,
-  valid_access m1 chunk b ofs p -> 
+  valid_access m1 chunk b ofs p ->
   b <> bf \/ lo >= hi \/ ofs + size_chunk chunk <= lo \/ hi <= ofs ->
   valid_access m2 chunk b ofs p.
 Axiom valid_access_free_2:
@@ -788,7 +787,7 @@ Axiom perm_drop_4:
 
 Axiom load_drop:
   forall m b lo hi p m', drop_perm m b lo hi p = Some m' ->
-  forall chunk b' ofs, 
+  forall chunk b' ofs,
   b' <> b \/ ofs + size_chunk chunk <= lo \/ hi <= ofs \/ perm_order p Readable ->
   load chunk m' b' ofs = load chunk m b' ofs.
 
@@ -926,10 +925,10 @@ Axiom weak_valid_pointer_extends:
   a sub-block at offset [ofs] of the block [b'] in [m2].
 
 A memory injection [f] defines a relation [val_inject] between values
-that is the identity for integer and float values, and relocates pointer 
+that is the identity for integer and float values, and relocates pointer
 values as prescribed by [f].  (See module [Values].)
 
-Likewise, a memory injection [f] defines a relation between memory states 
+Likewise, a memory injection [f] defines a relation between memory states
 that we now axiomatize. *)
 
 Parameter inject: meminj -> mem -> mem -> Prop.
@@ -1144,7 +1143,7 @@ Axiom alloc_left_mapped_inject:
   (forall ofs k p, lo <= ofs < hi -> perm m2 b2 (ofs + delta) k p) ->
   inj_offset_aligned delta (hi-lo) ->
   (forall b delta' ofs k p,
-   f b = Some (b2, delta') -> 
+   f b = Some (b2, delta') ->
    perm m1 b ofs k p ->
    lo + delta <= ofs + delta' < hi + delta -> False) ->
   exists f',
@@ -1177,8 +1176,8 @@ Axiom free_inject:
 
 Axiom drop_outside_inject:
   forall f m1 m2 b lo hi p m2',
-  inject f m1 m2 -> 
-  drop_perm m2 b lo hi p = Some m2' -> 
+  inject f m1 m2 ->
+  drop_perm m2 b lo hi p = Some m2' ->
   (forall b' delta ofs k p,
     f b' = Some(b, delta) ->
     perm m1 b' ofs k p -> lo <= ofs + delta < hi -> False) ->

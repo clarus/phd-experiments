@@ -159,7 +159,7 @@ extern "abort" : void
       return p + 4;
     }
     "garbage_collection"(root) : int -> void;
-    if (int32["alloc_ptr"] + size + 4 > int32["fromspace_end_ptr"]) { 
+    if (int32["alloc_ptr"] + size + 4 > int32["fromspace_end_ptr"]) {
       "abort"() : void;
     }
   }
@@ -184,4 +184,3 @@ extern "malloc" : int -> int
   int32["alloc_ptr"] = from;
   return 0;
 }
-

@@ -67,7 +67,6 @@ COMMAND LINE (%A is single numeric argument):
 
 nsievebits.gcc_run %A
 
-
 PROGRAM OUTPUT
 ==============
 Primes up to  5120000   356244

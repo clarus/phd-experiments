@@ -199,7 +199,7 @@ Nondetfunction mul (e1: expr) (e2: expr) :=
 
 (** ** Bitwise and, or, xor *)
 
-Nondetfunction andimm (n1: int) (e2: expr) := 
+Nondetfunction andimm (n1: int) (e2: expr) :=
   if Int.eq n1 Int.zero then Eop (Ointconst Int.zero) Enil else
   if Int.eq n1 Int.mone then e2 else
   match e2 with
@@ -209,7 +209,7 @@ Nondetfunction andimm (n1: int) (e2: expr) :=
       let n := Int.and n1 n2 in
       if Int.eq (Int.shru (Int.shl n amount) amount) n
       && Int.ltu amount Int.iwordsize
-      then rolm t2 (Int.sub Int.iwordsize amount) 
+      then rolm t2 (Int.sub Int.iwordsize amount)
                    (Int.and (Int.shru Int.mone amount) n)
       else Eop (Oandimm n) (Eop (Oshrimm amount) (t2:::Enil) ::: Enil)
   | Eop (Oandimm n2) (t2:::Enil) =>
@@ -219,7 +219,7 @@ Nondetfunction andimm (n1: int) (e2: expr) :=
   | Eop (Oshrimm amount) (t2:::Enil) =>
       if Int.eq (Int.shru (Int.shl n1 amount) amount) n1
       && Int.ltu amount Int.iwordsize
-      then rolm t2 (Int.sub Int.iwordsize amount) 
+      then rolm t2 (Int.sub Int.iwordsize amount)
                    (Int.and (Int.shru Int.mone amount) n1)
       else Eop (Oandimm n1) (e2:::Enil)
   | _ =>
@@ -369,14 +369,14 @@ Nondetfunction compimm (default: comparison -> int -> condition)
         Eop (Ocmp (negate_condition c)) el
       else if Int.eq_dec n2 Int.one then
         Eop (Ocmp c) el
-      else 
+      else
         Eop (Ointconst Int.zero) Enil
   | Cne, Eop (Ocmp c) el =>
       if Int.eq_dec n2 Int.zero then
         Eop (Ocmp c) el
       else if Int.eq_dec n2 Int.one then
         Eop (Ocmp (negate_condition c)) el
-      else 
+      else
         Eop (Ointconst Int.one) Enil
   | Ceq, Eop (Oandimm n1) (t1 ::: Enil) =>
       if Int.eq_dec n2 Int.zero then

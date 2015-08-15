@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *         INTERFACE FOR ALL ORDERING IMPLEMENTATIONS     * */
 /* *                                                        * */
-/* *  $Module:   ORDER                                      * */ 
+/* *  $Module:   ORDER                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1998, 1999, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "flags.h"
@@ -53,7 +52,6 @@
 
 NAT        ord_VARCOUNT[symbol__MAXSTANDARDVAR][2];
 PRECEDENCE ord_PRECEDENCE;
-
 
 static ord_RESULT ord_CheckDomPred(TERM T1, TERM T2, PRECEDENCE P)
 /**************************************************************
@@ -66,7 +64,7 @@ static ord_RESULT ord_CheckDomPred(TERM T1, TERM T2, PRECEDENCE P)
       (term_IsAtom(T2) && symbol_HasProperty(term_TopSymbol(T2), DOMPRED))) {
     if (term_IsAtom(T1)) {
       if (term_IsAtom(T2)) {
-	if (symbol_HasProperty(term_TopSymbol(T1), DOMPRED) && 
+	if (symbol_HasProperty(term_TopSymbol(T1), DOMPRED) &&
 	    (!symbol_HasProperty(term_TopSymbol(T2), DOMPRED) ||
 	     symbol_PrecedenceGreater(P,term_TopSymbol(T1),term_TopSymbol(T2))))
 	  return ord_GREATER_THAN;
@@ -86,11 +84,10 @@ static ord_RESULT ord_CheckDomPred(TERM T1, TERM T2, PRECEDENCE P)
   return ord_UNCOMPARABLE;
 }
 
-
 ord_RESULT ord_Compare(TERM T1, TERM T2, FLAGSTORE FlagStore, PRECEDENCE P)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
+  INPUT:
+  RETURNS:
 ***************************************************************/
 {
   ord_RESULT Aux;
@@ -100,10 +97,10 @@ ord_RESULT ord_Compare(TERM T1, TERM T2, FLAGSTORE FlagStore, PRECEDENCE P)
     misc_StartErrorReport();
     misc_ErrorReport("\n In ord_Compare:");
     misc_ErrorReport("\n Illegal input. One input term is an equality.");
-    misc_FinishErrorReport();    
+    misc_FinishErrorReport();
   }
 #endif
-  
+
   Aux = ord_CheckDomPred(T1, T2, P);
   if (Aux != ord_UNCOMPARABLE)
     return Aux;
@@ -113,7 +110,7 @@ ord_RESULT ord_Compare(TERM T1, TERM T2, FLAGSTORE FlagStore, PRECEDENCE P)
     case flag_ORDKBO:  return kbo_Compare(T1, T2); break;
     case flag_ORDRPOS: return rpos_Compare(T1, T2); break;
     default:
-      misc_StartErrorReport(); 
+      misc_StartErrorReport();
       misc_ErrorReport("\n In ord_Compare:");
       misc_ErrorReport("\n Illegal ordering type.");
       misc_FinishErrorReport();
@@ -121,7 +118,6 @@ ord_RESULT ord_Compare(TERM T1, TERM T2, FLAGSTORE FlagStore, PRECEDENCE P)
   }
   return ord_UNCOMPARABLE;
 }
-
 
 BOOL ord_CompareEqual(TERM T1, TERM T2, FLAGSTORE Flags)
 /**************************************************************
@@ -134,7 +130,7 @@ BOOL ord_CompareEqual(TERM T1, TERM T2, FLAGSTORE Flags)
   case flag_ORDKBO:  return term_Equal(T1, T2); break;
   case flag_ORDRPOS: return rpos_Equal(T1, T2); break;
   default:
-    misc_StartErrorReport(); 
+    misc_StartErrorReport();
     misc_ErrorReport("\n In ord_Compare: Illegal ordering type.");
     misc_FinishErrorReport();
     return FALSE;   /* unreachable code ... */
@@ -153,8 +149,8 @@ ord_RESULT ord_ContCompare(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2,
     misc_ErrorReport("\n Illegal input. One input term is an equality.");
     misc_FinishErrorReport();
   }
-#endif 
-  
+#endif
+
   Aux = ord_CheckDomPred(T1, T2, P);
   if (Aux != ord_UNCOMPARABLE)
     return Aux;
@@ -173,10 +169,9 @@ ord_RESULT ord_ContCompare(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2,
   return ord_UNCOMPARABLE;
 }
 
-
 BOOL ord_ContGreater(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2,
 		     FLAGSTORE FlagStore, PRECEDENCE P)
-{ 
+{
   ord_RESULT Aux;
 
 #ifdef CHECK
@@ -186,8 +181,8 @@ BOOL ord_ContGreater(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2,
     misc_ErrorReport("\n Illegal input. One input term is an equality.");
     misc_FinishErrorReport();
   }
-#endif 
-  
+#endif
+
   Aux = ord_CheckDomPred(T1, T2, P);
   if (Aux != ord_UNCOMPARABLE)
     return (Aux == ord_GREATER_THAN);
@@ -206,7 +201,6 @@ BOOL ord_ContGreater(CONTEXT C1, TERM T1, CONTEXT C2, TERM T2,
   return FALSE;   /* This line is never reached ...  */
 }
 
-
 ord_RESULT ord_Not(ord_RESULT Result)
 /**************************************************************
   INPUT:   An ord_RESULT
@@ -222,14 +216,13 @@ ord_RESULT ord_Not(ord_RESULT Result)
   return ord_GREATER_THAN;
 }
 
-
 void ord_Print(ord_RESULT Result)
 /**************************************************************
   INPUT:   An ord_Result.
   RETURNS: None, prints the Result as a string to stdout.
 ***************************************************************/
 {
-  switch(Result) { 
+  switch(Result) {
   case ord_UNCOMPARABLE:  fputs(" uncomparable ",stdout); break;
   case ord_EQUAL:         fputs(" equal ",stdout); break;
   case ord_GREATER_THAN:  fputs(" greater than ",stdout); break;
@@ -238,13 +231,12 @@ void ord_Print(ord_RESULT Result)
   }
 }
 
-
 ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
 			      BOOL Check, FLAGSTORE FlagStore,
 			      PRECEDENCE Precedence)
 /*********************************************************
   INPUT:   Two term literals and two flags indicating whether these
-           two literals are oriented equalities. 
+           two literals are oriented equalities.
 	   Additionally a check flag that indicates whether
 	   the orientation flags are sufficient or necessary and sufficient:
 	   If Check=TRUE then if flag is FALSE it is interpreted that it is not
@@ -275,7 +267,7 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
     Lit2 = term_FirstArgument(Lit2);
     pos2 = FALSE;
   }
-      
+
   if (fol_IsEquality(Lit1)) {         /* Real equation */
     if (fol_IsEquality(Lit2)) {
       TERM       l1,r1,l2,r2,aux;
@@ -283,15 +275,15 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
       r1 = term_SecondArgument(Lit1);
       l2 = term_FirstArgument(Lit2);
       r2 = term_SecondArgument(Lit2);
-      if (Orient1 || 
-	  (Check && 
+      if (Orient1 ||
+	  (Check &&
 	   ((Comp1 = ord_Compare(l1,r1,FlagStore,Precedence)) == ord_GREATER_THAN ||
 	    Comp1 == ord_SMALLER_THAN))) {
 	if (Comp1 == ord_SMALLER_THAN) {
 	  aux = l1; l1 = r1; r1 = aux;
 	}
 	if (Orient2 ||
-	    (Check && 
+	    (Check &&
 	     ((Comp2 = ord_Compare(l2,r2,FlagStore,Precedence))==ord_GREATER_THAN ||
 	      Comp2 == ord_SMALLER_THAN))) {
 	  /* Both equations are oriented */
@@ -348,13 +340,13 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
 	    return ord_SMALLER_THAN;
 	  AuxRr1l2  = ord_Compare(r1,l2, FlagStore, Precedence);
 	  if (result == AuxRr1l2 && result == ord_SMALLER_THAN)
-	    return  ord_SMALLER_THAN;	  
-	  return ord_UNCOMPARABLE;                   
+	    return  ord_SMALLER_THAN;
+	  return ord_UNCOMPARABLE;
 	}
       }
       else /* Lit1 is unorientable equation */
 	if (Orient2 ||
-	    (Check && 
+	    (Check &&
 	     ((Comp2 = ord_Compare(term_FirstArgument(Lit2),
 				   term_SecondArgument(Lit2),
 				   FlagStore, Precedence) == ord_GREATER_THAN) ||
@@ -384,7 +376,7 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
 	    }
 	    return result;
 	  }
-	  
+
 	  result    = ord_Compare(l1,l2, FlagStore, Precedence);
 	  AuxRr1l2  = ord_Compare(r1,l2, FlagStore, Precedence);
 	  if (result == AuxRr1l2)
@@ -421,7 +413,7 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
 	    return result;
 	  }
 	  if (term_Equal(l1,r2)) {
-	    result = ord_Compare(r1,l2, FlagStore, Precedence); 
+	    result = ord_Compare(r1,l2, FlagStore, Precedence);
 	    if (result == ord_EQUAL) {
 	      if (pos1 && !pos2)
 		return ord_SMALLER_THAN;
@@ -482,7 +474,7 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
     else {/* Second Atom is not an equation */
       /* They can't be equal ! */
       result = ord_Compare(term_FirstArgument(Lit1),Lit2,FlagStore,Precedence);
-      if (!Orient1 && result != ord_GREATER_THAN) { 
+      if (!Orient1 && result != ord_GREATER_THAN) {
 	auxResult = ord_Compare(term_SecondArgument(Lit1),Lit2,FlagStore,Precedence);
 	if (auxResult == ord_GREATER_THAN)
 	  result = ord_GREATER_THAN;
@@ -495,7 +487,7 @@ ord_RESULT ord_LiteralCompare(TERM Lit1, BOOL Orient1, TERM Lit2, BOOL Orient2,
     /* They can't be equal ! */
     if (fol_IsEquality(Lit2)) {
       result = ord_Compare(Lit1,term_FirstArgument(Lit2), FlagStore, Precedence);
-      if (!Orient2 && result != ord_SMALLER_THAN) { 
+      if (!Orient2 && result != ord_SMALLER_THAN) {
 	auxResult = ord_Compare(Lit1,term_SecondArgument(Lit2),FlagStore,Precedence);
 	if (auxResult == ord_SMALLER_THAN)
 	  result = ord_SMALLER_THAN;

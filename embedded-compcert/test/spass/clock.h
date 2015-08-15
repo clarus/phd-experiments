@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     CLOCK                              * */
 /* *                                                        * */
-/* *  $Module:   CLOCK                                      * */ 
+/* *  $Module:   CLOCK                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1999, 2001                  * */
 /* *  MPI fuer Informatik                                   * */

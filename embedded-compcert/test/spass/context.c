@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                CONTEXTS FOR VARIABLES                  * */
 /* *                                                        * */
-/* *  $Module:   CONTEXT                                    * */ 
+/* *  $Module:   CONTEXT                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1998, 1999, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "context.h"
@@ -75,7 +74,6 @@ int     cont_STATEBINDINGS;    /* Storage to save number of current bindings. */
 int     cont_STATESTACK;       /* Storage to save state of stack. */
 int     cont_STATETOPSTACK;    /* Storage to save state of the top element of the stack. */
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -83,7 +81,6 @@ int     cont_STATETOPSTACK;    /* Storage to save state of the top element of th
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 void cont_Init(void)
 /**********************************************************
@@ -110,7 +107,6 @@ void cont_Init(void)
   cont_StackPop();
 }
 
-
 void cont_Check(void)
 /**********************************************************
   INPUT:   None.
@@ -129,7 +125,6 @@ void cont_Check(void)
 #endif
 }
 
-
 void cont_Free(void)
 /**********************************************************
   INPUT:   None.
@@ -147,7 +142,6 @@ void cont_Free(void)
   memory_Free(cont_INSTANCECONTEXT, sizeof(CONTEXT_NODE));
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -155,7 +149,6 @@ void cont_Free(void)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL cont_TermEqual(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM Term2)
 /*********************************************************
@@ -190,7 +183,6 @@ BOOL cont_TermEqual(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM Term2)
     return TRUE;
 }
 
-
 BOOL cont_TermEqualModuloBindings(CONTEXT IndexContext, CONTEXT CtL, TERM TermL,
 				  CONTEXT CtR, TERM TermR)
 /*********************************************************
@@ -199,7 +191,7 @@ BOOL cont_TermEqualModuloBindings(CONTEXT IndexContext, CONTEXT CtL, TERM TermL,
   CAUTION: EQUAL FUNCTION- OR PREDICATE SYMBOLS SHARE THE
            SAME ARITY. THIS IS NOT VALID FOR JUNCTORS!
 *******************************************************/
-{   
+{
 #ifdef CHECK
   if (!(term_IsTerm(TermL) && term_IsTerm(TermR))) {
     misc_StartErrorReport();
@@ -250,31 +242,30 @@ BOOL cont_TermEqualModuloBindings(CONTEXT IndexContext, CONTEXT CtL, TERM TermL,
 
   if (!term_EqualTopSymbols(TermL, TermR))
     return FALSE;
-  else 
+  else
     if (term_IsVariable(TermL)) {
       if (CtL == CtR)
 	return TRUE;
       else
 	return FALSE;
     }
-    else 
+    else
       if (term_IsComplex(TermL)) {
 	LIST ScanL, ScanR;
-	
+
 	for (ScanL=term_ArgumentList(TermL), ScanR=term_ArgumentList(TermR);
 	     list_Exist(ScanL) && list_Exist(ScanR);
 	     ScanL=list_Cdr(ScanL), ScanR=list_Cdr(ScanR))
 	  if (!cont_TermEqualModuloBindings(IndexContext, CtL, list_Car(ScanL),
 					    CtR, list_Car(ScanR)))
 	    return FALSE;
-	
+
 	return (list_Empty(ScanL) ? list_Empty(ScanR) : FALSE);
-	
-      } 
+
+      }
       else
 	return TRUE;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -283,7 +274,6 @@ BOOL cont_TermEqualModuloBindings(CONTEXT IndexContext, CONTEXT CtL, TERM TermL,
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 TERM cont_CopyAndApplyBindings(CONTEXT TermContext, TERM Term)
 {
@@ -309,10 +299,9 @@ TERM cont_CopyAndApplyBindings(CONTEXT TermContext, TERM Term)
 	 Scan = list_Cdr(Scan))
       list_Rplaca(Scan, cont_CopyAndApplyBindings(TermContext, list_Car(Scan)));
     return term_Create(term_TopSymbol(Term), ArgumentList);
-  } else 
+  } else
     return term_Create(term_TopSymbol(Term), list_Nil());
 }
-
 
 TERM cont_CopyAndApplyBindingsCom(const CONTEXT Context, TERM Term)
 {
@@ -326,10 +315,9 @@ TERM cont_CopyAndApplyBindingsCom(const CONTEXT Context, TERM Term)
 	 Scan = list_Cdr(Scan))
       list_Rplaca(Scan, cont_CopyAndApplyBindingsCom(Context, list_Car(Scan)));
     return term_Create(term_TopSymbol(Term), ArgumentList);
-  } else 
+  } else
     return term_Create(term_TopSymbol(Term), list_Nil());
 }
-
 
 TERM cont_ApplyBindingsModuloMatching(const CONTEXT Context, TERM Term,
 				      BOOL VarCheck)
@@ -360,26 +348,25 @@ TERM cont_ApplyBindingsModuloMatching(const CONTEXT Context, TERM Term,
   Top = term_TopSymbol(Term);
 
   if (symbol_IsVariable(Top)) {
-    
+
     if (cont_VarIsBound(Context, Top)) {
       RplacTerm = cont_ContextBindingTerm(Context, Top);
       Arglist   = term_CopyTermList(term_ArgumentList(RplacTerm));
       term_RplacTop(Term, term_TopSymbol(RplacTerm));
       term_DeleteTermList(term_ArgumentList(Term));
-      term_RplacArgumentList(Term, Arglist); 
+      term_RplacArgumentList(Term, Arglist);
     }
   }
   else {
-    
+
     for (Arglist = term_ArgumentList(Term);
 	 !list_Empty(Arglist);
 	 Arglist = list_Cdr(Arglist))
       cont_ApplyBindingsModuloMatching(Context, list_Car(Arglist), VarCheck);
-  }     
+  }
 
   return Term;
 }
-
 
 static TERM cont_CopyAndApplyIndexVariableBindings(const CONTEXT Context, TERM Term)
 {
@@ -411,10 +398,9 @@ static TERM cont_CopyAndApplyIndexVariableBindings(const CONTEXT Context, TERM T
 	 Scan = list_Cdr(Scan))
       list_Rplaca(Scan, cont_CopyAndApplyIndexVariableBindings(Context, list_Car(Scan)));
     return term_Create(TermTop, ArgumentList);
-  } else 
+  } else
     return term_Create(TermTop, list_Nil());
 }
-
 
 TERM cont_ApplyBindingsModuloMatchingReverse(const CONTEXT Context, TERM Term)
 /**********************************************************
@@ -437,11 +423,11 @@ TERM cont_ApplyBindingsModuloMatchingReverse(const CONTEXT Context, TERM Term)
     misc_FinishErrorReport();
   }
 #endif
-    
+
   Top = term_TopSymbol(Term);
 
   if (symbol_IsVariable(Top)) {
-    
+
     if (cont_VarIsBound(Context, Top)) {
       RplacTerm =
 	cont_CopyAndApplyIndexVariableBindings(Context,
@@ -453,15 +439,14 @@ TERM cont_ApplyBindingsModuloMatchingReverse(const CONTEXT Context, TERM Term)
     }
   }
   else {
-    
+
     for (Arglist = term_ArgumentList(Term); !list_Empty(Arglist);
 	 Arglist = list_Cdr(Arglist))
       cont_ApplyBindingsModuloMatchingReverse(Context, list_Car(Arglist));
-  }     
+  }
 
   return Term;
 }
-
 
 BOOL cont_BindingsAreRenamingModuloMatching(const CONTEXT RenamingContext)
 {
@@ -481,7 +466,7 @@ BOOL cont_BindingsAreRenamingModuloMatching(const CONTEXT RenamingContext)
   Context = cont_LastBinding();
 
   while (Context) {
-    
+
     if (!symbol_IsIndexVariable(cont_BindingSymbol(Context))) {
       SYMBOL CodomainSymbol;
 
@@ -508,7 +493,6 @@ BOOL cont_BindingsAreRenamingModuloMatching(const CONTEXT RenamingContext)
   return TRUE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -516,7 +500,6 @@ BOOL cont_BindingsAreRenamingModuloMatching(const CONTEXT RenamingContext)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 SYMBOL cont_TermMaxVar(CONTEXT Context, TERM Term)
 /*********************************************************
@@ -545,7 +528,7 @@ SYMBOL cont_TermMaxVar(CONTEXT Context, TERM Term)
   } else {
     for (scan = term_ArgumentList(Term); !list_Empty(scan); scan = list_Cdr(scan)) {
       SYMBOL max = cont_TermMaxVar(Context, list_Car(scan));
-      
+
       if (max > result)
 	result = max;
     }
@@ -553,7 +536,6 @@ SYMBOL cont_TermMaxVar(CONTEXT Context, TERM Term)
 
   return result;
 }
-
 
 NAT cont_TermSize(CONTEXT Context, TERM Term)
 /*********************************************************
@@ -572,7 +554,6 @@ NAT cont_TermSize(CONTEXT Context, TERM Term)
 
   return result;
 }
-
 
 BOOL cont_TermContainsSymbol(CONTEXT Context, TERM Term, SYMBOL Symbol)
 /*********************************************************
@@ -596,7 +577,6 @@ BOOL cont_TermContainsSymbol(CONTEXT Context, TERM Term, SYMBOL Symbol)
   return FALSE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -605,12 +585,11 @@ BOOL cont_TermContainsSymbol(CONTEXT Context, TERM Term, SYMBOL Symbol)
 /* ********************************************************** */
 /**************************************************************/
 
-
 void cont_TermPrintPrefix(CONTEXT Context, TERM Term)
 /**************************************************************
   INPUT:   A context and a term.
   RETURNS: none.
-  SUMMARY: Prints the term modulo the context to stdout. 
+  SUMMARY: Prints the term modulo the context to stdout.
   CAUTION: none.
 ***************************************************************/
 {

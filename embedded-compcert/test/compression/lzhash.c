@@ -192,7 +192,7 @@ void InitializeSearchStructures()
 *                zero will be returned.
 ****************************************************************************/
 /* XL: no struct return */
-void FindMatch(encoded_string_t * matchData, 
+void FindMatch(encoded_string_t * matchData,
                unsigned int windowHead, unsigned int uncodedHead)
 {
     unsigned int i, j;

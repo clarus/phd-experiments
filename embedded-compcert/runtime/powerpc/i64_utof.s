@@ -17,7 +17,7 @@
 #     * Neither the name of the <organization> nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,13 +36,13 @@
 
         .text
 
-### Conversion from unsigned long to single float	
+### Conversion from unsigned long to single float
 
         .balign 16
         .globl __i64_utof
 __i64_utof:
 	mflr r9
-   # Check whether X < 2^53	
+   # Check whether X < 2^53
         andis. r0, r3, 0xFFE0       # test bits 53...63 of X
         beq 1f
    # X is large enough that double rounding can occur.
@@ -54,11 +54,10 @@ __i64_utof:
    # bits 13-31 of r0 are 0
         or r4, r4, r0           # correct bit number 12 of X
         rlwinm r4, r4, 0, 0, 20 # set to 0 bits 0 to 11 of X
-   # Convert to double, then round to single	
+   # Convert to double, then round to single
 1:      bl __i64_utod
         mtlr r9
         frsp f1, f1
         blr
         .type __i64_utof, @function
         .size __i64_utof, .-__i64_utof
-	

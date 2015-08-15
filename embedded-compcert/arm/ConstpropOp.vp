@@ -10,7 +10,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-(** Static analysis and strength reduction for operators 
+(** Static analysis and strength reduction for operators
   and conditions.  This is the machine-dependent part of [Constprop]. *)
 
 Require Import Coqlib.
@@ -22,7 +22,7 @@ Require Import Registers.
 
 (** * Static analysis *)
 
-(** To each pseudo-register at each program point, the static analysis 
+(** To each pseudo-register at each program point, the static analysis
   associates a compile-time approximation taken from the following set. *)
 
 Inductive approx : Type :=
@@ -36,7 +36,6 @@ Inductive approx : Type :=
                          (** The value is the address of the given global
                              symbol plus the given integer offset. *)
   | S: int -> approx.    (** The value is the stack pointer plus the offset. *)
-
 
 (** We now define the abstract interpretations of conditions and operators
   over this set of approximations.  For instance, the abstract interpretation
@@ -170,7 +169,6 @@ Nondetfunction eval_static_addressing (addr: addressing) (vl: list approx) :=
   | _, _ => Unknown
   end.
 
-
 (** * Operator strength reduction *)
 
 (** We now define auxiliary functions for strength reduction of
@@ -180,7 +178,7 @@ Nondetfunction eval_static_addressing (addr: addressing) (vl: list approx) :=
 
 Section STRENGTH_REDUCTION.
 
-Nondetfunction cond_strength_reduction 
+Nondetfunction cond_strength_reduction
               (cond: condition) (args: list reg) (vl: list approx) :=
   match cond, args, vl with
   | Ccomp c, r1 :: r2 :: nil, I n1 :: v2 :: nil =>
@@ -211,7 +209,7 @@ Nondetfunction cond_strength_reduction
       if Float.eq_dec n2 Float.zero
       then (Cnotcompfzero c, r1 :: nil)
       else (cond, args)
-  | _, _, _ => 
+  | _, _, _ =>
       (cond, args)
   end.
 
@@ -284,7 +282,7 @@ Definition make_xorimm (n: int) (r: reg) :=
   else if Int.eq n Int.mone then (Onot, r :: nil)
   else (Oxorimm n, r :: nil).
 
-Nondetfunction op_strength_reduction 
+Nondetfunction op_strength_reduction
               (op: operation) (args: list reg) (vl: list approx) :=
   match op, args, vl with
   | Oadd, r1 :: r2 :: nil, I n1 :: v2 :: nil => make_addimm n1 r2
@@ -316,7 +314,6 @@ Nondetfunction op_strength_reduction
       let (c', args') := cond_strength_reduction c args vl in (Ocmp c', args')
   | _, _, _ => (op, args)
   end.
-
 
 Nondetfunction addr_strength_reduction
                 (addr: addressing) (args: list reg) (vl: list approx) :=

@@ -12,4 +12,3 @@ int f(int x)
 {
   return sizeof(vba_version[0].signature);
 }
-

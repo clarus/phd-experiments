@@ -339,7 +339,6 @@ int main(void)
   int *current,*temp;
   struct _play *tree;
 
-
   ncol = 7;
 #ifdef SMALL_PROBLEM_SIZE
   nrow = 7;

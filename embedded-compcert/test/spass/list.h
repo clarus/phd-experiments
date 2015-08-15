@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     LISTS                              * */
 /* *                                                        * */
-/* *  $Module:   LIST                                       * */ 
+/* *  $Module:   LIST                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000            * */
 /* *  MPI fuer Informatik                                   * */
@@ -41,7 +41,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -127,12 +126,12 @@ static __inline__ POINTER list_Third(LIST L)
   return list_Car(list_Cdr(list_Cdr(L)));
 }
 
-static __inline__ POINTER list_Fourth(LIST L) 
+static __inline__ POINTER list_Fourth(LIST L)
 {
   return(list_Third(list_Cdr(L)));
 }
 
-static __inline__ POINTER list_Fifth(LIST L) 
+static __inline__ POINTER list_Fifth(LIST L)
 {
   return(list_Fourth(list_Cdr(L)));
 }
@@ -152,7 +151,6 @@ static __inline__ void list_RplacSecond(LIST L, POINTER P)
   list_Rplaca(list_Cdr(L), P);
 }
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -167,7 +165,7 @@ void    list_Apply(void (*)(POINTER), LIST);
 LIST    list_Reverse(const LIST);
 LIST    list_NReverse(LIST);
 
-void    list_Split(LIST, LIST *, LIST *); 
+void    list_Split(LIST, LIST *, LIST *);
 LIST    list_PointerSort(LIST);
 LIST    list_Merge(LIST, LIST, BOOL (*)(POINTER, POINTER));
 LIST    list_MergeSort(LIST, BOOL (*)(POINTER, POINTER));
@@ -233,7 +231,6 @@ static __inline__ LIST list_Cons(POINTER Ptr, const LIST List)
   return Cell;
 }
 
-
 static __inline__ LIST list_Nconc(LIST List1, LIST List2)
 {
   LIST Result;
@@ -251,12 +248,10 @@ static __inline__ LIST list_Nconc(LIST List1, LIST List2)
   return Result;
 }
 
-
 static __inline__ LIST list_List(POINTER P)
 {
   return list_Cons(P,list_Nil());
 }
-
 
 static __inline__ LIST list_Append(LIST List1, LIST List2)
 {
@@ -273,7 +268,6 @@ static __inline__ LIST list_Append(LIST List1, LIST List2)
   List1->cdr = List2;
   return Result;
 }
-
 
 static __inline__ void list_Delete(LIST L)
 {
@@ -299,10 +293,9 @@ static __inline__ BOOL list_Member(LIST List, POINTER Element,
       return TRUE;
     List = list_Cdr(List);
   }
-  
+
   return FALSE;
 }
-
 
 static __inline__ BOOL list_PointerMember(LIST List, POINTER Element)
 /**************************************************************
@@ -315,7 +308,7 @@ static __inline__ BOOL list_PointerMember(LIST List, POINTER Element)
       return TRUE;
     List = list_Cdr(List);
   }
-  
+
   return FALSE;
 }
 
@@ -328,40 +321,34 @@ static __inline__ LIST list_StackBottom(void)
   return list_Nil();
 }
 
-
 static __inline__ BOOL list_StackEmpty(LIST S)
 {
   return list_Empty(S);
 }
-
 
 static __inline__ LIST list_Push(POINTER I, LIST L)
 {
   return list_Cons(I, L);
 }
 
-
 static __inline__ POINTER list_Top(LIST L)
 {
   return list_Car(L);
 }
 
-
 static __inline__ LIST list_Pop(LIST L)
 {
-  LIST Aux = L; 
+  LIST Aux = L;
 
   L = list_Cdr(L);
   list_Free(Aux);
   return L;
 }
 
-
 static __inline__ void list_RplacTop(LIST L, POINTER P)
 {
   list_Rplaca(L, P);
 }
-
 
 static __inline__ LIST list_StackFree(LIST L)
 {
@@ -369,7 +356,6 @@ static __inline__ LIST list_StackFree(LIST L)
     L = list_Pop(L);
   return list_Nil();
 }
-
 
 /**************************************************************/
 /* Pair Macros                                                */
@@ -380,24 +366,20 @@ static __inline__ LIST list_PairNull(void)
   return list_Nil();
 }
 
-
 static __inline__ LIST list_PairCreate(POINTER P1, POINTER P2)
 {
   return list_Cons(P1, P2);
 }
-
 
 static __inline__ void list_PairFree(LIST L)
 {
   list_Free(L);
 }
 
-
 static __inline__ POINTER list_PairFirst(LIST L)
 {
   return list_Car(L);
 }
-
 
 static __inline__ POINTER list_PairSecond(LIST L)
 {
@@ -424,10 +406,9 @@ static __inline__ void list_DeleteDistribution(LIST L)
 /* Assoc Lists                                                */
 /**************************************************************/
 
-
 static __inline__ LIST list_AssocCons(LIST L, POINTER Key, POINTER Value)
 {
   return list_Cons(list_PairCreate(Key, Value), L);
-} 
+}
 
 #endif

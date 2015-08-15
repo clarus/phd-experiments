@@ -59,7 +59,7 @@ let size_eos = function
 let rec size_stmt = function
   | Sskip -> 0
   | Sassign(id, a) -> size_expr a
-  | Sstore(chunk, addr, args, src) -> 1 + size_exprs args + size_expr src 
+  | Sstore(chunk, addr, args, src) -> 1 + size_exprs args + size_expr src
   | Scall(optid, sg, eos, args) ->
       3 + size_eos eos + size_exprs args + length_exprs args
   | Stailcall(sg, eos, args) ->
@@ -77,7 +77,7 @@ let rec size_stmt = function
   | Slabel(lbl, s) -> size_stmt s
   | Sgoto lbl -> 1
 
-let more_likely (c: condexpr) (ifso: stmt) (ifnot: stmt) = 
+let more_likely (c: condexpr) (ifso: stmt) (ifnot: stmt) =
   size_stmt ifso > size_stmt ifnot
 
 (* Compiling a switch table into a decision tree *)
@@ -124,7 +124,7 @@ let compile_switch_as_tree default tbl =
        let (key1, act1) = sw.(lo)
        and (key2, act2) = sw.(lo+1)
        and (key3, act3) = sw.(lo+2) in
-       CTifeq(key1, act1, 
+       CTifeq(key1, act1,
         CTifeq(key2, act2,
           if Integers.Int.sub maxval minval = coqint_of_camlint 2l
           then CTaction act3
@@ -149,7 +149,7 @@ let compile_switch_as_jumptable default cases minkey maxkey =
        let pos = Int64.to_int (Int64.sub (uint64_of_coqint key) minkey) in
        tbl.(pos) <- act)
     cases;
-  CTjumptable(coqint_of_camlint (Int64.to_int32 minkey), 
+  CTjumptable(coqint_of_camlint (Int64.to_int32 minkey),
               coqint_of_camlint (Int32.of_int tblsize),
               Array.to_list tbl,
               CTaction default)

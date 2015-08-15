@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                REDUCTION RULES                         * */
 /* *                                                        * */
-/* *  $Module:   REDRULES                                   * */ 
+/* *  $Module:   REDRULES                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _REDRULES_
@@ -65,7 +64,6 @@
 extern const NAT red_USABLE;
 extern const NAT red_WORKEDOFF;
 extern const NAT red_ALL;
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -91,9 +89,7 @@ static __inline__ BOOL red_AllMode(NAT Mode)
   return (Mode == red_ALL);
 }
 
-
-void   red_Init(void);        
-
+void   red_Init(void);
 
 LIST   red_CompleteReductionOnDerivedClauses(PROOFSEARCH, LIST, NAT, int, NAT, int*);
 CLAUSE red_ReductionOnDerivedClause(PROOFSEARCH, CLAUSE, NAT);
@@ -104,8 +100,6 @@ LIST   red_SatInput(PROOFSEARCH);
 LIST   red_ReduceInput(PROOFSEARCH, LIST);
 BOOL   red_ClauseDeletion(SORTTHEORY, CLAUSE, FLAGSTORE, PRECEDENCE);
 
-
 void   red_CheckSplitSubsumptionCondition(PROOFSEARCH);
-
 
 #endif

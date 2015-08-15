@@ -43,7 +43,6 @@
 
 #include "proofcheck.h"
 
-
 /* options */
 int        pcheck_Timelimit;
 const char *pcheck_ProofFileSuffix;
@@ -55,7 +54,6 @@ BOOL        pcheck_GenNamedCg, pcheck_GenRedCg;
 const char  *pcheck_CgName, *pcheck_RedCgName;
 GRAPHFORMAT pcheck_GraphFormat;
 
-
 static int pcheck_MaxSplitLevel(LIST Clauses)
 /**************************************************************
   INPUT:   A list of clauses.
@@ -64,19 +62,18 @@ static int pcheck_MaxSplitLevel(LIST Clauses)
 {
   int Max;
   int Act;
-  
+
   Max = 0;
   while (!list_Empty(Clauses)) {
     Act = clause_SplitLevel(list_Car(Clauses));
-    if (Act > Max) 
+    if (Act > Max)
       Max = Act;
     Clauses = list_Cdr(Clauses);
   }
   return Max;
 }
 
-
-static __inline__ int pcheck_MaxParentSplitLevel(CLAUSE Clause) 
+static __inline__ int pcheck_MaxParentSplitLevel(CLAUSE Clause)
 /**************************************************************
   INPUT:   A clause
   RETURNS: The max split level of the parent clauses
@@ -85,10 +82,9 @@ static __inline__ int pcheck_MaxParentSplitLevel(CLAUSE Clause)
   return pcheck_MaxSplitLevel(clause_ParentClauses(Clause));
 }
 
-
 static BOOL pcheck_ClauseIsFromLeftSplit(CLAUSE Clause)
 /**************************************************************
-  INPUT  : A Clause                                                      
+  INPUT  : A Clause
   RETURNS: TRUE iff the clause is the left half of a split
   CAUTION: This works also for clauses without parents, since
            pcheck_MaxParentSplitLevel returns 0 in that case.
@@ -96,7 +92,6 @@ static BOOL pcheck_ClauseIsFromLeftSplit(CLAUSE Clause)
 {
   return (clause_SplitLevel(Clause) > pcheck_MaxParentSplitLevel(Clause));
 }
-
 
 static BOOL pcheck_ClauseIsFromRightSplit(CLAUSE Clause)
 /**************************************************************
@@ -120,7 +115,6 @@ static BOOL pcheck_ClauseIsFromSplit(CLAUSE Clause)
 	  pcheck_ClauseIsFromLeftSplit(Clause));
 }
 
-
 static int pcheck_LabelToNumber(const char* Label)
 /**************************************************************
   INPUT:   A clause label
@@ -142,7 +136,6 @@ static int pcheck_LabelToNumber(const char* Label)
   return Number;
 }
 
-
 static int pcheck_CompareNumberAndClause(const void* Number, const void* ClausePtr)
 /**************************************************************
   INPUT:   A number and a pointer to a CLAUSE.
@@ -154,7 +147,6 @@ static int pcheck_CompareNumberAndClause(const void* Number, const void* ClauseP
 {
   return (int)Number - clause_Number(*(const CLAUSE*)ClausePtr);
 }
-
 
 static void pcheck_ParentNumbersToPointersInVector(CLAUSE* ClauseVector, int Size)
 /**************************************************************
@@ -172,30 +164,29 @@ static void pcheck_ParentNumbersToPointersInVector(CLAUSE* ClauseVector, int Siz
   LIST    ScanParents;
   int     ParentNum;
   CLAUSE* Parent;
-  
+
   for (Position = 0; Position < Size; Position++)  {
     OldParents = clause_ParentClauses(ClauseVector[Position]);
     NewParents = list_Copy(OldParents);
-    
-    for (ScanParents = NewParents; !list_Empty(ScanParents); ScanParents = list_Cdr(ScanParents)) {     
+
+    for (ScanParents = NewParents; !list_Empty(ScanParents); ScanParents = list_Cdr(ScanParents)) {
       ParentNum = (int)list_Car(ScanParents);
       /* Binary search for parent clause with number <ParentNum>. */
       Parent = bsearch((const void*)ParentNum, ClauseVector, Size,
 		       sizeof(CLAUSE), pcheck_CompareNumberAndClause);
       if (Parent != NULL)
-	list_Rplaca(ScanParents, *Parent);  
+	list_Rplaca(ScanParents, *Parent);
       else {
 	misc_StartUserErrorReport();
-	misc_UserErrorReport("\n Error: Missing parent clause %d of clause %d.\n", 
+	misc_UserErrorReport("\n Error: Missing parent clause %d of clause %d.\n",
 			     ParentNum, clause_Number(ClauseVector[Position]));
 	misc_FinishUserErrorReport();
       }
-    }    
+    }
     clause_SetParentClauses(ClauseVector[Position], NewParents);
-    list_Delete(OldParents); 
+    list_Delete(OldParents);
   }
 }
-
 
 static LIST pcheck_ForceParentNumbersToPointersInVector(CLAUSE* ClauseVector,
 							int Size)
@@ -221,13 +212,13 @@ static LIST pcheck_ForceParentNumbersToPointersInVector(CLAUSE* ClauseVector,
   Missing = list_Nil();
 
   for (Position = 0; Position < Size; Position++) {
-    clause_RemoveFlag(ClauseVector[Position], MARKED); 
+    clause_RemoveFlag(ClauseVector[Position], MARKED);
     clause_RemoveFlag(ClauseVector[Position], HIDDEN);
   }
 
   for (Position = 0; Position < Size; Position++)  {
     Clause = ClauseVector[Position];
-    if (!clause_GetFlag(Clause, MARKED)) { 
+    if (!clause_GetFlag(Clause, MARKED)) {
       clause_SetFlag(Clause, MARKED);
       Parents    = clause_ParentClauses(Clause);
       PLits      = clause_ParentLiterals(Clause);
@@ -241,7 +232,7 @@ static LIST pcheck_ForceParentNumbersToPointersInVector(CLAUSE* ClauseVector,
 	Parent = bsearch((const void*)ParentNum, ClauseVector, Size,
 			 sizeof(CLAUSE), pcheck_CompareNumberAndClause);
 	if (Parent == NULL) {
-	  Missing = list_Cons((POINTER)ParentNum, Missing); 
+	  Missing = list_Cons((POINTER)ParentNum, Missing);
 	  clause_SetFlag(Clause, HIDDEN);
 	} else {
 	  if (clause_GetFlag(*Parent, HIDDEN))
@@ -249,7 +240,7 @@ static LIST pcheck_ForceParentNumbersToPointersInVector(CLAUSE* ClauseVector,
 	  NewParents  = list_Cons((POINTER)*Parent, NewParents);
 	  NewPLits    = list_Cons((POINTER)PLitNum, NewPLits);
 	}
-	Parents = list_Cdr(Parents); 
+	Parents = list_Cdr(Parents);
 	PLits   = list_Cdr(PLits);
       }
       list_Delete(clause_ParentClauses(Clause));
@@ -260,10 +251,9 @@ static LIST pcheck_ForceParentNumbersToPointersInVector(CLAUSE* ClauseVector,
       clause_SetParentLiterals(Clause, NewPLits);
     } /* if clause is not marked */
   } /* for all clauses */
- 
+
   return Missing;
 }
-
 
 static int pcheck_CompareClauseNumber(const void* C1, const void* C2)
 /**************************************************************
@@ -278,11 +268,10 @@ static int pcheck_CompareClauseNumber(const void* C1, const void* C2)
   return clause_Number(*(const CLAUSE*)C1) - clause_Number(*(const CLAUSE*)C2);
 }
 
-
 static LIST pcheck_ConvertParentsInList(LIST List)
 /**************************************************************
   INPUT:   A list of clauses.
-  RETURNS: The list of missing parent clause numbers from the list 
+  RETURNS: The list of missing parent clause numbers from the list
   EFFECTS: Parent numbers are converted to pointers
 ***************************************************************/
 {
@@ -304,13 +293,12 @@ static LIST pcheck_ConvertParentsInList(LIST List)
 
   /* convert parent lists */
   Missing = pcheck_ForceParentNumbersToPointersInVector(ClauseVector, Size);
-  
+
   memory_Free(ClauseVector, sizeof(CLAUSE) * Size);
   return Missing;
 }
 
-
-LIST pcheck_ConvertParentsInSPASSProof(PROOFSEARCH Search, LIST EmptyClauses) 
+LIST pcheck_ConvertParentsInSPASSProof(PROOFSEARCH Search, LIST EmptyClauses)
 /**************************************************************
   INPUT  : A proofsearch object with clauses sorted by weight
            and an unsorted list <EmptyClauses>
@@ -319,21 +307,20 @@ LIST pcheck_ConvertParentsInSPASSProof(PROOFSEARCH Search, LIST EmptyClauses)
            in the clauses are replaced by parent pointers
 ***************************************************************/
 {
-  LIST    AllLists; 
+  LIST    AllLists;
   LIST    Missing;
 
   AllLists = list_Nconc(list_Copy(prfs_DocProofClauses(Search)),
 			list_Copy(EmptyClauses));
   AllLists = list_Nconc(list_Copy(prfs_UsableClauses(Search)), AllLists);
   AllLists = list_Nconc(list_Copy(prfs_WorkedOffClauses(Search)), AllLists);
-  
+
   AllLists = pcheck_ClauseNumberMergeSort(AllLists);
   Missing  = pcheck_ConvertParentsInList(AllLists);
   list_Delete(AllLists);
 
   return Missing;
 }
-
 
 static LIST pcheck_ParentNumbersToParents(LIST Proof)
 /**************************************************************
@@ -365,22 +352,21 @@ static LIST pcheck_ParentNumbersToParents(LIST Proof)
 
   /* sort the clauses in vector by increasing clause number */
   qsort(ClauseVector, ProofLength, sizeof(CLAUSE), pcheck_CompareClauseNumber);
- 
+
   /* convert parent lists */
   pcheck_ParentNumbersToPointersInVector(ClauseVector, ProofLength);
- 
+
   memory_Free(ClauseVector, ProofLength * sizeof(CLAUSE));
 
   return Proof;
 }
 
-
 LIST pcheck_ParentPointersToParentNumbers(LIST Clauses)
 /**************************************************************
- INPUT  : A list of clauses                                                      
+ INPUT  : A list of clauses
  RETURNS: The list with parent pointers replaced by
           parent numbers
- EFFECTS: Sets marks on all clauses.                            
+ EFFECTS: Sets marks on all clauses.
 ***************************************************************/
 {
   LIST ScanClauses;
@@ -392,13 +378,12 @@ LIST pcheck_ParentPointersToParentNumbers(LIST Clauses)
     if (!clause_GetFlag(list_Car(ScanClauses), MARKED)) {
       for (ScanParents = clause_ParentClauses(list_Car(ScanClauses)); !list_Empty(ScanParents);
 	   ScanParents = list_Cdr(ScanParents))
-	list_Rplaca(ScanParents, (POINTER)clause_Number(list_Car(ScanParents))); 
+	list_Rplaca(ScanParents, (POINTER)clause_Number(list_Car(ScanParents)));
       clause_SetFlag(list_Car(ScanClauses), MARKED);
     }
   }
   return Clauses;
 }
-
 
 LIST pcheck_ConvertTermListToClauseList(LIST ProofRest, FLAGSTORE Flags,
 					PRECEDENCE Precedence)
@@ -417,21 +402,21 @@ LIST pcheck_ConvertTermListToClauseList(LIST ProofRest, FLAGSTORE Flags,
   int     Level;
   int     ClauseNumber;
   LIST    ParentLabels;
-  LIST    ParentIds;     
+  LIST    ParentIds;
   LIST    ParentLits;    /* this is a dummy list; parent lits are not yet specified in a SPASS proof */
   RULE    Origin;
   char*   ClauseLabel;
 
   Clauses = list_Nil();  /* result */
 
-  while (!list_Empty(ProofRest)) {    
+  while (!list_Empty(ProofRest)) {
     /* break proof line into components */
     ProofLine     = list_Car(ProofRest);
-    
+
     ClauseLabel   = list_First(ProofLine);
-    ClauseTerm    = list_Second(ProofLine);    
+    ClauseTerm    = list_Second(ProofLine);
     /* replace by NULL clause, since dfg_CreateClauseFromTerm deletes clause ! */
-    list_Rplaca(list_Cdr(ProofLine), clause_Null()); 
+    list_Rplaca(list_Cdr(ProofLine), clause_Null());
     ParentLabels  = (LIST)list_Third(ProofLine);
     Level         = (int)list_Fourth(ProofLine);
     Origin        = (RULE)list_Fifth(ProofLine);
@@ -446,11 +431,11 @@ LIST pcheck_ConvertTermListToClauseList(LIST ProofRest, FLAGSTORE Flags,
     ParentLits   = list_Nil();
 
     while (!list_Empty(ParentLabels)) {
-      ParentIds  = list_Cons((POINTER)pcheck_LabelToNumber(list_Car(ParentLabels)), ParentIds); 
+      ParentIds  = list_Cons((POINTER)pcheck_LabelToNumber(list_Car(ParentLabels)), ParentIds);
       ParentLits = list_Cons(0, ParentLits);
       ParentLabels   = list_Cdr(ParentLabels);
     }
-    
+
     /* set all data */
     clause_SetNumber(Clause, ClauseNumber);
     ParentIds = list_NReverse(ParentIds);
@@ -458,25 +443,24 @@ LIST pcheck_ConvertTermListToClauseList(LIST ProofRest, FLAGSTORE Flags,
     clause_SetParentLiterals(Clause, ParentLits);
     Clause->origin = Origin;
 
-    clause_SetSplitLevel(Clause, Level); 
+    clause_SetSplitLevel(Clause, Level);
     if (Level > 0) {
       clause_ClearSplitField(Clause);
       clause_SetSplitFieldBit(Clause, Level);
-    } else 
+    } else
       clause_SetSplitField(Clause, (SPLITFIELD)NULL,0);
 
     clause_RemoveFlag(Clause, MARKED);
     Clauses   = list_Cons(Clause, Clauses);
-    ProofRest = list_Cdr(ProofRest);  
+    ProofRest = list_Cdr(ProofRest);
   }
   Clauses = list_NReverse(Clauses);
-  
+
   /* convert parent numbers to pointers */
   Clauses = pcheck_ParentNumbersToParents(Clauses);
-  
+
   return Clauses;
 }
-
 
 static BOOL pcheck_ClauseIsUnmarked(CLAUSE C)
 /**************************************************************
@@ -486,7 +470,6 @@ static BOOL pcheck_ClauseIsUnmarked(CLAUSE C)
 {
   return !clause_GetFlag(C, MARKED);
 }
-
 
 static void pcheck_RemoveUnmarkedFromTableau(TABLEAU T)
 /**************************************************************
@@ -498,14 +481,13 @@ static void pcheck_RemoveUnmarkedFromTableau(TABLEAU T)
 {
   if (tab_IsEmpty(T))
     return;
-  
+
   tab_SetClauses(T, list_DeleteElementIf(tab_Clauses(T),
 					 (BOOL (*)(POINTER))pcheck_ClauseIsUnmarked));
-  
+
   pcheck_RemoveUnmarkedFromTableau(tab_LeftBranch(T));
   pcheck_RemoveUnmarkedFromTableau(tab_RightBranch(T));
 }
-
 
 static void pcheck_CollectUnmarkedSplits(TABLEAU T, LIST* Splits)
 /**************************************************************
@@ -521,14 +503,13 @@ static void pcheck_CollectUnmarkedSplits(TABLEAU T, LIST* Splits)
     return;
 
   for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)) {
-    if (!clause_GetFlag(list_Car(Scan), MARKED) && clause_IsFromSplitting(list_Car(Scan))) 
+    if (!clause_GetFlag(list_Car(Scan), MARKED) && clause_IsFromSplitting(list_Car(Scan)))
       (*Splits) = list_Cons(list_Car(Scan), *Splits);
   }
-  
+
   pcheck_CollectUnmarkedSplits(tab_LeftBranch(T), Splits);
   pcheck_CollectUnmarkedSplits(tab_RightBranch(T), Splits);
 }
-
 
 /* EK: unused, only recursive */
 static void pcheck_TableauSplitsComplete(TABLEAU T)
@@ -541,25 +522,24 @@ static void pcheck_TableauSplitsComplete(TABLEAU T)
 {
   if (tab_IsEmpty(T))
     return;
-  
+
   if (tab_RightBranchIsEmpty(T) && !tab_LeftBranchIsEmpty(T)) {
     misc_StartUserErrorReport();
-    misc_UserErrorReport("\n Error: Split of clause %d has no right branch.\n", 
+    misc_UserErrorReport("\n Error: Split of clause %d has no right branch.\n",
 			 clause_Number(tab_SplitClause(T)));
     misc_FinishUserErrorReport();
   }
- 
+
   if (!tab_RightBranchIsEmpty(T) && tab_LeftBranchIsEmpty(T)) {
     misc_StartUserErrorReport();
-    misc_UserErrorReport("\n Error: Split of clause %d has no left branch.\n", 
+    misc_UserErrorReport("\n Error: Split of clause %d has no left branch.\n",
 			 clause_Number(tab_SplitClause(T)));
     misc_FinishUserErrorReport();
   }
-  
+
   pcheck_TableauSplitsComplete(tab_LeftBranch(T));
   pcheck_TableauSplitsComplete(tab_RightBranch(T));
 }
-
 
 static void pcheck_RightSplitParents(CLAUSE SplitClause, CLAUSE RightSplitClause,
 				     CLAUSE LeftSplitClause)
@@ -578,13 +558,13 @@ static void pcheck_RightSplitParents(CLAUSE SplitClause, CLAUSE RightSplitClause
        !list_Empty(Scan); Scan = list_Cdr(Scan)) {
     if (clause_IsEmptyClause(list_Car(Scan)))
       HasEmpty = TRUE;
-    if (clause_Number(list_Car(Scan)) == clause_Number(SplitClause)) 
-      ContainsSplitClause = TRUE; 
+    if (clause_Number(list_Car(Scan)) == clause_Number(SplitClause))
+      ContainsSplitClause = TRUE;
   }
-  
+
   if (!HasEmpty) {
     misc_StartUserErrorReport();
-    misc_UserErrorReport("\n Error: Right split clause %d has no empty clause as parent.\n", 
+    misc_UserErrorReport("\n Error: Right split clause %d has no empty clause as parent.\n",
 			 clause_Number(SplitClause));
     misc_FinishUserErrorReport();
   }
@@ -596,8 +576,6 @@ static void pcheck_RightSplitParents(CLAUSE SplitClause, CLAUSE RightSplitClause
     misc_FinishUserErrorReport();
   }
 }
-
-
 
 /* EK: unused, only recursive */
 static void pcheck_SplitFormats(TABLEAU T)
@@ -623,11 +601,10 @@ static void pcheck_SplitFormats(TABLEAU T)
     pcheck_RightSplitParents(tab_SplitClause(T), list_Car(Scan),
 			     tab_LeftSplitClause(T));
   }
-    
+
   pcheck_SplitFormats(tab_RightBranch(T));
   pcheck_SplitFormats(tab_LeftBranch(T));
 }
-
 
 static void pcheck_SplitLevels(TABLEAU T)
 /**************************************************************
@@ -651,7 +628,7 @@ static void pcheck_SplitLevels(TABLEAU T)
     Clause = list_Car(Scan);
     if (!list_Empty(clause_ParentClauses(Clause))
 	&& !clause_IsFromSplitting(Clause)) {
- 
+
      CorrectLevel = pcheck_MaxParentSplitLevel(Clause);
      if (clause_SplitLevel(Clause) != CorrectLevel) {
        misc_StartUserErrorReport();
@@ -666,7 +643,6 @@ static void pcheck_SplitLevels(TABLEAU T)
   pcheck_SplitLevels(tab_LeftBranch(T));
 }
 
-
 /* EK: unused, only recursive */
 static void pcheck_SplitPrecheck(TABLEAU T)
 /**************************************************************
@@ -679,11 +655,11 @@ static void pcheck_SplitPrecheck(TABLEAU T)
 {
   if (tab_IsEmpty(T))
     return;
-  
+
   if (!subs_Subsumes(tab_LeftSplitClause(T), tab_SplitClause(T), -1, -1)) {
     misc_StartUserErrorReport();
     misc_UserErrorReport("\n Error: Incorrect split of %d,", tab_SplitClause(T));
-    misc_UserErrorReport(" left half of split does not subsume splitted clause.\n");			 
+    misc_UserErrorReport(" left half of split does not subsume splitted clause.\n");
     misc_FinishUserErrorReport();
   }
 
@@ -698,7 +674,6 @@ static void pcheck_SplitPrecheck(TABLEAU T)
   pcheck_SplitPrecheck(tab_LeftBranch(T));
   pcheck_SplitPrecheck(tab_RightBranch(T));
 }
-
 
 BOOL pcheck_BuildTableauFromProof(LIST Proof, TABLEAU* Tableau)
 /**************************************************************
@@ -731,7 +706,7 @@ BOOL pcheck_BuildTableauFromProof(LIST Proof, TABLEAU* Tableau)
 
     SplitLevel  = tab_PathLength(Path);
     Clause      = list_Car(ProofRest);
-    ClauseLevel = clause_SplitLevel(Clause); 
+    ClauseLevel = clause_SplitLevel(Clause);
 
     /* Special treatment for clauses that result from a splitting step */
     if (pcheck_ClauseIsFromSplit(Clause)) {
@@ -755,7 +730,7 @@ BOOL pcheck_BuildTableauFromProof(LIST Proof, TABLEAU* Tableau)
 	/* Left branch of a splitting step */
 	if (!tab_LeftBranchIsEmpty(SplitPos)) {
 	  misc_StartUserErrorReport();
-	  misc_UserErrorReport("\n Error: Multiple left splits for clause %d.\n", 
+	  misc_UserErrorReport("\n Error: Multiple left splits for clause %d.\n",
 			       clause_Number(tab_SplitClause(SplitPos)));
 	  misc_FinishUserErrorReport();
 	}
@@ -767,10 +742,10 @@ BOOL pcheck_BuildTableauFromProof(LIST Proof, TABLEAU* Tableau)
       } else {
 	/* Right branch of a splitting step */
 	if (tab_RightBranchIsEmpty(SplitPos)) {
-	  
+
 	  if (tab_LeftBranchIsEmpty(SplitPos)) {
 	    misc_StartUserErrorReport();
-	    misc_UserErrorReport("\n Error: Right split with incorrect split level, clause %d.\n", 
+	    misc_UserErrorReport("\n Error: Right split with incorrect split level, clause %d.\n",
 				 clause_Number(Clause));
 	    misc_FinishUserErrorReport();
 	  }
@@ -778,27 +753,25 @@ BOOL pcheck_BuildTableauFromProof(LIST Proof, TABLEAU* Tableau)
 	  Path = tab_PathPrefix(ClauseLevel-1, Path);
 	  tab_AddSplitAtCursor(Path, FALSE);
 	}
-	tab_AddRightSplitClause(SplitPos, Clause); 
+	tab_AddRightSplitClause(SplitPos, Clause);
       } /* clause from right split */
     } /* clause from split */
-      
+
     if (ClauseLevel > tab_PathLength(Path)) {
       misc_StartUserErrorReport();
-      misc_UserErrorReport("\n Error: Split level of clause %d greater than current level.\n", 
+      misc_UserErrorReport("\n Error: Split level of clause %d greater than current level.\n",
 			   clause_Number(Clause));
       misc_FinishUserErrorReport();
     }
-    tab_AddClauseOnItsLevel(Clause, Path); 
-    
-    ProofRest = list_Cdr(ProofRest);   
-  } /* while proof is not empty */
+    tab_AddClauseOnItsLevel(Clause, Path);
 
+    ProofRest = list_Cdr(ProofRest);
+  } /* while proof is not empty */
 
   tab_PathDelete(Path);
 
   return TRUE;
 }
-
 
 static BOOL pcheck_TableauJustificationsRec(TABLEAU T, TABPATH Path)
 /**************************************************************
@@ -817,7 +790,7 @@ static BOOL pcheck_TableauJustificationsRec(TABLEAU T, TABPATH Path)
   if (tab_IsEmpty(T))
     return TRUE;
 
-  Ok = TRUE; 
+  Ok = TRUE;
 
   /* for each clause, check that its parents have been justified */
 
@@ -826,38 +799,37 @@ static BOOL pcheck_TableauJustificationsRec(TABLEAU T, TABPATH Path)
 
     Clause  = list_Car(ScanClauses);
     Parents = clause_ParentClauses(Clause);
-    
-    RightSplit = pcheck_ClauseIsFromRightSplit(Clause); 
-    
+
+    RightSplit = pcheck_ClauseIsFromRightSplit(Clause);
+
     /* check all parents */
-    
-    for (ScanParents = Parents; !list_Empty(ScanParents); 
+
+    for (ScanParents = Parents; !list_Empty(ScanParents);
 	 ScanParents = list_Cdr(ScanParents)) {
-      
+
       Parent = list_Car(ScanParents);
-      
+
       if ((!(RightSplit && clause_IsEmptyClause(Parent)) &&
 	  !(RightSplit && pcheck_ClauseIsFromLeftSplit(Parent))) ||
 	  (clause_Number(Parent) > clause_Number(Clause)) ) {
 	if (!tab_PathContainsClause(Path, Parent)) {
 	  misc_StartUserErrorReport();
-	  misc_UserErrorReport("\n Error: Parent clause with number %d is not yet justified.\n", 
+	  misc_UserErrorReport("\n Error: Parent clause with number %d is not yet justified.\n",
 			       clause_Number(Parent));
 	  misc_FinishUserErrorReport();
 	}
       }
     }
   }  /* for all clauses in current node */
-  
-  
+
   /* Recursion */
-  
+
   if (!tab_LeftBranchIsEmpty(T)) {
     Path = tab_PathPush(tab_LeftBranch(T), Path);
     Ok   = Ok && pcheck_TableauJustificationsRec(tab_LeftBranch(T), Path);
     Path = tab_PathPop(Path);
   }
-  
+
   if (!tab_RightBranchIsEmpty(T)) {
     Path = tab_PathPush(tab_RightBranch(T), Path);
     Ok   = Ok && pcheck_TableauJustificationsRec(tab_RightBranch(T), Path);
@@ -879,16 +851,16 @@ static BOOL pcheck_TableauJustifications(TABLEAU T)
   BOOL    Ok;
 
   Path = tab_PathCreate(tab_Depth(T),T);
-  Ok   = pcheck_TableauJustificationsRec(T,Path); 
+  Ok   = pcheck_TableauJustificationsRec(T,Path);
   tab_PathDelete(Path);
-  
+
   return Ok;
 }
 
 BOOL pcheck_TableauProof(TABLEAU* Tableau, LIST Proof)
 /**************************************************************
-  INPUT: 
-  RETURNS:                                                      
+  INPUT:
+  RETURNS:
 ***************************************************************/
 {
   LIST RedundantClauses;
@@ -897,9 +869,9 @@ BOOL pcheck_TableauProof(TABLEAU* Tableau, LIST Proof)
 
   tab_LabelNodes(*Tableau);
   /* print out current tableau */
-  if (pcheck_GenNamedCg) 
+  if (pcheck_GenNamedCg)
     tab_WriteTableau(*Tableau, pcheck_CgName, pcheck_GraphFormat);
-  
+
   RedundantClauses = list_Nil();
   if (!pcheck_Quiet) {
     fputs("pruning closed branches...", stdout);
@@ -916,7 +888,7 @@ BOOL pcheck_TableauProof(TABLEAU* Tableau, LIST Proof)
   (*Tableau) = tab_RemoveIncompleteSplits(*Tableau, &RedundantClauses);  /* reduce open node redundancies */
   if (!pcheck_Quiet)
     puts("finished.");
-  
+
   list_Delete(RedundantClauses);
 
   /* remove all clauses that are not needed for the empty clauses */
@@ -929,12 +901,12 @@ BOOL pcheck_TableauProof(TABLEAU* Tableau, LIST Proof)
   UnmarkedSplits = list_Nil();
   pcheck_CollectUnmarkedSplits(*Tableau, &UnmarkedSplits);
   pcheck_MarkRecursive(UnmarkedSplits);
-  pcheck_RemoveUnmarkedFromTableau(*Tableau); 
+  pcheck_RemoveUnmarkedFromTableau(*Tableau);
   list_Delete(UnmarkedSplits);
   list_Delete(EmptyClauses);
 
   /* print reduced graph */
-  if (pcheck_GenRedCg) 
+  if (pcheck_GenRedCg)
     tab_WriteTableau(*Tableau, pcheck_RedCgName, pcheck_GraphFormat);
 
   tab_SetSplitLevels(*Tableau);
@@ -942,7 +914,7 @@ BOOL pcheck_TableauProof(TABLEAU* Tableau, LIST Proof)
   tab_CheckEmpties(*Tableau);
 
  if (!tab_IsClosed(*Tableau)) {
-    puts("\nerror: tableau is not closed.");  
+    puts("\nerror: tableau is not closed.");
     return FALSE;
  }
 
@@ -955,15 +927,14 @@ BOOL pcheck_TableauProof(TABLEAU* Tableau, LIST Proof)
     return FALSE;
   if (!pcheck_Quiet)
     puts("finished.");
- 
+
   return TRUE;
 }
 
-
 void pcheck_MarkRecursive(LIST Clauses)
 /**************************************************************
-  INPUT:   A list of clauses 
-  RETURNS: Nothing.                                                      
+  INPUT:   A list of clauses
+  RETURNS: Nothing.
   EFFECTS: Marks all <Clauses> and its ancestors with the
            MARKED clause flag.
 ***************************************************************/
@@ -973,12 +944,11 @@ void pcheck_MarkRecursive(LIST Clauses)
   for (; !list_Empty(Clauses); Clauses = list_Cdr(Clauses)) {
     Clause = list_Car(Clauses);
     if (!clause_GetFlag(Clause, MARKED)) {
-      pcheck_MarkRecursive(clause_ParentClauses(Clause)); 
+      pcheck_MarkRecursive(clause_ParentClauses(Clause));
       clause_SetFlag(Clause, MARKED);
     }
   }
 }
-
 
 static LIST pcheck_CollectTermVariables(TERM Term)
 /**************************************************************
@@ -996,7 +966,6 @@ static LIST pcheck_CollectTermVariables(TERM Term)
 
   return Result;
 }
-
 
 static BOOL pcheck_IsRightSplitHalf(CLAUSE C)
 /**************************************************************
@@ -1021,7 +990,6 @@ static BOOL pcheck_IsRightSplitHalf(CLAUSE C)
   return Ok;
 }
 
-
 static TERM pcheck_UnivClosure(TERM T)
 /**************************************************************
   INPUT:   A term, representing a formula.
@@ -1032,12 +1000,11 @@ static TERM pcheck_UnivClosure(TERM T)
   LIST Vars;
 
   Vars = pcheck_CollectTermVariables(T);
-  
+
   if (list_Empty(Vars))
     return T;
   return fol_CreateQuantifier(fol_All(), Vars, list_List(T));
 }
-
 
 static TERM pcheck_ClauseToTerm(CLAUSE Clause)
 /**************************************************************
@@ -1060,7 +1027,7 @@ static TERM pcheck_ClauseToTerm(CLAUSE Clause)
 
   if (list_Empty(Args))
     Args = list_List(term_Create(fol_False(), list_Nil()));
-  
+
   /* Build the disjunction of the literals */
   if (list_Empty(list_Cdr(Args))) {   /* only one arg */
     ClauseTerm = list_Car(Args);
@@ -1071,7 +1038,6 @@ static TERM pcheck_ClauseToTerm(CLAUSE Clause)
 
   return ClauseTerm;
 }
-
 
 static LIST pcheck_ClauseListToTermList(LIST Clauses)
 /**************************************************************
@@ -1084,10 +1050,9 @@ static LIST pcheck_ClauseListToTermList(LIST Clauses)
   Terms = list_Nil();
   for (; !list_Empty(Clauses); Clauses = list_Cdr(Clauses))
     Terms = list_Cons(pcheck_ClauseToTerm(list_Car(Clauses)), Terms);
-  
+
   return Terms;
 }
-
 
 static void pcheck_SaveNumberedDFGProblem(int Number, LIST Axioms,
 					  LIST Conjectures,
@@ -1108,7 +1073,7 @@ static void pcheck_SaveNumberedDFGProblem(int Number, LIST Axioms,
   NumStr   = string_IntToString(Number);
   Tmp      = pcheck_GenericFilename(ProofFileName, NumStr);
   Filename = string_Conc(DestPrefix, Tmp);
-    
+
   File = misc_OpenFile(Filename, "w");
   fol_FPrintDFGProblem(File, "{*Sub Proof*}", "{* Proof Checker *}",
 		       "unsatisfiable",
@@ -1120,7 +1085,6 @@ static void pcheck_SaveNumberedDFGProblem(int Number, LIST Axioms,
   string_StringFree(Tmp);
   string_StringFree(Filename);
 }
-
 
 static void pcheck_SplitToProblems(TABLEAU T, const char* ProofFileName,
 				   const char* DestPrefix)
@@ -1151,7 +1115,7 @@ static void pcheck_SplitToProblems(TABLEAU T, const char* ProofFileName,
 
   SplitClauseTerm = pcheck_ClauseToTerm(tab_SplitClause(T));
   LeftClauseTerm  = pcheck_ClauseToTerm(tab_LeftSplitClause(T));
-  
+
   /* by default, take all right split clauses as negations       */
   /* if the first clause is the second half of a split clause,   */
   /* take only the rest of the right split clauses as negations. */
@@ -1166,12 +1130,12 @@ static void pcheck_SplitToProblems(TABLEAU T, const char* ProofFileName,
     Disj  = term_Create(fol_Or(), list_Cons(LeftClauseTerm, list_List(RightClauseTerm)));
     Equiv = term_Create(fol_Equiv(), list_Cons(SplitClauseTerm, list_List(Disj)));
     Conj  = list_List(Equiv);
-    
+
     pcheck_SaveNumberedDFGProblem(clause_Number(tab_LeftSplitClause(T)),
 				  list_Nil(), Conj, ProofFileName, DestPrefix);
     term_DeleteTermList(Conj);
   }
-  
+
   Args = list_Nil();
 
   /* build conjunction of negations, if there are any. */
@@ -1187,15 +1151,14 @@ static void pcheck_SplitToProblems(TABLEAU T, const char* ProofFileName,
     Tmp   = term_Create(fol_Not(), list_List(Tmp));
     Equiv = term_Create(fol_Implies(),list_Cons(Tmp,list_List(LeftClauseTerm)));
     Conj  = list_List(Equiv);
-    
+
     /* problem id is number of right part of split clause, if it exists,
        number of first negation otherwise */
-    pcheck_SaveNumberedDFGProblem(clause_Number(list_Car(tab_RightSplitClauses(T))), 
+    pcheck_SaveNumberedDFGProblem(clause_Number(list_Car(tab_RightSplitClauses(T))),
 				  list_Nil(), Conj, ProofFileName, DestPrefix);
     term_DeleteTermList(Conj);
   }
 }
-
 
 void pcheck_TableauToProofTask(TABLEAU T, const char* ProofFileName,
 			       const char* DestPrefix)
@@ -1217,7 +1180,7 @@ void pcheck_TableauToProofTask(TABLEAU T, const char* ProofFileName,
   /* treat the splitting clauses at inner nodes of the tableau tree */
   if (!tab_IsLeaf(T))
     pcheck_SplitToProblems(T, ProofFileName, DestPrefix);
- 
+
   /* treat derived clauses that don't result from splitting */
   for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)) {
     Clause = list_Car(Scan);
@@ -1235,29 +1198,27 @@ void pcheck_TableauToProofTask(TABLEAU T, const char* ProofFileName,
       term_DeleteTermList(Conj);
     }
   }
-  
+
   /* recursion */
   pcheck_TableauToProofTask(tab_RightBranch(T), ProofFileName, DestPrefix);
   pcheck_TableauToProofTask(tab_LeftBranch(T), ProofFileName, DestPrefix);
 }
 
-
 int pcheck_SeqProofDepth(LIST Proof)
 /**************************************************************
   INPUT  : A sequential proof (list of clauses)
   RETURNS: The maximum clause depth in the proof
-***************************************************************/ 
+***************************************************************/
 {
   int Max;
 
   Max = 0;
-  for ( ; !list_Empty(Proof); Proof = list_Cdr(Proof)) 
+  for ( ; !list_Empty(Proof); Proof = list_Cdr(Proof))
     if (clause_Depth(list_Car(Proof)) > Max)
       Max = clause_Depth(list_Car(Proof));
-  
+
   return Max;
 }
-
 
 LIST pcheck_ReduceSPASSProof(LIST Proof)
 /**************************************************************
@@ -1266,7 +1227,7 @@ LIST pcheck_ReduceSPASSProof(LIST Proof)
   RETURNS: A list of clauses were incomplete splits
            and closed branches with descendants have been
 	   removed.
-***************************************************************/  
+***************************************************************/
 {
   LIST    EmptyClauses, RedundantClauses;
   LIST    ReducedProof;
@@ -1283,10 +1244,10 @@ LIST pcheck_ReduceSPASSProof(LIST Proof)
   Tableau = tab_PruneClosedBranches(Tableau, &RedundantClauses);
   Tableau = tab_RemoveIncompleteSplits(Tableau, &RedundantClauses);
   list_Delete(RedundantClauses);
-  
+
   tab_SetSplitLevels(Tableau);
-  
-  /* 
+
+  /*
    *  get minimal proof: First find earliest derived empty clauses,
    *  then recursively mark ancestors of these clauses. Put
    *  only marked clauses in <ReducedProof>.
@@ -1299,19 +1260,18 @@ LIST pcheck_ReduceSPASSProof(LIST Proof)
   UnmarkedSplits = list_Nil();
   pcheck_CollectUnmarkedSplits(Tableau, &UnmarkedSplits);
   pcheck_MarkRecursive(UnmarkedSplits);
-  pcheck_RemoveUnmarkedFromTableau(Tableau); 
+  pcheck_RemoveUnmarkedFromTableau(Tableau);
   list_Delete(UnmarkedSplits);
 
-  ReducedProof = list_Nil(); 
+  ReducedProof = list_Nil();
   tab_ToClauseList(Tableau, &ReducedProof);
   ReducedProof = pcheck_ClauseNumberMergeSort(ReducedProof);
 
   tab_Delete(Tableau);
-  list_Delete(EmptyClauses); 
+  list_Delete(EmptyClauses);
 
   return ReducedProof;
 }
-
 
 void pcheck_DeleteProof(LIST Proof)
 /**************************************************************
@@ -1321,28 +1281,27 @@ void pcheck_DeleteProof(LIST Proof)
 **************************************************************/
 {
   LIST Line, Scan2, Scan1;
-  
+
   Scan1 = Proof;
   while (!list_Empty(Scan1)) {
     Line = list_Car(Scan1);
-    
+
     string_StringFree(list_Car(Line));
     if (list_Second(Line) != clause_Null())                /* clause */
       term_Delete(list_Second(Line));
 
     /* delete labels in justification list and list itself */
 
-    for (Scan2 = list_Third(Line); !list_Empty(Scan2); Scan2 = list_Cdr(Scan2)) 
+    for (Scan2 = list_Third(Line); !list_Empty(Scan2); Scan2 = list_Cdr(Scan2))
       string_StringFree(list_Car(Scan2));
-    list_Delete(list_Third(Line));     
+    list_Delete(list_Third(Line));
 
     /* now contents of line are deleted. Delete line. */
-    list_Delete(Line);     
+    list_Delete(Line);
     Scan1 = list_Cdr(Scan1);
   }
   list_Delete(Proof);
 }
-
 
 char* pcheck_GenericFilename(const char* Filename, const char* Id)
 /**************************************************************
@@ -1351,14 +1310,14 @@ char* pcheck_GenericFilename(const char* Filename, const char* Id)
            (Filename = name.ext -> name_<Id>.prf)
   EFFECTS: Memory is allocated for the returned string.
 **************************************************************/
-{	
+{
   char *Help1, *Help2;
   int  i;
 
-  Help1 = string_Conc("_", Id); 
-  Help2 = string_Conc(Help1, pcheck_ProofFileSuffix); 
+  Help1 = string_Conc("_", Id);
+  Help2 = string_Conc(Help1, pcheck_ProofFileSuffix);
   string_StringFree(Help1);
-  
+
   /* remove filename extension */
   for (i = 0; Filename[i] != '.' && i < strlen(Filename); i++)
     /* empty */;
@@ -1367,7 +1326,6 @@ char* pcheck_GenericFilename(const char* Filename, const char* Id)
   return string_Nconc(Help1, Help2);  /* Help1 and Help2 are freed, too */
 }
 
-
 void pcheck_ClauseListRemoveFlag(LIST Clauses, CLAUSE_FLAGS Flag)
 /**************************************************************
   INPUT:   A list of clauses and a clause flag
@@ -1375,14 +1333,13 @@ void pcheck_ClauseListRemoveFlag(LIST Clauses, CLAUSE_FLAGS Flag)
   EFFECTS: Removes the <Flag> in all clauses in the list
 **************************************************************/
 {
-  for (; !list_Empty(Clauses); Clauses = list_Cdr(Clauses)) 
+  for (; !list_Empty(Clauses); Clauses = list_Cdr(Clauses))
     clause_RemoveFlag(list_Car(Clauses), Flag);
 }
 
-
 LIST pcheck_ClauseNumberMergeSort(LIST L)
 /**************************************************************
-  INPUT:   A list of clauses  
+  INPUT:   A list of clauses
   RETURNS: The sorted list: clause_Number(L[i]) < clause_Number(L[i+1])
   EFFECTS: Destructive
 ***************************************************************/

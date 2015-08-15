@@ -185,7 +185,7 @@ Nondetfunction mul (e1: expr) (e2: expr) :=
 
 (** ** Bitwise and, or, xor *)
 
-Nondetfunction andimm (n1: int) (e2: expr) := 
+Nondetfunction andimm (n1: int) (e2: expr) :=
   if Int.eq n1 Int.zero then Eop (Ointconst Int.zero) Enil else
   if Int.eq n1 Int.mone then e2 else
   match e2 with
@@ -342,14 +342,14 @@ Nondetfunction compimm (default: comparison -> int -> condition)
         Eop (Ocmp (negate_condition c)) el
       else if Int.eq_dec n2 Int.one then
         Eop (Ocmp c) el
-      else 
+      else
         Eop (Ointconst Int.zero) Enil
   | Cne, Eop (Ocmp c) el =>
       if Int.eq_dec n2 Int.zero then
         Eop (Ocmp c) el
       else if Int.eq_dec n2 Int.one then
         Eop (Ocmp (negate_condition c)) el
-      else 
+      else
         Eop (Ointconst Int.one) Enil
   | _, _ =>
        Eop (Ocmp (default c n2)) (e1 ::: Enil)
@@ -444,4 +444,3 @@ Nondetfunction addressing (chunk: memory_chunk) (e: expr) :=
       else (Aindexed Int.zero, Eop Oadd (e1:::e2:::Enil) ::: Enil)
   | _ => (Aindexed Int.zero, e:::Enil)
   end.
-

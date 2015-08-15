@@ -50,8 +50,8 @@ let referenced_instr = function
   | Pstb(_, c, _)
   | Pstfd(_, c, _)
   | Pstfs(_, c, _)
-  | Psth(_, c, _) 
-  | Pstw(_, c, _) 
+  | Psth(_, c, _)
+  | Pstw(_, c, _)
   | Psubfic(_, _, c)
   | Pxori(_, _, c)
   | Pxoris(_, _, c) -> referenced_constant c

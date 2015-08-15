@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                   RENAMING                             * */
 /* *                                                        * */
-/* *  $Module:   RENAMING                                   * */ 
+/* *  $Module:   RENAMING                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -41,7 +41,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -84,17 +83,16 @@ static BOOL ren_RootDistanceSmaller(RENAMING Ren1, RENAMING Ren2)
   return term_RootDistanceSmaller(ren_Hit(Ren1), ren_Hit(Ren2));
 }
 
-
 static void ren_ResetTermStamp(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: void.
-  EFFECT:  The Term stamp of term as well as the stamps of 
+  EFFECT:  The Term stamp of term as well as the stamps of
            all its subterms (up to atom level) are reset.
 ***********************************************************/
 {
   SYMBOL Top;
- 
+
   term_ResetTermStamp(Term);
   Top = term_TopSymbol(Term);
 
@@ -104,7 +102,7 @@ static void ren_ResetTermStamp(TERM Term)
     else {
       LIST Scan;
       for (Scan=term_ArgumentList(Term);!list_Empty(Scan);Scan=list_Cdr(Scan))
-	ren_ResetTermStamp(list_Car(Scan)); 
+	ren_ResetTermStamp(list_Car(Scan));
     }
   }
 }
@@ -131,14 +129,13 @@ static BOOL ren_HasNEquivFathers(TERM Term1, TERM Term2, NAT n)
   return FALSE;
 }
 
-
 static BOOL ren_PExtraFactorOk(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: TRUE if transforming the term <Term> in positive polarity context
            results in more than two clauses.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
   TERM   T1, T2;
   BOOL   Ok;
@@ -148,7 +145,7 @@ static BOOL ren_PExtraFactorOk(TERM Term)
     return FALSE;
 
   Top = term_TopSymbol(Term);
-  
+
   if (fol_IsQuantifier(Top))
     return ren_PExtraFactorOk(term_SecondArgument(Term));
 
@@ -194,7 +191,7 @@ static BOOL ren_PFactorOk(TERM Term)
   RETURNS: TRUE if transforming the term <Term> in positive polarity context
            results in more than one clause.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
 
   /* if <Term> has the stamp, it will be renamed */
@@ -202,7 +199,7 @@ static BOOL ren_PFactorOk(TERM Term)
     return FALSE;
 
   Top = term_TopSymbol(Term);
-  
+
   if (symbol_Equal(Top,fol_Equiv()) || symbol_Equal(Top,fol_And()))
     return TRUE;
 
@@ -226,14 +223,13 @@ static BOOL ren_PFactorOk(TERM Term)
   return FALSE; /* <Term> is a trivial disjunction */
 }
 
-
 static BOOL ren_NotPExtraFactorOk(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: TRUE if transforming the term <Term> in negative polarity context
            results in more than two clauses.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
 
   /* if <Term> has the stamp, it will be renamed */
@@ -241,7 +237,7 @@ static BOOL ren_NotPExtraFactorOk(TERM Term)
     return FALSE;
 
   Top = term_TopSymbol(Term);
-  
+
   if (symbol_Equal(Top,fol_Not()))
     return ren_PExtraFactorOk(term_FirstArgument(Term));
 
@@ -286,14 +282,13 @@ static BOOL ren_NotPExtraFactorOk(TERM Term)
   return FALSE; /* Either <Term> is a trivial conjunction or an atom */
 }
 
-
 static BOOL ren_NotPFactorOk(TERM Term)
 /**********************************************************
   INPUT:   A term.
   RETURNS: TRUE if transforming the term <Term> in negative polarity context
            results in more than one clause.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
 
   /* if <Term> has the stamp, it will be renamed */
@@ -301,7 +296,7 @@ static BOOL ren_NotPFactorOk(TERM Term)
     return FALSE;
 
   Top = term_TopSymbol(Term);
-  
+
   if (symbol_Equal(Top,fol_Equiv()) || symbol_Equal(Top,fol_Or()) ||
       symbol_Equal(Top,fol_Implies()))
     return TRUE;
@@ -321,7 +316,6 @@ static BOOL ren_NotPFactorOk(TERM Term)
 
   return FALSE; /* <Term> is a trivial conjunction */
 }
-
 
 static BOOL ren_PFactorBigger3(TERM Term)
 /**********************************************************
@@ -402,7 +396,6 @@ static BOOL ren_PFactorBigger3(TERM Term)
   return FALSE;
 }
 
-
 static BOOL ren_NotPFactorBigger3(TERM Term)
 /**********************************************************
   INPUT:   A term.
@@ -482,13 +475,12 @@ static BOOL ren_NotPFactorBigger3(TERM Term)
   return FALSE;
 }
 
-
 static BOOL ren_AFactorOk(TERM Term1, TERM Term2)
 /**********************************************************
   INPUT:   Two terms where <Term1> is a superterm of <Term2>
   RETURNS: TRUE if the A-Factor of Term2 in Term1 is larger than one.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
   TERM   Super;
 
@@ -496,8 +488,8 @@ static BOOL ren_AFactorOk(TERM Term1, TERM Term2)
     return FALSE;
 
   Super = term_Superterm(Term2);
-  Top   = term_TopSymbol(Super);    
-  
+  Top   = term_TopSymbol(Super);
+
   if (symbol_Equal(Top,fol_And()) || fol_IsQuantifier(Top))
     return ren_AFactorOk(Term1, Super);
 
@@ -539,7 +531,7 @@ static BOOL ren_AFactorOk(TERM Term1, TERM Term2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_AFactorOk: Unknown first order operator.");
   misc_FinishErrorReport();
-  return FALSE; 
+  return FALSE;
 }
 
 static BOOL ren_AExtraFactorOk(TERM Term1, TERM Term2)
@@ -547,7 +539,7 @@ static BOOL ren_AExtraFactorOk(TERM Term1, TERM Term2)
   INPUT:   Two terms where <Term1> is a superterm of <Term2>
   RETURNS: TRUE if the A-Factor of Term2 in Term1 is larger than two.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
   TERM   Super;
   BOOL   Ok;
@@ -556,8 +548,8 @@ static BOOL ren_AExtraFactorOk(TERM Term1, TERM Term2)
     return FALSE;
 
   Super = term_Superterm(Term2);
-  Top   = term_TopSymbol(Super);    
-  
+  Top   = term_TopSymbol(Super);
+
   if (symbol_Equal(Top,fol_And()) || fol_IsQuantifier(Top))
     return ren_AExtraFactorOk(Term1, Super);
 
@@ -616,9 +608,8 @@ static BOOL ren_AExtraFactorOk(TERM Term1, TERM Term2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_AExtraFactorOk: Unknown first order operator.");
   misc_FinishErrorReport();
-  return FALSE; 
+  return FALSE;
 }
-
 
 static BOOL ren_AFactorBigger3(TERM Term1, TERM Term2)
 /**********************************************************
@@ -634,8 +625,8 @@ static BOOL ren_AFactorBigger3(TERM Term1, TERM Term2)
     return FALSE;
 
   Super = term_Superterm(Term2);
-  Top   = term_TopSymbol(Super);    
-  
+  Top   = term_TopSymbol(Super);
+
   if (symbol_Equal(Top,fol_And()) || fol_IsQuantifier(Top))
     return ren_AFactorBigger3(Term1, Super);
 
@@ -705,16 +696,15 @@ static BOOL ren_AFactorBigger3(TERM Term1, TERM Term2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_AFactorBigger3: Unknown first order operator.");
   misc_FinishErrorReport();
-  return FALSE; 
+  return FALSE;
 }
-
 
 static BOOL ren_BFactorOk(TERM Term1, TERM Term2)
 /**********************************************************
   INPUT:   Two terms where <Term1> is a superterm of <Term2>
   RETURNS: TRUE if the B-Factor of Term2 in Term1 is larger than one.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
   TERM   Super;
 
@@ -722,8 +712,8 @@ static BOOL ren_BFactorOk(TERM Term1, TERM Term2)
     return FALSE;
 
   Super = term_Superterm(Term2);
-  Top   = term_TopSymbol(Super);    
-  
+  Top   = term_TopSymbol(Super);
+
   if (symbol_Equal(Top,fol_Or()) || fol_IsQuantifier(Top))
     return ren_BFactorOk(Term1, Super);
 
@@ -765,7 +755,7 @@ static BOOL ren_BFactorOk(TERM Term1, TERM Term2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_BFactorOk: Unknown first order operator.");
   misc_FinishErrorReport();
-  return FALSE; 
+  return FALSE;
 }
 
 static BOOL ren_BExtraFactorOk(TERM Term1, TERM Term2)
@@ -773,7 +763,7 @@ static BOOL ren_BExtraFactorOk(TERM Term1, TERM Term2)
   INPUT:   Two terms where <Term1> is a superterm of <Term2>
   RETURNS: TRUE if the B-Factor of Term2 in Term1 is larger than two.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
   TERM   Super;
   BOOL   Ok;
@@ -782,8 +772,8 @@ static BOOL ren_BExtraFactorOk(TERM Term1, TERM Term2)
     return FALSE;
 
   Super = term_Superterm(Term2);
-  Top   = term_TopSymbol(Super);    
-  
+  Top   = term_TopSymbol(Super);
+
   if (symbol_Equal(Top,fol_Or()) || fol_IsQuantifier(Top))
     return ren_BExtraFactorOk(Term1, Super);
 
@@ -842,7 +832,7 @@ static BOOL ren_BExtraFactorOk(TERM Term1, TERM Term2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_BExtraFactorOk: Unknown first order operator.");
   misc_FinishErrorReport();
-  return FALSE; 
+  return FALSE;
 }
 
 static BOOL ren_BFactorBigger3(TERM Term1, TERM Term2)
@@ -860,7 +850,7 @@ static BOOL ren_BFactorBigger3(TERM Term1, TERM Term2)
 
  Super = term_Superterm(Term2);
  Top   = term_TopSymbol(Super);
- 
+
   if (fol_IsQuantifier(Top) || symbol_Equal(Top, fol_Or()))
     return ren_BFactorBigger3(Term1, Super);
 
@@ -930,9 +920,8 @@ static BOOL ren_BFactorBigger3(TERM Term1, TERM Term2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_BFactorBigger3: Unknown first order operator.");
   misc_FinishErrorReport();
-  return FALSE; 
+  return FALSE;
 }
-
 
 static BOOL ren_HasBenefit(TERM Term1, TERM Term2, int Pol)
 /**********************************************************
@@ -940,11 +929,11 @@ static BOOL ren_HasBenefit(TERM Term1, TERM Term2, int Pol)
   RETURNS: TRUE if renaming <Term1> in <Term2> results in a positive benefit.
   CAUTION: It is assumed that all superterms are set !
 ***********************************************************/
-{ 
+{
   BOOL  PFacOk, NotPFacOk, AFacOk, BFacOk;
-  
+
   switch (Pol) {
-    
+
   case 0:
     PFacOk    = ren_PFactorOk(Term2);
     NotPFacOk = ren_NotPFactorOk(Term2);
@@ -966,7 +955,7 @@ static BOOL ren_HasBenefit(TERM Term1, TERM Term2, int Pol)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_HasBenefit: Unknown polarity.");
   misc_FinishErrorReport();
-  return FALSE;  
+  return FALSE;
 }
 
 static BOOL ren_HasNonZeroBenefit(TERM Term1, int Pol1, TERM Term2, int Pol2)
@@ -975,7 +964,7 @@ static BOOL ren_HasNonZeroBenefit(TERM Term1, int Pol1, TERM Term2, int Pol2)
   RETURNS: TRUE if renaming <Term1> in <Term2> results in non-zero  positive benefit.
   CAUTION: It is assumed that all superterms are set !
 ***********************************************************/
-{ 
+{
   BOOL  PFacOk, NotPFacOk, AFacOk, BFacOk, PEFacOk, NotPEFacOk, AEFacOk, BEFacOk;
   switch (Pol2) {
   case 0:
@@ -987,8 +976,8 @@ static BOOL ren_HasNonZeroBenefit(TERM Term1, int Pol1, TERM Term2, int Pol2)
     NotPEFacOk = NotPFacOk && ren_NotPExtraFactorOk(Term2);
     AEFacOk    = AFacOk    && ren_AExtraFactorOk(Term1,Term2);
     BEFacOk    = BFacOk    && ren_BExtraFactorOk(Term1,Term2);
-    
-    return ((AFacOk && BFacOk && PFacOk && NotPFacOk && (AEFacOk || BEFacOk || PEFacOk || NotPEFacOk)) || 
+
+    return ((AFacOk && BFacOk && PFacOk && NotPFacOk && (AEFacOk || BEFacOk || PEFacOk || NotPEFacOk)) ||
 	    (PEFacOk && AEFacOk) || (NotPEFacOk && BEFacOk) ||
 	    (AFacOk    && ren_PFactorBigger3(Term2)) ||
 	    (BFacOk    && ren_NotPFactorBigger3(Term2)) ||
@@ -1018,18 +1007,17 @@ static BOOL ren_HasNonZeroBenefit(TERM Term1, int Pol1, TERM Term2, int Pol2)
   misc_StartErrorReport();
   misc_ErrorReport("In ren_HasNonZeroBenefit: Unknown polarity.");
   misc_FinishErrorReport();
-  return FALSE;  
+  return FALSE;
 }
 
-
-static LIST ren_GetRenamings(TERM Term1, TERM Term2, int Pol) 
+static LIST ren_GetRenamings(TERM Term1, TERM Term2, int Pol)
 /**********************************************************
   INPUT:   Two terms and the polarity of the 2nd term in the overall formula.
   RETURNS: The list of subterms below <Term2> that have a positive renaming
            benefit.
   EFFECT:  All renamed formulae are stamped.
 ***********************************************************/
-{ 
+{
   SYMBOL Top;
   LIST   Result,Scan;
 
@@ -1109,7 +1097,6 @@ static int ren_Polarity(TERM Term)
   return 1;
 }
 
-
 static LIST ren_RemoveTerm(TERM Term, LIST Renamings)
 /**********************************************************
   INPUT:   A formula and a list of renamings.
@@ -1130,13 +1117,13 @@ static LIST ren_RemoveTerm(TERM Term, LIST Renamings)
 	ren_Delete(Renaming);
 	list_Rplaca(Scan, NULL);
       }
-      else 
+      else
 	ren_SetGeneral(Renaming, TRUE);
     }
     else
       ren_SetMatches(Renaming, list_PointerDeleteElement(ren_Matches(Renaming), Term));
   }
-  
+
   /* Take care for the NULL pointers */
   Renamings = list_PointerDeleteElement(Renamings, NULL);
 
@@ -1152,7 +1139,7 @@ static LIST ren_RemoveAllSubterms(TERM Term, LIST Renamings)
 ***********************************************************/
 {
   Renamings = ren_RemoveTerm(Term, Renamings);
-  
+
   if (!symbol_IsPredicate(term_TopSymbol(Term))) {
     if (fol_IsQuantifier(term_TopSymbol(Term)))
       Renamings = ren_RemoveAllSubterms(term_SecondArgument(Term), Renamings);
@@ -1165,8 +1152,6 @@ static LIST ren_RemoveAllSubterms(TERM Term, LIST Renamings)
 
   return Renamings;
 }
-
-
 
 static LIST ren_SolveDependencies(LIST Renamings)
 /**********************************************************
@@ -1199,9 +1184,8 @@ static LIST ren_SolveDependencies(LIST Renamings)
   return Renamings;
 }
 
-
 static TERM ren_FormulaRename(TERM Term, LIST Renamings, PRECEDENCE Precedence,
-			      LIST *SkolemSymbols) 
+			      LIST *SkolemSymbols)
 /**********************************************************
   INPUT:   A term and a list of renamings where all
            dependencies between the renaming terms are
@@ -1219,7 +1203,7 @@ static TERM ren_FormulaRename(TERM Term, LIST Renamings, PRECEDENCE Precedence,
   LIST     Scan,FreeVariables,Args,AllMatches;
   SYMBOL   ActSymbol;
   RENAMING Renaming;
- 
+
   DefTerm    = (TERM)NULL;
   AllMatches = list_Nil();
 
@@ -1232,7 +1216,7 @@ static TERM ren_FormulaRename(TERM Term, LIST Renamings, PRECEDENCE Precedence,
 
   while (!list_Empty(Renamings)) {
 
-    Renaming       = (RENAMING)list_Car(Renamings); 
+    Renaming       = (RENAMING)list_Car(Renamings);
     Renamings      = list_Cdr(Renamings);
     Hit            = ren_Hit(Renaming);
     Superterm      = term_Superterm(Hit);
@@ -1251,11 +1235,11 @@ static TERM ren_FormulaRename(TERM Term, LIST Renamings, PRECEDENCE Precedence,
     case 0:
       DefTerm = term_Create(fol_Equiv(),list_Cons(term_Copy(NewTerm),list_List(Hit)));
       break;
-	  
+
     case 1:
       DefTerm = term_Create(fol_Implies(),list_Cons(term_Copy(NewTerm),list_List(Hit)));
       break;
-	  
+
     case -1:
       DefTerm = term_Create(fol_Implies(),list_Cons(Hit,list_List(term_Copy(NewTerm))));
       break;
@@ -1270,18 +1254,17 @@ static TERM ren_FormulaRename(TERM Term, LIST Renamings, PRECEDENCE Precedence,
     /* Replace hit if renaming is not general */
     if (!ren_General(Renaming)) {
       term_RplacSuperterm(NewTerm, Superterm);
-      for (Args=term_ArgumentList(Superterm);!list_Empty(Args); Args=list_Cdr(Args)) 
+      for (Args=term_ArgumentList(Superterm);!list_Empty(Args); Args=list_Cdr(Args))
 	if ((TERM)list_Car(Args) == Hit) {
 	  list_Rplaca(Args, NewTerm);
 	  break;
-	}    
+	}
     }
     else
       term_Delete(NewTerm);
 
-
     for (Scan=ren_Matches(Renaming); !list_Empty(Scan); Scan=list_Cdr(Scan)) {
-      
+
       ActTerm   = (TERM)list_Car(Scan);
       Superterm = term_Superterm(ActTerm);
 
@@ -1303,18 +1286,18 @@ static TERM ren_FormulaRename(TERM Term, LIST Renamings, PRECEDENCE Precedence,
 
       /* Now replace match */
       term_RplacSuperterm(NewTerm, Superterm);
-      for (Args=term_ArgumentList(Superterm);!list_Empty(Args); Args=list_Cdr(Args)) 
+      for (Args=term_ArgumentList(Superterm);!list_Empty(Args); Args=list_Cdr(Args))
 	if (list_Car(Args) == ActTerm) {
 	  list_Rplaca(Args, NewTerm);
 	  break;
-	}  
+	}
     }
     AllMatches = list_Nconc(ren_Matches(Renaming), AllMatches); /* Delete later due to dependencies */
     ren_SetMatches(Renaming, list_Nil());
     list_Delete(FreeVariables);
   }
   list_DeleteWithElement(AllMatches, (void (*)(POINTER)) term_Delete);
-  return Result;			   
+  return Result;
 }
 
 static LIST ren_FreeRenaming(LIST Renamings)
@@ -1337,10 +1320,10 @@ static LIST ren_FreeRenaming(LIST Renamings)
       while (!term_HasTermStamp(Father) && term_Superterm(Father)) {
 	Father = term_Superterm(Father);
       }
-	
+
       term_ResetTermStamp(Term); /* Needed for P-Factor check */
       if (ren_General(Candidate) ||                                /* a general renaming without matches is useless */
-	  !ren_HasNonZeroBenefit(Father, ren_Polarity(Father),  
+	  !ren_HasNonZeroBenefit(Father, ren_Polarity(Father),
 				 Term, ren_OverallPolarity(Candidate))) {
 	ren_Delete(Candidate);
 	list_Rplaca(Scan,NULL);
@@ -1387,7 +1370,7 @@ static LIST ren_FurtherMatches(TERM Formula, LIST Formulas)
 	Allmatches = list_Cons(Hit,Allmatches);
 	Matchables = fol_Instances(Formula, Hit);
 	Polarity   = ren_Polarity(Hit);
-	
+
 	for (Scan2=Matchables; !list_Empty(Scan2); Scan2=list_Cdr(Scan2)) {
 	  if (list_PointerMember(Allmatches, list_Car(Scan2)))
 	    list_Rplaca(Scan2, NULL);
@@ -1407,7 +1390,6 @@ static LIST ren_FurtherMatches(TERM Formula, LIST Formulas)
 
   return Renamings;
 }
-
 
 TERM ren_Rename(TERM Term, PRECEDENCE Precedence, LIST *SkolemSymbols,
 		BOOL Document, BOOL Match)
@@ -1454,7 +1436,7 @@ TERM ren_Rename(TERM Term, PRECEDENCE Precedence, LIST *SkolemSymbols,
 
   Renamings = ren_FreeRenaming(Renamings);
 
-  Renamings = list_Sort(Renamings, (BOOL (*) (POINTER, POINTER))ren_RootDistanceSmaller);   
+  Renamings = list_Sort(Renamings, (BOOL (*) (POINTER, POINTER))ren_RootDistanceSmaller);
                                                        /* for dependencies sort renamings top down */
 
   Renamings = ren_SolveDependencies(Renamings);  /* dependencies in further matches */
@@ -1472,7 +1454,7 @@ TERM ren_Rename(TERM Term, PRECEDENCE Precedence, LIST *SkolemSymbols,
   }
 
   Term = ren_FormulaRename(Term, Renamings, Precedence, SkolemSymbols);
-  
+
   if (!list_Empty(Renamings) && Document) {
     puts("\n\n\t Renamed term:");
     fol_PrettyPrintDFG(Term);

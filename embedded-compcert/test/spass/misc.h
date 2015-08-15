@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                MISCELLANEOUS                           * */
 /* *                                                        * */
-/* *  $Module:   MISC                                       * */ 
+/* *  $Module:   MISC                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _MISC_
@@ -77,7 +76,6 @@
 #define SEEK_END 2
 #endif
 
-
 #define misc_ERROROUT     stderr
 #define misc_USERERROROUT stderr
 
@@ -85,13 +83,11 @@ typedef enum { FALSE=0, TRUE=1 } BOOL;
 
 #define misc_VERSION "V 2.1"
 
-
 typedef void*           POINTER;
 typedef unsigned int    NAT;
 
 /* Limits for EARL data types */
 #define NAT_MAX UINT_MAX
-
 
 /**************************************************************/
 /* Inline Functions                                           */
@@ -107,7 +103,6 @@ static __inline__ void misc_Error(void)
   exit(EXIT_FAILURE);
 }
 
-
 static __inline__ void misc_DumpCore(void)
 {
   fputs("\n\n", misc_ERROROUT);
@@ -116,7 +111,6 @@ static __inline__ void misc_DumpCore(void)
   fflush(stderr);
   abort();
 }
-
 
 static __inline__ void misc_PrintChar(NAT Number, char Character)
 {
@@ -135,7 +129,6 @@ static __inline__ BOOL misc_SmallerThan(int i, int j)
 
 #define misc_StartUserErrorReport()    fflush(stdout)
 #define misc_FinishUserErrorReport()   misc_Error()
-
 
 /**************************************************************/
 /* Functions                                                  */

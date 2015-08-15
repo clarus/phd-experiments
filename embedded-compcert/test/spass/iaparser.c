@@ -52,7 +52,6 @@
 #define yydebug ia_debug
 #define yynerrs ia_nerrs
 
-
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
@@ -90,12 +89,8 @@
 #define IA_NUM 270
 #define IA_ID 271
 
-
-
-
 /* Copy the first part of user declarations.  */
 #line 48 "iaparser.y"
-
 
 #include "flags.h"
 #include "ia.h"
@@ -158,8 +153,6 @@ static SYMBOL ia_VarLookup(char*);
 
 #define YYERROR_VERBOSE
 
-
-
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -202,7 +195,6 @@ typedef struct yyltype
 
 /* Copy the second part of user declarations.  */
 
-
 /* Line 213 of /opt/gnu//share/bison/yacc.c.  */
 #line 208 "iaparser.c"
 
@@ -222,7 +214,6 @@ typedef struct yyltype
 #  define YYSTACK_FREE free
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
-
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
@@ -382,11 +373,11 @@ static const unsigned char yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "IA_AND", "IA_EQUAL", "IA_EQUIV", 
-  "IA_EXISTS", "IA_FALSE", "IA_FORALL", "IA_IMPLIED", "IA_IMPLIES", 
-  "IA_NOT", "IA_OR", "IA_PROVE", "IA_TRUE", "IA_NUM", "IA_ID", "'('", 
-  "','", "')'", "'.'", "'['", "']'", "$accept", "proofrequest", 
-  "termlist", "term", "@1", "@2", "@3", "@4", "binsymbol", "nsymbol", 
+  "$end", "error", "$undefined", "IA_AND", "IA_EQUAL", "IA_EQUIV",
+  "IA_EXISTS", "IA_FALSE", "IA_FORALL", "IA_IMPLIED", "IA_IMPLIES",
+  "IA_NOT", "IA_OR", "IA_PROVE", "IA_TRUE", "IA_NUM", "IA_ID", "'('",
+  "','", "')'", "'.'", "'['", "']'", "$accept", "proofrequest",
+  "termlist", "term", "@1", "@2", "@3", "@4", "binsymbol", "nsymbol",
   "quantsymbol", "id", "qtermlist", "qterm", "labellistopt", "labellist", 0
 };
 #endif
@@ -717,7 +708,6 @@ yysymprint (yyout, yytype, yyvalue)
 }
 #endif /* YYDEBUG. */
 
-
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
@@ -771,7 +761,6 @@ int yyparse (void);
 # endif
 #endif
 
-
 /* The lookahead symbol.  */
 int yychar;
 
@@ -781,12 +770,11 @@ YYSTYPE yylval;
 /* Number of parse errors so far.  */
 int yynerrs;
 
-
 int
 yyparse (YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
-  
+
   register int yystate;
   register int yyn;
   int yyresult;
@@ -813,8 +801,6 @@ yyparse (YYPARSE_PARAM_ARG)
   YYSTYPE *yyvs = yyvsa;
   register YYSTYPE *yyvsp;
 
-
-
 #define YYPOPSTACK   (yyvsp--, yyssp--)
 
   YYSIZE_T yystacksize = YYINITDEPTH;
@@ -822,7 +808,6 @@ yyparse (YYPARSE_PARAM_ARG)
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
-
 
   /* When reducing, the number of symbols on the RHS of the reduced
      rule.  */
@@ -870,7 +855,6 @@ yyparse (YYPARSE_PARAM_ARG)
 	YYSTYPE *yyvs1 = yyvs;
 	short *yyss1 = yyss;
 
-
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
@@ -913,7 +897,6 @@ yyparse (YYPARSE_PARAM_ARG)
 
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
-
 
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
 		  (unsigned long int) yystacksize));
@@ -999,7 +982,6 @@ yybackup:
 
   *++yyvsp = yylval;
 
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
@@ -1007,7 +989,6 @@ yybackup:
 
   yystate = yyn;
   goto yynewstate;
-
 
 /*-----------------------------------------------------------.
 | yydefault -- do the default action for the current state.  |
@@ -1017,7 +998,6 @@ yydefault:
   if (yyn == 0)
     goto yyerrlab;
   goto yyreduce;
-
 
 /*-----------------------------.
 | yyreduce -- Do a reduction.  |
@@ -1035,8 +1015,6 @@ yyreduce:
      unconditionally makes the parser a bit smaller, and it avoids a
      GCC warning that YYVAL may be used uninitialized.  */
   yyval = yyvsp[1-yylen];
-
-
 
 #if YYDEBUG
   /* We have to keep this `#if YYDEBUG', since we use variables which
@@ -1268,7 +1246,6 @@ yyreduce:
     { yyval.list = list_Nconc(yyvsp[-2].list, list_List(yyvsp[0].string)); }
     break;
 
-
     }
 
 /* Line 1016 of /opt/gnu//share/bison/yacc.c.  */
@@ -1276,7 +1253,6 @@ yyreduce:
 
   yyvsp -= yylen;
   yyssp -= yylen;
-
 
 #if YYDEBUG
   if (yydebug)
@@ -1291,7 +1267,6 @@ yyreduce:
 
   *++yyvsp = yyval;
 
-
   /* Now `shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
      number reduced by.  */
@@ -1305,7 +1280,6 @@ yyreduce:
     yystate = yydefgoto[yyn - YYNTOKENS];
 
   goto yynewstate;
-
 
 /*------------------------------------.
 | yyerrlab -- here on detecting error |
@@ -1365,7 +1339,6 @@ yyerrlab:
 	yyerror ("parse error");
     }
   goto yyerrlab1;
-
 
 /*----------------------------------------------------.
 | yyerrlab1 -- error raised explicitly by an action.  |
@@ -1433,7 +1406,6 @@ yyerrlab1:
       yyvsp--;
       yystate = *--yyssp;
 
-
 #if YYDEBUG
       if (yydebug)
 	{
@@ -1453,10 +1425,8 @@ yyerrlab1:
 
   *++yyvsp = yylval;
 
-
   yystate = yyn;
   goto yynewstate;
-
 
 /*-------------------------------------.
 | yyacceptlab -- YYACCEPT comes here.  |
@@ -1490,10 +1460,7 @@ yyreturn:
   return yyresult;
 }
 
-
 #line 240 "iaparser.y"
-
-
 
 void yyerror(const char *s)
 {
@@ -1518,10 +1485,9 @@ LIST ia_GetNextRequest(FILE* Input, FLAGSTORE Flags)
   ia_PROOFREQUEST = list_Nil();
   ia_FLAGS        = Flags;
   ia_parse();
-  
+
   return ia_PROOFREQUEST;
 }
-
 
 /**************************************************************/
 /* Static Functions                                           */
@@ -1554,7 +1520,6 @@ static SYMBOL ia_Symbol(char* Name, NAT Arity)
   }
   return symbol;
 }
-
 
 static TERM ia_CreateQuantifier(SYMBOL Symbol, LIST VarTermList, TERM Term)
 /**************************************************************
@@ -1626,7 +1591,6 @@ static TERM ia_CreateQuantifier(SYMBOL Symbol, LIST VarTermList, TERM Term)
   return helpterm;
 }
 
-
 /**************************************************************/
 /* Functions for the Symbol Table                             */
 /**************************************************************/
@@ -1650,11 +1614,10 @@ static void ia_SymCheck(SYMBOL Symbol, NAT Arity)
   }
 }
 
-
 /**************************************************************/
 /* Functions for the Variable Table                           */
 /**************************************************************/
-  
+
 typedef struct {
   char*  name;
   SYMBOL symbol;
@@ -1756,4 +1719,3 @@ static SYMBOL ia_VarLookup(char* Name)
   }
   return symbol;
 }
-

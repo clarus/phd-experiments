@@ -35,19 +35,19 @@ let builtins = {
       (TInt(IUShort, []), [TInt(IUShort, [])], false);
     (* Float arithmetic *)
     "__builtin_fmadd",
-      (TFloat(FDouble, []), 
+      (TFloat(FDouble, []),
        [TFloat(FDouble, []); TFloat(FDouble, []); TFloat(FDouble, [])],
        false);
     "__builtin_fmsub",
-      (TFloat(FDouble, []), 
+      (TFloat(FDouble, []),
        [TFloat(FDouble, []); TFloat(FDouble, []); TFloat(FDouble, [])],
        false);
     "__builtin_fnmadd",
-      (TFloat(FDouble, []), 
+      (TFloat(FDouble, []),
        [TFloat(FDouble, []); TFloat(FDouble, []); TFloat(FDouble, [])],
        false);
     "__builtin_fnmsub",
-      (TFloat(FDouble, []), 
+      (TFloat(FDouble, []),
        [TFloat(FDouble, []); TFloat(FDouble, []); TFloat(FDouble, [])],
        false);
     "__builtin_fsqrt",
@@ -57,7 +57,7 @@ let builtins = {
     "__builtin_fres",
       (TFloat(FFloat, []), [TFloat(FFloat, [])], false);
     "__builtin_fsel",
-      (TFloat(FDouble, []), 
+      (TFloat(FDouble, []),
        [TFloat(FDouble, []); TFloat(FDouble, []); TFloat(FDouble, [])],
        false);
     "__builtin_fcti",

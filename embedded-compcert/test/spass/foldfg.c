@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *              FIRST ORDER LOGIC SYMBOLS                 * */
 /* *                                                        * */
-/* *  $Module:   FOL  DFG                                   * */ 
+/* *  $Module:   FOL  DFG                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,13 +42,10 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #include "foldfg.h"
 #include "flags.h"
-
 
 SYMBOL  fol_ALL;
 SYMBOL  fol_EXIST;
@@ -85,7 +82,7 @@ void fol_Init(BOOL All, PRECEDENCE Precedence)
 	   in <Precedence>.
   CAUTION: MUST BE CALLED BEFORE ANY OTHER fol-FUNCTION.
 ***************************************************************/
-{ 
+{
   if (All) {
 
     fol_ALL      = symbol_CreateJunctor("forall", 2, symbol_STATLEX, Precedence);
@@ -105,7 +102,7 @@ void fol_Init(BOOL All, PRECEDENCE Precedence)
     fol_FALSE    = symbol_CreatePredicate("false", 0, symbol_STATLEX, Precedence);
 
     fol_SYMBOLS =
-      list_Cons((POINTER)fol_ALL, list_Cons((POINTER)fol_EXIST, 
+      list_Cons((POINTER)fol_ALL, list_Cons((POINTER)fol_EXIST,
 	list_Cons((POINTER)fol_AND, list_Cons((POINTER)fol_OR,
 	  list_Cons((POINTER)fol_NOT,
 	    list_Cons((POINTER)fol_IMPLIES, list_Cons((POINTER)fol_IMPLIED,
@@ -119,7 +116,6 @@ void fol_Init(BOOL All, PRECEDENCE Precedence)
     fol_SYMBOLS  = list_Cons((POINTER)fol_NOT, list_List((POINTER)fol_EQUALITY));
   }
 }
-
 
 SYMBOL fol_IsStringPredefined(const char* String)
 /**************************************************************
@@ -135,7 +131,6 @@ SYMBOL fol_IsStringPredefined(const char* String)
   return symbol_Null();
 }
 
-
 TERM fol_CreateQuantifier(SYMBOL Quantifier, LIST VarList, LIST Arguments)
 /**************************************************************
   INPUT:   A symbol (which MUST be a fol quantifier),
@@ -143,36 +138,34 @@ TERM fol_CreateQuantifier(SYMBOL Quantifier, LIST VarList, LIST Arguments)
            a list of arguments.
   RETURNS: A quantified term.
 ***************************************************************/
-{                                                                  
-#ifdef CHECK                                                          
+{
+#ifdef CHECK
   if (!fol_IsQuantifier(Quantifier)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In fol_CreateQuantifier: Symbol isn't FOL quantifier.\n");
     misc_FinishErrorReport();
   }
-#endif                                                             
-                                                                   
-  return term_Create(Quantifier, list_Cons(term_Create(fol_Varlist(), VarList),
-					   Arguments));  
-}
+#endif
 
+  return term_Create(Quantifier, list_Cons(term_Create(fol_Varlist(), VarList),
+					   Arguments));
+}
 
 TERM fol_CreateQuantifierAddFather(SYMBOL Quantifier, LIST VarList, LIST Arguments)
 /**************************************************************
   INPUT:   A symbol (which MUST be a fol quantifier),
            a list of variables that will be bound, and
            a list of arguments.
-	   In contrast to fol_CreateQuantifier the superterm members 
+	   In contrast to fol_CreateQuantifier the superterm members
 	   are set for the arguments.
   RETURNS: A quantified term.
 ***************************************************************/
-{                                                                  
-  return term_CreateAddFather(Quantifier,                                
-			      list_Cons(term_CreateAddFather(fol_Varlist(), 
-							     VarList),   
-					Arguments));  
+{
+  return term_CreateAddFather(Quantifier,
+			      list_Cons(term_CreateAddFather(fol_Varlist(),
+							     VarList),
+					Arguments));
 }
-
 
 TERM fol_ComplementaryTerm(TERM Term)
 /**************************************************************
@@ -185,7 +178,6 @@ TERM fol_ComplementaryTerm(TERM Term)
   else
     return term_Create(fol_Not(), list_List(term_Copy(Term)));
 }
-
 
 LIST fol_GetNonFOLPredicates(void)
 /**************************************************************
@@ -200,7 +192,6 @@ LIST fol_GetNonFOLPredicates(void)
   Result = list_DeleteElementIf(Result, (BOOL (*)(POINTER))fol_IsPredefinedPred);
   return Result;
 }
-
 
 LIST fol_GetAssignments(TERM Term)
 /**************************************************************
@@ -224,7 +215,7 @@ LIST fol_GetAssignments(TERM Term)
     }
 
   return list_Nil();
-  
+
 }
 
 static void fol_NormalizeVarsIntern(TERM Formula)
@@ -239,7 +230,7 @@ static void fol_NormalizeVarsIntern(TERM Formula)
 {
   SYMBOL   Top;
   LIST     Scan1;
-  
+
 #ifdef CHECK
   if (!term_IsTerm(Formula)) {
     misc_StartErrorReport();
@@ -249,7 +240,7 @@ static void fol_NormalizeVarsIntern(TERM Formula)
 #endif
 
   Top = term_TopSymbol(Formula);
-  
+
   if (term_IsComplex(Formula)) {
     if (fol_IsQuantifier(Top)) {
       SYMBOL    Var;
@@ -274,13 +265,12 @@ static void fol_NormalizeVarsIntern(TERM Formula)
       for (Scan1=term_ArgumentList(Formula);!list_Empty(Scan1);Scan1=list_Cdr(Scan1))
 	fol_NormalizeVarsIntern(list_Car(Scan1));
   }
-  else 
+  else
     if (symbol_IsVariable(Top))
       term_RplacTop(Formula,(SYMBOL)term_BindingValue(Top));
 
   return;
 }
-
 
 void fol_NormalizeVars(TERM Formula)
 /**************************************************************
@@ -296,7 +286,6 @@ void fol_NormalizeVars(TERM Formula)
   term_NewMark();
   fol_NormalizeVarsIntern(Formula);
 }
-
 
 void fol_NormalizeVarsStartingAt(TERM Formula, SYMBOL S)
 /**************************************************************
@@ -314,7 +303,6 @@ void fol_NormalizeVarsStartingAt(TERM Formula, SYMBOL S)
   fol_NormalizeVarsIntern(Formula);
   symbol_SetStandardVarCounter(old);
 }
-
 
 void fol_RemoveImplied(TERM Formula)
 /*********************************************************
@@ -338,14 +326,13 @@ void fol_RemoveImplied(TERM Formula)
     }
   }
 }
-      
 
 BOOL fol_VarOccursFreely(TERM Var,TERM Term)
 /**************************************************************
   INPUT:   A variable and a term.
   RETURNS: TRUE iff <Var> occurs freely in <Term>
 ***************************************************************/
-{ 
+{
   LIST    Scan;
   int     Stack;
   SYMBOL  Top;
@@ -392,7 +379,6 @@ BOOL fol_VarOccursFreely(TERM Var,TERM Term)
   return FALSE;
 }
 
-
 LIST fol_FreeVariables(TERM Term)
 /**************************************************************
   INPUT:   A term where we assume that no variable is bound by more than
@@ -402,7 +388,7 @@ LIST fol_FreeVariables(TERM Term)
            Note that there may be many terms with same variable symbol.
 	   All Variable terms are newly created.
 ***************************************************************/
-{ 
+{
   LIST    Variables,Scan;
   int     Stack;
   SYMBOL  Top;
@@ -444,7 +430,7 @@ LIST fol_FreeVariables(TERM Term)
 	  stack_Push(term_ArgumentList(Term));
     }
     else {
-      if (symbol_IsVariable(Top) && !term_VarIsMarked(Top, FreeMark) 
+      if (symbol_IsVariable(Top) && !term_VarIsMarked(Top, FreeMark)
 	  && !term_VarIsMarked(Top, BoundMark)) {
 	Variables = list_Cons(Term, Variables);
 	term_CreateBinding(Top, FreeMark);
@@ -465,7 +451,7 @@ LIST fol_FreeVariables(TERM Term)
 
 LIST fol_BoundVariables(TERM Term)
 /**************************************************************
-  INPUT:   A term 
+  INPUT:   A term
   RETURNS: The list of bound variables occurring in the term.
 ***************************************************************/
 {
@@ -477,13 +463,13 @@ LIST fol_BoundVariables(TERM Term)
 
   do {
     if (fol_IsQuantifier(term_TopSymbol(Term))) {
-      result = list_Nconc(result, list_Copy(fol_QuantifierVariables(Term))); 
+      result = list_Nconc(result, list_Copy(fol_QuantifierVariables(Term)));
       stack_Push(list_Cdr(term_ArgumentList(Term)));
-    } 
-    else 
+    }
+    else
       if (term_IsComplex(Term))
 	stack_Push(term_ArgumentList(Term));
-    
+
     while (!stack_Empty(stack) && list_Empty(stack_Top()))
       stack_Pop();
 
@@ -496,7 +482,6 @@ LIST fol_BoundVariables(TERM Term)
   return result;
 }
 
-
 void fol_Free(void)
 /**************************************************************
   INPUT:   None.
@@ -506,7 +491,6 @@ void fol_Free(void)
 {
   list_Delete(fol_SYMBOLS);
 }
-
 
 BOOL fol_FormulaIsClause(TERM Formula)
 /**************************************************************
@@ -521,7 +505,7 @@ BOOL fol_FormulaIsClause(TERM Formula)
 
   if (term_TopSymbol(Formula) != fol_OR)
     return FALSE;
-  
+
   LitList = term_ArgumentList(Formula);
 
   while (!list_Empty(LitList)) {
@@ -532,7 +516,6 @@ BOOL fol_FormulaIsClause(TERM Formula)
 
   return TRUE;
 }
-
 
 void fol_FPrintOtterOptions(FILE* File, BOOL Equality,
 			    FLAG_TDFG2OTTEROPTIONSTYPE Options)
@@ -560,7 +543,7 @@ void fol_FPrintOtterOptions(FILE* File, BOOL Equality,
       fputs("\nset(para_from).", File);
       fputs("\nset(para_into).", File);
       fputs("\nset(para_from_vars).", File);
-      fputs("\nset(back_demod).", File);    
+      fputs("\nset(back_demod).", File);
     } /* No break: add auto */
   case flag_TDFG2OTTEROPTIONSAUTO:
     fputs("\nset(auto).", File);
@@ -585,7 +568,7 @@ static void fol_FPrintOtterFormula(FILE* File, TERM Formula)
 /**************************************************************
   INPUT:   A file and a formula.
   RETURNS: Nothing.
-  SUMMARY: Prints the formula in Otter format to <File>. 
+  SUMMARY: Prints the formula in Otter format to <File>.
 ***************************************************************/
 {
   SYMBOL Top;
@@ -623,7 +606,7 @@ static void fol_FPrintOtterFormula(FILE* File, TERM Formula)
 	fputs(")", File);
       }
       else
-	if (symbol_Equal(Top, fol_And()) || symbol_Equal(Top, fol_Or()) || 
+	if (symbol_Equal(Top, fol_And()) || symbol_Equal(Top, fol_Or()) ||
 	    symbol_Equal(Top, fol_Equiv()) || symbol_Equal(Top, fol_Implies()) ) {
 	  LIST Scan;
 	  fputs("(", File);
@@ -655,7 +638,7 @@ void fol_FPrintOtter(FILE* File, LIST Formulae, FLAG_TDFG2OTTEROPTIONSTYPE Optio
 /**************************************************************
   INPUT:   A file, a list of pairs (label.formula) and an option flag.
   RETURNS: Nothing.
-  SUMMARY: Prints a  the respective formulae in Otter format to <File>. 
+  SUMMARY: Prints a  the respective formulae in Otter format to <File>.
 ***************************************************************/
 {
   LIST   Scan;
@@ -684,7 +667,6 @@ void fol_FPrintOtter(FILE* File, LIST Formulae, FLAG_TDFG2OTTEROPTIONSTYPE Optio
     fputs("end_of_list.\n\n", File);
   }
 }
-
 
 void fol_FPrintDFGSignature(FILE* File)
 /**************************************************************
@@ -718,7 +700,7 @@ void fol_FPrintDFGSignature(FILE* File)
 	i = 0;
 	fputs("\n\t", File);
       }
-      
+
     } while (!list_Empty(functions));
     fputs("].\n", File);
   }
@@ -746,7 +728,6 @@ void fol_FPrintDFGSignature(FILE* File)
   list_Delete(functions);
 }
 
-
 static void fol_TermListFPrintDFG(FILE* File, LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -760,12 +741,11 @@ static void fol_TermListFPrintDFG(FILE* File, LIST List)
   }
 }
 
-
 void fol_FPrintDFG(FILE* File, TERM Term)
 /**************************************************************
   INPUT:   A file and a term.
   RETURNS: none.
-  SUMMARY: Prints the term in prefix notation to the file. 
+  SUMMARY: Prints the term in prefix notation to the file.
   CAUTION: Uses the other fol_Output functions.
 ***************************************************************/
 {
@@ -785,7 +765,7 @@ void fol_FPrintDFG(FILE* File, TERM Term)
       putc(')', File);
     }
   }
-  else 
+  else
     symbol_FPrint(File,term_TopSymbol(Term));
 }
 
@@ -793,7 +773,6 @@ void fol_PrintDFG(TERM Term)
 {
   fol_FPrintDFG(stdout,Term);
 }
-
 
 void fol_PrintPrecedence(PRECEDENCE Precedence)
 /**************************************************************
@@ -834,7 +813,7 @@ void fol_FPrintPrecedence(FILE *File, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A file to print to, and a precedence.
   RETURNS: Nothing.
-  EFFECT:  Prints the current precedence as a setting 
+  EFFECT:  Prints the current precedence as a setting
            command in DFG syntax to <File>.
 	   fol symbols are excluded.
 ***************************************************************/
@@ -884,7 +863,6 @@ void fol_FPrintPrecedence(FILE *File, PRECEDENCE Precedence)
   }
 }
 
-
 static void fol_FPrintFormulaList(FILE* File, LIST Formulas, const char* Name)
 /**************************************************************
   INPUT:   A file, a list of formulas, a name.
@@ -904,9 +882,8 @@ static void fol_FPrintFormulaList(FILE* File, LIST Formulas, const char* Name)
   fputs("end_of_list.\n\n", File);
 }
 
-
-void fol_FPrintDFGProblem(FILE* File, const char* Name, const char* Author, 
-			  const char* Status, const char* Description, 
+void fol_FPrintDFGProblem(FILE* File, const char* Name, const char* Author,
+			  const char* Status, const char* Description,
 			  LIST Axioms, LIST Conjectures)
 /**************************************************************
   INPUT:   A file, two lists of formulas, ??? EK
@@ -921,7 +898,7 @@ void fol_FPrintDFGProblem(FILE* File, const char* Name, const char* Author,
   fprintf(File,"status(%s).\n",Status);
   fprintf(File,"description(%s).\n",Description);
   fputs("end_of_list.\n\n", File);
-  
+
   fputs("list_of_symbols.\n", File);
   fol_FPrintDFGSignature(File);
   fputs("end_of_list.\n\n", File);
@@ -932,7 +909,6 @@ void fol_FPrintDFGProblem(FILE* File, const char* Name, const char* Author,
   fputs("end_problem.\n", File);
 }
 
-
 BOOL fol_AssocEquation(TERM Term, SYMBOL *Result)
 /**************************************************************
   INPUT:   A term.
@@ -942,14 +918,14 @@ BOOL fol_AssocEquation(TERM Term, SYMBOL *Result)
            assigned the assoc symbol.
 ***************************************************************/
 {
-  
+
   if (fol_IsEquality(Term)) {
     SYMBOL Top;
     TERM   Left,Right;
     Left = term_FirstArgument(Term);
     Right= term_SecondArgument(Term);
     Top  = term_TopSymbol(Left);
-    if (symbol_IsFunction(Top) && symbol_Arity(Top) == 2 && 
+    if (symbol_IsFunction(Top) && symbol_Arity(Top) == 2 &&
 	symbol_Equal(Top,term_TopSymbol(Right))) {
       SYMBOL v1,v2,v3;
       if (term_IsVariable(term_FirstArgument(Left)))
@@ -979,7 +955,6 @@ BOOL fol_AssocEquation(TERM Term, SYMBOL *Result)
   return FALSE;
 }
 
-
 BOOL fol_DistributiveEquation(TERM Term, SYMBOL* Addition,
 			      SYMBOL* Multiplication)
 /**************************************************************
@@ -997,14 +972,14 @@ BOOL fol_DistributiveEquation(TERM Term, SYMBOL* Addition,
 
   left  = term_FirstArgument(Term);
   right = term_SecondArgument(Term);
-  
+
   if (term_EqualTopSymbols(left, right) ||
       !symbol_IsFunction(term_TopSymbol(left)) ||
       !symbol_IsFunction(term_TopSymbol(right)) ||
       symbol_Arity(term_TopSymbol(left)) != 2 ||
       symbol_Arity(term_TopSymbol(right)) != 2)
     return FALSE;
-  
+
   if (term_IsVariable(term_FirstArgument(left)))
     v1 = term_FirstArgument(left);
   else if (term_IsVariable(term_FirstArgument(right))) {
@@ -1036,7 +1011,6 @@ BOOL fol_DistributiveEquation(TERM Term, SYMBOL* Addition,
   return FALSE;
 }
 
-
 static LIST fol_InstancesIntern(TERM Formula, TERM ToMatch, NAT Symbols)
 /**************************************************************
   INPUT:   A formula in which all instances of <ToMatch> are searched.
@@ -1049,18 +1023,18 @@ static LIST fol_InstancesIntern(TERM Formula, TERM ToMatch, NAT Symbols)
   NAT  HitSymbols;
   LIST Result;
   int  Stack;
-  
+
   Stack  = stack_Bottom();
   Result = list_Nil();
 
-  do {    
+  do {
     HitSymbols = term_Size(Formula);    /* First check number of symbols of current formula */
 
     if (HitSymbols >= Symbols && (Formula != ToMatch)) {
       cont_StartBinding();
       if (unify_MatchFlexible(cont_LeftContext(), ToMatch, Formula))
 	Result = list_Cons(Formula, Result);
-      else 
+      else
 	if (!symbol_IsPredicate(term_TopSymbol(Formula))) {
 	  if (fol_IsQuantifier(term_TopSymbol(Formula)))
 	    stack_Push(list_Cdr(term_ArgumentList(Formula)));
@@ -1069,7 +1043,7 @@ static LIST fol_InstancesIntern(TERM Formula, TERM ToMatch, NAT Symbols)
 	}
       cont_BackTrack();
     }
-    
+
     while (!stack_Empty(Stack) && list_Empty(stack_Top()))
       stack_Pop();
     if (!stack_Empty(Stack)) {
@@ -1077,11 +1051,10 @@ static LIST fol_InstancesIntern(TERM Formula, TERM ToMatch, NAT Symbols)
       stack_RplacTop(list_Cdr(stack_Top()));
     }
   } while (!stack_Empty(Stack));
-  
+
   return Result;
 }
- 
-   
+
 LIST fol_Instances(TERM Formula, TERM ToMatch)
 /**************************************************************
   INPUT:   A formula in which all instances of <ToMatch> are searched.
@@ -1090,13 +1063,12 @@ LIST fol_Instances(TERM Formula, TERM ToMatch)
 ***************************************************************/
 {
   NAT Symbols;
-  
+
   Symbols = term_ComputeSize(ToMatch); /* We use the number of symbols as a filter */
   term_InstallSize(Formula);
 
   return fol_InstancesIntern(Formula, ToMatch, Symbols);
 }
-
 
 static LIST fol_GeneralizationsIntern(TERM Formula, TERM MatchedBy, NAT Symbols)
 /**************************************************************
@@ -1110,18 +1082,18 @@ static LIST fol_GeneralizationsIntern(TERM Formula, TERM MatchedBy, NAT Symbols)
   NAT  HitSymbols;
   LIST Result;
   int  Stack;
-  
+
   Stack  = stack_Bottom();
   Result = list_Nil();
 
-  do {    
+  do {
     if (Formula != MatchedBy) {
       HitSymbols = term_Size(Formula);    /* First check number of symbols of current formula */
       if (HitSymbols <= Symbols) {
 	cont_StartBinding();
 	if (unify_MatchFlexible(cont_LeftContext(), Formula, MatchedBy))
 	  Result = list_Cons(Formula, Result);
-	else 
+	else
 	  if (!symbol_IsPredicate(term_TopSymbol(Formula))) {
 	    if (fol_IsQuantifier(term_TopSymbol(Formula)))
 	      stack_Push(list_Cdr(term_ArgumentList(Formula)));
@@ -1138,7 +1110,7 @@ static LIST fol_GeneralizationsIntern(TERM Formula, TERM MatchedBy, NAT Symbols)
 	    stack_Push(term_ArgumentList(Formula));
 	}
     }
-    
+
     while (!stack_Empty(Stack) && list_Empty(stack_Top()))
       stack_Pop();
     if (!stack_Empty(Stack)) {
@@ -1146,10 +1118,9 @@ static LIST fol_GeneralizationsIntern(TERM Formula, TERM MatchedBy, NAT Symbols)
       stack_RplacTop(list_Cdr(stack_Top()));
     }
   } while (!stack_Empty(Stack));
-  
+
   return Result;
 }
-
 
 LIST fol_Generalizations(TERM Formula, TERM MatchedBy)
 /**************************************************************
@@ -1159,13 +1130,12 @@ LIST fol_Generalizations(TERM Formula, TERM MatchedBy)
 ***************************************************************/
 {
   NAT Symbols;
-  
+
   Symbols = term_ComputeSize(MatchedBy); /* We use the number of symbols as a filter */
   term_InstallSize(Formula);
 
   return fol_GeneralizationsIntern(Formula, MatchedBy, Symbols);
 }
-
 
 TERM fol_MostGeneralFormula(LIST Formulas)
 /**************************************************************
@@ -1199,7 +1169,6 @@ TERM fol_MostGeneralFormula(LIST Formulas)
   return Result;
 }
 
-
 void fol_ReplaceVariable(TERM Term, SYMBOL Symbol, TERM Repl)
 /**************************************************************
   INPUT:   A term, a variable symbol and a replacement term.
@@ -1224,16 +1193,15 @@ void fol_ReplaceVariable(TERM Term, SYMBOL Symbol, TERM Repl)
 	return;
     fol_ReplaceVariable(term_SecondArgument(Term), Symbol, Repl);
   }
-    
+
   if (symbol_Equal(term_TopSymbol(Term), Symbol)) {
     term_RplacTop(Term,term_TopSymbol(Repl));
     term_RplacArgumentList(Term,term_CopyTermList(term_ArgumentList(Repl)));
-  } 
-  else 
+  }
+  else
     for (Scan = term_ArgumentList(Term); !list_Empty(Scan); Scan = list_Cdr(Scan))
       fol_ReplaceVariable(list_Car(Scan),Symbol,Repl);
 }
-
 
 static void fol_PrettyPrintInternDFG(TERM Term, int Depth)
 /**************************************************************
@@ -1248,7 +1216,7 @@ static void fol_PrettyPrintInternDFG(TERM Term, int Depth)
 
   Top = term_TopSymbol(Term);
   if (!symbol_Equal(Top,fol_Varlist())) {
-    for (i = 0; i < Depth; i++) 
+    for (i = 0; i < Depth; i++)
       fputs("  ", stdout);
     if (fol_IsLiteral(Term))
       term_PrintPrefix(Term);
@@ -1286,29 +1254,27 @@ static void fol_PrettyPrintInternDFG(TERM Term, int Depth)
     putchar('[');
     term_TermListPrintPrefix(term_ArgumentList(Term));
     putchar(']');
-  }  
+  }
 }
-
 
 void fol_PrettyPrintDFG(TERM Term)
 /**************************************************************
   INPUT:   A term.
   RETURNS: none.
-  SUMMARY: Prints the term hopefully more pretty to stdout. 
+  SUMMARY: Prints the term hopefully more pretty to stdout.
 ***************************************************************/
 {
   fol_PrettyPrintInternDFG(Term, 0);
 }
 
-
-TERM fol_CheckFatherLinksIntern(TERM Term) 
+TERM fol_CheckFatherLinksIntern(TERM Term)
 /**************************************************************
   INPUT:   A term.
   RETURNS: A subterm whose superterm pointer is not set correctly,
            else NULL.
   SUMMARY: Checks if all superterm links except of those from quantifier
            variables are set correctly.
-***************************************************************/ 
+***************************************************************/
 {
   LIST l;
   if (fol_IsQuantifier(term_TopSymbol(Term)))
@@ -1326,14 +1292,13 @@ TERM fol_CheckFatherLinksIntern(TERM Term)
   return NULL;
 }
 
-
-void fol_CheckFatherLinks(TERM Term) 
+void fol_CheckFatherLinks(TERM Term)
 /**************************************************************
   INPUT:   A term.
   RETURNS: none.
   SUMMARY: Checks if all superterm links except of those from
            quantifier variables are set correctly.
-***************************************************************/ 
+***************************************************************/
 {
   TERM Result;
 
@@ -1344,11 +1309,10 @@ void fol_CheckFatherLinks(TERM Term)
     misc_ErrorReport("\n In fol_CheckFatherLinks:");
     misc_ErrorReport(" Found a term where the father links");
     misc_ErrorReport(" are not correctly set.");
-    misc_FinishErrorReport();    
+    misc_FinishErrorReport();
   }
 #endif
 }
-
 
 static void fol_PrettyPrintIntern(TERM Term, int Depth)
 /**************************************************************
@@ -1360,7 +1324,7 @@ static void fol_PrettyPrintIntern(TERM Term, int Depth)
   int i;
   LIST scan;
 
-  for (i = 0; i < Depth; i++) 
+  for (i = 0; i < Depth; i++)
     fputs("  ", stdout);
   if (symbol_IsJunctor(term_TopSymbol(Term))) {
     if (term_IsComplex(Term)) {
@@ -1402,17 +1366,15 @@ static void fol_PrettyPrintIntern(TERM Term, int Depth)
   }
 }
 
-
-void fol_PrettyPrint(TERM Term)  
+void fol_PrettyPrint(TERM Term)
 /**************************************************************
   INPUT:   A term.
   RETURNS: none.
-  SUMMARY: Prints the term hopefully more pretty to stdout. 
+  SUMMARY: Prints the term hopefully more pretty to stdout.
 ***************************************************************/
 {
   fol_PrettyPrintIntern(Term, 0);
 }
-
 
 LIST fol_GetSubstEquations(TERM Term)
 /**************************************************************
@@ -1441,27 +1403,26 @@ LIST fol_GetSubstEquations(TERM Term)
   }
   if (symbol_IsPredicate(term_TopSymbol(Term)))
     return Result;
-  else 
+  else
     for (Scan = term_ArgumentList(Term); !list_Empty(Scan); Scan = list_Cdr(Scan))
       Result = list_Nconc(Result, fol_GetSubstEquations(list_Car(Scan)));
 
   return Result;
 }
 
-
 TERM fol_GetBindingQuantifier(TERM Term, SYMBOL Symbol)
 /**************************************************************
   INPUT:   A symbol and a term containing the symbol.
   RETURNS: The Quantifier binding the symbol.
 ***************************************************************/
-{ 
+{
   LIST Scan;
 
 #ifdef CHECK
   if (!term_IsTerm(Term) || !symbol_IsSymbol(Symbol)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In fol_GetBindingQuantifier: Illegal input.\n");
-    misc_FinishErrorReport();    
+    misc_FinishErrorReport();
   }
 #endif
 
@@ -1474,7 +1435,6 @@ TERM fol_GetBindingQuantifier(TERM Term, SYMBOL Symbol)
 
   return fol_GetBindingQuantifier(term_Superterm(Term), Symbol);
 }
-
 
 int fol_TermPolarity(TERM SubTerm, TERM Term)
 /**************************************************************
@@ -1496,7 +1456,7 @@ int fol_TermPolarity(TERM SubTerm, TERM Term)
 
   if (SubTerm == Term)
     return 1;
-  
+
   SuperTerm = term_Superterm(SubTerm);
 
   if (SuperTerm) {
@@ -1512,7 +1472,7 @@ int fol_TermPolarity(TERM SubTerm, TERM Term)
     if (symbol_Equal(Top,fol_EQUIV))
       return 0;
 
-    if (symbol_Equal(Top, fol_IMPLIES)) { 
+    if (symbol_Equal(Top, fol_IMPLIES)) {
       if (SubTerm == term_FirstArgument(SuperTerm))
 	return (-fol_TermPolarity(SuperTerm, Term));
       else
@@ -1521,7 +1481,7 @@ int fol_TermPolarity(TERM SubTerm, TERM Term)
     if (symbol_Equal(Top, fol_IMPLIED)) {
       if (SubTerm == term_SecondArgument(SuperTerm))
 	return (-fol_TermPolarity(SuperTerm, Term));
-      else 
+      else
 	return  fol_TermPolarity(SuperTerm, Term);
     }
     misc_StartErrorReport();
@@ -1532,15 +1492,14 @@ int fol_TermPolarity(TERM SubTerm, TERM Term)
   return 1;
 }
 
-
 static int fol_PolarCheckCount(TERM Nowterm, TERM SuperTerm, int Nowpolar)
 /**************************************************************
-   INPUT:   Two terms, Nowterm and its superterm, and the polarity of 
+   INPUT:   Two terms, Nowterm and its superterm, and the polarity of
             Nowterm.
    RETURNS: The polarity of SuperTerm according to Nowterm.
    COMMENT: Helpfunction for fol_PolarCheck.
 ***************************************************************/
-{ 
+{
   SYMBOL Top;
   Top = term_TopSymbol(SuperTerm);
 
@@ -1558,7 +1517,6 @@ static int fol_PolarCheckCount(TERM Nowterm, TERM SuperTerm, int Nowpolar)
   return -Nowpolar;
 }
 
-
 static BOOL fol_PolarCheckAllquantor(TERM Subterm, TERM Term, int SubtermPolar)
 /**************************************************************
    INPUT:   Two terms, Subterm subterm of Term, and polarity of Subterm.
@@ -1570,7 +1528,7 @@ static BOOL fol_PolarCheckAllquantor(TERM Subterm, TERM Term, int SubtermPolar)
   SYMBOL  Top;
   int     SubPolar;
 
-  if (Subterm == Term)  
+  if (Subterm == Term)
     return TRUE;
 
   SuperTerm  = term_Superterm(Subterm);
@@ -1583,7 +1541,7 @@ static BOOL fol_PolarCheckAllquantor(TERM Subterm, TERM Term, int SubtermPolar)
 
   /* To be clarified: can the below condition generalized to universal quantifiers? */
 
-  if (symbol_Equal(Top,fol_NOT) ||                   
+  if (symbol_Equal(Top,fol_NOT) ||
      (symbol_Equal(Top, fol_OR) && SubPolar == 1) ||
      (symbol_Equal(Top, fol_AND) && SubPolar == -1) ||
      (symbol_Equal(Top,fol_IMPLIES) && SubPolar == 1) ||
@@ -1592,7 +1550,6 @@ static BOOL fol_PolarCheckAllquantor(TERM Subterm, TERM Term, int SubtermPolar)
 
   return FALSE;
 }
-
 
 static BOOL fol_PolarCheckExquantor(TERM Subterm, TERM Term, int SubtermPolar)
 /**************************************************************
@@ -1605,7 +1562,7 @@ static BOOL fol_PolarCheckExquantor(TERM Subterm, TERM Term, int SubtermPolar)
   SYMBOL  Top;
   int     SubPolar;
 
-  if (Subterm == Term)  
+  if (Subterm == Term)
     return TRUE;
 
   SuperTerm  = term_Superterm(Subterm);
@@ -1630,7 +1587,7 @@ static BOOL fol_PolarCheckExquantor(TERM Subterm, TERM Term, int SubtermPolar)
 
 BOOL fol_PolarCheck(TERM Subterm, TERM Term)
 /**************************************************************
-  INPUT:   Two terms, <Subterm> is of the form x=t, where x or t variable. 
+  INPUT:   Two terms, <Subterm> is of the form x=t, where x or t variable.
            <Subterm> is a subterm of <Term> and the top symbol of
 	   <Term> must be the binding quantifier of x or t.
   RETURNS: BOOL if check is ok.
@@ -1651,8 +1608,7 @@ BOOL fol_PolarCheck(TERM Subterm, TERM Term)
   return FALSE;
 }
 
-
-void fol_PopQuantifier(TERM Term) 
+void fol_PopQuantifier(TERM Term)
 /**************************************************************
   INPUT:   A term whose top symbol is a quantifier.
   RETURNS: Nothing.
@@ -1682,7 +1638,6 @@ void fol_PopQuantifier(TERM Term)
   term_Free(SubTerm);
 }
 
-
 void fol_DeleteQuantifierVariable(TERM Quant,SYMBOL Var)
 /****************************************************************
   INPUT:   A term starting with a quantifier and a variable symbol.
@@ -1703,8 +1658,6 @@ void fol_DeleteQuantifierVariable(TERM Quant,SYMBOL Var)
   if (list_Empty(fol_QuantifierVariables(Quant)))
     fol_PopQuantifier(Quant);
 }
-
-
 
 void fol_SetTrue(TERM Term)
 /**************************************************************
@@ -1729,7 +1682,6 @@ void fol_SetFalse(TERM Term)
   term_RplacArgumentList(Term, list_Nil());
   term_RplacTop(Term, fol_False());
 }
-
 
 static void fol_ReplaceByArgCon(TERM Term)
 /**************************************************************
@@ -1768,14 +1720,13 @@ static void fol_ReplaceByArgCon(TERM Term)
   list_Delete(List);
 }
 
-
 BOOL fol_PropagateFreeness(TERM Term)
 /**************************************************************
   INPUT:   A term and a list of functions.
   RETURNS: True iff a subterm of the form f(...)=f(...) occurs in the term,
            where f has property FREELY and GENERATED.
   EFFECT:  Substitutes all occurences of f=f by <and(t1=s1,...tn=sn)>,where
-           ti and si are the arguments of each f in f=f. 
+           ti and si are the arguments of each f in f=f.
 ***************************************************************/
 {
   BOOL    Free;
@@ -1807,7 +1758,6 @@ BOOL fol_PropagateFreeness(TERM Term)
   return Free;
 }
 
-
 static BOOL fol_PropagateWitnessIntern(TERM Equation, SYMBOL Variable)
 /**************************************************************
   INPUT:   A Term which is an equation where <Variable> is one
@@ -1822,8 +1772,8 @@ static BOOL fol_PropagateWitnessIntern(TERM Equation, SYMBOL Variable)
   TERM    SuperTerm, BindQuantor, Predicat;
   SYMBOL  SuperTop;
 
-  SuperTerm   = term_Superterm(Equation);  
-  
+  SuperTerm   = term_Superterm(Equation);
+
   if (SuperTerm == term_Null())
     return FALSE;
 
@@ -1837,15 +1787,15 @@ static BOOL fol_PropagateWitnessIntern(TERM Equation, SYMBOL Variable)
       list_Length(term_ArgumentList(SuperTerm)) != 2)
     return FALSE;
 
-  if (Equation == term_SecondArgument(SuperTerm)) 
+  if (Equation == term_SecondArgument(SuperTerm))
     Predicat  = term_FirstArgument(SuperTerm);
-  else 
+  else
     Predicat = term_SecondArgument(SuperTerm);
 
   if (symbol_Equal(term_TopSymbol(BindQuantor), fol_All()) &&
       symbol_Equal(SuperTop, fol_Or()) &&
       symbol_Equal(term_TopSymbol(Predicat), fol_Not()) &&
-      symbol_HasProperty(term_TopSymbol(term_FirstArgument(Predicat)), FREELY) && 
+      symbol_HasProperty(term_TopSymbol(term_FirstArgument(Predicat)), FREELY) &&
       symbol_HasProperty(term_TopSymbol(term_FirstArgument(Predicat)), GENERATED) &&
       symbol_Equal(term_TopSymbol(term_FirstArgument(term_FirstArgument(Predicat))), Variable)) {
     fol_SetFalse(BindQuantor);
@@ -1857,7 +1807,7 @@ static BOOL fol_PropagateWitnessIntern(TERM Equation, SYMBOL Variable)
     return FALSE;
 
   if (symbol_Equal(term_TopSymbol(BindQuantor), fol_All())) {
-    if (symbol_Equal(SuperTop, fol_Implies()) && 
+    if (symbol_Equal(SuperTop, fol_Implies()) &&
 	term_SecondArgument(SuperTerm) == Equation) {
       fol_SetFalse(BindQuantor);
       return TRUE;
@@ -1876,7 +1826,6 @@ static BOOL fol_PropagateWitnessIntern(TERM Equation, SYMBOL Variable)
 
   return FALSE;
 }
-
 
 BOOL fol_PropagateWitness(TERM Term)
 /**************************************************************
@@ -1945,7 +1894,7 @@ BOOL fol_PropagateTautologies(TERM Term)
   }
 
   if (symbol_Equal(Top, fol_Or()) || symbol_Equal(Top, fol_And())) {
-    for (Scan = ArgumentList; !list_Empty(Scan); Scan = list_Cdr(Scan)) 
+    for (Scan = ArgumentList; !list_Empty(Scan); Scan = list_Cdr(Scan))
       if (symbol_Equal(term_TopSymbol(list_Car(Scan)), fol_Not())) {
       for (Bscan = ArgumentList; !list_Empty(Bscan); Bscan = list_Cdr(Bscan)) {
 	if (list_Car(Scan) != list_Car(Bscan) &&
@@ -1968,7 +1917,6 @@ BOOL fol_PropagateTautologies(TERM Term)
 
   return Hit;
 }
-
 
 static BOOL fol_AlphaEqualIntern(TERM Term1, TERM Term2, NAT Mark)
 /**************************************************************
@@ -1999,7 +1947,7 @@ static BOOL fol_AlphaEqualIntern(TERM Term1, TERM Term2, NAT Mark)
     for (Scan = fol_QuantifierVariables(Term1), Bscan = fol_QuantifierVariables(Term2);
 	 !list_Empty(Scan);
 	 Scan = list_Cdr(Scan), Bscan = list_Cdr(Bscan))
-      term_CreateValueBinding(term_TopSymbol(list_Car(Bscan)), Mark, 
+      term_CreateValueBinding(term_TopSymbol(list_Car(Bscan)), Mark,
 			      (POINTER)term_TopSymbol(list_Car(Scan)));
 
     if (!fol_AlphaEqualIntern(term_SecondArgument(Term1), term_SecondArgument(Term2), Mark))
@@ -2021,10 +1969,9 @@ static BOOL fol_AlphaEqualIntern(TERM Term1, TERM Term2, NAT Mark)
   return TRUE;
 }
 
-
 BOOL fol_AlphaEqual(TERM Term1, TERM Term2)
 /**************************************************************
-  INPUT:   Two terms of the form Qx(<rest>). All variables that occur in 
+  INPUT:   Two terms of the form Qx(<rest>). All variables that occur in
            Term1 and Term2 must be bound by only one quantifier!
   RETURNS: TRUE iff Term2 is bound renaming of Term1.
 ***************************************************************/
@@ -2057,7 +2004,6 @@ BOOL fol_AlphaEqual(TERM Term1, TERM Term2)
 
   return Hit;
 }
-
 
 static BOOL fol_VarBoundTwiceIntern(TERM Term, NAT Mark)
 /**************************************************************
@@ -2093,7 +2039,6 @@ static BOOL fol_VarBoundTwiceIntern(TERM Term, NAT Mark)
   return FALSE;
 }
 
-
 BOOL fol_VarBoundTwice(TERM Term)
 /**************************************************************
   INPUT:   A term.
@@ -2118,7 +2063,6 @@ BOOL fol_VarBoundTwice(TERM Term)
 
   return Hit;
 }
-
 
 NAT fol_Depth(TERM Term)
 /**************************************************************
@@ -2154,7 +2098,6 @@ NAT fol_Depth(TERM Term)
   return (Depth+1);
 }
 
-
 static void fol_ApplyContextToTermIntern(CONTEXT Context, TERM Term)
 /********************************************************************
    INPUT:  A context (Context) and a term (Term).
@@ -2176,7 +2119,6 @@ static void fol_ApplyContextToTermIntern(CONTEXT Context, TERM Term)
       fol_ApplyContextToTermIntern(Context, list_Car(Scan));
   }
 }
-
 
 static BOOL fol_CheckApplyContextToTerm(CONTEXT Context, TERM Term)
 /*************************************************************
@@ -2207,7 +2149,6 @@ static BOOL fol_CheckApplyContextToTerm(CONTEXT Context, TERM Term)
   return Apply;
 }
 
-
 BOOL fol_ApplyContextToTerm(CONTEXT Context, TERM Term)
 /***************************************************************
    INPUT:  A context (Context) and a term (Term).
@@ -2223,11 +2164,10 @@ BOOL fol_ApplyContextToTerm(CONTEXT Context, TERM Term)
   return FALSE;
 }
 
-
 BOOL fol_SignatureMatchFormula(TERM Formula, TERM Instance, BOOL Variant)
 /********************************************************************
    INPUT : Two formulas and a flag.
-           It is assumed that the symbol context is clean. 
+           It is assumed that the symbol context is clean.
    RETURN: TRUE iff <Formula> can be matched to <Instance> by matching
            variables as well as signature symbols. If <Variant> is TRUE
 	   variables must be matched to variables.
@@ -2240,7 +2180,7 @@ BOOL fol_SignatureMatchFormula(TERM Formula, TERM Instance, BOOL Variant)
   TERM    ActFormula, ActInstance;
 
 #ifdef CHECK
-  if (!term_IsTerm(Formula) || term_InBindingPhase() || 
+  if (!term_IsTerm(Formula) || term_InBindingPhase() ||
       !term_IsTerm(Instance) || !symbol_ContextIsClean()) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In fol_SignatureMatchFormula: Illegal input or context.");
@@ -2255,12 +2195,12 @@ BOOL fol_SignatureMatchFormula(TERM Formula, TERM Instance, BOOL Variant)
   ActMark     = term_OldMark();
   ActFormula  = Formula;
   ActInstance = Instance;
-  
+
   do {
     FormulaTop  = term_TopSymbol(ActFormula);
     InstanceTop = term_TopSymbol(ActInstance);
 
-    if (!symbol_IsVariable(FormulaTop)) { 
+    if (!symbol_IsVariable(FormulaTop)) {
       if (!symbol_ContextIsBound(FormulaTop)) {
 	if (!symbol_IsJunctor(FormulaTop) && !symbol_IsJunctor(InstanceTop) &&
 	    !fol_IsPredefinedPred(FormulaTop) && !fol_IsPredefinedPred(InstanceTop))
@@ -2273,7 +2213,7 @@ BOOL fol_SignatureMatchFormula(TERM Formula, TERM Instance, BOOL Variant)
 	}
       }
       else {
-	if (symbol_ContextIsBound(FormulaTop) && 
+	if (symbol_ContextIsBound(FormulaTop) &&
 	    !symbol_Equal(symbol_ContextGetValue(FormulaTop),InstanceTop)) {
 	  term_StopBinding();
 	  return FALSE;
@@ -2283,9 +2223,9 @@ BOOL fol_SignatureMatchFormula(TERM Formula, TERM Instance, BOOL Variant)
 
     if (list_Length(term_ArgumentList(ActFormula)) != list_Length(term_ArgumentList(ActInstance))) {
       term_StopBinding();
-      return FALSE;	
+      return FALSE;
     }
-    
+
     if (term_IsComplex(ActFormula)) {
       stack_Push(term_ArgumentList(ActInstance));
       stack_Push(term_ArgumentList(ActFormula));
@@ -2326,7 +2266,6 @@ BOOL fol_SignatureMatchFormula(TERM Formula, TERM Instance, BOOL Variant)
   return TRUE;
 }
 
-
 BOOL fol_SignatureMatch(TERM Term, TERM Instance, LIST* Bindings, BOOL Variant)
 /*****************************************************************
    INPUT : Two formulas, a binding list and a boolean flag.
@@ -2354,12 +2293,12 @@ BOOL fol_SignatureMatch(TERM Term, TERM Instance, LIST* Bindings, BOOL Variant)
   ActMark     = term_OldMark();
   ActTerm     = Term;
   ActInstance = Instance;
-  
+
   do {
     TermTop     = term_TopSymbol(ActTerm);
     InstanceTop = term_TopSymbol(ActInstance);
 
-    if (!symbol_IsVariable(TermTop)) { 
+    if (!symbol_IsVariable(TermTop)) {
       if (!symbol_ContextIsBound(TermTop)) {
 	if (!symbol_IsJunctor(TermTop) && !symbol_IsJunctor(InstanceTop) &&
 	    !fol_IsPredefinedPred(TermTop) && !fol_IsPredefinedPred(InstanceTop) &&
@@ -2374,7 +2313,7 @@ BOOL fol_SignatureMatch(TERM Term, TERM Instance, LIST* Bindings, BOOL Variant)
 	}
       }
       else {
-	if (symbol_ContextIsBound(TermTop) && 
+	if (symbol_ContextIsBound(TermTop) &&
 	    !symbol_Equal(symbol_ContextGetValue(TermTop),InstanceTop)) {
 	  return FALSE;
 	}
@@ -2382,9 +2321,9 @@ BOOL fol_SignatureMatch(TERM Term, TERM Instance, LIST* Bindings, BOOL Variant)
     }
 
     if (list_Length(term_ArgumentList(ActTerm)) != list_Length(term_ArgumentList(ActInstance))) {
-      return FALSE;	
+      return FALSE;
     }
-    
+
     if (term_IsComplex(ActTerm)) {
       stack_Push(term_ArgumentList(ActInstance));
       stack_Push(term_ArgumentList(ActTerm));
@@ -2422,7 +2361,6 @@ BOOL fol_SignatureMatch(TERM Term, TERM Instance, LIST* Bindings, BOOL Variant)
   return TRUE;
 }
 
-
 BOOL fol_CheckFormula(TERM Formula)
 /*******************************************************************
    INPUT : A term Formula.
@@ -2439,6 +2377,6 @@ BOOL fol_CheckFormula(TERM Formula)
     list_Delete(FreeVars);
     return FALSE;
   }
-  
+
   return term_CheckTerm(Formula);
 }

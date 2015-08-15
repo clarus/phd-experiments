@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *         INTERFACE FOR ALL ORDERING IMPLEMENTATIONS     * */
 /* *                                                        * */
-/* *  $Module:   ORDER                                      * */ 
+/* *  $Module:   ORDER                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -40,7 +40,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -129,8 +128,6 @@ static __inline__ BOOL ord_IsUncomparable(ord_RESULT Res)
 {
   return ord_UNCOMPARABLE == Res;
 }
-
-
 
 /**************************************************************/
 /*  FUNCTIONS                                                 */

@@ -1,7 +1,7 @@
 /*
    SipHash reference C implementation
 
-   Written in 2012 by 
+   Written in 2012 by
    Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
    Daniel J. Bernstein <djb@cr.yp.to>
 
@@ -207,7 +207,6 @@ u8 vectors[64][8] =
   { 0x57, 0x5f, 0xf2, 0x8e, 0x60, 0x38, 0x1b, 0xe5, },
   { 0x72, 0x45, 0x06, 0xeb, 0x4c, 0x32, 0x8a, 0x95, }
 };
-
 
 int test_vectors()
 {

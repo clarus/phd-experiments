@@ -49,7 +49,7 @@ val attr_is_type_related: attribute -> bool
 
 (* Type compatibility *)
 val compatible_types : ?noattrs: bool -> Env.t -> typ -> typ -> bool
-  (* Check that the two given types are compatible.  
+  (* Check that the two given types are compatible.
      If [noattrs], ignore attributes (recursively). *)
 val combine_types : ?noattrs: bool -> Env.t -> typ -> typ -> typ option
   (* Like [compatible_types], but if the two types are compatible,
@@ -185,7 +185,7 @@ val ecomma :  exp -> exp -> exp
 val sskip: stmt
   (* The [skip] statement.  No location. *)
 val sseq : location -> stmt -> stmt -> stmt
-  (* Return the statement [s1; s2], optimizing the cases 
+  (* Return the statement [s1; s2], optimizing the cases
      where [s1] or [s2] is [skip], or [s2] is a block. *)
 val sassign : location -> exp -> exp -> stmt
   (* Return the statement [exp1 = exp2;] *)
@@ -198,4 +198,3 @@ val printloc: out_channel -> location -> unit
   (* Printer for locations (for Printf) *)
 val formatloc: Format.formatter -> location -> unit
   (* Printer for locations (for Format) *)
-

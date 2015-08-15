@@ -187,7 +187,7 @@ let filename_num : (string, int) Hashtbl.t = Hashtbl.create 7
 
 let print_file_line oc file line =
   if !Clflags.option_g && file <> "" then begin
-    let filenum = 
+    let filenum =
       try
         Hashtbl.find filename_num file
       with Not_found ->
@@ -220,7 +220,7 @@ let cfi_rel_offset oc reg ofs =
   if Configuration.asm_supports_cfi then
     fprintf oc "	.cfi_rel_offset	%s, %ld\n" reg ofs
 
-(* Built-ins.  They come in two flavors: 
+(* Built-ins.  They come in two flavors:
    - annotation statements: take their arguments in registers or stack
      locations; generate no code;
    - inlined by the compiler: take their arguments in arbitrary
@@ -542,7 +542,7 @@ let print_instruction oc = function
       fprintf oc "	b	%a\n" print_symb id;
       n + 1
   | Pbreg(r, sg) ->
-      let n = 
+      let n =
         if r = IR14
         then fixup_result oc Outgoing sg
         else fixup_arguments oc Outgoing sg in
@@ -678,7 +678,7 @@ let print_instruction oc = function
       fprintf oc "%a:\n" print_label lbl; 0
   | Ploadsymbol(r1, id, ofs) ->
       let lbl = label_symbol id ofs in
-      fprintf oc "	ldr	%a, .L%d @ %a\n" 
+      fprintf oc "	ldr	%a, .L%d @ %a\n"
          ireg r1 lbl print_symb_ofs (id, ofs); 1
   | Pbtbl(r, tbl) ->
       fprintf oc "	mov	r14, %a, lsl #2\n" ireg r;
@@ -837,5 +837,3 @@ let print_program oc p =
 (*  fprintf oc "	.fpu	vfp\n"; *)
   Hashtbl.clear filename_num;
   List.iter (print_globdef oc) p.prog_defs
-
-

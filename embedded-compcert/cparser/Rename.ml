@@ -44,7 +44,7 @@ let enter_public env id =
       re_used = StringSet.add id.name env.re_used }
 
 (* For static or local identifiers, we make up a new name if needed *)
-(* If the same identifier has already been declared, 
+(* If the same identifier has already been declared,
    don't rename a second time *)
 
 let rename env id =
@@ -83,7 +83,7 @@ let ident env id =
   try
     IdentMap.find id env.re_id
   with Not_found ->
-    Cerrors.fatal_error "Internal error: Rename: %s__%d unbound" 
+    Cerrors.fatal_error "Internal error: Rename: %s__%d unbound"
                         id.name id.stamp
 
 let rec typ env = function
@@ -100,7 +100,7 @@ let rec typ env = function
   | ty -> ty
 
 and param env (id, ty) =
-  if id.name = "" then 
+  if id.name = "" then
     ((id, typ env ty), env)
   else
     let (id', env') = rename env id in ((id', typ env' ty), env')
@@ -197,7 +197,7 @@ let fundef env f =
       fd_body = stmt env2 f.fd_body },
     env0 )
 
-let enum env (id, v, opte) = 
+let enum env (id, v, opte) =
   let (id', env') = rename env id in
   ((id', v, optexp env' opte), env')
 
@@ -267,4 +267,3 @@ let program p =
   globdecls
     (reserve_public (reserve_builtins()) p)
     [] p
-  

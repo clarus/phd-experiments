@@ -42,12 +42,10 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _TABLEAU_
 #define _TABLEAU_
-
 
 #include "list.h"
 #include "clause.h"
@@ -65,17 +63,15 @@ typedef struct TABLEAU_HELP {
   int  Label;
 } TABLEAU_NODE, *TABLEAU;
 
-
 typedef struct {
   TABLEAU *Path;      /* An array of tableaux */
   int     Length;
   int     MaxLength;
-  
+
 } TABPATH_NODE, *TABPATH;
 
 /* tableau output formats */
 typedef enum { DAVINCI, XVCG } GRAPHFORMAT;
-
 
 TABPATH tab_PathCreate(int, TABLEAU);
 void    tab_PathDelete(TABPATH);
@@ -113,7 +109,7 @@ static __inline__ TABLEAU tab_PathNthNode(TABPATH TabPath, int n)
     misc_ErrorReport("\nnode %d was requested.\n", n);
     misc_FinishErrorReport();
   }
-#endif  
+#endif
 
   return TabPath->Path[n];
 }
@@ -122,7 +118,7 @@ static __inline__ TABPATH tab_PathPush(TABLEAU Tab, TABPATH TabPath)
 {
   TabPath->Length++;
   TabPath->Path[TabPath->Length] = Tab;
-  
+
 #ifdef CHECK
   if (TabPath->Length > TabPath->MaxLength) {
     misc_StartErrorReport();
@@ -131,7 +127,7 @@ static __inline__ TABPATH tab_PathPush(TABLEAU Tab, TABPATH TabPath)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   return TabPath;
 }
 
@@ -151,7 +147,7 @@ static __inline__ TABPATH tab_PathPop(TABPATH TabPath)
 #endif
 
   TabPath->Path[TabPath->Length--] = tab_EmptyTableau();
-  
+
   return TabPath;
 }
 
@@ -172,11 +168,11 @@ static __inline__ TABLEAU tab_CreateNode(void)
   Node->RightSplitClauses = list_Nil();
 
   Node->Clauses     = list_Nil();
- 
+
 #ifdef USE_LABEL
   Node->Label       = 0;
 #endif
-  
+
   return Node;
 }
 
@@ -190,7 +186,6 @@ static __inline__ TABLEAU tab_PathTop(TABPATH Path)
 {
   return tab_PathNthNode(Path, tab_PathLength(Path));
 }
-
 
 static __inline__ BOOL tab_IsEmpty(TABLEAU Tab)
 {
@@ -210,12 +205,12 @@ static __inline__ TABLEAU tab_LeftBranch(TABLEAU Tab)
 static __inline__ void tab_SetRightBranch(TABLEAU Tab, TABLEAU SubTab)
 {
   Tab->RightBranch = SubTab;
-} 
+}
 
 static __inline__ void tab_SetLeftBranch(TABLEAU Tab, TABLEAU SubTab)
 {
   Tab->LeftBranch = SubTab;
-} 
+}
 
 static __inline__ BOOL tab_RightBranchIsEmpty(TABLEAU Tab)
 {
@@ -267,12 +262,10 @@ static __inline__ void tab_SetLeftSplitClause(TABLEAU T, CLAUSE C)
   T->LeftSplitClause = C;
 }
 
-
 static __inline__ LIST tab_RightSplitClauses(TABLEAU T)
 {
   return T->RightSplitClauses;
 }
-
 
 static __inline__ void tab_SetRightSplitClauses(TABLEAU T, LIST L)
 {

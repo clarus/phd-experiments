@@ -245,5 +245,3 @@ Definition transf_fundef (fd: fundef) : res fundef :=
 
 Definition transf_program (p: program) : res program :=
   AST.transform_partial_program transf_fundef p.
-
-

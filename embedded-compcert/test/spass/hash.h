@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                 SIMPLE HASHING                         * */
 /* *                                                        * */
-/* *  $Module:   HASH                                       * */ 
+/* *  $Module:   HASH                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1999, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _HASH_
@@ -54,7 +53,6 @@
 
 #include "list.h"
 
-
 /**************************************************************/
 /* Structures                                                 */
 /**************************************************************/
@@ -63,7 +61,6 @@
 
 /* Each Entry is a list of pairs <key,value> */
 extern LIST hash_TABLE[hash__SIZE];
-
 
 /**************************************************************/
 /* Inline Functions                                           */
@@ -90,7 +87,6 @@ static __inline__ void hash_Put(POINTER Key, POINTER Value)
 					  hash_List(hash_Index(Key))));
 }
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -101,7 +97,4 @@ void    hash_ResetWithValue(void (*)(POINTER));
 
 POINTER hash_Get(POINTER);
 
-
 #endif
-
-

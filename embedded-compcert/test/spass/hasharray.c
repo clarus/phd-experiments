@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                       HASHING                          * */
 /* *                                                        * */
-/* *  $Module:   HASHARRAY                                  * */ 
+/* *  $Module:   HASHARRAY                                  * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1998, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,11 +42,9 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "hasharray.h"
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -89,10 +87,10 @@ void hsh_Reset(HASH H)
 void hsh_Delete(HASH H)
 /**************************************************************
   INPUT:   A hasharray
-  EFFECT:  Deletes all information stored in the array and 
+  EFFECT:  Deletes all information stored in the array and
            the array itself.
            Keys and data items are not deleted !
-***************************************************************/            
+***************************************************************/
 {
   hsh_Reset(H);
   memory_Free(H, sizeof(LIST) * hsh__SIZE);

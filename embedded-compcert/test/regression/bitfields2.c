@@ -29,4 +29,3 @@ int main()
   printf("y = { c = %d, d = %d; e = %d }\n", y.c, y.d, y.e);
   printf("z = { f = %d, g = %d; h = %d }\n", z.f, z.g, z.h);
 }
-

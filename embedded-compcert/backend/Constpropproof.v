@@ -51,7 +51,7 @@ Definition regs_match_approx (a: D.t) (rs: regset) : Prop :=
 Lemma regs_match_approx_top:
   forall rs, regs_match_approx D.top rs.
 Proof.
-  intros. red; intros. simpl. rewrite PTree.gempty. 
+  intros. red; intros. simpl. rewrite PTree.gempty.
   unfold Approx.top, val_match_approx. auto.
 Qed.
 
@@ -80,10 +80,10 @@ Lemma regs_match_approx_update:
   regs_match_approx ra rs ->
   regs_match_approx (D.set r a ra) (rs#r <- v).
 Proof.
-  intros; red; intros. rewrite Regmap.gsspec. 
+  intros; red; intros. rewrite Regmap.gsspec.
   case (peq r0 r); intro.
   subst r0. rewrite D.gss. auto.
-  rewrite D.gso; auto. 
+  rewrite D.gso; auto.
 Qed.
 
 Lemma approx_regs_val_list:
@@ -103,9 +103,9 @@ Lemma regs_match_approx_forget:
 Proof.
   induction rl; simpl; intros.
   auto.
-  apply IHrl. red; intros. destruct (peq r a). 
-  subst a. rewrite D.gss. constructor. 
-  rewrite D.gso; auto. 
+  apply IHrl. red; intros. destruct (peq r a).
+  subst a. rewrite D.gss. constructor.
+  rewrite D.gso; auto.
 Qed.
 
 (** The correctness of the static analysis follows from the results
@@ -126,23 +126,23 @@ Proof.
   apply regs_match_approx_increasing with (transfer' gapp f lu pc approxs!!pc).
   eapply Constprop.DS.fixpoint_solution; eauto.
   unfold successors_list, successors. rewrite PTree.gmap1. rewrite H. auto.
-  unfold transfer'. destruct (lu!pc) as [regs|]. 
-  apply regs_match_approx_forget; auto. 
+  unfold transfer'. destruct (lu!pc) as [regs|].
+  apply regs_match_approx_forget; auto.
   auto.
-  intros. rewrite PMap.gi. apply regs_match_approx_top. 
+  intros. rewrite PMap.gi. apply regs_match_approx_top.
 Qed.
 
 Lemma analyze_correct_3:
   forall f rs,
   regs_match_approx (analyze gapp f)!!(f.(fn_entrypoint)) rs.
 Proof.
-  intros. unfold analyze. 
+  intros. unfold analyze.
   set (lu := last_uses f) in *.
   destruct (Constprop.DS.fixpoint (successors f) (transfer' gapp f lu)
                         ((fn_entrypoint f, D.top) :: nil)) as [approxs|] eqn:FIX.
   apply regs_match_approx_increasing with D.top.
   eapply Constprop.DS.fixpoint_entry; eauto. auto with coqlib.
-  apply regs_match_approx_top. 
+  apply regs_match_approx_top.
   intros. rewrite PMap.gi. apply regs_match_approx_top.
 Qed.
 
@@ -171,14 +171,14 @@ Proof.
   destruct H. destruct (zeq pos 0). subst.  rewrite Zplus_0_r in H0.
   destruct chunk; simpl; auto.
   rewrite Mem.load_int8_signed_unsigned in H0. rewrite H in H0. simpl in H0.
-  inv H0. decEq. apply Int.sign_ext_zero_ext. compute; auto. 
+  inv H0. decEq. apply Int.sign_ext_zero_ext. compute; auto.
   congruence.
   eapply IHil; eauto. omega.
   (* Init_int16 *)
   destruct H. destruct (zeq pos 0). subst.  rewrite Zplus_0_r in H0.
   destruct chunk; simpl; auto.
   rewrite Mem.load_int16_signed_unsigned in H0. rewrite H in H0. simpl in H0.
-  inv H0. decEq. apply Int.sign_ext_zero_ext. compute; auto. 
+  inv H0. decEq. apply Int.sign_ext_zero_ext. compute; auto.
   congruence.
   eapply IHil; eauto. omega.
   (* Init_int32 *)
@@ -214,17 +214,17 @@ Qed.
 Lemma eval_static_load_sound:
   forall chunk m addr vaddr v,
   Mem.loadv chunk m vaddr = Some v ->
-  mem_match_approx m ->  
+  mem_match_approx m ->
   val_match_approx ge sp addr vaddr ->
   val_match_approx ge sp (eval_static_load gapp chunk addr) v.
 Proof.
-  intros. unfold eval_static_load. destruct addr; simpl; auto. 
+  intros. unfold eval_static_load. destruct addr; simpl; auto.
   destruct (gapp!i) as [il|] eqn:?; auto.
-  red in H1. subst vaddr. unfold symbol_address in H. 
+  red in H1. subst vaddr. unfold symbol_address in H.
   destruct (Genv.find_symbol ge i) as [b'|] eqn:?; simpl in H; try discriminate.
-  exploit H0; eauto. intros [A [B C]]. 
-  eapply eval_load_init_sound; eauto. 
-  red; auto. 
+  exploit H0; eauto. intros [A [B C]].
+  eapply eval_load_init_sound; eauto.
+  red; auto.
 Qed.
 
 Lemma mem_match_approx_store:
@@ -236,7 +236,7 @@ Proof.
   intros; red; intros. exploit H; eauto. intros [A [B C]].
   destruct addr; simpl in H0; try discriminate.
   exploit Mem.store_valid_access_3; eauto. intros [P Q].
-  split. apply Genv.load_store_init_data_invariant with m; auto. 
+  split. apply Genv.load_store_init_data_invariant with m; auto.
   intros. eapply Mem.load_store_other; eauto. left; red; intro; subst b0.
   eapply C. apply Mem.perm_cur_max. eapply P. instantiate (1 := Int.unsigned i).
   generalize (size_chunk_pos chunk). omega.
@@ -252,9 +252,9 @@ Lemma mem_match_approx_alloc:
 Proof.
   intros; red; intros. exploit H; eauto. intros [A [B C]].
   split. apply Genv.load_store_init_data_invariant with m; auto.
-  intros. eapply Mem.load_alloc_unchanged; eauto. 
+  intros. eapply Mem.load_alloc_unchanged; eauto.
   split. eauto with mem.
-  intros; red; intros. exploit Mem.perm_alloc_inv; eauto. 
+  intros; red; intros. exploit Mem.perm_alloc_inv; eauto.
   rewrite dec_eq_false. apply C. eapply Mem.valid_not_valid_diff; eauto with mem.
 Qed.
 
@@ -268,12 +268,12 @@ Proof.
   split. apply Genv.load_store_init_data_invariant with m; auto.
   intros. eapply Mem.load_free; eauto.
   destruct (eq_block b0 b); auto. subst b0.
-  right. destruct (zlt lo hi); auto. 
-  elim (C lo). apply Mem.perm_cur_max. 
-  exploit Mem.free_range_perm; eauto. instantiate (1 := lo); omega. 
+  right. destruct (zlt lo hi); auto.
+  elim (C lo). apply Mem.perm_cur_max.
+  exploit Mem.free_range_perm; eauto. instantiate (1 := lo); omega.
   intros; eapply Mem.perm_implies; eauto with mem.
   split. eauto with mem.
-  intros; red; intros. eapply C. eauto with mem. 
+  intros; red; intros. eapply C. eauto with mem.
 Qed.
 
 Lemma mem_match_approx_extcall:
@@ -284,17 +284,17 @@ Lemma mem_match_approx_extcall:
 Proof.
   intros; red; intros. exploit H; eauto. intros [A [B C]].
   split. apply Genv.load_store_init_data_invariant with m; auto.
-  intros. eapply external_call_readonly; eauto. 
+  intros. eapply external_call_readonly; eauto.
   split. eapply external_call_valid_block; eauto.
-  intros; red; intros. elim (C ofs). eapply external_call_max_perm; eauto. 
+  intros; red; intros. elim (C ofs). eapply external_call_max_perm; eauto.
 Qed.
 
 (* Show that mem_match_approx holds initially *)
 
 Definition global_approx_charact (g: genv) (ga: global_approx) : Prop :=
   forall id il b,
-  ga!id = Some il -> 
-  Genv.find_symbol g id = Some b -> 
+  ga!id = Some il ->
+  Genv.find_symbol g id = Some b ->
   Genv.find_var_info g b = Some (mkglobvar tt il true false).
 
 Lemma make_global_approx_correct:
@@ -304,16 +304,16 @@ Lemma make_global_approx_correct:
 Proof.
   induction gdl; simpl; intros.
   auto.
-  destruct a as [id gd]. apply IHgdl. 
-  red; intros. 
+  destruct a as [id gd]. apply IHgdl.
+  red; intros.
   assert (EITHER: id0 = id /\ gd = Gvar(mkglobvar tt il true false)
                \/ id0 <> id /\ ga!id0 = Some il).
   destruct gd.
   rewrite PTree.grspec in H0. destruct (PTree.elt_eq id0 id); [discriminate|auto].
   destruct (gvar_readonly v && negb (gvar_volatile v)) eqn:?.
   rewrite PTree.gsspec in H0. destruct (peq id0 id).
-  inv H0. left. split; auto. 
-  destruct v; simpl in *. 
+  inv H0. left. split; auto.
+  destruct v; simpl in *.
   destruct gvar_readonly; try discriminate.
   destruct gvar_volatile; try discriminate.
   destruct gvar_info. auto.
@@ -324,7 +324,7 @@ Proof.
   simpl in *.
   destruct EITHER as [[A B] | [A B]].
   subst id0. rewrite PTree.gss in H1. inv H1. rewrite PTree.gss. auto.
-  rewrite PTree.gso in H1; auto. destruct gd. eapply H; eauto. 
+  rewrite PTree.gso in H1; auto. destruct gd. eapply H; eauto.
   rewrite PTree.gso. eapply H; eauto.
   red; intros; subst b. eelim Plt_strict; eapply Genv.genv_symb_range; eauto.
 Qed.
@@ -332,17 +332,17 @@ Qed.
 Theorem mem_match_approx_init:
   forall m, Genv.init_mem prog = Some m -> mem_match_approx m.
 Proof.
-  intros. 
+  intros.
   assert (global_approx_charact ge gapp).
     unfold ge, gapp.   unfold Genv.globalenv.
     apply make_global_approx_correct.
     red; intros. rewrite PTree.gempty in H0; discriminate.
-  red; intros. 
+  red; intros.
   exploit Genv.init_mem_characterization.
-  unfold ge in H0. eapply H0; eauto. eauto. 
+  unfold ge in H0. eapply H0; eauto. eauto.
   unfold Genv.perm_globvar; simpl.
   intros [A [B C]].
-  split. auto. split. eapply Genv.find_symbol_not_fresh; eauto. 
+  split. auto. split. eapply Genv.find_symbol_not_fresh; eauto.
   intros; red; intros. exploit B; eauto. intros [P Q]. inv Q.
 Qed.
 
@@ -356,14 +356,14 @@ End ANALYSIS.
 Lemma symbols_preserved:
   forall (s: ident), Genv.find_symbol tge s = Genv.find_symbol ge s.
 Proof.
-  intros; unfold ge, tge, tprog, transf_program. 
+  intros; unfold ge, tge, tprog, transf_program.
   apply Genv.find_symbol_transf.
 Qed.
 
 Lemma varinfo_preserved:
   forall b, Genv.find_var_info tge b = Genv.find_var_info ge b.
 Proof.
-  intros; unfold ge, tge, tprog, transf_program. 
+  intros; unfold ge, tge, tprog, transf_program.
   apply Genv.find_var_info_transf.
 Qed.
 
@@ -371,7 +371,7 @@ Lemma functions_translated:
   forall (v: val) (f: fundef),
   Genv.find_funct ge v = Some f ->
   Genv.find_funct tge v = Some (transf_fundef gapp f).
-Proof.  
+Proof.
   intros.
   exact (Genv.find_funct_transf (transf_fundef gapp) _ _ H).
 Qed.
@@ -380,8 +380,8 @@ Lemma function_ptr_translated:
   forall (b: block) (f: fundef),
   Genv.find_funct_ptr ge b = Some f ->
   Genv.find_funct_ptr tge b = Some (transf_fundef gapp f).
-Proof.  
-  intros. 
+Proof.
+  intros.
   exact (Genv.find_funct_ptr_transf (transf_fundef gapp) _ _ H).
 Qed.
 
@@ -406,7 +406,7 @@ Lemma set_reg_lessdef:
   forall r v1 v2 rs1 rs2,
   Val.lessdef v1 v2 -> regs_lessdef rs1 rs2 -> regs_lessdef (rs1#r <- v1) (rs2#r <- v2).
 Proof.
-  intros; red; intros. repeat rewrite Regmap.gsspec. 
+  intros; red; intros. repeat rewrite Regmap.gsspec.
   destruct (peq r0 r); auto.
 Qed.
 
@@ -432,13 +432,13 @@ Proof.
   generalize (H r); intro MATCH. generalize (H1 r); intro LD.
   destruct (rs#r); simpl in H0; try discriminate.
   destruct (Int.eq_dec i Int.zero); try discriminate.
-  inv LD. 
+  inv LD.
   assert (find_function tge (inl _ r) rs' = Some (transf_fundef gapp f)).
     simpl. rewrite <- H4. simpl. rewrite dec_eq_true. apply function_ptr_translated. auto.
   destruct (D.get r approx); auto.
   predSpec Int.eq Int.eq_spec i0 Int.zero; intros; auto.
   simpl in *. unfold symbol_address in MATCH. rewrite symbols_preserved.
-  destruct (Genv.find_symbol ge i); try discriminate. 
+  destruct (Genv.find_symbol ge i); try discriminate.
   inv MATCH. apply function_ptr_translated; auto.
   rewrite symbols_preserved. destruct (Genv.find_symbol ge i); try discriminate.
   apply function_ptr_translated; auto.
@@ -450,7 +450,7 @@ Lemma const_for_result_correct:
   val_match_approx ge sp a v ->
   eval_operation tge sp op nil m = Some v.
 Proof.
-  unfold const_for_result; intros. 
+  unfold const_for_result; intros.
   destruct a; inv H; simpl in H0.
   simpl. congruence.
   destruct (generate_float_constants tt); inv H2.  simpl. congruence.
@@ -477,7 +477,7 @@ Proof.
   apply match_pc_base.
   destruct (fn_code f)!pc as [i|] eqn:?; try apply match_pc_base.
   destruct i; try apply match_pc_base.
-  eapply match_pc_nop; eauto. 
+  eapply match_pc_nop; eauto.
   destruct (eval_static_condition c (approx_regs app l)) as [b|] eqn:?.
   eapply match_pc_cond; eauto.
   apply match_pc_base.
@@ -504,7 +504,7 @@ Lemma annot_strength_reduction_correct:
   /\ annot_eventvals targs' eargs' = annot_eventvals targs eargs.
 Proof.
   induction targs; simpl; intros.
-- inv H. simpl. exists eargs; auto. 
+- inv H. simpl. exists eargs; auto.
 - destruct a.
   + destruct args as [ | arg args0]; simpl in H0; inv H0.
     destruct (annot_strength_reduction app targs args0) as [targs'' args''] eqn:E.
@@ -540,15 +540,15 @@ Proof.
   intros until m'. functional induction (builtin_strength_reduction app ef args); intros; auto.
 + generalize (MATCH r1); rewrite e1; simpl; intros E. simpl in H.
   unfold symbol_address in E. destruct (Genv.find_symbol ge symb) as [b|] eqn:?; rewrite E in H.
-  rewrite volatile_load_global_charact. exists b; auto. 
+  rewrite volatile_load_global_charact. exists b; auto.
   inv H.
 + generalize (MATCH r1); rewrite e1; simpl; intros E. simpl in H.
   unfold symbol_address in E. destruct (Genv.find_symbol ge symb) as [b|] eqn:?; rewrite E in H.
-  rewrite volatile_store_global_charact. exists b; auto. 
+  rewrite volatile_store_global_charact. exists b; auto.
   inv H.
 + inv H. exploit annot_strength_reduction_correct; eauto.
-  intros [eargs' [A B]]. 
-  rewrite <- B. econstructor; eauto. 
+  intros [eargs' [A B]].
+  rewrite <- B. econstructor; eauto.
 Qed.
 
 End BUILTIN_STRENGTH_REDUCTION.
@@ -631,7 +631,7 @@ Lemma match_states_succ:
   match_states O (State s f sp pc2 rs m)
                 (State s' (transf_function gapp f) sp pc2 rs' m').
 Proof.
-  intros. 
+  intros.
   assert (regs_match_approx sp (analyze gapp f)!!pc2 rs).
     eapply analyze_correct_1; eauto.
   apply match_states_intro with (app := (analyze gapp f)!!pc2); auto.
@@ -643,7 +643,7 @@ Lemma transf_instr_at:
   f.(fn_code)!pc = Some i ->
   (transf_function gapp f).(fn_code)!pc = Some(transf_instr gapp f (analyze gapp f) pc i).
 Proof.
-  intros. simpl. unfold transf_code. rewrite PTree.gmap. rewrite H. auto. 
+  intros. simpl. unfold transf_code. rewrite PTree.gmap. rewrite H. auto.
 Qed.
 
 Ltac TransfInstr :=
@@ -669,38 +669,38 @@ Proof.
   left; econstructor; econstructor; split.
   eapply exec_Inop; eauto.
   eapply match_states_succ; eauto. simpl; auto.
-  unfold transfer; rewrite H. auto. 
+  unfold transfer; rewrite H. auto.
 
   (* Inop, skipped over *)
-  rewrite H0 in H; inv H. 
+  rewrite H0 in H; inv H.
   right; exists n; split. omega. split. auto.
   apply match_states_intro with app; auto.
-  eapply analyze_correct_1; eauto. simpl; auto. 
-  unfold transfer; rewrite H0. auto. 
+  eapply analyze_correct_1; eauto. simpl; auto.
+  unfold transfer; rewrite H0. auto.
 
   (* Iop *)
   rename pc'0 into pc. TransfInstr.
   set (app_before := (analyze gapp f)#pc).
   set (a := eval_static_operation op (approx_regs app_before args)).
   set (app_after := D.set res a app_before).
-  assert (VMATCH: val_match_approx ge sp a v).  
+  assert (VMATCH: val_match_approx ge sp a v).
     eapply eval_static_operation_correct; eauto.
     apply approx_regs_val_list; auto.
   assert (MATCH': regs_match_approx sp app_after rs#res <- v).
     apply regs_match_approx_update; auto.
   assert (MATCH'': regs_match_approx sp (analyze gapp f) # pc' rs # res <- v).
     eapply analyze_correct_1 with (pc := pc); eauto. simpl; auto.
-    unfold transfer; rewrite H. auto.  
+    unfold transfer; rewrite H. auto.
   destruct (const_for_result a) as [cop|] eqn:?; intros.
   (* constant is propagated *)
   left; econstructor; econstructor; split.
-  eapply exec_Iop; eauto. 
+  eapply exec_Iop; eauto.
 (*  eapply const_for_result_correct; eauto.
   apply match_states_intro with app_after; auto.
-  apply match_successor. 
+  apply match_successor.
   apply set_reg_lessdef; auto.
   (* operator is strength-reduced *)
-  exploit op_strength_reduction_correct. eexact MATCH2. reflexivity. eauto. 
+  exploit op_strength_reduction_correct. eexact MATCH2. reflexivity. eauto.
   fold app_before.
   destruct (op_strength_reduction op args (approx_regs app_before args)) as [op' args'].
   intros [v' [EV' LD']].
@@ -715,7 +715,7 @@ Proof.
   apply set_reg_lessdef; auto. eapply Val.lessdef_trans; eauto.
 
   (* Iload *)
-  rename pc'0 into pc. TransfInstr. 
+  rename pc'0 into pc. TransfInstr.
   set (ap1 := eval_static_addressing addr
                (approx_regs (analyze gapp f) # pc args)).
   set (ap2 := eval_static_load gapp chunk ap1).
@@ -763,7 +763,7 @@ Proof.
   left; econstructor; econstructor; split.
   eapply exec_Istore; eauto.
   eapply match_states_succ; eauto. simpl; auto.
-  unfold transfer; rewrite H. auto. 
+  unfold transfer; rewrite H. auto.
   eapply mem_match_approx_store; eauto.
 
   (* Icall *)
@@ -773,11 +773,11 @@ Proof.
   left; econstructor; econstructor; split.
   eapply exec_Icall; eauto. apply sig_function_translated; auto.
   constructor; auto. constructor; auto.
-  econstructor; eauto. 
+  econstructor; eauto.
   intros. eapply analyze_correct_1; eauto. simpl; auto.
   unfold transfer; rewrite H.
   apply regs_match_approx_update; auto. simpl. auto.
-  apply regs_lessdef_regs; auto. 
+  apply regs_lessdef_regs; auto.
 
   (* Itailcall *)
   exploit Mem.free_parallel_extends; eauto. intros [m2' [A B]].
@@ -785,65 +785,65 @@ Proof.
   TransfInstr; intro.
   left; econstructor; econstructor; split.
   eapply exec_Itailcall; eauto. apply sig_function_translated; auto.
-  constructor; auto. 
+  constructor; auto.
   eapply mem_match_approx_free; eauto.
-  apply regs_lessdef_regs; auto. 
+  apply regs_lessdef_regs; auto.
 
   (* Ibuiltin *)
   rename pc'0 into pc.
 Opaque builtin_strength_reduction.
-  exploit builtin_strength_reduction_correct; eauto. 
+  exploit builtin_strength_reduction_correct; eauto.
   TransfInstr.
   destruct (builtin_strength_reduction (analyze gapp f)#pc ef args) as [ef' args'].
   intros P Q.
-  exploit external_call_mem_extends; eauto. 
+  exploit external_call_mem_extends; eauto.
   instantiate (1 := rs'##args'). apply regs_lessdef_regs; auto.
   intros [v' [m2' [A [B [C D]]]]].
   left; econstructor; econstructor; split.
-  eapply exec_Ibuiltin. eauto. 
+  eapply exec_Ibuiltin. eauto.
   eapply external_call_symbols_preserved; eauto.
   exact symbols_preserved. exact varinfo_preserved.
   eapply match_states_succ; eauto. simpl; auto.
-  unfold transfer; rewrite H. 
+  unfold transfer; rewrite H.
   apply regs_match_approx_update; auto. simpl; auto.
-  eapply mem_match_approx_extcall; eauto. 
+  eapply mem_match_approx_extcall; eauto.
   apply set_reg_lessdef; auto.
 
   (* Icond, preserved *)
-  rename pc'0 into pc. TransfInstr. 
+  rename pc'0 into pc. TransfInstr.
   generalize (cond_strength_reduction_correct ge sp (analyze gapp f)#pc rs m
                     MATCH2 cond args (approx_regs (analyze gapp f) # pc args) (refl_equal _)).
   destruct (cond_strength_reduction cond args (approx_regs (analyze gapp f) # pc args)) as [cond' args'].
   intros EV1 TCODE.
-  left; exists O; exists (State s' (transf_function gapp f) sp (if b then ifso else ifnot) rs' m'); split. 
+  left; exists O; exists (State s' (transf_function gapp f) sp (if b then ifso else ifnot) rs' m'); split.
   destruct (eval_static_condition cond (approx_regs (analyze gapp f) # pc args)) eqn:?.
   assert (eval_condition cond rs ## args m = Some b0).
     eapply eval_static_condition_correct; eauto. eapply approx_regs_val_list; eauto.
   assert (b = b0) by congruence. subst b0.
-  destruct b; eapply exec_Inop; eauto. 
+  destruct b; eapply exec_Inop; eauto.
   eapply exec_Icond; eauto.
   eapply eval_condition_lessdef with (vl1 := rs##args'); eauto. eapply regs_lessdef_regs; eauto. congruence.
-  eapply match_states_succ; eauto. 
+  eapply match_states_succ; eauto.
   destruct b; simpl; auto.
   unfold transfer; rewrite H. auto.
 
   (* Icond, skipped over *)
-  rewrite H1 in H; inv H. 
+  rewrite H1 in H; inv H.
   assert (eval_condition cond rs ## args m = Some b0).
     eapply eval_static_condition_correct; eauto. eapply approx_regs_val_list; eauto.
   assert (b = b0) by congruence. subst b0.
-  right; exists n; split. omega. split. auto. 
+  right; exists n; split. omega. split. auto.
   assert (MATCH': regs_match_approx sp (analyze gapp f) # (if b then ifso else ifnot) rs).
     eapply analyze_correct_1; eauto. destruct b; simpl; auto.
     unfold transfer; rewrite H1; auto.
-  econstructor; eauto. constructor. 
+  econstructor; eauto. constructor.
 
   (* Ijumptable *)
   rename pc'0 into pc.
   assert (A: (fn_code (transf_function gapp f))!pc = Some(Ijumptable arg tbl)
              \/ (fn_code (transf_function gapp f))!pc = Some(Inop pc')).
   TransfInstr. destruct (approx_reg (analyze gapp f) # pc arg) eqn:?; auto.
-  generalize (MATCH2 arg). unfold approx_reg in Heqt. rewrite Heqt. rewrite H0. 
+  generalize (MATCH2 arg). unfold approx_reg in Heqt. rewrite Heqt. rewrite H0.
   simpl. intro EQ; inv EQ. rewrite H1. auto.
   assert (B: rs'#arg = Vint n).
   generalize (REGS arg); intro LD; inv LD; congruence.
@@ -859,7 +859,7 @@ Opaque builtin_strength_reduction.
   eapply exec_Ireturn; eauto. TransfInstr; auto.
   constructor; auto.
   eapply mem_match_approx_free; eauto.
-  destruct or; simpl; auto. 
+  destruct or; simpl; auto.
 
   (* internal function *)
   exploit Mem.alloc_extends. eauto. eauto. apply Zle_refl. apply Zle_refl.
@@ -875,7 +875,7 @@ Opaque builtin_strength_reduction.
   apply init_regs_lessdef; auto.
 
   (* external function *)
-  exploit external_call_mem_extends; eauto. 
+  exploit external_call_mem_extends; eauto.
   intros [v' [m2' [A [B [C D]]]]].
   simpl. left; econstructor; econstructor; split.
   eapply exec_function_external; eauto.
@@ -885,9 +885,9 @@ Opaque builtin_strength_reduction.
   eapply mem_match_approx_extcall; eauto.
 
   (* return *)
-  inv H4. inv H1. 
+  inv H4. inv H1.
   left; exists O; econstructor; split.
-  eapply exec_return; eauto. 
+  eapply exec_return; eauto.
   econstructor; eauto. constructor. apply set_reg_lessdef; auto.
 Qed.*)
 Admitted.
@@ -905,16 +905,16 @@ Proof.
   rewrite symbols_preserved. eauto.
   reflexivity.
   rewrite <- H3. apply sig_function_translated.
-  constructor. 
+  constructor.
   eapply mem_match_approx_init; eauto.
   constructor. constructor. apply Mem.extends_refl.
 Qed.
 
 Lemma transf_final_states:
-  forall n st1 st2 r, 
+  forall n st1 st2 r,
   match_states n st1 st2 -> final_state st1 r -> final_state st2 r.
 Proof.
-  intros. inv H0. inv H. inv STACKS. inv RES. constructor. 
+  intros. inv H0. inv H. inv STACKS. inv RES. constructor.
 Qed.
 
 (** The preservation of the observable behavior of the program then
@@ -924,14 +924,14 @@ Theorem transf_program_correct:
   forward_simulation (RTL.semantics prog) (RTL.semantics tprog).
 Proof.
   eapply Forward_simulation with (fsim_order := lt); simpl.
-  apply lt_wf. 
+  apply lt_wf.
   eexact transf_initial_states.
   eexact transf_final_states.
-  fold ge; fold tge. intros. 
-    exploit transf_step_correct; eauto. 
+  fold ge; fold tge. intros.
+    exploit transf_step_correct; eauto.
     intros [ [n2 [s2' [A B]]] | [n2 [A [B C]]]].
     exists n2; exists s2'; split; auto. left; apply plus_one; auto.
-    exists n2; exists s2; split; auto. right; split; auto. subst t; apply star_refl. 
+    exists n2; exists s2; split; auto. right; split; auto. subst t; apply star_refl.
   eexact symbols_preserved.
 Qed.
 

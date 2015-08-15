@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *               SPLITTING OF CLAUSES                     * */
 /* *                                                        * */
-/* *  $Module:   SPLIT                                      * */ 
+/* *  $Module:   SPLIT                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 2000                  * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _RULES_SPLIT_
@@ -55,16 +54,14 @@
 #include "clause.h"
 #include "search.h"
 
-
 /**************************************************************/
 /* Function Prototypes                                        */
-/**************************************************************/        
+/**************************************************************/
 
 LIST   split_Backtrack(PROOFSEARCH, CLAUSE, CLAUSE*);
 void   split_KeepClauseAtLevel(PROOFSEARCH, CLAUSE, int);
 void   split_DeleteClauseAtLevel(PROOFSEARCH, CLAUSE, int);
 LIST   split_ExtractEmptyClauses(LIST, LIST*);
 CLAUSE split_SmallestSplitLevelClause(LIST);
-
 
 #endif

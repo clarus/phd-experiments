@@ -218,7 +218,7 @@ Definition order_float (f1 f2:float): option Datatypes.comparison :=
   end.
 
 Definition cmp (c:comparison) (f1 f2:float) : bool := (**r comparison *)
-  match c with                                                                        
+  match c with
   | Ceq =>
       match order_float f1 f2 with Some Eq => true | _ => false end
   | Cne =>
@@ -231,7 +231,7 @@ Definition cmp (c:comparison) (f1 f2:float) : bool := (**r comparison *)
       match order_float f1 f2 with Some Gt => true | _ => false end
   | Cge =>
       match order_float f1 f2 with Some(Gt|Eq) => true | _ => false end
-  end. 
+  end.
 
 (** Conversions between floats and their concrete in-memory representation
     as a sequence of 64 bits (double precision) or 32 bits (single precision). *)
@@ -253,7 +253,7 @@ Ltac compute_this val :=
   let x := fresh in set val as x in *; vm_compute in x; subst x.
 
 Ltac smart_omega :=
-  simpl radix_val in *; simpl Zpower in *;  
+  simpl radix_val in *; simpl Zpower in *;
   compute_this Int.modulus; compute_this Int.half_modulus;
   compute_this Int.max_unsigned;
   compute_this Int.min_signed; compute_this Int.max_signed;
@@ -275,7 +275,7 @@ Proof.
 Qed.
 
 Lemma floatofbinary32_exact :
-  forall f, is_finite_strict _ _ f = true -> 
+  forall f, is_finite_strict _ _ f = true ->
     is_finite_strict _ _ (floatofbinary32 f) = true /\ B2R _ _ f = B2R _ _ (floatofbinary32 f).
 Proof.
   destruct f as [ | | |s m e]; try discriminate; intro.
@@ -330,7 +330,7 @@ Qed.
 Theorem singleoffloat_of_single:
   forall f, is_single f -> singleoffloat f = f.
 Proof.
-  intros. destruct H as [s EQ]. subst f. unfold singleoffloat. 
+  intros. destruct H as [s EQ]. subst f. unfold singleoffloat.
   rewrite binary32offloatofbinary32; reflexivity.
 Qed.
 
@@ -379,9 +379,9 @@ Proof.
   replace 0%R with (0*bpow radix2 e0)%R by ring; apply Rmult_lt_compat_r;
     [apply bpow_gt_0; reflexivity|now apply (Z2R_lt _ 0)].
   apply Rmult_gt_0_compat; [apply (Z2R_lt 0); reflexivity|now apply bpow_gt_0].
-  destruct b, b0; try (now apply_Rcompare; apply H5); inversion H3; 
+  destruct b, b0; try (now apply_Rcompare; apply H5); inversion H3;
     try (apply_Rcompare; apply H4; rewrite H, H1 in H7; assumption);
-    try (apply_Rcompare; do 2 rewrite Z2R_opp, Ropp_mult_distr_l_reverse; 
+    try (apply_Rcompare; do 2 rewrite Z2R_opp, Ropp_mult_distr_l_reverse;
       apply Ropp_lt_contravar; apply H4; rewrite H, H1 in H7; assumption);
     rewrite H7, Rcompare_mult_r, Rcompare_Z2R by (apply bpow_gt_0); reflexivity.
 Qed.
@@ -510,7 +510,7 @@ Lemma round_exact:
     round radix2 (FLT_exp (3 - 1024 - 53) 53)
       (round_mode mode_NE) (Z2R n) = Z2R n.
 Proof.
-  intros; rewrite round_generic; [reflexivity|now apply valid_rnd_round_mode|].  
+  intros; rewrite round_generic; [reflexivity|now apply valid_rnd_round_mode|].
   apply generic_format_FLT; exists (Float radix2 n 0).
   unfold F2R, Fnum, Fexp, bpow; rewrite Rmult_1_r; intuition.
   pose proof (Zabs_spec n); now smart_omega.
@@ -531,7 +531,7 @@ Theorem floatofintu_floatofint_1:
   Int.ltu x ox8000_0000 = true ->
   floatofintu x = floatofint x.
 Proof.
-  unfold floatofintu, floatofint, Int.signed, Int.ltu; intro. 
+  unfold floatofintu, floatofint, Int.signed, Int.ltu; intro.
   change (Int.unsigned ox8000_0000) with Int.half_modulus.
   destruct (zlt (Int.unsigned x) Int.half_modulus); now intuition.
 Qed.
@@ -542,19 +542,19 @@ Theorem floatofintu_floatofint_2:
   floatofintu x = add (floatofint (Int.sub x ox8000_0000))
                       (floatofintu ox8000_0000).
 Proof.
-  unfold floatofintu, floatofint, Int.signed, Int.ltu, Int.sub; intros. 
+  unfold floatofintu, floatofint, Int.signed, Int.ltu, Int.sub; intros.
   pose proof (Int.unsigned_range x).
   compute_this (Int.unsigned ox8000_0000).
   destruct (zlt (Int.unsigned x) 2147483648); try  discriminate.
   rewrite Int.unsigned_repr by smart_omega.
   destruct (zlt ((Int.unsigned x) - 2147483648) Int.half_modulus).
-  unfold add, b64_plus. 
+  unfold add, b64_plus.
   match goal with [|- _ = Bplus _ _ _ _ _ ?x ?y] =>
     pose proof (Bplus_correct 53 1024 eq_refl eq_refl mode_NE x y) end.
   do 2 rewrite (fun x H => proj1 (binary_normalize64_exact x H)) in H1 by smart_omega.
   do 2 rewrite (fun x H => proj2 (binary_normalize64_exact x H)) in H1 by smart_omega.
-  rewrite <- Z2R_plus, round_exact in H1 by smart_omega. 
-  rewrite Rlt_bool_true in H1; 
+  rewrite <- Z2R_plus, round_exact in H1 by smart_omega.
+  rewrite Rlt_bool_true in H1;
     replace (Int.unsigned x - 2147483648 + 2147483648) with (Int.unsigned x) in * by ring.
   apply B2R_inj.
   destruct (binary_normalize64_exact (Int.unsigned x)); [now smart_omega|].
@@ -587,7 +587,7 @@ Proof.
   now apply valid_rnd_round_mode.
   apply generic_format_FIX. exists (Float radix2 (cond_Zopp b (Zpos m)) 0). split; reflexivity.
   split; [reflexivity|].
-  rewrite round_generic, Z2R_mult, Z2R_Zpower_pos, <- bpow_powerRZ; 
+  rewrite round_generic, Z2R_mult, Z2R_Zpower_pos, <- bpow_powerRZ;
     [reflexivity|now apply valid_rnd_round_mode|apply generic_format_F2R; discriminate].
   rewrite (inbetween_float_ZR_sign _ _ _ ((Zpos m) / Zpower_pos radix2 p)
     (new_location (Zpower_pos radix2 p) (Zpos m mod Zpower_pos radix2 p) loc_Exact)).
@@ -624,7 +624,7 @@ Theorem intoffloat_correct:
     end.
 Proof.
   intro; pose proof (Zoffloat_correct f); unfold intoffloat; destruct (Zoffloat f).
-  pose proof (Zle_bool_spec Int.min_signed z); pose proof (Zle_bool_spec z Int.max_signed). 
+  pose proof (Zle_bool_spec Int.min_signed z); pose proof (Zle_bool_spec z Int.max_signed).
   compute_this Int.min_signed; compute_this Int.max_signed; destruct H.
   inversion H0; [inversion H1|].
   rewrite <- (Int.signed_repr z) in H2 by smart_omega; split; assumption.
@@ -656,7 +656,7 @@ Theorem intuoffloat_correct:
     end.
 Proof.
   intro; pose proof (Zoffloat_correct f); unfold intuoffloat; destruct (Zoffloat f).
-  pose proof (Zle_bool_spec 0 z); pose proof (Zle_bool_spec z Int.max_unsigned). 
+  pose proof (Zle_bool_spec 0 z); pose proof (Zle_bool_spec z Int.max_unsigned).
   compute_this Int.max_unsigned; destruct H.
   inversion H0. inversion H1.
   rewrite <- (Int.unsigned_repr z) in H2 by smart_omega; split; assumption.
@@ -684,14 +684,14 @@ Proof.
   simpl B2R; change 0%R with (Z2R 0); change (-1)%R with (Z2R (-1)); split; apply Z2R_lt; reflexivity.
   pose proof (Int.unsigned_range i).
   unfold round, scaled_mantissa, B2R, F2R, Fnum, Fexp in H0 |- *; simpl bpow in H0; do 2 rewrite Rmult_1_r in H0;
-    apply eq_Z2R in H0. 
+    apply eq_Z2R in H0.
   split; apply Rnot_le_lt; intro.
   rewrite Ztrunc_ceil in H0;
     [apply Zceil_le in H3; change (-1)%R with (Z2R (-1)) in H3; rewrite Zceil_Z2R in H3; omega|].
   eapply Rle_trans; [now apply H3|apply (Z2R_le (-1) 0); discriminate].
   rewrite Ztrunc_floor in H0; [apply Zfloor_le in H3; rewrite Zfloor_Z2R in H3; now smart_omega|].
   eapply Rle_trans; [|now apply H3]; apply (Z2R_le 0); discriminate.
-Qed.  
+Qed.
 
 Theorem intuoffloat_intoffloat_1:
   forall x n,
@@ -709,7 +709,7 @@ Proof.
   destruct H4; [rewrite H2 in H4; discriminate|].
   apply intuoffloat_interval in H0; exfalso; destruct H0, H4.
   eapply Rlt_le_trans in H0; [|now apply H4]; apply (lt_Z2R (-1)) in H0; discriminate.
-  apply Rcompare_Lt_inv in H1; eapply Rle_lt_trans in H1; [|now apply H4]. 
+  apply Rcompare_Lt_inv in H1; eapply Rle_lt_trans in H1; [|now apply H4].
   unfold floatofintu in H1; rewrite (fun x H => proj1 (binary_normalize64_exact x H)) in H1;
     [apply lt_Z2R in H1; discriminate|split; reflexivity].
 Qed.
@@ -740,15 +740,15 @@ Proof.
     [rewrite H in H2; simpl B2R in H2; apply (eq_Z2R 0) in H2; discriminate|reflexivity].
   reflexivity.
   rewrite H in H2; apply Rcompare_Gt_inv in H2; pose proof (intuoffloat_interval _ _ H1).
-  unfold sub, b64_minus. 
+  unfold sub, b64_minus.
   exploit (Bminus_correct 53 1024 eq_refl eq_refl mode_NE x (floatofintu ox8000_0000)); [assumption|reflexivity|]; intro.
   rewrite H, round_generic in H6.
-  match goal with [H6:if Rlt_bool ?x ?y then _ else _|-_] => 
+  match goal with [H6:if Rlt_bool ?x ?y then _ else _|-_] =>
     pose proof (Rlt_bool_spec x y); destruct (Rlt_bool x y) end.
   destruct H6.
   match goal with [|- _ ?y = _] => pose proof (intoffloat_correct y); destruct (intoffloat y) end.
   destruct H9.
-  f_equal; rewrite <- (Int.repr_signed i); unfold Int.sub; f_equal; apply eq_Z2R. 
+  f_equal; rewrite <- (Int.repr_signed i); unfold Int.sub; f_equal; apply eq_Z2R.
   rewrite Z2R_minus, H10, H4.
   unfold round, scaled_mantissa, F2R, Fexp, Fnum, round_mode; simpl bpow; repeat rewrite Rmult_1_r;
     rewrite <- Z2R_minus; f_equal.
@@ -787,21 +787,21 @@ Lemma split_bits_or:
 Proof.
   intros.
   transitivity (split_bits 52 11 (join_bits 52 11 false (Int.unsigned x) 1075)).
-  - f_equal. rewrite Int64.ofwords_add'. reflexivity. 
-  - apply split_join_bits. 
+  - f_equal. rewrite Int64.ofwords_add'. reflexivity.
+  - apply split_join_bits.
     compute; auto.
-    generalize (Int.unsigned_range x). 
-    compute_this Int.modulus; compute_this (2^52); omega. 
+    generalize (Int.unsigned_range x).
+    compute_this Int.modulus; compute_this (2^52); omega.
     compute_this (2^11); omega.
 Qed.
 
 Lemma from_words_value:
   forall x,
-    B2R _ _ (from_words ox4330_0000 x) = 
+    B2R _ _ (from_words ox4330_0000 x) =
     (bpow radix2 52 + Z2R (Int.unsigned x))%R /\
     is_finite _ _ (from_words ox4330_0000 x) = true.
 Proof.
-  intros; unfold from_words, double_of_bits, b64_of_bits, binary_float_of_bits. 
+  intros; unfold from_words, double_of_bits, b64_of_bits, binary_float_of_bits.
   rewrite B2R_FF2B; unfold is_finite; rewrite match_FF2B;
   unfold binary_float_of_bits_aux; rewrite split_bits_or; simpl; pose proof (Int.unsigned_range x).
   destruct (Int.unsigned x + Zpower_pos 2 52) eqn:?.
@@ -819,7 +819,7 @@ Theorem floatofintu_from_words:
     sub (from_words ox4330_0000 x) (from_words ox4330_0000 Int.zero).
 Proof.
   intros; destruct (Int.eq_dec x Int.zero); [subst; vm_compute; reflexivity|].
-  assert (Int.unsigned x <> 0). 
+  assert (Int.unsigned x <> 0).
   intro; destruct n; rewrite <- (Int.repr_unsigned x), H; reflexivity.
   pose proof (Int.unsigned_range x).
   pose proof (binary_normalize64_exact (Int.unsigned x)). destruct H1; [smart_omega|].
@@ -832,15 +832,15 @@ Proof.
   replace (bpow radix2 52 + Z2R (Int.unsigned x) -
     (bpow radix2 52 + Z2R 0))%R with (Z2R (Int.unsigned x)) in H3 by (simpl; ring).
   rewrite round_exact in H3 by smart_omega.
-  match goal with [H3:if Rlt_bool ?x ?y then _ else _ |- _] => 
-    pose proof (Rlt_bool_spec x y); destruct (Rlt_bool x y) end; destruct H3. 
+  match goal with [H3:if Rlt_bool ?x ?y then _ else _ |- _] =>
+    pose proof (Rlt_bool_spec x y); destruct (Rlt_bool x y) end; destruct H3.
   try (change (53 ?= 1024) with Lt in H3,H5).  (* for Coq 8.4 *)
   simpl Zcompare in *; apply B2R_inj;
-    try match goal with [H':B2R _ _ ?f = _ , H'':is_finite _ _ ?f = true |- is_finite_strict _ _ ?f = true] => 
+    try match goal with [H':B2R _ _ ?f = _ , H'':is_finite _ _ ?f = true |- is_finite_strict _ _ ?f = true] =>
       destruct f; [
-        simpl in H'; change 0%R with (Z2R 0) in H'; apply eq_Z2R in H'; now destruct (H (eq_sym H')) | 
+        simpl in H'; change 0%R with (Z2R 0) in H'; apply eq_Z2R in H'; now destruct (H (eq_sym H')) |
         discriminate H'' | discriminate H'' | reflexivity
-      ] 
+      ]
     end.
   rewrite H3; assumption.
   inversion H4; change (bpow radix2 1024) with (Z2R (radix2 ^ 1024)) in H6; rewrite <- Z2R_abs in H6.
@@ -849,7 +849,7 @@ Proof.
 Qed.
 
 Lemma ox8000_0000_signed_unsigned:
-  forall x, 
+  forall x,
     Int.unsigned (Int.add x ox8000_0000) = Int.signed x + Int.half_modulus.
 Proof.
   intro; unfold Int.signed, Int.add; pose proof (Int.unsigned_range x).
@@ -881,19 +881,19 @@ Local Transparent Int.repr Int64.repr.
     (bpow radix2 52 + Z2R (Int.unsigned ox8000_0000)))%R with (Z2R (Int.signed x)) in H3
   by (rewrite ox8000_0000_signed_unsigned; rewrite Z2R_plus; simpl; ring).
   rewrite round_exact in H3 by smart_omega.
-  match goal with [H3:if Rlt_bool ?x ?y then _ else _ |- _] => 
-    pose proof (Rlt_bool_spec x y); destruct (Rlt_bool x y) end; destruct H3. 
+  match goal with [H3:if Rlt_bool ?x ?y then _ else _ |- _] =>
+    pose proof (Rlt_bool_spec x y); destruct (Rlt_bool x y) end; destruct H3.
   try (change (0 ?= 53) with Lt in H3,H5).  (* for Coq 8.4 *)
   try (change (53 ?= 1024) with Lt in H3,H5).  (* for Coq 8.4 *)
   simpl Zcompare in *; apply B2R_inj;
-    try match goal with [H':B2R _ _ ?f = _ , H'':is_finite _ _ ?f = true |- is_finite_strict _ _ ?f = true] => 
+    try match goal with [H':B2R _ _ ?f = _ , H'':is_finite _ _ ?f = true |- is_finite_strict _ _ ?f = true] =>
       destruct f; [
-        simpl in H'; change 0%R with (Z2R 0) in H'; apply eq_Z2R in H'; now destruct (H (eq_sym H')) | 
+        simpl in H'; change 0%R with (Z2R 0) in H'; apply eq_Z2R in H'; now destruct (H (eq_sym H')) |
         discriminate H'' | discriminate H'' | reflexivity
-      ] 
+      ]
     end.
   rewrite H3; assumption.
-  inversion H4; unfold bpow in H6; rewrite <- Z2R_abs in H6; 
+  inversion H4; unfold bpow in H6; rewrite <- Z2R_abs in H6;
     apply le_Z2R in H6; pose proof (Zabs_spec (Int.signed x)); exfalso; now smart_omega.
 Qed.
 

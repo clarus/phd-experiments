@@ -17,7 +17,7 @@
 #     * Neither the name of the <organization> nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -35,7 +35,7 @@
 # Helper functions for 64-bit integer arithmetic.  PowerPC version.
 
 	.text
-	
+
 # Unsigned division and modulus
 
 # This function computes both the quotient and the remainder of two
@@ -43,8 +43,8 @@
 
 # Input:  numerator N in (r3,r4), divisor D in (r5,r6)
 # Output: quotient Q in (r7,r8),  remainder R in (r3,r4)
-# Locals: mask M in (r9,r10)	
-	
+# Locals: mask M in (r9,r10)
+
 	.globl  __i64_udivmod
 	.balign 16
 __i64_udivmod:

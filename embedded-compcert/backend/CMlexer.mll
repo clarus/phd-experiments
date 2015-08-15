@@ -21,8 +21,8 @@ exception Error of string
 }
 
 let blank = [' ' '\009' '\012' '\010' '\013']
-let floatlit = 
- ("-"? (['0'-'9'] ['0'-'9' '_']* 
+let floatlit =
+ ("-"? (['0'-'9'] ['0'-'9' '_']*
   ('.' ['0'-'9' '_']* )?
   (['e' 'E'] ['+' '-']? ['0'-'9'] ['0'-'9' '_']*)? )) | "inf" | "nan"
 let ident = ['A'-'Z' 'a'-'z' '_'] ['A'-'Z' 'a'-'z' '_' '$' '0'-'9']*
@@ -60,7 +60,7 @@ rule token = parse
   | "float64"    { FLOAT64 }
   | "floatofint"    { FLOATOFINT }
   | "floatofintu"    { FLOATOFINTU }
-  | "goto"  { GOTO } 
+  | "goto"  { GOTO }
   | ">"    { GREATER }
   | ">f"    { GREATERF }
   | ">u"    { GREATERU }

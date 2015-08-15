@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                 FLAGS OF SPASS                         * */
 /* *                                                        * */
-/* *  $Module:   FLAGS                                      * */ 
+/* *  $Module:   FLAGS                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _FLAGS_
@@ -61,14 +60,14 @@
 extern const int flag_CLEAN;
 
 /* Define the legal values for all flags as data types.
-  
-   All flags have a minimum and a maximum. Legal values are 
-   within that range, *excluding* the minimum, maximum value. By using 
-   flag_XXXMIN and flag_XXXMAX we have a simple test for a 
+
+   All flags have a minimum and a maximum. Legal values are
+   within that range, *excluding* the minimum, maximum value. By using
+   flag_XXXMIN and flag_XXXMAX we have a simple test for a
    flag's correctness:
 
      if
-       flag value <= flag minimum 
+       flag value <= flag minimum
        or flag value >= flag maximum
      then
        the flag has an illegal state.
@@ -104,7 +103,7 @@ typedef enum { flag_BOUNDLOOPSMIN = 0,
 /* State definitions for flag_BOUNDMODE */
 typedef enum { flag_BOUNDMODEMIN = -1,
 	       flag_BOUNDMODEUNLIMITED,
-	       flag_BOUNDMODERESTRICTEDBYWEIGHT, 
+	       flag_BOUNDMODERESTRICTEDBYWEIGHT,
 	       flag_BOUNDMODERESTRICTEDBYDEPTH,
 	       flag_BOUNDMODEMAX
 } FLAG_BOUNDMODETYPE;
@@ -374,7 +373,7 @@ typedef enum { flag_MEMORYMIN = -2,
 
 /* State definitions for flag_ORD */
 typedef enum { flag_ORDMIN = -1,
-	       flag_ORDKBO, 
+	       flag_ORDKBO,
 	       flag_ORDRPOS,
 	       flag_ORDMAX
 } FLAG_ORDTYPE;
@@ -749,7 +748,6 @@ typedef enum { flag_WDRATIOMIN = 0,
 	       flag_WDRATIOMAX = INT_MAX
 } FLAG_WDRATIOTYPE;
 
-
 /* Define all flags */
 
 typedef enum { flag_AUTO, flag_STDIN, flag_INTERACTIVE, flag_FLOTTER,
@@ -774,14 +772,14 @@ typedef enum { flag_AUTO, flag_STDIN, flag_INTERACTIVE, flag_FLOTTER,
 	       flag_SATINPUT,   flag_WDRATIO,    flag_PREFCON,
 	       flag_FULLRED,
 	       flag_FUNCWEIGHT, flag_VARWEIGHT,  flag_PREFVAR,
-	       flag_BOUNDMODE,  flag_BOUNDSTART, 
+	       flag_BOUNDMODE,  flag_BOUNDSTART,
 	       flag_BOUNDLOOPS, flag_APPLYDEFS,
 
 	       flag_ORD,
 
 	       flag_CNFOPTSKOLEM, flag_CNFSTRSKOLEM, flag_CNFPROOFSTEPS,
 	       flag_CNFRENAMING,  flag_CNFPRENAMING, flag_CNFFEQREDUCTIONS,
-	       
+
 	       flag_IEMS,       flag_ISOR,
 	       flag_IEQR,       flag_IERR,
 	       flag_IEQF,       flag_IMPM,       flag_ISPR,
@@ -797,12 +795,11 @@ typedef enum { flag_AUTO, flag_STDIN, flag_INTERACTIVE, flag_FLOTTER,
 	       flag_ROBV,       flag_RUNC,       flag_RTER,
 	       flag_RTAUT,      flag_RSST,       flag_RSSI,
 	       flag_RFSUB,      flag_RBSUB,      flag_RAED,
-	       flag_RCON,       
-	       
+	       flag_RCON,
+
 	       flag_TDFG2OTTEROPTIONS,
 
 	       flag_MAXFLAG } FLAG_ID;     /* flag_MAXFLAG is a final Dummy */
-
 
 /* Define different flag types */
 typedef enum { flag_INFERENCE,
@@ -811,7 +808,6 @@ typedef enum { flag_INFERENCE,
 	       flag_UNIQUE,               /* miscellaneous flags */
 	       flag_MAXTYPE
 } FLAG_TYPE;
-
 
 /* Define the flag data type */
 typedef int FLAG;
@@ -864,7 +860,7 @@ static __inline__ void flag_CheckFlagValueInRange(FLAG_ID FlagId, int Value)
   /* prints an error report if a flag's value is out of range */
 {
   flag_CheckFlagIdInRange(FlagId);
- 
+
   if (Value <= flag_Minimum(FlagId)) {
      misc_StartUserErrorReport();
      misc_UserErrorReport("\n Error: Flag value %d is too small for flag %s.\n", Value, flag_Name(FlagId));
@@ -947,9 +943,8 @@ static __inline__ void flag_CleanStore(FLAGSTORE Store)
 {
   int i;
   for (i = 0; i < flag_MAXFLAG; i++)
-    Store[i] = flag_CLEAN;  
+    Store[i] = flag_CLEAN;
 }
-
 
 static __inline__ FLAGSTORE flag_CreateStore(void)
      /* creates a fresh, clean FLAGSTORE */
@@ -961,7 +956,6 @@ static __inline__ FLAGSTORE flag_CreateStore(void)
   return store;
 }
 
-
 static __inline__ void flag_DeleteStore(FLAGSTORE Store)
 {
 #ifdef CHECK
@@ -972,26 +966,22 @@ static __inline__ void flag_DeleteStore(FLAGSTORE Store)
   memory_Free(Store,sizeof(FLAGARRAY));
 }
 
-
 static __inline__ void flag_InitStoreByDefaults(FLAGSTORE Store)
 {
   FLAG_ID i;
   for (i = (FLAG_ID) 0; i < flag_MAXFLAG; i++)
-    flag_SetFlagValue(Store, i, flag_GetFlagValue(flag_DefaultStore(),i));  
+    flag_SetFlagValue(Store, i, flag_GetFlagValue(flag_DefaultStore(),i));
 }
-
 
 static __inline__ void flag_SetFlagToDefault(FLAGSTORE Store, FLAG_ID Flag)
 {
   flag_SetFlagValue(Store, Flag, flag_GetFlagValue(flag_DefaultStore(), Flag));
 }
 
-
 static __inline__ void flag_TransferFlag(FLAGSTORE Source, FLAGSTORE Destination, FLAG_ID FlagId)
 {
   flag_SetFlagValue(Destination, FlagId, flag_GetFlagValue(Source, FlagId));
 }
-
 
 static __inline__ void flag_TransferAllFlags(FLAGSTORE Source, FLAGSTORE Destination)
 {
@@ -1000,7 +990,6 @@ static __inline__ void flag_TransferAllFlags(FLAGSTORE Source, FLAGSTORE Destina
     Destination[i] = Source[i];
 }
 
-
 static __inline__ void flag_TransferSetFlags(FLAGSTORE Source, FLAGSTORE Destination)
 {
   FLAG_ID i;
@@ -1008,7 +997,6 @@ static __inline__ void flag_TransferSetFlags(FLAGSTORE Source, FLAGSTORE Destina
     if (!flag_ValueIsClean(Source,i))
       flag_TransferFlag(Source, Destination, i);
 }
-
 
 static __inline__ BOOL flag_IsOfType(FLAG_ID Flag, FLAG_TYPE Type)
 /**************************************************************
@@ -1023,8 +1011,7 @@ static __inline__ BOOL flag_IsOfType(FLAG_ID Flag, FLAG_TYPE Type)
   return (BOOL) (flag_Type(Flag) == Type);
 }
 
-
-static __inline__ BOOL flag_IsInference(FLAG_ID Flag) 
+static __inline__ BOOL flag_IsInference(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
   RETURNS: TRUE is the flag is an inference flag,
@@ -1036,8 +1023,7 @@ static __inline__ BOOL flag_IsInference(FLAG_ID Flag)
   return flag_IsOfType(Flag, flag_INFERENCE);
 }
 
-
-static __inline__ BOOL flag_IsReduction(FLAG_ID Flag) 
+static __inline__ BOOL flag_IsReduction(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
   RETURNS: TRUE is the flag is a reduction flag,
@@ -1049,8 +1035,7 @@ static __inline__ BOOL flag_IsReduction(FLAG_ID Flag)
   return flag_IsOfType(Flag, flag_REDUCTION);
 }
 
-
-static __inline__ BOOL flag_IsPrinting(FLAG_ID Flag) 
+static __inline__ BOOL flag_IsPrinting(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
   RETURNS: TRUE is the flag is a printing flag,
@@ -1062,8 +1047,7 @@ static __inline__ BOOL flag_IsPrinting(FLAG_ID Flag)
   return flag_IsOfType(Flag, flag_PRINTING);
 }
 
-
-static __inline__ BOOL flag_IsUnique(FLAG_ID Flag) 
+static __inline__ BOOL flag_IsUnique(FLAG_ID Flag)
 /**************************************************************
   INPUT:   A FlagId.
   RETURNS: TRUE is the flag is an unique flag,
@@ -1074,7 +1058,6 @@ static __inline__ BOOL flag_IsUnique(FLAG_ID Flag)
 
   return flag_IsOfType(Flag, flag_UNIQUE);
 }
-
 
 static __inline__ void flag_PrintReductionRules(FLAGSTORE Store)
 /**************************************************************
@@ -1109,9 +1092,3 @@ static __inline__ void flag_PrintInferenceRules(FLAGSTORE Store)
 }
 
 #endif
-
-
-
-
-
-

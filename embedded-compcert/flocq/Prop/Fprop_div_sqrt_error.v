@@ -61,14 +61,12 @@ exists (Float beta (Ztrunc (scaled_mantissa beta fexp x)) (canonic_exp beta fexp
 split; auto.
 Qed.
 
-
 Context { prec_gt_0_ : Prec_gt_0 prec }.
 
 Notation format := (generic_format beta (FLX_exp prec)).
 Notation cexp := (canonic_exp beta (FLX_exp prec)).
 
 Variable choice : Z -> bool.
-
 
 (** Remainder of the division in FLX *)
 Theorem div_error_FLX :

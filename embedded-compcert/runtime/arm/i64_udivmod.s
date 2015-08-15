@@ -17,7 +17,7 @@
 @     * Neither the name of the <organization> nor the
 @       names of its contributors may be used to endorse or promote products
 @       derived from this software without specific prior written permission.
-@ 
+@
 @ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 @ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 @ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -38,10 +38,10 @@
 
 @@@ Auxiliary function for division and modulus. Don't call from C
 
-@ On entry:  N = (r0, r1) numerator    D = (r2, r3) divisor	
-@ On exit:   Q = (r4, r5) quotient     R = (r0, r1) remainder	
-@ Locals:    M = (r6, r7) mask         TMP = r8 temporary	
-	
+@ On entry:  N = (r0, r1) numerator    D = (r2, r3) divisor
+@ On exit:   Q = (r4, r5) quotient     R = (r0, r1) remainder
+@ Locals:    M = (r6, r7) mask         TMP = r8 temporary
+
 	.global __i64_udivmod
 __i64_udivmod:
         orrs r8, r2, r3         @ is D == 0?

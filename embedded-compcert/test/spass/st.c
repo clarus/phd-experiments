@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                    ST INDEXING                         * */
 /* *                                                        * */
-/* *  $Module:   ST                                         * */ 
+/* *  $Module:   ST                                         * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,11 +42,9 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "st.h"
-
 
 /**************************************************************/
 /* Local Variables                                            */
@@ -65,7 +63,6 @@ ST_STACK st_STACK;
 int      st_STACKPOINTER;
 int      st_STACKSAVE;
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -73,7 +70,6 @@ int      st_STACKSAVE;
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 st_INDEX st_IndexCreate(void)
 /**************************************************************
@@ -94,7 +90,6 @@ st_INDEX st_IndexCreate(void)
   return StIndex;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -103,14 +98,13 @@ st_INDEX st_IndexCreate(void)
 /* ********************************************************** */
 /**************************************************************/
 
-
 static st_INDEX st_NodeAddLeaf(SUBST Subst, st_MINMAX MinMax, POINTER Pointer)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
-{ 
+{
   st_INDEX NewLeaf;
 
   NewLeaf           = st_Get();
@@ -123,13 +117,12 @@ static st_INDEX st_NodeAddLeaf(SUBST Subst, st_MINMAX MinMax, POINTER Pointer)
   return NewLeaf;
 }
 
-
 static void st_NodeAddInner(st_INDEX StIndex, SUBST SubstOld, SUBST SubstNew,
 			    SUBST ComGen, st_MINMAX MinMax, POINTER Pointer)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   st_INDEX OldIndexNode;
@@ -154,7 +147,6 @@ static void st_NodeAddInner(st_INDEX StIndex, SUBST SubstOld, SUBST SubstNew,
     st_SetMin(StIndex, MinMax);
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -163,12 +155,11 @@ static void st_NodeAddInner(st_INDEX StIndex, SUBST SubstOld, SUBST SubstNew,
 /* ********************************************************** */
 /**************************************************************/
 
-
 static void st_NodeMergeWithSon(st_INDEX StIndex)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   st_INDEX SubNode;
@@ -188,7 +179,6 @@ static void st_NodeMergeWithSon(st_INDEX StIndex)
   st_Free(SubNode);
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -197,12 +187,11 @@ static void st_NodeMergeWithSon(st_INDEX StIndex)
 /* ********************************************************** */
 /**************************************************************/
 
-
 static void st_CloseUsedVariables(const CONTEXT Context, LIST NodeList)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   for (; list_Exist(NodeList); NodeList = list_Cdr(NodeList)) {
@@ -219,7 +208,6 @@ static void st_CloseUsedVariables(const CONTEXT Context, LIST NodeList)
   }
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -228,12 +216,11 @@ static void st_CloseUsedVariables(const CONTEXT Context, LIST NodeList)
 /* ********************************************************** */
 /**************************************************************/
 
-
 static st_INDEX st_FirstVariant(const CONTEXT Context, LIST Subnodes, st_INDEX* BestNonVariant)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   st_INDEX EmptyVariant;
@@ -248,7 +235,7 @@ static st_INDEX st_FirstVariant(const CONTEXT Context, LIST Subnodes, st_INDEX* 
     cont_StartBinding();
 
     if (subst_Variation(Context, CurrentNode->subst)) {
-      if (subst_Exist(CurrentNode->subst)) {	
+      if (subst_Exist(CurrentNode->subst)) {
 	subst_CloseVariables(Context, CurrentNode->subst);
 
 	return CurrentNode;
@@ -265,7 +252,6 @@ static st_INDEX st_FirstVariant(const CONTEXT Context, LIST Subnodes, st_INDEX* 
   return EmptyVariant;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -274,12 +260,11 @@ static st_INDEX st_FirstVariant(const CONTEXT Context, LIST Subnodes, st_INDEX* 
 /* ********************************************************** */
 /**************************************************************/
 
-
 void st_EntryCreate(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT Context)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   st_INDEX  Current;
@@ -309,17 +294,17 @@ void st_EntryCreate(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT 
       st_SetMax(Current, MinMax);
     else if (st_Min(Current) > MinMax)
       st_SetMin(Current, MinMax);
-    
+
     StIndex = Current;
   }
 
   if (cont_BindingsSinceLastStart()==0 && Current && st_IsLeaf(Current)) {
-    
+
     /* INSERT ENTRY EQUAL MODULO RENAMING */
     Current->entries = list_Cons(Pointer, Current->entries);
-  
+
   } else if (BestNonVariant) {
-    
+
     /* CREATE INNER NODE AND A NEW LEAF */
     SUBST ComGen, SubstOld, SubstNew;
 
@@ -334,9 +319,9 @@ void st_EntryCreate(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT 
 		    ComGen,
 		    MinMax,
 		    Pointer);
-    
+
   } else
-    
+
     /* ADD A SINGLE LEAF NODE TO FATHER */
     StIndex->subnodes =
       list_Cons(st_NodeAddLeaf(subst_CloseOpenVariables(subst_Nil()), MinMax,
@@ -346,7 +331,6 @@ void st_EntryCreate(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT 
   cont_Reset();
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -354,7 +338,6 @@ void st_EntryCreate(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT 
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 void st_IndexDelete(st_INDEX StIndex)
 /**************************************************************
@@ -374,7 +357,6 @@ void st_IndexDelete(st_INDEX StIndex)
   st_Free(StIndex);
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -382,7 +364,6 @@ void st_IndexDelete(st_INDEX StIndex)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 static st_INDEX st_EntryDeleteHelp(const CONTEXT Context, st_INDEX StIndex, POINTER Pointer,
 				   BOOL* Found)
@@ -431,7 +412,7 @@ static st_INDEX st_EntryDeleteHelp(const CONTEXT Context, st_INDEX StIndex, POIN
 	    if (list_Empty(list_Cdr(StIndex->subnodes))) {
 	      /* 'StIndex' has one subnode only. */
 	      st_NodeMergeWithSon(StIndex);
-	  
+
 	      return StIndex;
 	    }
 
@@ -464,14 +445,13 @@ static st_INDEX st_EntryDeleteHelp(const CONTEXT Context, st_INDEX StIndex, POIN
   }
 }
 
-
 BOOL st_EntryDelete(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT Context)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
-{ 
+{
   BOOL   Found;
   LIST   Subnodes;
   SYMBOL FirstDomain;
@@ -529,7 +509,6 @@ BOOL st_EntryDelete(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT 
   return Found;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -538,12 +517,11 @@ BOOL st_EntryDelete(st_INDEX StIndex, POINTER Pointer, TERM Term, const CONTEXT 
 /* ********************************************************** */
 /**************************************************************/
 
-
 static LIST st_TraverseTreeUnifier(CONTEXT IndexContext, st_INDEX StIndex)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   int      Save;
@@ -555,11 +533,11 @@ static LIST st_TraverseTreeUnifier(CONTEXT IndexContext, st_INDEX StIndex)
 
   Result      = list_Nil();
   CurrentList = StIndex->subnodes;
-  
+
   cont_StartBinding();
 
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -569,7 +547,7 @@ static LIST st_TraverseTreeUnifier(CONTEXT IndexContext, st_INDEX StIndex)
 
       CurrentList = stack_PopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 subst_Unify(IndexContext, CurrentNode->subst);
@@ -583,19 +561,18 @@ static LIST st_TraverseTreeUnifier(CONTEXT IndexContext, st_INDEX StIndex)
 	cont_StartBinding();
       } else
 	cont_StopAndStartBinding();
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static LIST st_TraverseTreeGen(CONTEXT IndexContext, st_INDEX StIndex)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   int      Save;
@@ -609,9 +586,9 @@ static LIST st_TraverseTreeGen(CONTEXT IndexContext, st_INDEX StIndex)
   CurrentList = StIndex->subnodes;
 
   cont_StartBinding();
-  
+
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -621,7 +598,7 @@ static LIST st_TraverseTreeGen(CONTEXT IndexContext, st_INDEX StIndex)
 
       CurrentList = stack_PopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 subst_Match(IndexContext, CurrentNode->subst);
@@ -635,19 +612,18 @@ static LIST st_TraverseTreeGen(CONTEXT IndexContext, st_INDEX StIndex)
 	cont_StartBinding();
       } else
 	cont_StopAndStartBinding();
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static LIST st_TraverseTreeInstance(CONTEXT IndexContext, st_INDEX StIndex)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   int      Save;
@@ -663,7 +639,7 @@ static LIST st_TraverseTreeInstance(CONTEXT IndexContext, st_INDEX StIndex)
   cont_StartBinding();
 
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -673,7 +649,7 @@ static LIST st_TraverseTreeInstance(CONTEXT IndexContext, st_INDEX StIndex)
 
       CurrentList = stack_PopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 subst_MatchReverse(IndexContext, CurrentNode->subst);
@@ -687,21 +663,20 @@ static LIST st_TraverseTreeInstance(CONTEXT IndexContext, st_INDEX StIndex)
 	cont_StartBinding();
       } else
 	cont_StopAndStartBinding();
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static LIST st_TraverseTreeGenPreTest(CONTEXT IndexContext,
 				      st_INDEX StIndex,
 				      st_MINMAX MinMax)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   int      Save;
@@ -717,7 +692,7 @@ static LIST st_TraverseTreeGenPreTest(CONTEXT IndexContext,
   cont_StartBinding();
 
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -727,7 +702,7 @@ static LIST st_TraverseTreeGenPreTest(CONTEXT IndexContext,
 
       CurrentList = stack_PopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 (MinMax >= st_Min(CurrentNode)) &&
@@ -749,12 +724,11 @@ static LIST st_TraverseTreeGenPreTest(CONTEXT IndexContext,
   }
 }
 
-
 static LIST st_TraverseTreeInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, st_MINMAX MinMax)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   int      Save;
@@ -770,7 +744,7 @@ static LIST st_TraverseTreeInstancePreTest(CONTEXT IndexContext, st_INDEX StInde
   cont_StartBinding();
 
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -780,7 +754,7 @@ static LIST st_TraverseTreeInstancePreTest(CONTEXT IndexContext, st_INDEX StInde
 
       CurrentList = stack_PopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 (MinMax <= st_Max(CurrentNode)) &&
@@ -802,12 +776,11 @@ static LIST st_TraverseTreeInstancePreTest(CONTEXT IndexContext, st_INDEX StInde
   }
 }
 
-
 LIST st_GetUnifier(CONTEXT IndexContext, st_INDEX StIndex, CONTEXT TermContext, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST   Result;
@@ -821,16 +794,15 @@ LIST st_GetUnifier(CONTEXT IndexContext, st_INDEX StIndex, CONTEXT TermContext, 
   Result = st_TraverseTreeUnifier(IndexContext, StIndex);
 
   cont_Reset();
-  
+
   return Result;
 }
 
-
 LIST st_GetGen(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST   Result;
@@ -844,16 +816,15 @@ LIST st_GetGen(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
   Result = st_TraverseTreeGen(IndexContext, StIndex);
 
   cont_Reset();
-  
+
   return Result;
 }
 
-
 LIST st_GetGenPreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST   Result;
@@ -867,16 +838,15 @@ LIST st_GetGenPreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
   Result = st_TraverseTreeGenPreTest(IndexContext, StIndex, term_ComputeSize(Term));
 
   cont_Reset();
-  
+
   return Result;
 }
 
-
 LIST st_GetInstance(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST   Result;
@@ -890,16 +860,15 @@ LIST st_GetInstance(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
   Result = st_TraverseTreeInstance(IndexContext, StIndex);
 
   cont_Reset();
-  
+
   return Result;
 }
 
-
 LIST st_GetInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST   Result;
@@ -913,10 +882,9 @@ LIST st_GetInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
   Result = st_TraverseTreeInstancePreTest(IndexContext, StIndex, term_ComputeSize(Term));
 
   cont_Reset();
-  
+
   return Result;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -926,12 +894,11 @@ LIST st_GetInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /* ********************************************************** */
 /**************************************************************/
 
-
 static POINTER st_TraverseForExistUnifier(CONTEXT IndexContext)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST     CurrentList;
@@ -942,9 +909,9 @@ static POINTER st_TraverseForExistUnifier(CONTEXT IndexContext)
      without backtracking the current bindings. */
 
   CurrentList = list_Nil();
-  
+
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -954,7 +921,7 @@ static POINTER st_TraverseForExistUnifier(CONTEXT IndexContext)
 
       CurrentList = st_StackPopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 subst_Unify(IndexContext, CurrentNode->subst);
@@ -965,25 +932,24 @@ static POINTER st_TraverseForExistUnifier(CONTEXT IndexContext)
 	cont_StartBinding();
       } else
 	cont_StopAndStartBinding();
-    
+
       if (st_IsLeaf(CurrentNode)) {
 	st_StackPush(list_Cdr(CurrentNode->entries));
 	return list_Car(CurrentNode->entries);
       }
     }
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static POINTER st_TraverseForExistGen(CONTEXT IndexContext)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST     CurrentList;
@@ -994,9 +960,9 @@ static POINTER st_TraverseForExistGen(CONTEXT IndexContext)
      without backtracking the current bindings. */
 
   CurrentList = list_Nil();
-  
+
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -1006,7 +972,7 @@ static POINTER st_TraverseForExistGen(CONTEXT IndexContext)
 
       CurrentList = st_StackPopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 subst_Match(IndexContext, CurrentNode->subst);
@@ -1023,19 +989,18 @@ static POINTER st_TraverseForExistGen(CONTEXT IndexContext)
 	return list_Car(CurrentNode->entries);
       }
     }
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static POINTER st_TraverseForExistGenPreTest(CONTEXT IndexContext)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST     CurrentList;
@@ -1046,9 +1011,9 @@ static POINTER st_TraverseForExistGenPreTest(CONTEXT IndexContext)
      without backtracking the current bindings. */
 
   CurrentList = list_Nil();
-  
+
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -1058,7 +1023,7 @@ static POINTER st_TraverseForExistGenPreTest(CONTEXT IndexContext)
 
       CurrentList = st_StackPopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 (st_EXIST_MINMAX >= st_Min(CurrentNode)) &&
@@ -1076,19 +1041,18 @@ static POINTER st_TraverseForExistGenPreTest(CONTEXT IndexContext)
 	return list_Car(CurrentNode->entries);
       }
     }
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static POINTER st_TraverseForExistInstance(CONTEXT IndexContext)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST     CurrentList;
@@ -1099,9 +1063,9 @@ static POINTER st_TraverseForExistInstance(CONTEXT IndexContext)
      without backtracking the current bindings. */
 
   CurrentList = list_Nil();
-  
+
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -1111,7 +1075,7 @@ static POINTER st_TraverseForExistInstance(CONTEXT IndexContext)
 
       CurrentList = st_StackPopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 subst_MatchReverse(IndexContext, CurrentNode->subst);
@@ -1128,19 +1092,18 @@ static POINTER st_TraverseForExistInstance(CONTEXT IndexContext)
 	return list_Car(CurrentNode->entries);
       }
     }
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 static POINTER st_TraverseForExistInstancePreTest(CONTEXT IndexContext)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST     CurrentList;
@@ -1151,9 +1114,9 @@ static POINTER st_TraverseForExistInstancePreTest(CONTEXT IndexContext)
      without backtracking the current bindings. */
 
   CurrentList = list_Nil();
-  
+
   for (;;) {
-    
+
     /* BACKTRACK A BIG STEP */
     if (list_Empty(CurrentList)) {
       cont_StopAndBackTrack();
@@ -1163,7 +1126,7 @@ static POINTER st_TraverseForExistInstancePreTest(CONTEXT IndexContext)
 
       CurrentList = st_StackPopResult();
     }
-    
+
     /* DESCENDING */
     for (CurrentNode = (st_INDEX)list_Car(CurrentList);
 	 (st_EXIST_MINMAX <= st_Max(CurrentNode)) &&
@@ -1181,19 +1144,18 @@ static POINTER st_TraverseForExistInstancePreTest(CONTEXT IndexContext)
 	return list_Car(CurrentNode->entries);
       }
     }
-    
+
     /* BACKTRACK LEAF OR INNER NODE */
     CurrentList = list_Cdr(CurrentList);
     cont_BackTrackAndStart();
   }
 }
 
-
 void st_CancelExistRetrieval(void)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   if (st_CURRENT_RETRIEVAL != st_NOP) {
@@ -1226,12 +1188,11 @@ void st_CancelExistRetrieval(void)
   }
 }
 
-
 POINTER st_ExistUnifier(CONTEXT IndexContext, st_INDEX StIndex, CONTEXT TermContext, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   SYMBOL  FirstDomain;
@@ -1281,12 +1242,11 @@ POINTER st_ExistUnifier(CONTEXT IndexContext, st_INDEX StIndex, CONTEXT TermCont
     return NULL;
 }
 
-
 POINTER st_ExistGen(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   SYMBOL  FirstDomain;
@@ -1297,8 +1257,8 @@ POINTER st_ExistGen(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     misc_StartErrorReport();
     misc_ErrorReport("\n In st_ExistGen: ST-Stack not empty.\n");
     misc_FinishErrorReport();
-  } 
-  else 
+  }
+  else
     if (st_CURRENT_RETRIEVAL != st_NOP) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In st_ExistGen: %d Retrieval already in progress.\n",
@@ -1314,7 +1274,7 @@ POINTER st_ExistGen(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     st_CURRENT_RETRIEVAL = st_GEN;
     st_WHICH_CONTEXTS    = st_STANDARD;
     st_INDEX_CONTEXT     = IndexContext;
-  
+
     st_STACKSAVE = st_StackBottom();
 
     FirstDomain = symbol_FirstIndexVariable();
@@ -1338,12 +1298,11 @@ POINTER st_ExistGen(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     return NULL;
 }
 
-
 POINTER st_ExistGenPreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   SYMBOL  FirstDomain;
@@ -1354,8 +1313,8 @@ POINTER st_ExistGenPreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     misc_StartErrorReport();
     misc_ErrorReport("\n In st_ExistGenPreTest: ST-Stack not empty.\n");
     misc_FinishErrorReport();
-  } 
-  else 
+  }
+  else
     if (st_CURRENT_RETRIEVAL != st_NOP) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In st_ExistGenPreTest: %d Retrieval already in progress.\n",
@@ -1371,9 +1330,8 @@ POINTER st_ExistGenPreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     st_CURRENT_RETRIEVAL = st_GENPRETEST;
     st_WHICH_CONTEXTS    = st_STANDARD;
     st_INDEX_CONTEXT     = IndexContext;
-  
-    st_STACKSAVE = st_StackBottom();
 
+    st_STACKSAVE = st_StackBottom();
 
     FirstDomain     = symbol_FirstIndexVariable();
     st_EXIST_MINMAX = term_ComputeSize(Term);
@@ -1397,12 +1355,11 @@ POINTER st_ExistGenPreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     return NULL;
 }
 
-
 POINTER st_ExistInstance(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   SYMBOL  FirstDomain;
@@ -1413,8 +1370,8 @@ POINTER st_ExistInstance(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     misc_StartErrorReport();
     misc_ErrorReport("\n In st_ExistInstance: ST-Stack not empty.\n");
     misc_FinishErrorReport();
-  } 
-  else 
+  }
+  else
     if (st_CURRENT_RETRIEVAL != st_NOP) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In st_ExistInstance: %d Retrieval already in progress.\n",
@@ -1454,12 +1411,11 @@ POINTER st_ExistInstance(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
     return NULL;
 }
 
-
 POINTER st_ExistInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Term)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   SYMBOL  FirstDomain;
@@ -1470,8 +1426,8 @@ POINTER st_ExistInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Ter
     misc_StartErrorReport();
     misc_ErrorReport("\n In st_ExistInstancePreTest: ST-Stack not empty.\n");
     misc_FinishErrorReport();
-  } 
-  else 
+  }
+  else
     if (st_CURRENT_RETRIEVAL != st_NOP) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In st_ExistInstancePreTest: %d Retrieval already in progress.\n",
@@ -1512,12 +1468,11 @@ POINTER st_ExistInstancePreTest(CONTEXT IndexContext, st_INDEX StIndex, TERM Ter
     return NULL;
 }
 
-
 POINTER st_NextCandidate(void)
 /**************************************************************
-  INPUT:   
-  RETURNS: 
-  EFFECTS: 
+  INPUT:
+  RETURNS:
+  EFFECTS:
 ***************************************************************/
 {
   LIST Result;
@@ -1527,8 +1482,8 @@ POINTER st_NextCandidate(void)
     misc_StartErrorReport();
     misc_ErrorReport("\n In st_NextCandidate: ST-Stack empty.\n");
     misc_FinishErrorReport();
-  } 
-  else 
+  }
+  else
     if (st_CURRENT_RETRIEVAL == st_NOP) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In st_NextCandidate: No retrieval in progress.\n");
@@ -1595,7 +1550,6 @@ POINTER st_NextCandidate(void)
   }
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -1603,7 +1557,6 @@ POINTER st_NextCandidate(void)
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 static void st_PrintHelp(st_INDEX St, int Position, void (*Print)(POINTER))
 /**************************************************************
@@ -1613,14 +1566,14 @@ static void st_PrintHelp(st_INDEX St, int Position, void (*Print)(POINTER))
 ***************************************************************/
 {
   int i;
-  
+
   if (St == (st_INDEX)NULL)
     return;
-  
+
   for (i = 0; i < Position; i++)
     putchar(' ');
   puts("|");
-  
+
   for (i = 0; i < Position; i++)
     putchar(' ');
   fputs("+-", stdout);
@@ -1646,7 +1599,7 @@ static void st_PrintHelp(st_INDEX St, int Position, void (*Print)(POINTER))
       printf(" %d Entries", list_Length(St->entries));
 
     putchar('\n');
-    
+
   } else {
     LIST Scan;
 
@@ -1654,7 +1607,6 @@ static void st_PrintHelp(st_INDEX St, int Position, void (*Print)(POINTER))
       st_PrintHelp(list_Car(Scan), Position + 2, Print);
   }
 }
-
 
 void st_Print(st_INDEX StIndex, void (*Print)(POINTER))
 /**************************************************************

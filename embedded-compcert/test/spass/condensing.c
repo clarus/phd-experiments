@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *               CONDENSATION OF CLAUSES                  * */
 /* *                                                        * */
-/* *  $Module:   CONDENSING                                 * */ 
+/* *  $Module:   CONDENSING                                 * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,13 +41,11 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "subsumption.h"
 #include "misc.h"
 #include "condensing.h"
-
 
 LIST cond_CondFast(CLAUSE c)
 /**********************************************************
@@ -62,11 +60,11 @@ LIST cond_CondFast(CLAUSE c)
 
   indexlist = list_Nil();
   vec       = vec_ActMax();
-  
+
   for (i = 0; i < clause_Length(c); i++) {
     vec_Push((POINTER) i);
   }
-  
+
   for (k = clause_Length(c) - 1; k >= 0; k--) {
     for (i = vec; i < vec_ActMax(); i++) {
       if ((int)vec_GetNth(i) != k) {
@@ -81,12 +79,12 @@ LIST cond_CondFast(CLAUSE c)
 	      j = vec_ActMax();
 	    }
 	  }
-	  
+
 	  if (subs_IdcRes(c,vec,(vec_ActMax() -1))) {
 	    indexlist = list_Cons((POINTER)k,indexlist);
 	    vec_Pop();
 	  }
-	  
+
 	  i = vec_ActMax()+1;
 	}
 	else
@@ -94,7 +92,7 @@ LIST cond_CondFast(CLAUSE c)
       }
     }
   }
- 
+
   vec_SetMax(vec);
   return indexlist;
 }

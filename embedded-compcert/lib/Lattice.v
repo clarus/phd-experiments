@@ -27,7 +27,7 @@ Local Unset Case Analysis Schemes.
 (** * Signatures of semi-lattices *)
 
 (** A semi-lattice is a type [t] equipped with an equivalence relation [eq],
-  a boolean equivalence test [beq], a partial order [ge], a smallest element 
+  a boolean equivalence test [beq], a partial order [ge], a smallest element
   [bot], and an upper bound operation [lub].
   Note that we do not demand that [lub] computes the least upper bound. *)
 
@@ -98,12 +98,12 @@ Lemma gss:
   forall p v x,
   L.eq (get p (set p v x)) v.
 Proof.
-  intros. destruct x; simpl. 
+  intros. destruct x; simpl.
   case_eq (L.beq v L.bot); intros.
-  rewrite PTree.grs. apply L.eq_sym. apply L.beq_correct; auto. 
+  rewrite PTree.grs. apply L.eq_sym. apply L.beq_correct; auto.
   rewrite PTree.gss. apply L.eq_refl.
   case_eq (L.beq v L.top); intros.
-  rewrite PTree.grs. apply L.eq_sym. apply L.beq_correct; auto. 
+  rewrite PTree.grs. apply L.eq_sym. apply L.beq_correct; auto.
   rewrite PTree.gss. apply L.eq_refl.
 Qed.
 
@@ -148,12 +148,12 @@ Proof.
   rewrite PTree.beq_correct in H. generalize (H p).
   destruct (t0!p); destruct (t1!p); intuition.
   apply L.beq_correct; auto.
-  apply L.eq_refl. 
+  apply L.eq_refl.
   red; intro; simpl.
   rewrite PTree.beq_correct in H. generalize (H p).
   destruct (t0!p); destruct (t1!p); intuition.
   apply L.beq_correct; auto.
-  apply L.eq_refl. 
+  apply L.eq_refl.
 Qed.
 
 Definition ge (x y: t) : Prop :=
@@ -210,17 +210,17 @@ Definition opt_eq (ox oy: option L.t) : Prop :=
 
 Lemma opt_eq_refl: forall ox, opt_eq ox ox.
 Proof.
-  intros. unfold opt_eq. destruct ox. apply L.eq_refl. auto. 
+  intros. unfold opt_eq. destruct ox. apply L.eq_refl. auto.
 Qed.
 
 Lemma opt_eq_sym: forall ox oy, opt_eq ox oy -> opt_eq oy ox.
 Proof.
-  unfold opt_eq. destruct ox; destruct oy; auto. apply L.eq_sym. 
+  unfold opt_eq. destruct ox; destruct oy; auto. apply L.eq_sym.
 Qed.
 
 Lemma opt_eq_trans: forall ox oy oz, opt_eq ox oy -> opt_eq oy oz -> opt_eq ox oz.
 Proof.
-  unfold opt_eq. destruct ox; destruct oy; destruct oz; intuition. 
+  unfold opt_eq. destruct ox; destruct oy; destruct oz; intuition.
   eapply L.eq_trans; eauto.
 Qed.
 
@@ -234,8 +234,8 @@ Definition opt_beq (ox oy: option L.t) : bool :=
 Lemma opt_beq_correct:
   forall ox oy, opt_beq ox oy = true -> opt_eq ox oy.
 Proof.
-  unfold opt_beq, opt_eq. destruct ox; destruct oy; try congruence. 
-  intros. apply L.beq_correct; auto. 
+  unfold opt_beq, opt_eq. destruct ox; destruct oy; try congruence.
+  intros. apply L.beq_correct; auto.
   auto.
 Qed.
 
@@ -251,7 +251,7 @@ Proof. intros; red; intros; apply opt_eq_sym; auto. Qed.
 Lemma tree_eq_trans: forall m1 m2 m3, tree_eq m1 m2 -> tree_eq m2 m3 -> tree_eq m1 m3.
 Proof. intros; red; intros; apply opt_eq_trans with (PTree.get i m2); auto. Qed.
 
-Lemma tree_eq_node: 
+Lemma tree_eq_node:
   forall l1 o1 r1 l2 o2 r2,
   tree_eq l1 l2 -> tree_eq r1 r2 -> opt_eq o1 o2 ->
   tree_eq (PTree.Node l1 o1 r1) (PTree.Node l2 o2 r2).
@@ -259,23 +259,23 @@ Proof.
   intros; red; intros. destruct i; simpl; auto.
 Qed.
 
-Lemma tree_eq_node': 
+Lemma tree_eq_node':
   forall l1 o1 r1 l2 o2 r2,
   tree_eq l1 l2 -> tree_eq r1 r2 -> opt_eq o1 o2 ->
   tree_eq (PTree.Node l1 o1 r1) (PTree.Node' l2 o2 r2).
 Proof.
-  intros; red; intros. rewrite PTree.gnode'. apply tree_eq_node; auto. 
+  intros; red; intros. rewrite PTree.gnode'. apply tree_eq_node; auto.
 Qed.
 
-Lemma tree_eq_node'': 
+Lemma tree_eq_node'':
   forall l1 o1 r1 l2 o2 r2,
   tree_eq l1 l2 -> tree_eq r1 r2 -> opt_eq o1 o2 ->
   tree_eq (PTree.Node' l1 o1 r1) (PTree.Node' l2 o2 r2).
 Proof.
-  intros; red; intros. repeat rewrite PTree.gnode'. apply tree_eq_node; auto. 
+  intros; red; intros. repeat rewrite PTree.gnode'. apply tree_eq_node; auto.
 Qed.
 
-Hint Resolve opt_beq_correct opt_eq_refl opt_eq_sym 
+Hint Resolve opt_beq_correct opt_eq_refl opt_eq_sym
              tree_eq_refl tree_eq_sym
              tree_eq_node tree_eq_node' tree_eq_node'' : combine.
 
@@ -341,7 +341,7 @@ Inductive changed2 : Type :=
 
 Fixpoint xcombine (m1 m2 : PTree.t L.t) {struct m1} : changed2 :=
     match m1, m2 with
-    | PTree.Leaf, PTree.Leaf => 
+    | PTree.Leaf, PTree.Leaf =>
         Same
     | PTree.Leaf, _ =>
         match combine_r m2 with
@@ -378,7 +378,7 @@ Fixpoint xcombine (m1 m2 : PTree.t L.t) {struct m1} : changed2 :=
     end.
 
 Lemma xcombine_eq:
-  forall m1 m2, 
+  forall m1 m2,
   match xcombine m1 m2 with
   | Same => tree_eq m1 (PTree.combine f m1 m2) /\ tree_eq m2 (PTree.combine f m1 m2)
   | Same1 => tree_eq m1 (PTree.combine f m1 m2)
@@ -393,7 +393,7 @@ Opaque combine_l combine_r PTree.xcombine_l PTree.xcombine_r.
   destruct (combine_r (PTree.Node m2_1 o m2_2)); auto.
   generalize (combine_l_eq (PTree.Node m1_1 o m1_2)).
   destruct (combine_l (PTree.Node m1_1 o m1_2)); auto.
-  generalize (IHm1_1 m2_1) (IHm1_2 m2_2). 
+  generalize (IHm1_1 m2_1) (IHm1_2 m2_2).
   destruct (xcombine m1_1 m2_1);
   destruct (xcombine m1_2 m2_2); auto with combine;
   intuition; case_eq (opt_beq (f o o0) o); case_eq (opt_beq (f o o0) o0); auto with combine.
@@ -444,7 +444,7 @@ Definition lub (x y: t) : t :=
               | None, _ => b
               | _, None => None
               end)
-        m n)             
+        m n)
   | Top_except m, Bot_except n =>
       Top_except
         (combine
@@ -454,7 +454,7 @@ Definition lub (x y: t) : t :=
               | None, _ => None
               | _, None => a
               end)
-        m n)             
+        m n)
   | Top_except m, Top_except n =>
       Top_except
         (combine
@@ -472,7 +472,7 @@ Lemma gcombine_top:
   L.eq (get p (Top_except (combine f t1 t2)))
        (match f t1!p t2!p with Some x => x | None => L.top end).
 Proof.
-  intros. simpl. generalize (gcombine f H t1 t2 p). unfold opt_eq. 
+  intros. simpl. generalize (gcombine f H t1 t2 p). unfold opt_eq.
   destruct ((combine f t1 t2)!p); destruct (f t1!p t2!p).
   auto. contradiction. contradiction. intros; apply L.eq_refl.
 Qed.
@@ -483,7 +483,7 @@ Lemma gcombine_bot:
   L.eq (get p (Bot_except (combine f t1 t2)))
        (match f t1!p t2!p with Some x => x | None => L.bot end).
 Proof.
-  intros. simpl. generalize (gcombine f H t1 t2 p). unfold opt_eq. 
+  intros. simpl. generalize (gcombine f H t1 t2 p). unfold opt_eq.
   destruct ((combine f t1 t2)!p); destruct (f t1!p t2!p).
   auto. contradiction. contradiction. intros; apply L.eq_refl.
 Qed.
@@ -493,33 +493,33 @@ Lemma ge_lub_left:
 Proof.
   assert (forall u v,
     L.ge (match opt_lub u v with Some x => x | None => L.top end) u).
-  intros; unfold opt_lub. 
+  intros; unfold opt_lub.
   case_eq (L.beq (L.lub u v) L.top); intros. apply L.ge_top. apply L.ge_lub_left.
 
   unfold ge, lub; intros. destruct x; destruct y.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_bot. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_bot. auto.
   simpl. destruct t0!p; destruct t1!p.
   apply L.ge_lub_left.
-  apply L.ge_refl. apply L.eq_refl. 
+  apply L.ge_refl. apply L.eq_refl.
   apply L.ge_bot.
   apply L.ge_refl. apply L.eq_refl.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto.
   simpl. destruct t0!p; destruct t1!p.
   auto.
   apply L.ge_top.
   apply L.ge_bot.
   apply L.ge_top.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto.
   simpl. destruct t0!p; destruct t1!p.
   auto.
   apply L.ge_refl. apply L.eq_refl.
   apply L.ge_top.
   apply L.ge_top.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto.
   simpl. destruct t0!p; destruct t1!p.
   auto.
   apply L.ge_top.
@@ -532,33 +532,33 @@ Lemma ge_lub_right:
 Proof.
   assert (forall u v,
     L.ge (match opt_lub u v with Some x => x | None => L.top end) v).
-  intros; unfold opt_lub. 
+  intros; unfold opt_lub.
   case_eq (L.beq (L.lub u v) L.top); intros. apply L.ge_top. apply L.ge_lub_right.
 
   unfold ge, lub; intros. destruct x; destruct y.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_bot. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_bot. auto.
   simpl. destruct t0!p; destruct t1!p.
   apply L.ge_lub_right.
   apply L.ge_bot.
-  apply L.ge_refl. apply L.eq_refl. 
+  apply L.ge_refl. apply L.eq_refl.
   apply L.ge_refl. apply L.eq_refl.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto.
   simpl. destruct t0!p; destruct t1!p.
   auto.
   apply L.ge_top.
   apply L.ge_refl. apply L.eq_refl.
   apply L.ge_top.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto.
   simpl. destruct t0!p; destruct t1!p.
   auto.
   apply L.ge_bot.
   apply L.ge_top.
   apply L.ge_top.
 
-  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto. 
+  eapply L.ge_trans. apply L.ge_refl. apply gcombine_top. auto.
   simpl. destruct t0!p; destruct t1!p.
   auto.
   apply L.ge_top.
@@ -587,7 +587,7 @@ Module LFSet (S: FSetInterface.WS) <: SEMILATTICE.
   Definition ge (x y: t) := S.Subset y x.
   Lemma ge_refl: forall x y, eq x y -> ge x y.
   Proof.
-    unfold eq, ge, S.Equal, S.Subset; intros. firstorder. 
+    unfold eq, ge, S.Equal, S.Subset; intros. firstorder.
   Qed.
   Lemma ge_trans: forall x y z, ge x y -> ge y z -> ge x z.
   Proof.
@@ -604,12 +604,12 @@ Module LFSet (S: FSetInterface.WS) <: SEMILATTICE.
 
   Lemma ge_lub_left: forall x y, ge (lub x y) x.
   Proof.
-    unfold lub, ge, S.Subset; intros. apply S.union_2; auto. 
+    unfold lub, ge, S.Subset; intros. apply S.union_2; auto.
   Qed.
 
   Lemma ge_lub_right: forall x y, ge (lub x y) y.
   Proof.
-    unfold lub, ge, S.Subset; intros. apply S.union_3; auto. 
+    unfold lub, ge, S.Subset; intros. apply S.union_3; auto.
   Qed.
 
 End LFSet.
@@ -619,7 +619,7 @@ End LFSet.
 (** Given a type with decidable equality [X], the following functor
   returns a semi-lattice structure over [X.t] complemented with
   a top and a bottom element.  The ordering is the flat ordering
-  [Bot < Inj x < Top]. *) 
+  [Bot < Inj x < Top]. *)
 
 Module LFlat(X: EQUALITY_TYPE) <: SEMILATTICE_WITH_TOP.
 
@@ -704,7 +704,7 @@ Proof.
 Qed.
 
 End LFlat.
-  
+
 (** * Boolean semi-lattice *)
 
 (** This semi-lattice has only two elements, [bot] and [top], trivially

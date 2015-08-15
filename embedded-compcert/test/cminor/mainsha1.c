@@ -26,7 +26,7 @@ static void do_test(unsigned char * txt, unsigned char * expected_output)
   SHA1_add_data(&ctx, txt, strlen((char *) txt));
   SHA1_finish(&ctx, output);
   ok = memcmp(output, expected_output, 20) == 0;
-  printf("Test `%s': %s\n", 
+  printf("Test `%s': %s\n",
          (char *) txt, (ok ? "passed" : "FAILED"));
 }
 
@@ -50,7 +50,6 @@ unsigned char test_output_2[20] =
 { 0x84, 0x98, 0x3E, 0x44, 0x1C, 0x3B, 0xD2, 0x6E, 0xBA, 0xAE,
   0x4A, 0xA1, 0xF9, 0x51, 0x29, 0xE5, 0xE5, 0x46, 0x70, 0xF1 };
 
-
 static void do_bench(int nblocks)
 {
   struct SHA1Context ctx;
@@ -58,7 +57,7 @@ static void do_bench(int nblocks)
   unsigned char data[64];
 
   SHA1_init(&ctx);
-  for (; nblocks > 0; nblocks--) 
+  for (; nblocks > 0; nblocks--)
     SHA1_add_data(&ctx, data, 64);
   SHA1_finish(&ctx, output);
 }

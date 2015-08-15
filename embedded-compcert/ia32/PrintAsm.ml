@@ -26,7 +26,7 @@ module StringSet = Set.Make(String)
 
 type target = ELF | MacOS | Cygwin
 
-let target = 
+let target =
   match Configuration.system with
   | "macosx" -> MacOS
   | "linux"  -> ELF
@@ -116,7 +116,7 @@ let addressing oc (Addrmode(base, shift, cst)) =
   | Coq_inl n ->
       let n = camlint_of_coqint n in
       fprintf oc "%ld" n
-  | Coq_inr(id, ofs) -> 
+  | Coq_inr(id, ofs) ->
       let ofs = camlint_of_coqint ofs in
       if ofs = 0l
       then symbol oc id
@@ -133,13 +133,13 @@ let name_of_condition = function
   | Cond_e -> "e" | Cond_ne -> "ne"
   | Cond_b -> "b" | Cond_be -> "be" | Cond_ae -> "ae" | Cond_a -> "a"
   | Cond_l -> "l" | Cond_le -> "le" | Cond_ge -> "ge" | Cond_g -> "g"
-  | Cond_p -> "p" | Cond_np -> "np" 
+  | Cond_p -> "p" | Cond_np -> "np"
 
 let name_of_neg_condition = function
   | Cond_e -> "ne" | Cond_ne -> "e"
   | Cond_b -> "ae" | Cond_be -> "a" | Cond_ae -> "b" | Cond_a -> "be"
   | Cond_l -> "ge" | Cond_le -> "g" | Cond_ge -> "l" | Cond_g -> "le"
-  | Cond_p -> "np" | Cond_np -> "p" 
+  | Cond_p -> "np" | Cond_np -> "p"
 
 (* Names of sections *)
 
@@ -227,7 +227,7 @@ let filename_num : (string, int) Hashtbl.t = Hashtbl.create 7
 
 let print_file_line oc file line =
   if !Clflags.option_g && file <> "" then begin
-    let filenum = 
+    let filenum =
       try
         Hashtbl.find filename_num file
       with Not_found ->
@@ -256,7 +256,7 @@ let cfi_adjust oc delta =
 
 (* Built-in functions *)
 
-(* Built-ins.  They come in two flavors: 
+(* Built-ins.  They come in two flavors:
    - annotation statements: take their arguments in registers or stack
      locations; generate no code;
    - inlined by the compiler: take their arguments in arbitrary
@@ -500,7 +500,7 @@ let print_builtin_inline oc name args res =
         fprintf oc "	movl	%a, %a\n" ireg a2 ireg tmp;
       fprintf oc "	bswap	%a\n" ireg tmp;
       fprintf oc "	movl	%a, 0(%a)\n" ireg tmp ireg a1
-  (* Catch-all *)  
+  (* Catch-all *)
   | _ ->
       invalid_arg ("unrecognized builtin " ^ name)
   end;
@@ -811,7 +811,7 @@ let print_init oc = function
       if Z.gt n Z.zero then
         fprintf oc "	.space	%s\n" (Z.to_string n)
   | Init_addrof(symb, ofs) ->
-      fprintf oc "	.long	%a\n" 
+      fprintf oc "	.long	%a\n"
                  symbol_offset (symb, camlint_of_coqint ofs)
 
 let print_init_data oc name id =

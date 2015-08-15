@@ -10,7 +10,7 @@ Import ListNotations.
     | nil : t P nil
     | cons : forall x l, P x -> t P l -> t P (x :: l).
   End ForAll.
-  
+
   Module ForAll2.
     Inductive t (A B : Type) (P : A -> B -> Type) : list A -> list B -> Type :=
     | nil : t P nil nil

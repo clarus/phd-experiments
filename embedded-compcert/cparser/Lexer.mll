@@ -6,7 +6,7 @@
  *  Wes Weimer          <weimer@cs.berkeley.edu>
  *  Ben Liblit          <liblit@cs.berkeley.edu>
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
@@ -49,7 +49,7 @@ exception Eof
 
 module H = Hashtbl
 
-let newline lb = 
+let newline lb =
   let cp = lb.lex_curr_p in
   lb.lex_curr_p <- { cp with pos_lnum = 1 + cp.pos_lnum }
 
@@ -83,7 +83,7 @@ let rec intlist_to_string (str: int64 list):string =
 let lexicon = H.create 211
 let init_lexicon _ =
   H.clear lexicon;
-  List.iter 
+  List.iter
     (fun (key, builder) -> H.add lexicon key builder)
     [ ("_Bool", fun loc -> UNDERSCORE_BOOL loc);
       ("auto", fun loc -> AUTO loc);
@@ -113,25 +113,25 @@ let init_lexicon _ =
       ("union", fun loc -> UNION loc);
       ("break", fun loc -> BREAK loc);
       ("continue", fun loc -> CONTINUE loc);
-      ("goto", fun loc -> GOTO loc); 
+      ("goto", fun loc -> GOTO loc);
       ("return", fun loc -> RETURN loc);
       ("switch", fun loc -> SWITCH loc);
-      ("case", fun loc -> CASE loc); 
+      ("case", fun loc -> CASE loc);
       ("default", fun loc -> DEFAULT loc);
-      ("while", fun loc -> WHILE loc);  
-      ("do", fun loc -> DO loc);  
+      ("while", fun loc -> WHILE loc);
+      ("do", fun loc -> DO loc);
       ("for", fun loc -> FOR loc);
       ("if", fun loc -> IF loc);
       ("else", fun _ -> ELSE);
       (*** Implementation specific keywords ***)
       ("__signed__", fun loc -> SIGNED loc);
       ("__inline__", fun loc -> INLINE loc);
-      ("inline", fun loc -> INLINE loc); 
+      ("inline", fun loc -> INLINE loc);
       ("__inline", fun loc -> INLINE loc);
       ("_inline", fun loc ->
-                      if !msvcMode then 
+                      if !msvcMode then
                         INLINE loc
-                      else 
+                      else
                         IDENT ("_inline", loc));
       ("__attribute__", fun loc -> ATTRIBUTE loc);
       ("__attribute", fun loc -> ATTRIBUTE loc);
@@ -145,7 +145,7 @@ let init_lexicon _ =
       ("__typeof__", fun loc -> TYPEOF loc);
       ("__typeof", fun loc -> TYPEOF loc);
 (*
-      ("typeof", fun loc -> TYPEOF loc); 
+      ("typeof", fun loc -> TYPEOF loc);
 *)
       ("_Alignof", fun loc -> ALIGNOF loc);
       ("__alignof", fun loc -> ALIGNOF loc);
@@ -164,15 +164,15 @@ let init_lexicon _ =
       (**** MS VC ***)
       ("__int64", fun loc -> INT64 loc);
       ("__int32", fun loc -> INT loc);
-      ("_cdecl",  fun loc -> MSATTR ("_cdecl", loc)); 
+      ("_cdecl",  fun loc -> MSATTR ("_cdecl", loc));
       ("__cdecl", fun loc -> MSATTR ("__cdecl", loc));
-      ("_stdcall", fun loc -> MSATTR ("_stdcall", loc)); 
+      ("_stdcall", fun loc -> MSATTR ("_stdcall", loc));
       ("__stdcall", fun loc -> MSATTR ("__stdcall", loc));
-      ("_fastcall", fun loc -> MSATTR ("_fastcall", loc)); 
+      ("_fastcall", fun loc -> MSATTR ("_fastcall", loc));
       ("__fastcall", fun loc -> MSATTR ("__fastcall", loc));
       ("__w64", fun loc -> MSATTR("__w64", loc));
       ("__declspec", fun loc -> DECLSPEC loc);
-      ("__forceinline", fun loc -> INLINE loc); (* !! we turn forceinline 
+      ("__forceinline", fun loc -> INLINE loc); (* !! we turn forceinline
                                                  * into inline *)
       ("__try", fun loc -> TRY loc);
       ("__except", fun loc -> EXCEPT loc);
@@ -187,7 +187,7 @@ let init_lexicon _ =
       ("__thread", fun loc -> THREAD loc)
     ]
 
-(* Mark an identifier as a type name. The old mapping is preserved and will 
+(* Mark an identifier as a type name. The old mapping is preserved and will
  * be reinstated when we exit this context *)
 let add_type name =
    (* ignore (print_string ("adding type name " ^ name ^ "\n"));  *)
@@ -197,16 +197,16 @@ let context : string list list ref = ref []
 
 let push_context _ = context := []::!context
 
-let pop_context _ = 
+let pop_context _ =
   match !context with
     [] -> assert false
   | con::sub ->
 		(context := sub;
-		List.iter (fun name -> 
+		List.iter (fun name ->
                            (* ignore (print_string ("removing lexicon for " ^ name ^ "\n")); *)
                             H.remove lexicon name) con)
 
-(* Mark an identifier as a variable name. The old mapping is preserved and 
+(* Mark an identifier as a variable name. The old mapping is preserved and
  * will be reinstated when we exit this context  *)
 let add_identifier name =
   match !context with
@@ -214,7 +214,6 @@ let add_identifier name =
   | con::sub ->
        context := (name::con)::sub;
        H.add lexicon name (fun loc -> IDENT (name, loc))
-
 
 (*
 ** Useful primitives
@@ -225,11 +224,9 @@ let scan_ident lb id =
   (* default to variable name, as opposed to type *)
   with Not_found -> IDENT (id, here)
 
-
 (*
 ** Buffer processor
 *)
- 
 
 let init ~(filename: string) ic : Lexing.lexbuf =
   init_lexicon ();
@@ -244,12 +241,11 @@ let init ~(filename: string) ic : Lexing.lexbuf =
   lb.lex_curr_p <- {cp with pos_fname = filename; pos_lnum = 1};
   lb
 
-let finish () = 
+let finish () =
   ()
 
 (*** Error handling ***)
 let error = parse_error
-
 
 (*** escape character management ***)
 let scan_escape (char: char) : int64 =
@@ -262,14 +258,14 @@ let scan_escape (char: char) : int64 =
   | 'v' -> '\011'  (* ASCII code 11 *)
   | 'a' -> '\007'  (* ASCII code 7 *)
   | 'e' | 'E' -> '\027'  (* ASCII code 27. This is a GCC extension *)
-  | '\'' -> '\''    
+  | '\'' -> '\''
   | '"'-> '"'     (* '"' *)
   | '?' -> '?'
   | '(' when not !msvcMode -> '('
   | '{' when not !msvcMode -> '{'
   | '[' when not !msvcMode -> '['
   | '%' when not !msvcMode -> '%'
-  | '\\' -> '\\' 
+  | '\\' -> '\\'
   | other -> error ("Unrecognized escape sequence: \\" ^ (String.make 1 other)); raise Parsing.Parse_error
   in
   Int64.of_int (Char.code result)
@@ -329,15 +325,14 @@ let make_char (i:int64):char =
   end;
   Char.chr (Int64.to_int i)
 
-
 (* ISO standard locale-specific function to convert a wide character
- * into a sequence of normal characters. Here we work on strings. 
- * We convert L"Hi" to "H\000i\000" 
+ * into a sequence of normal characters. Here we work on strings.
+ * We convert L"Hi" to "H\000i\000"
   matth: this seems unused.
 let wbtowc wstr =
-  let len = String.length wstr in 
-  let dest = String.make (len * 2) '\000' in 
-  for i = 0 to len-1 do 
+  let len = String.length wstr in
+  let dest = String.make (len * 2) '\000' in
+  for i = 0 to len-1 do
     dest.[i*2] <- wstr.[i] ;
   done ;
   dest
@@ -361,7 +356,6 @@ let decdigit = ['0'-'9']
 let octdigit = ['0'-'7']
 let hexdigit = ['0'-'9' 'a'-'f' 'A'-'F']
 let letter = ['a'- 'z' 'A'-'Z']
-
 
 let usuffix = ['u' 'U']
 let lsuffix = "l"|"L"|"ll"|"LL"
@@ -388,11 +382,11 @@ let hexadecimal_floating_constant =
    (hexprefix hexadecimal_fractional_constant binary_exponent_part floating_suffix?)
   |(hexprefix (hexdigit+ as intpart) binary_exponent_part floating_suffix?)
 
-let ident = (letter|'_'|'$')(letter|decdigit|'_'|'$')* 
+let ident = (letter|'_'|'$')(letter|decdigit|'_'|'$')*
 let blank = [' ' '\t' '\012' '\r']+
 let escape = '\\' _
 let hex_escape = '\\' ['x' 'X'] hexdigit+
-let oct_escape = '\\' octdigit octdigit? octdigit? 
+let oct_escape = '\\' octdigit octdigit? octdigit?
 
 rule initial =
 	parse 	"/*"			{ comment lexbuf;
@@ -415,7 +409,7 @@ rule initial =
 |		"L'"			{ CST_WCHAR (chr lexbuf, currentLoc lexbuf) }
 |		'"'			{ (* '"' *)
 (* matth: BUG:  this could be either a regular string or a wide string.
- *  e.g. if it's the "world" in 
+ *  e.g. if it's the "world" in
  *     L"Hello, " "world"
  *  then it should be treated as wide even though there's no L immediately
  *  preceding it.  See test/small1/wchar5.c for a failure case. *)
@@ -477,7 +471,7 @@ rule initial =
 |		'?'				{QUEST}
 |		':'				{COLON}
 |		'~'		       {TILDE (currentLoc lexbuf)}
-	
+
 |		'{'		       {LBRACE (currentLoc lexbuf)}
 |		'}'		       {RBRACE (currentLoc lexbuf)}
 |		'['				{LBRACKET}
@@ -488,14 +482,14 @@ rule initial =
 |		','				{COMMA}
 |		'.'				{DOT}
 |		"sizeof"		{SIZEOF (currentLoc lexbuf)}
-|               "__asm"                 { if !msvcMode then 
-                                             MSASM (msasm lexbuf, currentLoc lexbuf) 
+|               "__asm"                 { if !msvcMode then
+                                             MSASM (msasm lexbuf, currentLoc lexbuf)
                                           else (ASM (currentLoc lexbuf)) }
 
 (* If we see __pragma we eat it and the matching parentheses as well *)
 |               "__pragma"              { matchingParsOpen := 0;
-                                          let _ = matchingpars lexbuf in 
-                                          initial lexbuf 
+                                          let _ = matchingpars lexbuf in
+                                          initial lexbuf
                                         }
 
 (* __extension__ is a black. The parser runs into some conflicts if we let it
@@ -505,12 +499,11 @@ rule initial =
 |		eof			{EOF}
 |		_			{parse_error "Invalid symbol"; raise Parsing.Parse_error }
 and comment =
-    parse 	
+    parse
       "*/"			        { () }
 |     eof			        { () }
 |     '\n'                              { newline lexbuf; comment lexbuf }
 |		_ 			{ comment lexbuf }
-
 
 and onelinecomment = parse
     '\n'|eof    { () }
@@ -521,14 +514,14 @@ and matchingpars = parse
 | blank         { matchingpars lexbuf }
 | '('           { incr matchingParsOpen; matchingpars lexbuf }
 | ')'           { decr matchingParsOpen;
-                  if !matchingParsOpen = 0 then 
+                  if !matchingParsOpen = 0 then
                      ()
-                  else 
+                  else
                      matchingpars lexbuf
                 }
 |  "/*"		{ comment lexbuf; matchingpars lexbuf}
 |  '"'		{ (* '"' *)
-                  let _ = str lexbuf in 
+                  let _ = str lexbuf in
                   matchingpars lexbuf
                  }
 | _              { matchingpars lexbuf }
@@ -537,7 +530,7 @@ and matchingpars = parse
 and hash = parse
   '\n'		{ newline lexbuf; initial lexbuf}
 | blank		{ hash lexbuf}
-| intnum	{ (* We are seeing a line number. This is the number for the 
+| intnum	{ (* We are seeing a line number. This is the number for the
                    * next line *)
                   let s = Lexing.lexeme lexbuf in
                   begin try
@@ -555,27 +548,27 @@ and hash = parse
                 }
 | _	        { endline lexbuf}
 
-and file =  parse 
+and file =  parse
         '\n'		        { newline lexbuf; initial lexbuf}
 |	blank			{ file lexbuf}
 |	'"' [^ '\012' '\t' '"']* '"' 	{ (* '"' *)
                                    let n = Lexing.lexeme lexbuf in
-                                   let n1 = String.sub n 1 
+                                   let n1 = String.sub n 1
                                        ((String.length n) - 2) in
                                    setCurrentFile lexbuf n1;
 				 endline lexbuf}
 
 |	_			{ endline lexbuf}
 
-and endline = parse 
+and endline = parse
         '\n' 			{ newline lexbuf; initial lexbuf}
 |   eof                         { EOF }
 |	_			{ endline lexbuf}
 
 and pragma = parse
    '\n'                 { newline lexbuf; "" }
-|   _                   { let cur = Lexing.lexeme lexbuf in 
-                          cur ^ (pragma lexbuf) }  
+|   _                   { let cur = Lexing.lexeme lexbuf in
+                          cur ^ (pragma lexbuf) }
 
 and str = parse
         '"'             {[]} (* no nul terminiation in CST_STRING '"' *)
@@ -590,25 +583,25 @@ and chr =  parse
 |	oct_escape	{lex_oct_escape chr lexbuf}
 |	escape		{lex_simple_escape chr lexbuf}
 |	_		{lex_unescaped chr lexbuf}
-	
+
 and msasm = parse
     blank               { msasm lexbuf }
 |   '{'                 { msasminbrace lexbuf }
-|   _                   { let cur = Lexing.lexeme lexbuf in 
+|   _                   { let cur = Lexing.lexeme lexbuf in
                           cur ^ (msasmnobrace lexbuf) }
 
 and msasminbrace = parse
     '}'                 { "" }
-|   _                   { let cur = Lexing.lexeme lexbuf in 
-                          cur ^ (msasminbrace lexbuf) }  
+|   _                   { let cur = Lexing.lexeme lexbuf in
+                          cur ^ (msasminbrace lexbuf) }
 and msasmnobrace = parse
-   ['}' ';' '\n']       { lexbuf.Lexing.lex_curr_pos <- 
+   ['}' ';' '\n']       { lexbuf.Lexing.lex_curr_pos <-
                                lexbuf.Lexing.lex_curr_pos - 1;
                           "" }
-|  "__asm"              { lexbuf.Lexing.lex_curr_pos <- 
+|  "__asm"              { lexbuf.Lexing.lex_curr_pos <-
                                lexbuf.Lexing.lex_curr_pos - 5;
                           "" }
-|  _                    { let cur = Lexing.lexeme lexbuf in 
+|  _                    { let cur = Lexing.lexeme lexbuf in
 
                           cur ^ (msasmnobrace lexbuf) }
 

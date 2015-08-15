@@ -10,7 +10,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-(** Function calling conventions and other conventions regarding the use of 
+(** Function calling conventions and other conventions regarding the use of
     machine registers and stack slots. *)
 
 Require Import Coqlib.
@@ -119,25 +119,25 @@ Proof.
 Qed.
 
 Lemma index_int_callee_save_inj:
-  forall r1 r2, 
+  forall r1 r2,
   In r1 int_callee_save_regs ->
   In r2 int_callee_save_regs ->
   r1 <> r2 ->
   index_int_callee_save r1 <> index_int_callee_save r2.
 Proof.
-  intros r1 r2. 
+  intros r1 r2.
   simpl; ElimOrEq; ElimOrEq; unfold index_int_callee_save;
   intros; congruence.
 Qed.
 
 Lemma index_float_callee_save_inj:
-  forall r1 r2, 
+  forall r1 r2,
   In r1 float_callee_save_regs ->
   In r2 float_callee_save_regs ->
   r1 <> r2 ->
   index_float_callee_save r1 <> index_float_callee_save r2.
 Proof.
-  intros r1 r2. 
+  intros r1 r2.
   simpl; ElimOrEq; ElimOrEq; unfold index_float_callee_save;
   intros; congruence.
 Qed.
@@ -153,25 +153,24 @@ Proof.
 Qed.
 
 Lemma register_classification:
-  forall r, 
+  forall r,
   In r destroyed_at_call \/ In r int_callee_save_regs \/ In r float_callee_save_regs.
 Proof.
-  destruct r; 
+  destruct r;
   try (left; simpl; OrEq);
   try (right; left; simpl; OrEq);
   try (right; right; simpl; OrEq).
 Qed.
 
-
 Lemma int_callee_save_not_destroyed:
-  forall r, 
+  forall r,
     In r destroyed_at_call -> In r int_callee_save_regs -> False.
 Proof.
   intros. revert H0 H. simpl. ElimOrEq; NotOrEq.
 Qed.
 
 Lemma float_callee_save_not_destroyed:
-  forall r, 
+  forall r,
     In r destroyed_at_call -> In r float_callee_save_regs -> False.
 Proof.
   intros. revert H0 H. simpl. ElimOrEq; NotOrEq.
@@ -214,9 +213,9 @@ Qed.
 (** The functions in this section determine the locations (machine registers
   and stack slots) used to communicate arguments and results between the
   caller and the callee during function calls.  These locations are functions
-  of the signature of the function and of the call instruction.  
+  of the signature of the function and of the call instruction.
   Agreement between the caller and the callee on the locations to use
-  is guaranteed by our dynamic semantics for Cminor and RTL, which demand 
+  is guaranteed by our dynamic semantics for Cminor and RTL, which demand
   that the signature of the call instruction is identical to that of the
   called function.
 
@@ -243,7 +242,7 @@ Definition loc_result (s: signature) : list mreg :=
 (** The result location is a caller-save register or a temporary *)
 
 Lemma loc_result_caller_save:
-  forall (s: signature) (r: mreg), 
+  forall (s: signature) (r: mreg),
   In r (loc_result s) -> In r destroyed_at_call.
 Proof.
   intros.
@@ -328,7 +327,7 @@ Fixpoint size_arguments_rec (tyl: list typ) (ofs: Z) {struct tyl} : Z :=
 Definition size_arguments (s: signature) : Z :=
   Zmax 0 (size_arguments_rec s.(sig_args) (-4)).
 
-(** Argument locations are either non-temporary registers or [Outgoing] 
+(** Argument locations are either non-temporary registers or [Outgoing]
   stack slots at nonnegative offsets. *)
 
 Definition loc_argument_acceptable (l: loc) : Prop :=
@@ -342,8 +341,8 @@ Remark ireg_param_caller_save:
   forall n, In (ireg_param n) destroyed_at_call.
 Proof.
   unfold ireg_param; intros.
-  destruct (zeq n (-4)). simpl; auto. 
-  destruct (zeq n (-3)). simpl; auto. 
+  destruct (zeq n (-4)). simpl; auto.
+  destruct (zeq n (-3)). simpl; auto.
   destruct (zeq n (-2)); simpl; auto.
 Qed.
 
@@ -357,8 +356,8 @@ Remark sreg_param_caller_save:
   forall n, In (sreg_param n) destroyed_at_call.
 Proof.
   unfold sreg_param; intros.
-  destruct (zeq n (-4)). simpl; tauto. 
-  destruct (zeq n (-3)). simpl; tauto. 
+  destruct (zeq n (-4)). simpl; tauto.
+  destruct (zeq n (-3)). simpl; tauto.
   destruct (zeq n (-2)); simpl; tauto.
 Qed.
 
@@ -453,7 +452,7 @@ Proof.
   {
     intros. generalize (size_arguments_rec_above tyl ofs0). intros.
     rewrite Zmax_spec. rewrite zlt_false. auto. omega.
-  } 
+  }
   assert (forall tyl ofs0,
     In (S Outgoing ofs ty) (loc_arguments_rec tyl ofs0) ->
     ofs + typesize ty <= Zmax 0 (size_arguments_rec tyl ofs0)).
@@ -462,18 +461,18 @@ Proof.
     elim H1.
     destruct a.
   - (* Tint *)
-    destruct H1; auto. destruct (zle 0 ofs0); inv H1. apply H0. omega. 
+    destruct H1; auto. destruct (zle 0 ofs0); inv H1. apply H0. omega.
   - (* Tfloat *)
     destruct H1; auto. destruct (zle 0 (align ofs0 2)); inv H1. apply H0. omega.
   - (* Tlong *)
     destruct H1.
     destruct (zle 0 (align ofs0 2)); inv H1.
-    eapply Zle_trans. 2: apply H0. simpl typesize; omega. omega. 
+    eapply Zle_trans. 2: apply H0. simpl typesize; omega. omega.
     destruct H1; auto.
     destruct (zle 0 (align ofs0 2)); inv H1.
     eapply Zle_trans. 2: apply H0. simpl typesize; omega. omega.
   - (* Tsingle *)
-    destruct H1; auto. destruct (zle 0 ofs0); inv H1. apply H0. omega. 
+    destruct H1; auto. destruct (zle 0 ofs0); inv H1. apply H0. omega.
   }
-  unfold size_arguments. apply H1. auto.  
+  unfold size_arguments. apply H1. auto.
 Qed.

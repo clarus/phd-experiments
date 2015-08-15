@@ -45,7 +45,6 @@ module Nat = struct
 
 end
 
-
 (* Coq's [positive] type and some of its operations *)
 
 module P = struct

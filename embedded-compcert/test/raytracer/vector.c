@@ -70,5 +70,3 @@ void vsub(struct vector * a, struct vector * b,
   v->dy = a->dy - b->dy;
   v->dz = a->dz - b->dz;
 }
-
-  

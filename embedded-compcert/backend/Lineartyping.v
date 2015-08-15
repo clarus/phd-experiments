@@ -73,7 +73,7 @@ Definition wt_instr (i: instruction) : bool :=
       match is_move_operation op args with
       | Some arg =>
           subtype (mreg_type arg) (mreg_type res)
-      | None => 
+      | None =>
           let (targs, tres) := type_of_operation op in
           subtype tres (mreg_type res)
       end
@@ -82,7 +82,7 @@ Definition wt_instr (i: instruction) : bool :=
   | Ltailcall sg ros =>
       zeq (size_arguments sg) 0
   | Lbuiltin ef args res =>
-      subtype_list (proj_sig_res' (ef_sig ef)) (map mreg_type res) 
+      subtype_list (proj_sig_res' (ef_sig ef)) (map mreg_type res)
   | Lannot ef args =>
       forallb loc_valid args
   | _ =>
@@ -109,7 +109,7 @@ Lemma wt_setreg:
   Val.has_type v (mreg_type r) -> wt_locset ls -> wt_locset (Locmap.set (R r) v ls).
 Proof.
   intros; red; intros.
-  unfold Locmap.set. 
+  unfold Locmap.set.
   destruct (Loc.eq (R r) l).
   subst l; auto.
   destruct (Loc.diff_dec (R r) l). auto. red. auto.
@@ -120,10 +120,10 @@ Lemma wt_setstack:
   wt_locset ls -> wt_locset (Locmap.set (S sl ofs ty) v ls).
 Proof.
   intros; red; intros.
-  unfold Locmap.set. 
+  unfold Locmap.set.
   destruct (Loc.eq (S sl ofs ty) l).
-  subst l. simpl. 
-  generalize (Val.load_result_type (chunk_of_type ty) v). 
+  subst l. simpl.
+  generalize (Val.load_result_type (chunk_of_type ty) v).
   replace (type_of_chunk (chunk_of_type ty)) with ty. auto.
   destruct ty; reflexivity.
   destruct (Loc.diff_dec (S sl ofs ty) l). auto. red. auto.
@@ -172,7 +172,6 @@ Proof.
 - apply wt_setreg; auto.
 - destruct v; simpl in H; try contradiction;
   simpl; apply wt_setreg; auto; apply wt_setreg; auto.
-- apply wt_setreg; auto. apply Val.has_subtype with Tsingle; auto. 
+- apply wt_setreg; auto. apply Val.has_subtype with Tsingle; auto.
 - apply wt_setreg; auto.
 Qed.
-

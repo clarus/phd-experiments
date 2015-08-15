@@ -26,4 +26,3 @@ extern "malloc" : int -> int
     l = int32[l+4];
   }
 }
-

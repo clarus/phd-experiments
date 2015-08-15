@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                  STRUCTURE SHARING                     * */
 /* *                                                        * */
-/* *  $Module:   SHARING                                    * */ 
+/* *  $Module:   SHARING                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _SHARING_
@@ -66,7 +65,7 @@
 /* info, i.e. a POINTER to the term structure, if */
 /* the symbol is already inserted in the sharing */
 /* structure, a NULL Pointer else.               */
-  
+
 typedef TERM VARTABLE[symbol__MAXVARIABLES];
 
 typedef TERM CONSTTABLE[symbol__MAXSIGNATURE];
@@ -182,12 +181,11 @@ static __inline__ TERM sharing_SharedTermCopy(TERM Term)
   return term_Superterm(Term);
 }
 
-
 /**************************************************************/
 /* Functions for Creation and Deletion of a SHARED_INDEX         */
 /**************************************************************/
 
-SHARED_INDEX sharing_IndexCreate(void); 
+SHARED_INDEX sharing_IndexCreate(void);
 void         sharing_IndexDelete(SHARED_INDEX);
 
 /**************************************************************/
@@ -240,6 +238,4 @@ void         sharing_PrintSharingConstterms1(SHARED_INDEX);
 void         sharing_PrintSharingVarterms1(SHARED_INDEX);
 void         sharing_PrintSameLevelTerms(TERM);
 
-
 #endif
-

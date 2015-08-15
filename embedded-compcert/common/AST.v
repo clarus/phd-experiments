@@ -235,14 +235,14 @@ Lemma transform_program_function:
   exists f, In (i, Gfun f) p.(prog_defs) /\ transf f = tf.
 Proof.
   simpl. unfold transform_program. intros.
-  exploit list_in_map_inv; eauto. 
-  intros [[i' gd] [EQ IN]]. simpl in EQ. destruct gd; inv EQ. 
+  exploit list_in_map_inv; eauto.
+  intros [[i' gd] [EQ IN]]. simpl in EQ. destruct gd; inv EQ.
   exists f; auto.
 Qed.
 
 End TRANSF_PROGRAM.
 
-(** The following is a more general presentation of [transform_program] where 
+(** The following is a more general presentation of [transform_program] where
   global variable information can be transformed, in addition to function
   definitions.  Moreover, the transformation functions can fail and
   return an error message. *)
@@ -286,12 +286,12 @@ Lemma transform_partial_program2_function:
   In (i, Gfun tf) tp.(prog_defs) ->
   exists f, In (i, Gfun f) p.(prog_defs) /\ transf_fun f = OK tf.
 Proof.
-  intros. monadInv H. simpl in H0. 
+  intros. monadInv H. simpl in H0.
   revert x EQ H0. induction (prog_defs p); simpl; intros.
   inv EQ. contradiction.
   destruct a as [id [f|v]].
   destruct (transf_fun f) as [tf1|msg] eqn:?; monadInv EQ.
-  simpl in H0; destruct H0. inv H. exists f; auto. 
+  simpl in H0; destruct H0. inv H. exists f; auto.
   exploit IHl; eauto. intros [f' [P Q]]; exists f'; auto.
   destruct (transf_globvar v) as [tv1|msg] eqn:?; monadInv EQ.
   simpl in H0; destruct H0. inv H.
@@ -306,7 +306,7 @@ Lemma transform_partial_program2_variable:
      In (i, Gvar(mkglobvar v tv.(gvar_init) tv.(gvar_readonly) tv.(gvar_volatile))) p.(prog_defs)
   /\ transf_var v = OK tv.(gvar_info).
 Proof.
-  intros. monadInv H. simpl in H0. 
+  intros. monadInv H. simpl in H0.
   revert x EQ H0. induction (prog_defs p); simpl; intros.
   inv EQ. contradiction.
   destruct a as [id [f|v]].
@@ -328,11 +328,11 @@ Lemma transform_partial_program2_succeeds:
   | Gvar gv => exists tv, transf_var gv.(gvar_info) = OK tv
   end.
 Proof.
-  intros. monadInv H. 
+  intros. monadInv H.
   revert x EQ H0. induction (prog_defs p); simpl; intros.
   contradiction.
   destruct a as [id1 g1]. destruct g1.
-  destruct (transf_fun f) eqn:TF; try discriminate. monadInv EQ. 
+  destruct (transf_fun f) eqn:TF; try discriminate. monadInv EQ.
   destruct H0. inv H. econstructor; eauto. eapply IHl; eauto.
   destruct (transf_globvar v) eqn:TV; try discriminate. monadInv EQ.
   destruct H0. inv H. monadInv TV. econstructor; eauto. eapply IHl; eauto.
@@ -405,7 +405,7 @@ Lemma transform_partial_program_function:
   In (i, Gfun tf) tp.(prog_defs) ->
   exists f, In (i, Gfun f) p.(prog_defs) /\ transf_partial f = OK tf.
 Proof.
-  apply transform_partial_program2_function. 
+  apply transform_partial_program2_function.
 Qed.
 
 Lemma transform_partial_program_succeeds:
@@ -414,8 +414,8 @@ Lemma transform_partial_program_succeeds:
   In (i, Gfun fd) p.(prog_defs) ->
   exists tfd, transf_partial fd = OK tfd.
 Proof.
-  unfold transform_partial_program; intros. 
-  exploit transform_partial_program2_succeeds; eauto. 
+  unfold transform_partial_program; intros.
+  exploit transform_partial_program2_succeeds; eauto.
 Qed.
 
 End TRANSF_PARTIAL_PROGRAM.
@@ -428,7 +428,7 @@ Proof.
   unfold transform_partial_program, transform_partial_program2, transform_program; intros.
   replace (transf_globdefs (fun f => OK (transf f)) (fun v => OK v) p.(prog_defs))
      with (OK (map (transform_program_globdef transf) p.(prog_defs))).
-  auto. 
+  auto.
   induction (prog_defs p); simpl.
   auto.
   destruct a as [id [f|v]]; rewrite <- IHl.
@@ -436,11 +436,11 @@ Proof.
     destruct v; auto.
 Qed.
 
-(** The following is a relational presentation of 
+(** The following is a relational presentation of
   [transform_partial_augment_preogram].  Given relations between function
   definitions and between variable information, it defines a relation
   between programs stating that the two programs have appropriately related
-  shapes (global names are preserved and possibly augmented, etc) 
+  shapes (global names are preserved and possibly augmented, etc)
   and that identically-named function definitions
   and variable information are related. *)
 
@@ -471,24 +471,24 @@ Lemma transform_partial_augment_program_match:
   forall (A B V W: Type)
          (transf_fun: A -> res B)
          (transf_var: V -> res W)
-         (p: program A V) 
+         (p: program A V)
          (new_globs : list (ident * globdef B W))
          (new_main : ident)
          (tp: program B W),
   transform_partial_augment_program transf_fun transf_var new_globs new_main p = OK tp ->
-  match_program 
+  match_program
     (fun fd tfd => transf_fun fd = OK tfd)
     (fun info tinfo => transf_var info = OK tinfo)
     new_globs new_main
     p tp.
 Proof.
-  unfold transform_partial_augment_program; intros. monadInv H. 
+  unfold transform_partial_augment_program; intros. monadInv H.
   red; simpl. split; auto. exists x; split; auto.
   revert x EQ. generalize (prog_defs p). induction l; simpl; intros.
   monadInv EQ. constructor.
-  destruct a as [id [f|v]]. 
+  destruct a as [id [f|v]].
   (* function *)
-  destruct (transf_fun f) as [tf|?] eqn:?; monadInv EQ. 
+  destruct (transf_fun f) as [tf|?] eqn:?; monadInv EQ.
   constructor; auto. constructor; auto.
   (* variable *)
   unfold transf_globvar in EQ.
@@ -521,10 +521,10 @@ Inductive external_function : Type :=
          points within a volatile global variable, generate an event.
          Otherwise, produce no event and behave like a regular memory store. *)
   | EF_vload_global (chunk: memory_chunk) (id: ident) (ofs: int)
-     (** A volatile load operation from a global variable. 
+     (** A volatile load operation from a global variable.
          Specialized version of [EF_vload]. *)
   | EF_vstore_global (chunk: memory_chunk) (id: ident) (ofs: int)
-     (** A volatile store operation in a global variable. 
+     (** A volatile store operation in a global variable.
          Specialized version of [EF_vstore]. *)
   | EF_malloc
      (** Dynamic memory allocation.  Takes the requested size in bytes
@@ -614,7 +614,7 @@ Definition external_function_eq: forall (ef1 ef2: external_function), {ef1=ef2} 
 Proof.
   generalize ident_eq signature_eq chunk_eq typ_eq zeq Int.eq_dec; intros.
   decide equality.
-  apply list_eq_dec. decide equality. apply Float.eq_dec. 
+  apply list_eq_dec. decide equality. apply Float.eq_dec.
 Defined.
 Global Opaque external_function_eq.
 

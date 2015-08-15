@@ -52,7 +52,6 @@
 #define yydebug dfg_debug
 #define yynerrs dfg_nerrs
 
-
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
@@ -184,12 +183,8 @@
 #define DFG_ID 317
 #define DFG_TEXT 318
 
-
-
-
 /* Copy the first part of user declarations.  */
 #line 48 "dfgparser.y"
-
 
 #include <ctype.h>
 #include "dfg.h"
@@ -304,8 +299,6 @@ static SYMBOL dfg_VarLookup(char*);
 
 #define YYERROR_VERBOSE
 
-
-
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -351,7 +344,6 @@ typedef struct yyltype
 
 /* Copy the second part of user declarations.  */
 
-
 /* Line 213 of /opt/gnu//share/bison/yacc.c.  */
 #line 357 "dfgparser.c"
 
@@ -371,7 +363,6 @@ typedef struct yyltype
 #  define YYSTACK_FREE free
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
-
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
@@ -626,37 +617,37 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "DFG_AND", "DFG_AUTHOR", "DFG_AXIOMS", 
-  "DFG_BEGPROB", "DFG_BY", "DFG_CLAUSE", "DFG_CLOSEBRACE", "DFG_CLSLIST", 
-  "DFG_CNF", "DFG_CONJECS", "DFG_DATE", "DFG_DECLLIST", "DFG_DESC", 
-  "DFG_DESCLIST", "DFG_DNF", "DFG_DOMPRED", "DFG_ENDLIST", "DFG_ENDPROB", 
-  "DFG_EQUAL", "DFG_EQUIV", "DFG_EXISTS", "DFG_FALSE", "DFG_FORMLIST", 
-  "DFG_FORMULA", "DFG_FORALL", "DFG_FREELY", "DFG_FUNC", "DFG_GENERATED", 
-  "DFG_GENSET", "DFG_HYPOTH", "DFG_IMPLIED", "DFG_IMPLIES", "DFG_LOGIC", 
-  "DFG_NAME", "DFG_NOT", "DFG_OPENBRACE", "DFG_OPERAT", "DFG_OR", 
-  "DFG_PREC", "DFG_PRED", "DFG_PRDICAT", "DFG_PRFLIST", "DFG_QUANTIF", 
-  "DFG_SATIS", "DFG_SETFLAG", "DFG_SETTINGS", "DFG_SYMLIST", "DFG_SORT", 
-  "DFG_SORTS", "DFG_STATUS", "DFG_STEP", "DFG_SUBSORT", "DFG_TERMLIST", 
-  "DFG_TRUE", "DFG_UNKNOWN", "DFG_UNSATIS", "DFG_VERSION", "DFG_NUM", 
-  "DFG_MINUS1", "DFG_ID", "DFG_TEXT", "'('", "')'", "'.'", "'['", "']'", 
-  "','", "':'", "$accept", "problem", "description", "name", "author", 
-  "status", "desctext", "versionopt", "logicopt", "dateopt", "log_state", 
-  "logicalpart", "symbollistopt", "functionsopt", "functionlist", "func", 
-  "predicatesopt", "predicatelist", "pred", "sortsopt", "sortlist", 
-  "operatorsopt", "operatorlist", "op", "quantifiersopt", 
-  "quantifierlist", "quant", "number", "declarationlistopt", 
-  "decllistopt", "decl", "@1", "@2", "gendecl", "freelyopt", "funclist", 
-  "sortdecl", "formulalist", "origin", "formulalistsopt", 
-  "formulalistopt", "labelopt", "formula", "@3", "@4", "formulaopt", 
-  "arglist", "binsymbol", "nsymbol", "quantsymbol", "id", "qtermlist", 
-  "qterm", "clauselistsopt", "clauselist", "@5", "cnfclausesopt", 
-  "cnfclauseopt", "cnfclause", "@6", "@7", "cnfclausebody", "litlist", 
-  "lit", "atomlist", "atom", "dnfclausesopt", "dnfclauseopt", "dnfclause", 
-  "dnfclausebody", "term", "termlist", "prooflistsopt", "prooflist", "@8", 
-  "prooflistopt", "parentlist", "assoclistopt", "assoclist", 
-  "id_or_formula", "@9", "anysymbol", "optargs", "clause", 
-  "listOfTermsopt", "listOfTerms", "@10", "terms", "settinglistsopt", 
-  "settinglist", "@11", "flags", "spassflags", "spassflag", "preclist", 
+  "$end", "error", "$undefined", "DFG_AND", "DFG_AUTHOR", "DFG_AXIOMS",
+  "DFG_BEGPROB", "DFG_BY", "DFG_CLAUSE", "DFG_CLOSEBRACE", "DFG_CLSLIST",
+  "DFG_CNF", "DFG_CONJECS", "DFG_DATE", "DFG_DECLLIST", "DFG_DESC",
+  "DFG_DESCLIST", "DFG_DNF", "DFG_DOMPRED", "DFG_ENDLIST", "DFG_ENDPROB",
+  "DFG_EQUAL", "DFG_EQUIV", "DFG_EXISTS", "DFG_FALSE", "DFG_FORMLIST",
+  "DFG_FORMULA", "DFG_FORALL", "DFG_FREELY", "DFG_FUNC", "DFG_GENERATED",
+  "DFG_GENSET", "DFG_HYPOTH", "DFG_IMPLIED", "DFG_IMPLIES", "DFG_LOGIC",
+  "DFG_NAME", "DFG_NOT", "DFG_OPENBRACE", "DFG_OPERAT", "DFG_OR",
+  "DFG_PREC", "DFG_PRED", "DFG_PRDICAT", "DFG_PRFLIST", "DFG_QUANTIF",
+  "DFG_SATIS", "DFG_SETFLAG", "DFG_SETTINGS", "DFG_SYMLIST", "DFG_SORT",
+  "DFG_SORTS", "DFG_STATUS", "DFG_STEP", "DFG_SUBSORT", "DFG_TERMLIST",
+  "DFG_TRUE", "DFG_UNKNOWN", "DFG_UNSATIS", "DFG_VERSION", "DFG_NUM",
+  "DFG_MINUS1", "DFG_ID", "DFG_TEXT", "'('", "')'", "'.'", "'['", "']'",
+  "','", "':'", "$accept", "problem", "description", "name", "author",
+  "status", "desctext", "versionopt", "logicopt", "dateopt", "log_state",
+  "logicalpart", "symbollistopt", "functionsopt", "functionlist", "func",
+  "predicatesopt", "predicatelist", "pred", "sortsopt", "sortlist",
+  "operatorsopt", "operatorlist", "op", "quantifiersopt",
+  "quantifierlist", "quant", "number", "declarationlistopt",
+  "decllistopt", "decl", "@1", "@2", "gendecl", "freelyopt", "funclist",
+  "sortdecl", "formulalist", "origin", "formulalistsopt",
+  "formulalistopt", "labelopt", "formula", "@3", "@4", "formulaopt",
+  "arglist", "binsymbol", "nsymbol", "quantsymbol", "id", "qtermlist",
+  "qterm", "clauselistsopt", "clauselist", "@5", "cnfclausesopt",
+  "cnfclauseopt", "cnfclause", "@6", "@7", "cnfclausebody", "litlist",
+  "lit", "atomlist", "atom", "dnfclausesopt", "dnfclauseopt", "dnfclause",
+  "dnfclausebody", "term", "termlist", "prooflistsopt", "prooflist", "@8",
+  "prooflistopt", "parentlist", "assoclistopt", "assoclist",
+  "id_or_formula", "@9", "anysymbol", "optargs", "clause",
+  "listOfTermsopt", "listOfTerms", "@10", "terms", "settinglistsopt",
+  "settinglist", "@11", "flags", "spassflags", "spassflag", "preclist",
   "precitem", "statopt", "gsettings", "gsetting", "labellist", 0
 };
 #endif
@@ -1244,7 +1235,6 @@ yysymprint (yyout, yytype, yyvalue)
 }
 #endif /* YYDEBUG. */
 
-
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
@@ -1298,7 +1288,6 @@ int yyparse (void);
 # endif
 #endif
 
-
 /* The lookahead symbol.  */
 int yychar;
 
@@ -1308,12 +1297,11 @@ YYSTYPE yylval;
 /* Number of parse errors so far.  */
 int yynerrs;
 
-
 int
 yyparse (YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
-  
+
   register int yystate;
   register int yyn;
   int yyresult;
@@ -1340,8 +1328,6 @@ yyparse (YYPARSE_PARAM_ARG)
   YYSTYPE *yyvs = yyvsa;
   register YYSTYPE *yyvsp;
 
-
-
 #define YYPOPSTACK   (yyvsp--, yyssp--)
 
   YYSIZE_T yystacksize = YYINITDEPTH;
@@ -1349,7 +1335,6 @@ yyparse (YYPARSE_PARAM_ARG)
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
-
 
   /* When reducing, the number of symbols on the RHS of the reduced
      rule.  */
@@ -1397,7 +1382,6 @@ yyparse (YYPARSE_PARAM_ARG)
 	YYSTYPE *yyvs1 = yyvs;
 	short *yyss1 = yyss;
 
-
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
@@ -1440,7 +1424,6 @@ yyparse (YYPARSE_PARAM_ARG)
 
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
-
 
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
 		  (unsigned long int) yystacksize));
@@ -1526,7 +1509,6 @@ yybackup:
 
   *++yyvsp = yylval;
 
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
@@ -1534,7 +1516,6 @@ yybackup:
 
   yystate = yyn;
   goto yynewstate;
-
 
 /*-----------------------------------------------------------.
 | yydefault -- do the default action for the current state.  |
@@ -1544,7 +1525,6 @@ yydefault:
   if (yyn == 0)
     goto yyerrlab;
   goto yyreduce;
-
 
 /*-----------------------------.
 | yyreduce -- Do a reduction.  |
@@ -1562,8 +1542,6 @@ yyreduce:
      unconditionally makes the parser a bit smaller, and it avoids a
      GCC warning that YYVAL may be used uninitialized.  */
   yyval = yyvsp[1-yylen];
-
-
 
 #if YYDEBUG
   /* We have to keep this `#if YYDEBUG', since we use variables which
@@ -2350,8 +2328,8 @@ yyreduce:
 		      if (s == 0) {
 		        misc_StartUserErrorReport();
 		        misc_UserErrorReport("\n Undefined symbol %s", list_Car(yyvsp[-1].list));
-			misc_UserErrorReport(" in DomPred list.\n"); 
-			misc_FinishUserErrorReport(); 
+			misc_UserErrorReport(" in DomPred list.\n");
+			misc_FinishUserErrorReport();
 		      }
 		      if (!symbol_IsPredicate(s)) {
 			misc_StartUserErrorReport();
@@ -2359,7 +2337,7 @@ yyreduce:
 			misc_UserErrorReport(" in DomPred list.\n");
 			misc_FinishUserErrorReport();
 		      }
-		      string_StringFree(list_Car(yyvsp[-1].list)); 
+		      string_StringFree(list_Car(yyvsp[-1].list));
 		      symbol_AddProperty(s, DOMPRED);
 		    }
 		  }
@@ -2384,8 +2362,8 @@ yyreduce:
 		      if (s == 0) {
 			misc_StartUserErrorReport();
 			misc_UserErrorReport("\n Undefined symbol %s ", yyvsp[0].string);
-			misc_UserErrorReport(" in precedence list.\n"); 
-			misc_FinishUserErrorReport(); 
+			misc_UserErrorReport(" in precedence list.\n");
+			misc_FinishUserErrorReport();
 		      }
 		      string_StringFree(yyvsp[0].string);
 		      symbol_SetIncreasedOrdering(dfg_PRECEDENCE, s);
@@ -2400,7 +2378,7 @@ yyreduce:
 			misc_StartUserErrorReport();
 			misc_UserErrorReport("\n Undefined symbol %s", yyvsp[-4].string);
 			misc_UserErrorReport("in precedence list.\n");
-			misc_FinishUserErrorReport(); 
+			misc_FinishUserErrorReport();
 		      }
 		      string_StringFree(yyvsp[-4].string);
 		      symbol_SetIncreasedOrdering(dfg_PRECEDENCE, s);
@@ -2449,7 +2427,6 @@ yyreduce:
     { yyval.list = list_Nconc(yyvsp[-2].list, list_List(yyvsp[0].string)); }
     break;
 
-
     }
 
 /* Line 1016 of /opt/gnu//share/bison/yacc.c.  */
@@ -2457,7 +2434,6 @@ yyreduce:
 
   yyvsp -= yylen;
   yyssp -= yylen;
-
 
 #if YYDEBUG
   if (yydebug)
@@ -2472,7 +2448,6 @@ yyreduce:
 
   *++yyvsp = yyval;
 
-
   /* Now `shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
      number reduced by.  */
@@ -2486,7 +2461,6 @@ yyreduce:
     yystate = yydefgoto[yyn - YYNTOKENS];
 
   goto yynewstate;
-
 
 /*------------------------------------.
 | yyerrlab -- here on detecting error |
@@ -2546,7 +2520,6 @@ yyerrlab:
 	yyerror ("parse error");
     }
   goto yyerrlab1;
-
 
 /*----------------------------------------------------.
 | yyerrlab1 -- error raised explicitly by an action.  |
@@ -2614,7 +2587,6 @@ yyerrlab1:
       yyvsp--;
       yystate = *--yyssp;
 
-
 #if YYDEBUG
       if (yydebug)
 	{
@@ -2634,10 +2606,8 @@ yyerrlab1:
 
   *++yyvsp = yylval;
 
-
   yystate = yyn;
   goto yynewstate;
-
 
 /*-------------------------------------.
 | yyacceptlab -- YYACCEPT comes here.  |
@@ -2671,9 +2641,7 @@ yyreturn:
   return yyresult;
 }
 
-
 #line 895 "dfgparser.y"
-
 
 void yyerror(const char *s)
 {
@@ -2719,7 +2687,6 @@ static void dfg_Init(FILE* Input, FLAGSTORE Flags, PRECEDENCE Precedence)
   dfg_DESC.description = (char*) NULL;
   dfg_DESC.date        = (char*) NULL;
 }
-
 
 void dfg_Free(void)
 /**************************************************************
@@ -2874,7 +2841,6 @@ void dfg_FPrintDescription(FILE* File)
   fputs("end_of_list.", File);
 }
 
-
 LIST dfg_DFGParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence,
 		   LIST* Axioms, LIST* Conjectures, LIST* SortDecl,
 		   LIST* UserDefinedPrecedence)
@@ -2908,7 +2874,7 @@ LIST dfg_DFGParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence,
   dfg_Init(File, Flags, Precedence);  /* Initialize the parser and scanner */
   bottom = stack_Bottom();
   dfg_parse();          /* Invoke the parser */
-#ifdef CHECK 
+#ifdef CHECK
   if (!stack_Empty(bottom)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In dfg_DFGParser: Stack not empty!\n");
@@ -2958,7 +2924,6 @@ LIST dfg_DFGParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence,
   return scan;
 }
 
-
 LIST dfg_ProofParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   The input file containing clauses in DFG syntax,
@@ -2985,7 +2950,7 @@ LIST dfg_ProofParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence)
   dfg_Init(File, Flags, Precedence);  /* Initialize the parser and scanner */
   bottom = stack_Bottom();
   dfg_parse();          /* Invoke the parser */
-#ifdef CHECK 
+#ifdef CHECK
   if (!stack_Empty(bottom)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In dfg_ProofParser: Stack not empty!\n");
@@ -3031,7 +2996,6 @@ LIST dfg_ProofParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence)
   return dfg_AXCLAUSES;
 }
 
-
 LIST dfg_TermParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   The input file containing a list of terms in DFG syntax,
@@ -3042,11 +3006,11 @@ LIST dfg_TermParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence)
 ***************************************************************/
 {
   NAT bottom;
-  
+
   dfg_Init(File, Flags, Precedence);   /* Initialize the parser and scanner */
   bottom = stack_Bottom();
   dfg_parse();          /* Invoke the parser */
-#ifdef CHECK 
+#ifdef CHECK
   if (!stack_Empty(bottom)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In dfg_TermParser: Stack not empty!\n");
@@ -3069,7 +3033,6 @@ LIST dfg_TermParser(FILE* File, FLAGSTORE Flags, PRECEDENCE Precedence)
 
   return dfg_TERMLIST;
 }
-
 
 void dfg_DeleteFormulaPairList(LIST FormulaPairs)
 /**************************************************************
@@ -3171,7 +3134,7 @@ static void dfg_SymbolDecl(int SymbolType, char* Name, int Arity)
     /* Check if the old and new symbol type are equal */
     if ((SymbolType == DFG_FUNC && !symbol_IsFunction(symbol)) ||
 	(SymbolType == DFG_PRDICAT && !symbol_IsPredicate(symbol)) ||
-	((SymbolType == DFG_OPERAT || SymbolType == DFG_QUANTIF) && 
+	((SymbolType == DFG_OPERAT || SymbolType == DFG_QUANTIF) &&
 	 !symbol_IsJunctor(symbol))) {
       misc_StartUserErrorReport();
       misc_UserErrorReport("\n Line %u: symbol %s was already declared as ",
@@ -3220,7 +3183,6 @@ static void dfg_SymbolDecl(int SymbolType, char* Name, int Arity)
   string_StringFree(Name);  /* Name was copied */
 }
 
-
 static SYMBOL dfg_Symbol(char* Name, NAT Arity)
 /**************************************************************
   INPUT:   The name of a symbol and the actual arity of the symbol.
@@ -3262,7 +3224,6 @@ static SYMBOL dfg_Symbol(char* Name, NAT Arity)
   }
   return symbol;
 }
-
 
 TERM dfg_CreateQuantifier(SYMBOL Symbol, LIST VarTermList, TERM Term)
 /**************************************************************
@@ -3334,7 +3295,6 @@ TERM dfg_CreateQuantifier(SYMBOL Symbol, LIST VarTermList, TERM Term)
   return helpterm;
 }
 
-
 CLAUSE dfg_CreateClauseFromTerm(TERM Clause, BOOL IsAxiom, FLAGSTORE Flags,
 				PRECEDENCE Precedence)
 /**************************************************************
@@ -3350,14 +3310,14 @@ CLAUSE dfg_CreateClauseFromTerm(TERM Clause, BOOL IsAxiom, FLAGSTORE Flags,
            if they occur in <Clause>.
 	   The contents of the flag store and the precedence are changed
 	   because the parser read flag and precedence settings from
-	   
+
   MEMORY:  The clause term is deleted.
 ***************************************************************/
 {
   LIST   literals, scan;
   TERM   literal;
   CLAUSE result;
-  
+
   if (term_TopSymbol(Clause) == fol_All()) {
     /* Remove and free the quantifier and the OR term */
     literals = term_ArgumentList(term_SecondArgument(Clause));
@@ -3409,7 +3369,6 @@ CLAUSE dfg_CreateClauseFromTerm(TERM Clause, BOOL IsAxiom, FLAGSTORE Flags,
   return result;
 }
 
-
 static void dfg_SubSort(char* Name1, char* Name2)
 /**************************************************************
   INPUT:   Two sort symbol names.
@@ -3438,7 +3397,7 @@ static void dfg_SubSort(char* Name1, char* Name2)
 
   varterm = term_Create(symbol_CreateStandardVariable(), list_Nil());
   symbol_ResetStandardVarCounter();
-  
+
   t1   = term_Create(s1, list_List(varterm));
   t2   = term_Create(s2, list_List(term_Copy(varterm)));
   term = term_Create(fol_Implies(), list_Cons(t1, list_List(t2)));
@@ -3446,7 +3405,6 @@ static void dfg_SubSort(char* Name1, char* Name2)
 			      list_List(term));
   dfg_SORTDECLLIST = list_Nconc(dfg_SORTDECLLIST, list_List(list_PairCreate(NULL,term)));
 }
-
 
 static void dfg_SymbolGenerated(SYMBOL SortPredicate, BOOL FreelyGenerated,
 				LIST GeneratedBy)
@@ -3500,7 +3458,6 @@ static void dfg_SymbolGenerated(SYMBOL SortPredicate, BOOL FreelyGenerated,
   symbol_SetGeneratedBy(SortPredicate, GeneratedBy);
 }
 
-
 /**************************************************************/
 /* Functions for the Symbol Table                             */
 /**************************************************************/
@@ -3521,7 +3478,6 @@ static __inline__ void dfg_SymFree(DFG_SYM Entry)
   memory_Free(Entry, sizeof(DFG_SYMENTRY));
 }
 
-
 static void dfg_SymAdd(SYMBOL Symbol)
 /**************************************************************
   INPUT:   A symbol.
@@ -3537,7 +3493,6 @@ static void dfg_SymAdd(SYMBOL Symbol)
   newEntry->arity  = 0;
   dfg_SYMBOLLIST = list_Cons(newEntry, dfg_SYMBOLLIST);
 }
-
 
 static void dfg_SymCheck(SYMBOL Symbol, NAT Arity)
 /**************************************************************
@@ -3584,7 +3539,6 @@ static void dfg_SymCheck(SYMBOL Symbol, NAT Arity)
   }
 }
 
-
 static void dfg_SymCleanUp(void)
 /**************************************************************
   INPUT:   None.
@@ -3607,11 +3561,10 @@ static void dfg_SymCleanUp(void)
   }
 }
 
-
 /**************************************************************/
 /* Functions for the Variable Table                           */
 /**************************************************************/
-  
+
 typedef struct {
   char*  name;
   SYMBOL symbol;
@@ -3711,4 +3664,3 @@ static SYMBOL dfg_VarLookup(char* Name)
   }
   return symbol;
 }
-

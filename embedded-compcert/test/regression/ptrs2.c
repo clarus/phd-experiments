@@ -17,10 +17,9 @@ Matrix * CopyMatrix(Matrix * Mat) {
 
 Matrix * IdentMatrix(void)
 {
-  Matrix SI = { { 1.00, 0.00, 0.00, 0.00 }, 
+  Matrix SI = { { 1.00, 0.00, 0.00, 0.00 },
 		{ 0.00, 1.00, 0.00, 0.00 },
 		{ 0.00, 0.00, 1.00, 0.00 },
 		{ 0.00, 0.00, 0.00, 1.00 }};
   return CopyMatrix(&SI);
 }
-

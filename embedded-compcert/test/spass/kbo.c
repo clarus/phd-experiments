@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *         EXTENDED KNUTH BENDIX ORDERING                 * */
 /* *                                                        * */
-/* *  $Module:   KBO                                        * */ 
+/* *  $Module:   KBO                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "kbo.h"
@@ -56,8 +55,8 @@ const int kbo_MINWEIGHT = 1;
 
 static int kbo_ContCompVarCondAndWeightIntern(CONTEXT Context, TERM Term, int Index)
 /**************************************************************
-  INPUT:   
-  EFFECT:  
+  INPUT:
+  EFFECT:
 ***************************************************************/
 {
   int Weight;
@@ -79,7 +78,7 @@ static int kbo_ContCompVarCondAndWeightIntern(CONTEXT Context, TERM Term, int In
   return Weight;
 }
 
-static int kbo_ContCompVarCondAndWeight(CONTEXT Context1, TERM Term1, BOOL *VarCond1, 
+static int kbo_ContCompVarCondAndWeight(CONTEXT Context1, TERM Term1, BOOL *VarCond1,
 					CONTEXT Context2, TERM Term2, BOOL *VarCond2)
 /**************************************************************
   INPUT:   Two contexts, two terms and two pointers to booleans.
@@ -119,9 +118,8 @@ static int kbo_ContCompVarCondAndWeight(CONTEXT Context1, TERM Term1, BOOL *VarC
 	return Weight;
     }
   }
-  return Weight;  
+  return Weight;
 }
-
 
 static int kbo_CompVarCondAndWeight(TERM Term1, BOOL *VarCond1, TERM Term2, BOOL *VarCond2)
 /**************************************************************
@@ -215,15 +213,14 @@ static int kbo_CompVarCondAndWeight(TERM Term1, BOOL *VarCond1, TERM Term2, BOOL
 	return Weight;
     }
   }
-  return Weight;  
+  return Weight;
 }
-
 
 static ord_RESULT kbo_CompareStruc(TERM Term1, TERM Term2, int WeightDiff)
 /**************************************************************
   INPUT:   Two terms where the kbo-variable condition for <Term1> and
            <Term2> is satisfied and <WeightDiff> is the kbo weight difference
-	   between <Term1> and <Term2> 
+	   between <Term1> and <Term2>
   RETURNS: ord_UNCOMPARABLE, if Term1 and Term2 are uncomparable
 	   ord_EQUAL,        if Term1 and Term2 are equal
 	   ord_GREATER_THAN, if Term1 is greater than Term2
@@ -239,7 +236,7 @@ static ord_RESULT kbo_CompareStruc(TERM Term1, TERM Term2, int WeightDiff)
 
   if (WeightDiff > 0)
     return ord_GREATER_THAN;
-  else 
+  else
     if (WeightDiff == 0) {
       if (symbol_IsStandardVariable(Top1)) {
 	if (symbol_IsStandardVariable(Top2))
@@ -270,7 +267,7 @@ static ord_RESULT kbo_CompareStruc(TERM Term1, TERM Term2, int WeightDiff)
 	      else
 		return ord_EQUAL;
 	    }
-	    else {	      
+	    else {
 	      while (!list_Empty(Scan1) && term_Equal(list_Car(Scan1),list_Car(Scan2))) {
 		Scan1 = list_Cdr(Scan1);
 		Scan2 = list_Cdr(Scan2);
@@ -281,7 +278,7 @@ static ord_RESULT kbo_CompareStruc(TERM Term1, TERM Term2, int WeightDiff)
 		RecTerm1 = (TERM)list_Car(Scan1);
 		RecTerm2 = (TERM)list_Car(Scan2);
 	      }
-	    }	      
+	    }
 	    RecWeightDiff =  kbo_CompVarCondAndWeight(RecTerm1,&T1VarCond,RecTerm2,&T2VarCond);
 	    if (RecWeightDiff >= 0 && T1VarCond)
 	      return kbo_CompareStruc(RecTerm1, RecTerm2, RecWeightDiff);
@@ -296,7 +293,6 @@ static ord_RESULT kbo_CompareStruc(TERM Term1, TERM Term2, int WeightDiff)
 
   return ord_UNCOMPARABLE;
 }
-  
 
 ord_RESULT kbo_Compare(TERM Term1, TERM Term2)
 /**************************************************************
@@ -324,7 +320,6 @@ ord_RESULT kbo_Compare(TERM Term1, TERM Term2)
     misc_FinishErrorReport();
   }
 #endif
-
 
   WeightDiff =  kbo_CompVarCondAndWeight(Term1,&T1VarCond,Term2,&T2VarCond);
 
@@ -354,7 +349,7 @@ static ord_RESULT kbo_ContCompareStruc(CONTEXT Context1, TERM Term1,
 	   kbo weight difference between <Term1> and <Term2>.
   RETURNS: ord_UNCOMPARABLE, if Term1 and Term2 are uncomparable
 	   ord_EQUAL,        if Term1 and Term2 are equal
-	   ord_GREATER_THAN, if Term1 is greater than Term2 
+	   ord_GREATER_THAN, if Term1 is greater than Term2
 	   The Terms are interpreted with respect to the contexts.
   CAUTION: The precedence from the order module is used to determine
            the precedence of symbols!
@@ -370,7 +365,7 @@ static ord_RESULT kbo_ContCompareStruc(CONTEXT Context1, TERM Term1,
 
   if (WeightDiff > 0)
     return ord_GREATER_THAN;
-  else 
+  else
     if (WeightDiff == 0) {
       if (symbol_IsStandardVariable(Top1)) {
 	if (symbol_IsStandardVariable(Top2))
@@ -402,7 +397,7 @@ static ord_RESULT kbo_ContCompareStruc(CONTEXT Context1, TERM Term1,
 	      else
 		return ord_EQUAL;
 	    }
-	    else {	      
+	    else {
 	      while (!list_Empty(Scan1) && cont_TermEqual(Context1,list_Car(Scan1),Context2,list_Car(Scan2))) {
 		Scan1 = list_Cdr(Scan1);
 		Scan2 = list_Cdr(Scan2);
@@ -413,7 +408,7 @@ static ord_RESULT kbo_ContCompareStruc(CONTEXT Context1, TERM Term1,
 		RecTerm1 = cont_Deref(&Context1,list_Car(Scan1));
 		RecTerm2 = cont_Deref(&Context2,list_Car(Scan2));
 	      }
-	    }	      
+	    }
 	    RecWeightDiff =  kbo_ContCompVarCondAndWeight(Context1,RecTerm1,&T1VarCond,
 							  Context2,RecTerm2,&T2VarCond);
 	    if (RecWeightDiff >= 0 && T1VarCond)
@@ -429,7 +424,6 @@ static ord_RESULT kbo_ContCompareStruc(CONTEXT Context1, TERM Term1,
 
   return ord_UNCOMPARABLE;
 }
-  
 
 ord_RESULT kbo_ContCompare(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM Term2)
 /**************************************************************
@@ -439,7 +433,7 @@ ord_RESULT kbo_ContCompare(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM 
 	   ord_EQUAL,        if Term1 and Term2 are comparable and have the
 	                      same weight,
 	   ord_GREATER_THAN, if Term1 is greater than Term2 wrt the kbo with
-	                      the actual precedence kbo_Prec and the given 
+	                      the actual precedence kbo_Prec and the given
 			      symbol_Weights,
 	   ord_SMALLER_THAN, else.
 	   The Terms are interpreted with respect to the contexts.
@@ -459,7 +453,6 @@ ord_RESULT kbo_ContCompare(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM 
     misc_FinishErrorReport();
   }
 #endif
-
 
   WeightDiff =  kbo_ContCompVarCondAndWeight(Context1, Term1, &T1VarCond, Context2, Term2, &T2VarCond);
 
@@ -530,7 +523,7 @@ static BOOL kbo_ContGreaterCompareStruc(CONTEXT Context1, TERM Term1,
 	  else
 	    return FALSE;
 	}
-	else {	      
+	else {
 	  while (!list_Empty(Scan1) && cont_TermEqual(Context1,list_Car(Scan1),Context2,list_Car(Scan2))) {
 	    Scan1 = list_Cdr(Scan1);
 	    Scan2 = list_Cdr(Scan2);
@@ -541,7 +534,7 @@ static BOOL kbo_ContGreaterCompareStruc(CONTEXT Context1, TERM Term1,
 	    RecTerm1 = cont_Deref(&Context1,list_Car(Scan1));
 	    RecTerm2 = cont_Deref(&Context2,list_Car(Scan2));
 	  }
-	}	      
+	}
 	RecWeightDiff =  kbo_ContCompVarCondAndWeight(Context1,RecTerm1,&T1VarCond,
 						      Context2,RecTerm2,&T2VarCond);
 
@@ -553,10 +546,9 @@ static BOOL kbo_ContGreaterCompareStruc(CONTEXT Context1, TERM Term1,
 	      return kbo_ContGreaterCompareStruc(Context1, RecTerm1, Context2, RecTerm2);
 	}
       }
-  
+
   return FALSE;
 }
-
 
 BOOL kbo_ContGreater(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM Term2)
 /**************************************************************
@@ -579,14 +571,13 @@ BOOL kbo_ContGreater(CONTEXT Context1, TERM Term1, CONTEXT Context2, TERM Term2)
   }
 #endif
 
-
   WeightDiff =  kbo_ContCompVarCondAndWeight(Context1, Term1, &T1VarCond, Context2, Term2, &T2VarCond);
 
   if (T1VarCond) {
     if (WeightDiff > 0)
       return TRUE;
     else
-      if (WeightDiff == 0) 
+      if (WeightDiff == 0)
 	return kbo_ContGreaterCompareStruc(Context1,Term1,Context2,Term2);
   }
   return FALSE;

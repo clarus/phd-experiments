@@ -98,7 +98,7 @@ let print_function pp id f =
       (List.rev_map
         (fun (pc, i) -> (P.to_int32 pc, i))
         (PTree.elements f.fn_code)) in
-  print_succ pp f.fn_entrypoint 
+  print_succ pp f.fn_entrypoint
     (match instrs with (pc1, _) :: _ -> pc1 | [] -> -1l);
   List.iter (print_instruction pp) instrs;
   fprintf pp "@;<0 -2>}@]@."
@@ -134,4 +134,3 @@ let print_constprop = print_if destination_constprop
 
 let destination_cse : string option ref = ref None
 let print_cse = print_if destination_cse
-

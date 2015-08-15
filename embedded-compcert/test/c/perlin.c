@@ -1,4 +1,4 @@
-// perlin noise, derived from the Java reference implementation at 
+// perlin noise, derived from the Java reference implementation at
 // http://mrl.nyu.edu/~perlin/noise/
 
 #include <math.h>
@@ -55,7 +55,7 @@ static double noise(double x, double y, double z) {
                                  grad(p[BB+1], x-1, y-1, z-1 ))));
 }
 
-static void init(void) { 
+static void init(void) {
   int i = 0;
   for (i=0; i < 256 ; i++)
     p[256+i] = p[i] = permutation[i];
@@ -63,13 +63,13 @@ static void init(void) {
 
 int main(int argc, char ** argv) {
   init();
-  
+
   double x, y, z, sum = 0.0;
   for (x = -11352.57; x < 23561.57; x += .1235)
     for (y = -346.1235; y < 124.124; y += 1.4325)
       for (z = -156.235; y < 23.2345; y += 2.45)
         sum += noise(x, y, z);
-  
+
   printf("%.4e\n", sum);
   return 0;
 }

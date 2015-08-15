@@ -123,7 +123,7 @@ let rec expr p (prec, e) =
     if assoc = LtoR
     then (prec', prec' + 1)
     else (prec' + 1, prec') in
-  if prec' < prec 
+  if prec' < prec
   then fprintf p "@[<hov 2>("
   else fprintf p "@[<hov 2>";
   begin match e with
@@ -244,7 +244,7 @@ let rec print_stmt p s =
       fprintf p "@[<v 2>switch (%a) {" print_expr e;
       List.iter
         (fun (n, x) ->
-           fprintf p "@ case %ld: exit %d;\n" 
+           fprintf p "@ case %ld: exit %d;\n"
                      (camlint_of_coqint n) (Nat.to_int x))
         cases;
       fprintf p "@ default: exit %d;\n" (Nat.to_int dfl);
@@ -299,12 +299,12 @@ let print_init_data p = function
 let rec print_init_data_list p = function
   | [] -> ()
   | [item] -> print_init_data p item
-  | item::rest -> 
+  | item::rest ->
       (print_init_data p item;
        fprintf p ",";
        print_init_data_list p rest)
 
-let print_globvar p gv = 
+let print_globvar p gv =
   if (gv.gvar_readonly) then
     fprintf p "readonly ";
   if (gv.gvar_volatile) then

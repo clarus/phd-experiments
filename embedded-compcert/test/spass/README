@@ -4,7 +4,6 @@
 This is the generic README file for all SPASS distributions, so your downloaded
 package may only contain a subset of what is described here.
 
-
 				Important Files
 				===============
 
@@ -15,7 +14,7 @@ INSTALLATION 	for a guide to install the prover, man pages,
 		in /usr/local/bin and man-pages in /usr/local/man;
 		use the prefix option of make install for a different
 		path
-	
+
 COPYING      	for the licence agreement that you certify by
              	installation, its the GNU GENERAL PUBLIC LICENSE, Version 2
 
@@ -23,15 +22,12 @@ VERSIONHISTORY	changes starting from version 1.0.0
 
 README		is this file
 
-
-
-
 				Programs
 				========
 
 The distribution contains the following programs. Most
 of them give you a brief description if they are called
-without arguments. Most of the programs come with man-pages. 
+without arguments. Most of the programs come with man-pages.
 
 SPASS		is our prover for first-order logic with equality.
 
@@ -56,9 +52,7 @@ dfg2otter.pl	has the same functionality than dfg2otter but adds specific
 
 dfg2tptp	translates DFG-syntax input  files into TPTP input files.
 
-
 dfg2ascii  	provides an ASCII pretty print of DFG-syntax input files
-
 
 				Documentation
 				=============
@@ -66,31 +60,25 @@ dfg2ascii  	provides an ASCII pretty print of DFG-syntax input files
 Besides the man pages, in the directory doc you'll find a description
 of our input syntax (spass-input-syntax.pdf), a small tutorial (tutorial.pdf)
 that is just a print out of our tutorial web page and the complete
-theory of SPASS (handbook-spass.pdf). Furthermore, there is a FAQ 
+theory of SPASS (handbook-spass.pdf). Furthermore, there is a FAQ
 database (faq.txt).
-
 
 				Examples
 				========
 
 In the examples directory you'll find some small examples. Further
 example collections can be downloaded from the SPASS homepage. By
-convention, files ending in ".dfg" are formula files and files ending 
+convention, files ending in ".dfg" are formula files and files ending
 in ".cnf" are files containing clauses.
 
-				
 				    WWW
 				    ===
 
-Consider the SPASS homepage at 
+Consider the SPASS homepage at
 
 			http://spass.mpi-sb.mpg.de/
 
 for recent developments, downloads etc.
-
-
-
-
 
 have SPASS
   Christoph Weidenbach

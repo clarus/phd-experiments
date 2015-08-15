@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *              FIRST ORDER LOGIC SYMBOLS                 * */
 /* *                                                        * */
-/* *  $Module:   FOL      DFG                               * */ 
+/* *  $Module:   FOL      DFG                               * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -41,7 +41,6 @@
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 /* $RCSfile$ */
 
@@ -166,20 +165,19 @@ static  __inline__ LIST fol_QuantifierVariables(TERM T)
 static __inline__ BOOL fol_IsLiteral(TERM T)
 {
   return symbol_IsPredicate(term_TopSymbol(T)) ||
-    (symbol_Equal(term_TopSymbol(T),fol_Not()) && 
+    (symbol_Equal(term_TopSymbol(T),fol_Not()) &&
      symbol_IsPredicate(term_TopSymbol(term_FirstArgument(T))));
 }
 
 static __inline__ BOOL fol_IsNegativeLiteral(TERM T)
 {
-  return (symbol_Equal(term_TopSymbol(T),fol_Not()) && 
+  return (symbol_Equal(term_TopSymbol(T),fol_Not()) &&
 	  symbol_IsPredicate(term_TopSymbol(term_FirstArgument(T))));
 }
 
-
 static __inline__ BOOL fol_IsJunctor(SYMBOL S)
 {
-  return fol_IsQuantifier(S) || symbol_Equal(S, fol_AND) || 
+  return fol_IsQuantifier(S) || symbol_Equal(S, fol_AND) ||
     symbol_Equal(S, fol_OR) || symbol_Equal(S, fol_NOT) ||
     symbol_Equal(S, fol_IMPLIED) ||  symbol_Equal(S, fol_VARLIST) ||
     symbol_Equal(S, fol_IMPLIES) || symbol_Equal(S, fol_EQUIV);
@@ -204,7 +202,6 @@ static __inline__ BOOL fol_IsEquality(TERM Term)
   return term_TopSymbol(Term) == fol_EQUALITY;
 }
 
-
 static __inline__ BOOL fol_IsAssignment(TERM Term)
 {
   return (term_TopSymbol(Term) == fol_EQUALITY &&
@@ -215,7 +212,6 @@ static __inline__ BOOL fol_IsAssignment(TERM Term)
 	    !term_ContainsVariable(term_FirstArgument(Term),
 				   term_TopSymbol(term_SecondArgument(Term))))));
 }
-
 
 static __inline__ LIST fol_DeleteFalseTermFromList(LIST List)
 /**************************************************************
@@ -230,7 +226,6 @@ static __inline__ LIST fol_DeleteFalseTermFromList(LIST List)
 				  (void (*)(POINTER))term_Delete);
 }
 
-
 static __inline__ LIST fol_DeleteTrueTermFromList(LIST List)
 /**************************************************************
   INPUT:   A list of terms.
@@ -243,7 +238,6 @@ static __inline__ LIST fol_DeleteTrueTermFromList(LIST List)
   return list_DeleteElementIfFree(List, (BOOL (*)(POINTER))fol_IsTrue,
 				  (void (*)(POINTER))term_Delete);
 }
-
 
 /**************************************************************/
 /* Functions                                                  */

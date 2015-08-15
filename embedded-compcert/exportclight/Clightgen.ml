@@ -179,7 +179,7 @@ let parse_cmdline spec usage =
       let s = Sys.argv.(i) in
       match find_action s acts with
       | None ->
-          if s <> "-help" && s <> "--help" 
+          if s <> "-help" && s <> "--help"
           then eprintf "Unknown argument `%s'\n" s;
           error ()
       | Some(Set r) ->

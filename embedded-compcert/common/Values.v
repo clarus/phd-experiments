@@ -84,7 +84,7 @@ Lemma has_subtype:
   subtype ty1 ty2 = true -> has_type v ty1 -> has_type v ty2.
 Proof.
   intros. destruct ty1; destruct ty2; simpl in H; discriminate || assumption || idtac.
-  unfold has_type in *. destruct v; auto. 
+  unfold has_type in *. destruct v; auto.
 Qed.
 
 Lemma has_subtype_list:
@@ -654,7 +654,7 @@ Lemma load_result_same:
   forall v ty, has_type v ty -> load_result (chunk_of_type ty) v = v.
 Proof.
   unfold has_type; intros. destruct v; destruct ty; try contradiction; auto.
-  simpl. rewrite Float.singleoffloat_of_single; auto. 
+  simpl. rewrite Float.singleoffloat_of_single; auto.
 Qed.
 
 (** Theorems on arithmetic operations. *)
@@ -662,14 +662,14 @@ Qed.
 Theorem cast8unsigned_and:
   forall x, zero_ext 8 x = and x (Vint(Int.repr 255)).
 Proof.
-  destruct x; simpl; auto. decEq. 
-  change 255 with (two_p 8 - 1). apply Int.zero_ext_and. omega. 
+  destruct x; simpl; auto. decEq.
+  change 255 with (two_p 8 - 1). apply Int.zero_ext_and. omega.
 Qed.
 
 Theorem cast16unsigned_and:
   forall x, zero_ext 16 x = and x (Vint(Int.repr 65535)).
 Proof.
-  destruct x; simpl; auto. decEq. 
+  destruct x; simpl; auto. decEq.
   change 65535 with (two_p 16 - 1). apply Int.zero_ext_and. omega.
 Qed.
 
@@ -682,7 +682,7 @@ Qed.
 Theorem bool_of_val_of_optbool:
   forall ob b, bool_of_val (of_optbool ob) b -> ob = Some b.
 Proof.
-  intros. destruct ob; simpl in H. 
+  intros. destruct ob; simpl in H.
   destruct b0; simpl in H; inv H; auto.
   inv H.
 Qed.
@@ -714,7 +714,7 @@ Qed.
 Theorem notbool_idem3:
   forall x, notbool(notbool(notbool x)) = notbool x.
 Proof.
-  destruct x; simpl; auto. 
+  destruct x; simpl; auto.
   case (Int.eq i Int.zero); reflexivity.
 Qed.
 
@@ -736,7 +736,7 @@ Proof.
   rewrite Int.add_assoc; auto.
   rewrite Int.add_assoc; auto.
   decEq. decEq. apply Int.add_commut.
-  decEq. rewrite Int.add_commut. rewrite <- Int.add_assoc. 
+  decEq. rewrite Int.add_commut. rewrite <- Int.add_assoc.
   decEq. apply Int.add_commut.
   decEq. rewrite Int.add_assoc. auto.
 Qed.
@@ -749,8 +749,8 @@ Qed.
 Theorem add_permut_4:
   forall x y z t, add (add x y) (add z t) = add (add x z) (add y t).
 Proof.
-  intros. rewrite add_permut. rewrite add_assoc. 
-  rewrite add_permut. symmetry. apply add_assoc. 
+  intros. rewrite add_permut. rewrite add_assoc.
+  rewrite add_permut. symmetry. apply add_assoc.
 Qed.
 
 Theorem neg_zero: neg Vzero = Vzero.
@@ -765,7 +765,7 @@ Qed.
 
 Theorem sub_zero_r: forall x, sub Vzero x = neg x.
 Proof.
-  destruct x; simpl; auto. 
+  destruct x; simpl; auto.
 Qed.
 
 Theorem sub_add_opp: forall x y, sub x (Vint y) = add x (Vint (Int.neg y)).
@@ -793,11 +793,11 @@ Theorem sub_add_r:
 Proof.
   destruct v1; destruct v2; intros; simpl; auto.
   rewrite Int.sub_add_r. auto.
-  repeat rewrite Int.sub_add_opp. decEq. 
+  repeat rewrite Int.sub_add_opp. decEq.
   repeat rewrite Int.add_assoc. decEq. apply Int.add_commut.
-  decEq. repeat rewrite Int.sub_add_opp. 
+  decEq. repeat rewrite Int.sub_add_opp.
   rewrite Int.add_assoc. decEq. apply Int.neg_add_distr.
-  case (eq_block b b0); intro. simpl. decEq. 
+  case (eq_block b b0); intro. simpl. decEq.
   repeat rewrite Int.sub_add_opp. rewrite Int.add_assoc. decEq.
   apply Int.neg_add_distr.
   reflexivity.
@@ -821,7 +821,6 @@ Proof.
   decEq. apply Int.mul_add_distr_l.
 Qed.
 
-
 Theorem mul_add_distr_r:
   forall x y z, mul x (add y z) = add (mul x y) (mul x z).
 Proof.
@@ -837,7 +836,7 @@ Proof.
   intros; destruct x; simpl; auto.
   change 32 with Int.zwordsize.
   rewrite (Int.is_power2_range _ _ H). decEq. apply Int.mul_pow2. auto.
-Qed.  
+Qed.
 
 Theorem mods_divs:
   forall x y z,
@@ -846,7 +845,7 @@ Proof.
   intros. destruct x; destruct y; simpl in *; try discriminate.
   destruct (Int.eq i0 Int.zero
         || Int.eq i (Int.repr Int.min_signed) && Int.eq i0 Int.mone); inv H.
-  exists (Vint (Int.divs i i0)); split; auto. 
+  exists (Vint (Int.divs i i0)); split; auto.
   simpl. rewrite Int.mods_divs. auto.
 Qed.
 
@@ -855,10 +854,10 @@ Theorem modu_divu:
   modu x y = Some z -> exists v, divu x y = Some v /\ z = sub x (mul v y).
 Proof.
   intros. destruct x; destruct y; simpl in *; try discriminate.
-  destruct (Int.eq i0 Int.zero) eqn:?; inv H. 
-  exists (Vint (Int.divu i i0)); split; auto. 
+  destruct (Int.eq i0 Int.zero) eqn:?; inv H.
+  exists (Vint (Int.divu i i0)); split; auto.
   simpl. rewrite Int.modu_divu. auto.
-  generalize (Int.eq_spec i0 Int.zero). rewrite Heqb; auto. 
+  generalize (Int.eq_spec i0 Int.zero). rewrite Heqb; auto.
 Qed.
 
 Theorem divs_pow2:
@@ -880,8 +879,8 @@ Theorem divu_pow2:
   shru x (Vint logn) = y.
 Proof.
   intros; destruct x; simpl in H0; inv H0.
-  destruct (Int.eq n Int.zero); inv H2. 
-  simpl. 
+  destruct (Int.eq n Int.zero); inv H2.
+  simpl.
   rewrite (Int.is_power2_range _ _ H).
   decEq. symmetry. apply Int.divu_pow2. auto.
 Qed.
@@ -893,7 +892,7 @@ Theorem modu_pow2:
   and x (Vint (Int.sub n Int.one)) = y.
 Proof.
   intros; destruct x; simpl in H0; inv H0.
-  destruct (Int.eq n Int.zero); inv H2. 
+  destruct (Int.eq n Int.zero); inv H2.
   simpl. decEq. symmetry. eapply Int.modu_and; eauto.
 Qed.
 
@@ -932,12 +931,12 @@ Qed.
 
 Theorem not_xor: forall x, notint x = xor x (Vint Int.mone).
 Proof.
-  destruct x; simpl; auto. 
+  destruct x; simpl; auto.
 Qed.
 
 Theorem shl_mul: forall x y, mul x (shl Vone y) = shl x y.
 Proof.
-  destruct x; destruct y; simpl; auto. 
+  destruct x; destruct y; simpl; auto.
   case (Int.ltu i0 Int.iwordsize); auto.
   decEq. symmetry. apply Int.shl_mul.
 Qed.
@@ -965,11 +964,11 @@ Theorem shrx_carry:
   shrx x y = Some z ->
   add (shr x y) (shr_carry x y) = z.
 Proof.
-  intros. destruct x; destruct y; simpl in H; inv H. 
+  intros. destruct x; destruct y; simpl in H; inv H.
   destruct (Int.ltu i0 (Int.repr 31)) eqn:?; inv H1.
   exploit Int.ltu_inv; eauto. change (Int.unsigned (Int.repr 31)) with 31. intros.
-  assert (Int.ltu i0 Int.iwordsize = true). 
-    unfold Int.ltu. apply zlt_true. change (Int.unsigned Int.iwordsize) with 32. omega. 
+  assert (Int.ltu i0 Int.iwordsize = true).
+    unfold Int.ltu. apply zlt_true. change (Int.unsigned Int.iwordsize) with 32. omega.
   simpl. rewrite H0. simpl. decEq. rewrite Int.shrx_carry; auto.
 Qed.
 
@@ -980,12 +979,12 @@ Theorem shrx_shr:
     x = Vint p /\ y = Vint q /\
     z = shr (if Int.lt p Int.zero then add x (Vint (Int.sub (Int.shl Int.one q) Int.one)) else x) (Vint q).
 Proof.
-  intros. destruct x; destruct y; simpl in H; inv H. 
+  intros. destruct x; destruct y; simpl in H; inv H.
   destruct (Int.ltu i0 (Int.repr 31)) eqn:?; inv H1.
   exploit Int.ltu_inv; eauto. change (Int.unsigned (Int.repr 31)) with 31. intros.
-  assert (Int.ltu i0 Int.iwordsize = true). 
-    unfold Int.ltu. apply zlt_true. change (Int.unsigned Int.iwordsize) with 32. omega. 
-  exists i; exists i0; intuition. 
+  assert (Int.ltu i0 Int.iwordsize = true).
+    unfold Int.ltu. apply zlt_true. change (Int.unsigned Int.iwordsize) with 32. omega.
+  exists i; exists i0; intuition.
   rewrite Int.shrx_shr; auto. destruct (Int.lt i Int.zero); simpl; rewrite H0; auto.
 Qed.
 
@@ -1004,7 +1003,7 @@ Theorem rolm_rolm:
            (Int.and (Int.rol m1 n2) m2).
 Proof.
   intros; destruct x; simpl; auto.
-  decEq. 
+  decEq.
   apply Int.rolm_rolm. apply int_wordsize_divides_modulus.
 Qed.
 
@@ -1032,10 +1031,10 @@ Theorem negate_cmpu_bool:
 Proof.
   assert (forall c,
     cmp_different_blocks (negate_comparison c) = option_map negb (cmp_different_blocks c)).
-  destruct c; auto. 
+  destruct c; auto.
   destruct x; destruct y; simpl; auto.
   rewrite Int.negate_cmpu. auto.
-  destruct (Int.eq i Int.zero); auto. 
+  destruct (Int.eq i Int.zero); auto.
   destruct (Int.eq i0 Int.zero); auto.
   destruct (eq_block b b0).
   destruct ((valid_ptr b (Int.unsigned i) || valid_ptr b (Int.unsigned i - 1)) &&
@@ -1048,7 +1047,7 @@ Qed.
 Lemma not_of_optbool:
   forall ob, of_optbool (option_map negb ob) = notbool (of_optbool ob).
 Proof.
-  destruct ob; auto. destruct b; auto. 
+  destruct ob; auto. destruct b; auto.
 Qed.
 
 Theorem negate_cmp:
@@ -1098,21 +1097,21 @@ Qed.
 Theorem negate_cmpf_eq:
   forall v1 v2, notbool (cmpf Cne v1 v2) = cmpf Ceq v1 v2.
 Proof.
-  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool. 
+  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool.
   rewrite Float.cmp_ne_eq. destruct (Float.cmp Ceq f f0); auto.
 Qed.
 
 Theorem negate_cmpf_ne:
   forall v1 v2, notbool (cmpf Ceq v1 v2) = cmpf Cne v1 v2.
 Proof.
-  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool. 
+  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool.
   rewrite Float.cmp_ne_eq. destruct (Float.cmp Ceq f f0); auto.
 Qed.
 
 Theorem cmpf_le:
   forall v1 v2, cmpf Cle v1 v2 = or (cmpf Clt v1 v2) (cmpf Ceq v1 v2).
 Proof.
-  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool. 
+  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool.
   rewrite Float.cmp_le_lt_eq.
   destruct (Float.cmp Clt f f0); destruct (Float.cmp Ceq f f0); auto.
 Qed.
@@ -1120,7 +1119,7 @@ Qed.
 Theorem cmpf_ge:
   forall v1 v2, cmpf Cge v1 v2 = or (cmpf Cgt v1 v2) (cmpf Ceq v1 v2).
 Proof.
-  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool. 
+  destruct v1; destruct v2; auto. unfold cmpf, cmpf_bool.
   rewrite Float.cmp_ge_gt_eq.
   destruct (Float.cmp Cgt f f0); destruct (Float.cmp Ceq f f0); auto.
 Qed.
@@ -1128,57 +1127,57 @@ Qed.
 Theorem cmp_ne_0_optbool:
   forall ob, cmp Cne (of_optbool ob) (Vint Int.zero) = of_optbool ob.
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmp_eq_1_optbool:
   forall ob, cmp Ceq (of_optbool ob) (Vint Int.one) = of_optbool ob.
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmp_eq_0_optbool:
   forall ob, cmp Ceq (of_optbool ob) (Vint Int.zero) = of_optbool (option_map negb ob).
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmp_ne_1_optbool:
   forall ob, cmp Cne (of_optbool ob) (Vint Int.one) = of_optbool (option_map negb ob).
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmpu_ne_0_optbool:
   forall valid_ptr ob,
   cmpu valid_ptr Cne (of_optbool ob) (Vint Int.zero) = of_optbool ob.
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmpu_eq_1_optbool:
   forall valid_ptr ob,
   cmpu valid_ptr Ceq (of_optbool ob) (Vint Int.one) = of_optbool ob.
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmpu_eq_0_optbool:
   forall valid_ptr ob,
   cmpu valid_ptr Ceq (of_optbool ob) (Vint Int.zero) = of_optbool (option_map negb ob).
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Theorem cmpu_ne_1_optbool:
   forall valid_ptr ob,
   cmpu valid_ptr Cne (of_optbool ob) (Vint Int.one) = of_optbool (option_map negb ob).
 Proof.
-  intros. destruct ob; simpl; auto. destruct b; auto. 
+  intros. destruct ob; simpl; auto. destruct b; auto.
 Qed.
 
 Lemma zero_ext_and:
-  forall n v, 
+  forall n v,
   0 < n < Int.zwordsize ->
   Val.zero_ext n v = Val.and v (Vint (Int.repr (two_p n - 1))).
 Proof.
@@ -1190,8 +1189,8 @@ Lemma rolm_lt_zero:
 Proof.
   intros. unfold cmp, cmp_bool; destruct v; simpl; auto.
   transitivity (Vint (Int.shru i (Int.repr (Int.zwordsize - 1)))).
-  decEq. symmetry. rewrite Int.shru_rolm. auto. auto. 
-  rewrite Int.shru_lt_zero. destruct (Int.lt i Int.zero); auto. 
+  decEq. symmetry. rewrite Int.shru_rolm. auto. auto.
+  rewrite Int.shru_lt_zero. destruct (Int.lt i Int.zero); auto.
 Qed.
 
 Lemma rolm_ge_zero:
@@ -1202,7 +1201,7 @@ Proof.
   unfold cmp; simpl. destruct (Int.lt i Int.zero); auto.
 Qed.
 
-(** The ``is less defined'' relation between values. 
+(** The ``is less defined'' relation between values.
     A value is less defined than itself, and [Vundef] is
     less defined than any value. *)
 
@@ -1237,7 +1236,7 @@ Lemma lessdef_list_inv:
 Proof.
   induction 1; simpl.
   tauto.
-  inv H. destruct IHlessdef_list. 
+  inv H. destruct IHlessdef_list.
   left; congruence. tauto. tauto.
 Qed.
 
@@ -1282,14 +1281,14 @@ Lemma cmpu_bool_lessdef:
   cmpu_bool valid_ptr c v1 v2 = Some b ->
   cmpu_bool valid_ptr' c v1' v2' = Some b.
 Proof.
-  intros. 
+  intros.
   destruct v1; simpl in H2; try discriminate;
   destruct v2; simpl in H2; try discriminate;
   inv H0; inv H1; simpl; auto.
   destruct (eq_block b0 b1).
   assert (forall b ofs, valid_ptr b ofs || valid_ptr b (ofs - 1) = true ->
                         valid_ptr' b ofs || valid_ptr' b (ofs - 1) = true).
-    intros until ofs. rewrite ! orb_true_iff. intuition. 
+    intros until ofs. rewrite ! orb_true_iff. intuition.
   destruct (valid_ptr b0 (Int.unsigned i) || valid_ptr b0 (Int.unsigned i - 1)) eqn:?; try discriminate.
   destruct (valid_ptr b1 (Int.unsigned i0) || valid_ptr b1 (Int.unsigned i0 - 1)) eqn:?; try discriminate.
   erewrite !H0 by eauto. auto.
@@ -1303,7 +1302,7 @@ Lemma of_optbool_lessdef:
   (forall b, ob = Some b -> ob' = Some b) ->
   lessdef (of_optbool ob) (of_optbool ob').
 Proof.
-  intros. destruct ob; simpl; auto. rewrite (H b); auto. 
+  intros. destruct ob; simpl; auto. rewrite (H b); auto.
 Qed.
 
 Lemma longofwords_lessdef:
@@ -1316,13 +1315,13 @@ Qed.
 Lemma loword_lessdef:
   forall v v', lessdef v v' -> lessdef (loword v) (loword v').
 Proof.
-  intros. inv H; auto. 
+  intros. inv H; auto.
 Qed.
 
 Lemma hiword_lessdef:
   forall v v', lessdef v v' -> lessdef (hiword v) (hiword v').
 Proof.
-  intros. inv H; auto. 
+  intros. inv H; auto.
 Qed.
 
 End Val.
@@ -1361,12 +1360,12 @@ Inductive val_inject (mi: meminj): val -> val -> Prop :=
 
 Hint Constructors val_inject.
 
-Inductive val_list_inject (mi: meminj): list val -> list val-> Prop:= 
+Inductive val_list_inject (mi: meminj): list val -> list val-> Prop:=
   | val_nil_inject :
       val_list_inject mi nil nil
-  | val_cons_inject : forall v v' vl vl' , 
+  | val_cons_inject : forall v v' vl vl' ,
       val_inject mi v v' -> val_list_inject mi vl vl'->
-      val_list_inject mi (v :: vl) (v' :: vl').  
+      val_list_inject mi (v :: vl) (v' :: vl').
 
 Hint Resolve val_nil_inject val_cons_inject.
 
@@ -1401,7 +1400,7 @@ Remark val_sub_inject:
 Proof.
   intros. inv H; inv H0; simpl; auto.
   econstructor; eauto. rewrite Int.sub_add_l. auto.
-  destruct (eq_block b1 b0); auto. subst. rewrite H1 in H. inv H. rewrite dec_eq_true. 
+  destruct (eq_block b1 b0); auto. subst. rewrite H1 in H. inv H. rewrite dec_eq_true.
   rewrite Int.sub_shifted. auto.
 Qed.
 
@@ -1460,7 +1459,7 @@ Proof.
   fold (weak_valid_ptr1 b1 (Int.unsigned ofs1)) in H1.
   fold (weak_valid_ptr1 b0 (Int.unsigned ofs0)) in H1.
   fold (weak_valid_ptr2 b2 (Int.unsigned (Int.add ofs1 (Int.repr delta)))).
-  fold (weak_valid_ptr2 b3 (Int.unsigned (Int.add ofs0 (Int.repr delta0)))). 
+  fold (weak_valid_ptr2 b3 (Int.unsigned (Int.add ofs0 (Int.repr delta0)))).
   destruct (eq_block b1 b0); subst.
   rewrite H in H2. inv H2. rewrite dec_eq_true.
   destruct (weak_valid_ptr1 b0 (Int.unsigned ofs1)) eqn:?; try discriminate.
@@ -1471,7 +1470,7 @@ Proof.
   destruct (valid_ptr1 b0 (Int.unsigned ofs0)) eqn:?; try discriminate.
   destruct (eq_block b2 b3); subst.
   assert (valid_ptr_implies: forall b ofs, valid_ptr1 b ofs = true -> weak_valid_ptr1 b ofs = true).
-    intros. unfold weak_valid_ptr1. rewrite H0; auto. 
+    intros. unfold weak_valid_ptr1. rewrite H0; auto.
   erewrite !weak_valid_ptr_inj by eauto using valid_ptr_implies. simpl.
   exploit valid_different_ptrs_inj; eauto. intros [?|?]; [congruence |].
   destruct c; simpl in H1; inv H1.
@@ -1490,13 +1489,13 @@ Qed.
 Lemma val_loword_inject:
   forall v v', val_inject f v v' -> val_inject f (Val.loword v) (Val.loword v').
 Proof.
-  intros. unfold Val.loword; inv H; auto. 
+  intros. unfold Val.loword; inv H; auto.
 Qed.
 
 Lemma val_hiword_inject:
   forall v v', val_inject f v v' -> val_inject f (Val.hiword v) (Val.hiword v').
 Proof.
-  intros. unfold Val.hiword; inv H; auto. 
+  intros. unfold Val.hiword; inv H; auto.
 Qed.
 
 End VAL_INJ_OPS.
@@ -1511,10 +1510,10 @@ Lemma inject_incr_refl :
 Proof. unfold inject_incr. auto. Qed.
 
 Lemma inject_incr_trans :
-  forall f1 f2 f3, 
+  forall f1 f2 f3,
   inject_incr f1 f2 -> inject_incr f2 f3 -> inject_incr f1 f3 .
 Proof.
-  unfold inject_incr; intros. eauto. 
+  unfold inject_incr; intros. eauto.
 Qed.
 
 Lemma val_inject_incr:
@@ -1541,7 +1540,7 @@ Lemma val_inject_lessdef:
   forall v1 v2, Val.lessdef v1 v2 <-> val_inject (fun b => Some(b, 0)) v1 v2.
 Proof.
   intros; split; intros.
-  inv H; auto. destruct v2; econstructor; eauto. rewrite Int.add_zero; auto. 
+  inv H; auto. destruct v2; econstructor; eauto. rewrite Int.add_zero; auto.
   inv H; auto. inv H0. rewrite Int.add_zero; auto.
 Qed.
 
@@ -1562,7 +1561,7 @@ Lemma val_inject_id:
   val_inject inject_id v1 v2 <-> Val.lessdef v1 v2.
 Proof.
   intros; split; intros.
-  inv H; auto. 
+  inv H; auto.
   unfold inject_id in H0. inv H0. rewrite Int.add_zero. constructor.
   inv H. destruct v2; econstructor. unfold inject_id; reflexivity. rewrite Int.add_zero; auto.
   constructor.
@@ -1587,6 +1586,6 @@ Lemma val_inject_compose:
   val_inject (compose_meminj f f') v1 v3.
 Proof.
   intros. inv H; auto; inv H0; auto. econstructor.
-  unfold compose_meminj; rewrite H1; rewrite H3; eauto. 
+  unfold compose_meminj; rewrite H1; rewrite H3; eauto.
   rewrite Int.add_assoc. decEq. unfold Int.add. apply Int.eqm_samerepr. auto with ints.
-Qed. 
+Qed.

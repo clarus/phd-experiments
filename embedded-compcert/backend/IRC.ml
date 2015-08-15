@@ -163,7 +163,7 @@ module DLinkMove = struct
   type t = move
   let make state =
     let rec empty =
-      { src = DLinkNode.dummy; dst = DLinkNode.dummy; 
+      { src = DLinkNode.dummy; dst = DLinkNode.dummy;
         mstate = state; mprev = empty; mnext = empty }
     in empty
   let dummy = make CoalescedMoves
@@ -295,7 +295,7 @@ let init costs =
     worklistMoves = DLinkMove.make WorklistMoves;
     activeMoves = DLinkMove.make ActiveMoves
   }
-  
+
 (* Create nodes corresponding to XTL variables *)
 
 let weightedSpillCost st =
@@ -306,7 +306,7 @@ let weightedSpillCost st =
 let newNodeOfReg g r ty =
   let st = g.stats_of_reg r in
   g.nextIdent <- g.nextIdent + 1;
-  { ident = g.nextIdent; typ = ty; 
+  { ident = g.nextIdent; typ = ty;
     var = V(r, ty); regclass = class_of_type ty;
     accesses = st.usedefs;
     spillcost = weightedSpillCost st;
@@ -319,7 +319,7 @@ let newNodeOfReg g r ty =
 let newNodeOfLoc g l =
   let ty = Loc.coq_type l in
   g.nextIdent <- g.nextIdent + 1;
-  { ident = g.nextIdent; typ = ty; 
+  { ident = g.nextIdent; typ = ty;
     var = L l; regclass = class_of_type ty;
     accesses = 0; spillcost = 0.0;
     adjlist = []; degree = 0; movelist = []; extra_adj = []; extra_pref = [];
@@ -443,7 +443,6 @@ let initialNodePartition g =
     | Colored -> ()
     | _ -> assert false in
   Hashtbl.iter part_node g.varTable
-
 
 (* Check invariants *)
 
@@ -591,9 +590,9 @@ let canCoalesceGeorge g u v =
 -  If [u] is precolored, use George's criterion.
 -  If [u] is not precolored, use Briggs's criterion.
 
-   As noted by Hailperin, for non-precolored nodes, George's criterion 
+   As noted by Hailperin, for non-precolored nodes, George's criterion
    is incomparable with Briggs's: there are cases where G says yes
-   and B says no.  Typically, [u] is a long-lived variable with many 
+   and B says no.  Typically, [u] is a long-lived variable with many
    interferences, and [v] is a short-lived temporary copy of [u]
    that has no more interferences than [u].  Coalescing [u] and [v]
    is "weakly safe" in Hailperin's terminology: [u] is no harder to color,
@@ -673,7 +672,7 @@ let coalesce g =
     combine g u v;
     addWorkList g u
   end else begin
-    DLinkMove.insert m g.activeMoves    
+    DLinkMove.insert m g.activeMoves
   end
 
 (* Freeze moves associated with node [u] *)
@@ -704,7 +703,7 @@ let freeze g =
 let spillCost n =
 (*i
   printf "spillCost %s: cost = %.2f  degree = %d  rank = %.2f\n"
-                (name_of_node n) n.spillcost n.degree 
+                (name_of_node n) n.spillcost n.degree
                 (n.spillcost /. float n.degree);
 *)
   n.spillcost /. float n.degree

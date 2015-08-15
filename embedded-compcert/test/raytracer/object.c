@@ -83,7 +83,7 @@ struct object * oscale(struct object * o1, flt sx, flt sy, flt sz)
 struct object * otranslate(struct object * o1,
                            flt tx, flt ty, flt tz)
 {
-  return transform(o1, mtranslate(tx, ty, tz), mtranslate(- tx, - ty, - tz), 
+  return transform(o1, mtranslate(tx, ty, tz), mtranslate(- tx, - ty, - tz),
                    1.0);
 }
 
@@ -123,7 +123,7 @@ struct object * ounion(struct object * o1, struct object * o2)
   return o;
 }
 
-static void normal_vector_object(struct object * obj, 
+static void normal_vector_object(struct object * obj,
                                  struct point * p,
                                  int face,
                                  /*out*/ struct vector * v)
@@ -212,4 +212,3 @@ void normal_vector(struct object * obj, struct point * p, int face,
   product(&tang_world1, &tang_world2, n);
   vnormalize(n, n);
 }
-

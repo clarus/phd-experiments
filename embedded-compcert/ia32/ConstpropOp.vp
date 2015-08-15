@@ -10,7 +10,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-(** Static analysis and strength reduction for operators 
+(** Static analysis and strength reduction for operators
   and conditions.  This is the machine-dependent part of [Constprop]. *)
 
 Require Import Coqlib.
@@ -22,7 +22,7 @@ Require Import Registers.
 
 (** * Static analysis *)
 
-(** To each pseudo-register at each program point, the static analysis 
+(** To each pseudo-register at each program point, the static analysis
   associates a compile-time approximation taken from the following set. *)
 
 Inductive approx : Type :=
@@ -134,7 +134,7 @@ Nondetfunction eval_static_operation (op: operation) (vl: list approx) :=
   | Oshldimm n, I n1 :: I n2 :: nil =>
       let n' := Int.sub Int.iwordsize n in
       if Int.ltu n Int.iwordsize && Int.ltu n' Int.iwordsize
-      then I(Int.or (Int.shl n1 n) (Int.shru n2 n')) 
+      then I(Int.or (Int.shl n1 n) (Int.shru n2 n'))
       else Unknown
   | Olea mode, vl => eval_static_addressing mode vl
   | Onegf, F n1 :: nil => F(Float.neg n1)
@@ -164,7 +164,7 @@ Section STRENGTH_REDUCTION.
 
 Variable app: reg -> approx.
 
-Nondetfunction cond_strength_reduction 
+Nondetfunction cond_strength_reduction
               (cond: condition) (args: list reg) (vl: list approx) :=
   match cond, args, vl with
   | Ccomp c, r1 :: r2 :: nil, I n1 :: v2 :: nil =>
@@ -175,7 +175,7 @@ Nondetfunction cond_strength_reduction
       (Ccompuimm (swap_comparison c) n1, r2 :: nil)
   | Ccompu c, r1 :: r2 :: nil, v1 :: I n2 :: nil =>
       (Ccompuimm c n2, r1 :: nil)
-  | _, _, _ => 
+  | _, _, _ =>
       (cond, args)
   end.
 
@@ -293,7 +293,7 @@ Definition make_moduimm n (r1 r2: reg) :=
     RTL code, which means that commutative operations cannot
     be specialized if their first argument is a constant. *)
 
-Nondetfunction op_strength_reduction 
+Nondetfunction op_strength_reduction
               (op: operation) (args: list reg) (vl: list approx) :=
   match op, args, vl with
   | Osub, r1 :: r2 :: nil, v1 :: I n2 :: nil => make_addimm (Int.neg n2) r1
@@ -311,7 +311,7 @@ Nondetfunction op_strength_reduction
       let (addr', args') := addr_strength_reduction addr args vl in
       (Olea addr', args')
   | Ocmp c, args, vl =>
-      let (c', args') := cond_strength_reduction c args vl in 
+      let (c', args') := cond_strength_reduction c args vl in
       (Ocmp c', args')
   | _, _, _ => (op, args)
   end.

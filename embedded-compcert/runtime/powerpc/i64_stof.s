@@ -17,7 +17,7 @@
 #     * Neither the name of the <organization> nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,13 +36,13 @@
 
         .text
 
-### Conversion from signed long to single float	
+### Conversion from signed long to single float
 
         .balign 16
         .globl __i64_stof
 __i64_stof:
 	mflr r9
-   # Check whether -2^53 <= X < 2^53	
+   # Check whether -2^53 <= X < 2^53
         srawi r5, r3, 31
         srawi r6, r3, 21        # (r5,r6) = X >> 53
         addic r6, r6, 1
@@ -58,11 +58,10 @@ __i64_stof:
    # bits 13-31 of r0 are 0
         or r4, r4, r0           # correct bit number 12 of X
         rlwinm r4, r4, 0, 0, 20 # set to 0 bits 0 to 11 of X
-   # Convert to double, then round to single	
+   # Convert to double, then round to single
 1:      bl __i64_stod
         mtlr r9
         frsp f1, f1
         blr
         .type __i64_stof, @function
         .size __i64_stof, .-__i64_stof
-	

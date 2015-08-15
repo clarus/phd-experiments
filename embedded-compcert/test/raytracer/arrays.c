@@ -27,4 +27,3 @@ struct array * copy_array(int eltsize, struct array * arr, int extrasize)
   memcpy(a->data, arr->data, eltsize * a->size);
   return a;
 }
-

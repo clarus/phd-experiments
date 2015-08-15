@@ -36,7 +36,7 @@ let process_c_file prepro_opts name =
   safe_remove ppname;
   match r with
   | None -> exit 2
-  | Some p -> 
+  | Some p ->
       let oc = open_out cpname in
       let oform = Format.formatter_of_out_channel oc in
       Cprint.program oform p;
@@ -44,11 +44,11 @@ let process_c_file prepro_opts name =
       cpname
 
 let starts_with pref s =
-  String.length s >= String.length pref 
+  String.length s >= String.length pref
   && String.sub s 0 (String.length pref) = pref
 
 let ends_with suff s =
-  String.length s >= String.length suff 
+  String.length s >= String.length suff
   && String.sub s (String.length s - String.length suff) (String.length suff)
      = suff
 
@@ -59,8 +59,8 @@ let rec parse_cmdline prepro args i =
     if s = "-Xsimplif" && i + 1 < Array.length Sys.argv then begin
       transfs := Sys.argv.(i+1);
       parse_cmdline prepro args (i+2)
-    end else if (s = "-I" || s = "-D" || s = "-U") 
-             && i + 1 < Array.length Sys.argv then 
+    end else if (s = "-I" || s = "-D" || s = "-U")
+             && i + 1 < Array.length Sys.argv then
       parse_cmdline (Sys.argv.(i+1) :: s :: prepro) args (i+2)
     else if starts_with "-I" s
              || starts_with "-D" s

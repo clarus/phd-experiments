@@ -50,7 +50,6 @@
 #include "terminator.h"
 #include "list.h"
 
-
 static LIST red_GetTerminatorPartnerLits(TERM Atom, LITERAL Lit,
 					 BOOL UnitsOnly, LIST IndexList)
 /**************************************************************
@@ -90,7 +89,6 @@ static LIST red_GetTerminatorPartnerLits(TERM Atom, LITERAL Lit,
   }
   return Result;
 }
-
 
 static CLAUSE red_CreateTerminatorEmptyClause(LIST FoundMap, FLAGSTORE Flags,
 					      PRECEDENCE Precedence)
@@ -139,7 +137,6 @@ static CLAUSE red_CreateTerminatorEmptyClause(LIST FoundMap, FLAGSTORE Flags,
   return Result;
 }
 
-
 static BOOL red_TerminatorLitIsBetter(LITERAL L1, NAT S1, LITERAL L2, NAT S2)
 /**************************************************************
   INPUT:   Two literals and its sizes wrt. some substitution.
@@ -161,7 +158,6 @@ static BOOL red_TerminatorLitIsBetter(LITERAL L1, NAT S1, LITERAL L2, NAT S2)
   else
     return FALSE;
 }
-
 
 static CLAUSE red_SearchTerminator(NAT n, LIST RestLits, LIST FoundMap,
 				   SUBST Subst, SYMBOL GlobalMaxVar,
@@ -226,18 +222,18 @@ static CLAUSE red_SearchTerminator(NAT n, LIST RestLits, LIST FoundMap,
 	PLitInd     = clause_LiteralGetIndex(PLit);
 	PClauseCopy = clause_Copy(clause_LiteralOwningClause(PLit));
 	Limit       = clause_Length(PClauseCopy) == 1 ? n : n-1;
-	
+
 	clause_RenameVarsBiggerThan(PClauseCopy, GlobalMaxVar);
-	
+
 	PLit        = clause_GetLiteral(PClauseCopy, PLitInd);
 	FoundMap    = list_Cons(list_PairCreate(Lit, PLit), FoundMap);
 	ToDoList    = clause_GetLiteralListExcept(PClauseCopy, PLitInd);
 	ToDoList    = list_Nconc(ToDoList, list_Copy(RestLits));
-	
+
 	NewMaxVar   = clause_SearchMaxVar(PClauseCopy);
 	if (symbol_GreaterVariable(GlobalMaxVar, NewMaxVar))
 	  NewMaxVar = GlobalMaxVar;
-	
+
 	cont_Check();
 	if (!unify_UnifyNoOC(cont_LeftContext(), AtomCopy,
 			     cont_RightContext(), clause_LiteralAtom(PLit))) {
@@ -248,17 +244,17 @@ static CLAUSE red_SearchTerminator(NAT n, LIST RestLits, LIST FoundMap,
 	subst_ExtractUnifier(cont_LeftContext(), &NewSubst,
 			     cont_RightContext(), &RightSubst);
 	cont_Reset();
-	
+
 	/* The domains of both substitutions are disjoint */
 	/* so we do just a simple union operation.        */
 	NewSubst = subst_NUnion(NewSubst, RightSubst);
 	RightSubst = NewSubst;
 	NewSubst  = subst_Compose(NewSubst, subst_Copy(Subst));
 	subst_Delete(RightSubst);
-	
+
 	Result = red_SearchTerminator(Limit, ToDoList, FoundMap, NewSubst,
 				      NewMaxVar, IndexList, Flags, Precedence);
-	
+
 	clause_Delete(PClauseCopy);
 	subst_Delete(NewSubst);
 	list_Delete(ToDoList);
@@ -279,11 +275,10 @@ static CLAUSE red_SearchTerminator(NAT n, LIST RestLits, LIST FoundMap,
     /* <ClashList> may be non-empty since the loop stops */
     /* if a terminator was found.                       */
     list_Delete(ClashList);
-    
+
     return Result;
   }
 }
-
 
 CLAUSE red_Terminator(CLAUSE RedClause, NAT n, SHARED_INDEX WoIndex,
 		      SHARED_INDEX UsIndex, FLAGSTORE Flags,
@@ -310,7 +305,7 @@ CLAUSE red_Terminator(CLAUSE RedClause, NAT n, SHARED_INDEX WoIndex,
   Result    = red_SearchTerminator(n, Rest, list_Nil(), subst_Nil(),
 				   clause_MaxVar(RedClause), IndexList, Flags,
 				   Precedence);
-  
+
   /* cleanup */
   list_Delete(IndexList);
   list_Delete(Rest);

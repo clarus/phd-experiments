@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                INFERENCE RULES                         * */
 /* *                                                        * */
-/* *  $Module:   INFRULES                                   * */ 
+/* *  $Module:   INFRULES                                   * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _INFRULES_
@@ -63,7 +62,7 @@
 
 /**************************************************************/
 /* Functions                                                  */
-/**************************************************************/        
+/**************************************************************/
 
 LIST inf_DerivableClauses(PROOFSEARCH, CLAUSE);
 
@@ -88,21 +87,21 @@ LIST inf_ApplyDefinition(PROOFSEARCH, CLAUSE, FLAGSTORE, PRECEDENCE);
 
 /**************************************************************/
 /* Inline Functions                                           */
-/**************************************************************/        
+/**************************************************************/
 
 static __inline__ LIST inf_Paramodulation(CLAUSE GivenClause,
 					  SHARED_INDEX ShIndex,
 					  FLAGSTORE Flags,
 					  PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, an Index, usually the WorkedOffIndex, a 
+  INPUT:   A clause, an Index, usually the WorkedOffIndex, a
            flag store and a precedence.
-  RETURNS: A list of clauses derivable from the GivenClause by 
-           paramodulation wrt. the Index. 
+  RETURNS: A list of clauses derivable from the GivenClause by
+           paramodulation wrt. the Index.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
 ***************************************************************/
-{ 
+{
   return list_Nconc(inf_GenSuperpositionLeft(GivenClause, ShIndex, FALSE,
 					     FALSE, FALSE, Flags, Precedence),
 		    inf_GenSuperpositionRight(GivenClause, ShIndex, FALSE,
@@ -114,10 +113,10 @@ static __inline__ LIST inf_OrderedParamodulation(CLAUSE GivenClause,
 						 FLAGSTORE Flags,
 						 PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, an Index, usually the WorkedOffIndex, a 
+  INPUT:   A clause, an Index, usually the WorkedOffIndex, a
            flag store and a precedence.
-  RETURNS: A list of clauses derivable from the Givenclause by 
-           ordered paramodulation wrt. the Index. 
+  RETURNS: A list of clauses derivable from the Givenclause by
+           ordered paramodulation wrt. the Index.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
 ***************************************************************/
@@ -135,8 +134,8 @@ static __inline__ LIST inf_SuperpositionLeft(CLAUSE GivenClause,
 /**************************************************************
   INPUT:   A clause, an Index, usually the WorkedOffIndex, a
            flag store, and a precedence.
-  RETURNS: A list of clauses derivable from the Givenclause by 
-           superposition left wrt. the Index. 
+  RETURNS: A list of clauses derivable from the Givenclause by
+           superposition left wrt. the Index.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
 ***************************************************************/
@@ -149,10 +148,10 @@ static __inline__ LIST inf_SuperpositionRight(CLAUSE GivenClause,
 					      FLAGSTORE Flags,
 					      PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause, an Index, usually the WorkedOffIndex, a 
+  INPUT:   A clause, an Index, usually the WorkedOffIndex, a
            flag store and a precedence.
-  RETURNS: A list of clauses derivable from the Givenclause by 
-           superposition right wrt. the Index. 
+  RETURNS: A list of clauses derivable from the Givenclause by
+           superposition right wrt. the Index.
   MEMORY:  A list of clauses is produced, where memory for the list
            and the clauses is allocated.
 ***************************************************************/
@@ -160,6 +159,4 @@ static __inline__ LIST inf_SuperpositionRight(CLAUSE GivenClause,
   return inf_GenSuperpositionRight(GivenClause,ShIndex,TRUE,TRUE,FALSE,Flags, Precedence);
 }
 
-
 #endif
-

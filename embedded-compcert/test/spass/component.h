@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *               COMPONENTS OF CLAUSES                    * */
 /* *                                                        * */
-/* *  $Module:   COMPONENT                                  * */ 
+/* *  $Module:   COMPONENT                                  * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,7 +41,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _COMPONENT_
@@ -59,10 +58,9 @@
 
 typedef struct cliteral {
   BOOL  used;              /* Flag if the index is already used            */
-  int   litindex;          /* Index of the literal in the original clause  */ 
+  int   litindex;          /* Index of the literal in the original clause  */
   LIST  litvarlist;        /* List of variables of the literal             */
 } *CLITERAL, CLITERAL_NODE;
-
 
 typedef struct litptr {
   CLITERAL *litptr;             /* Array of Pointer to literals           */
@@ -113,7 +111,6 @@ static __inline__ void litptr_SetLiteral(LITPTR LP, int I, CLITERAL CL)
   LP->litptr[I] = CL;
 }
 
-
 static __inline__ int litptr_Length(LITPTR C)
 {
   return C->length;
@@ -134,7 +131,6 @@ static __inline__ void literal_Free(CLITERAL Lit)
   memory_Free(Lit, sizeof(CLITERAL_NODE));
 }
 
-
 /**************************************************************/
 /* Functions on a Component and on a Literal                  */
 /**************************************************************/
@@ -146,6 +142,5 @@ LITPTR   litptr_Create(LIST, LIST);
 void     litptr_Delete(LITPTR);
 void     litptr_Print(LITPTR);
 BOOL     litptr_AllUsed(LITPTR);
-
 
 #endif

@@ -13,7 +13,7 @@ struct S1 g_207 = {1,2,3};
 void print_S1(struct S1 * p)
 {
   printf("f0 = %u, f1 = %u, f2 = %u, second = %u\n",
-         p->f0, p->f1, p->f2, 
+         p->f0, p->f1, p->f2,
          *((unsigned char *)p + 4));
 }
 

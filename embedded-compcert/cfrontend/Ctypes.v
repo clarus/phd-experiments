@@ -22,7 +22,7 @@ Require Import Errors.
 (** * Syntax of types *)
 
 (** Compcert C types are similar to those of C.  They include numeric types,
-  pointers, arrays, function types, and composite types (struct and 
+  pointers, arrays, function types, and composite types (struct and
   union).  Numeric types (integers and floats) fully specify the
   bit size of the type.  An integer type is a pair of a signed/unsigned
   flag and a bit size: 8, 16, or 32 bits, or the special [IBool] size
@@ -117,7 +117,7 @@ Proof.
   assert (forall (x y: signedness), {x=y} + {x<>y}). decide equality.
   assert (forall (x y: floatsize), {x=y} + {x<>y}). decide equality.
   assert (forall (x y: attr), {x=y} + {x<>y}). decide equality. apply bool_dec.
-  generalize ident_eq zeq. intros E1 E2. 
+  generalize ident_eq zeq. intros E1 E2.
   decide equality.
   decide equality.
   generalize ident_eq. intros E1.
@@ -253,25 +253,25 @@ Proof.
   destruct i; omega.
   destruct f; omega.
   apply Zmult_gt_0_compat. auto. generalize (Zmax1 1 z); omega.
-  destruct H. 
-  generalize (align_le (Zmax 1 (sizeof_struct f 0)) (alignof_fields f) (alignof_fields_pos f)). 
-  generalize (Zmax1 1 (sizeof_struct f 0)). omega. 
-  generalize (align_le (Zmax 1 (sizeof_union f)) (alignof_fields f) (alignof_fields_pos f)). 
-  generalize (Zmax1 1 (sizeof_union f)). omega. 
+  destruct H.
+  generalize (align_le (Zmax 1 (sizeof_struct f 0)) (alignof_fields f) (alignof_fields_pos f)).
+  generalize (Zmax1 1 (sizeof_struct f 0)). omega.
+  generalize (align_le (Zmax 1 (sizeof_union f)) (alignof_fields f) (alignof_fields_pos f)).
+  generalize (Zmax1 1 (sizeof_union f)). omega.
   split. omega. auto.
   destruct H0. split; intros.
   generalize (Zmax2 (sizeof t) (sizeof_union f)). omega.
-  apply H1. 
+  apply H1.
   generalize (align_le pos (alignof t) (alignof_pos t)). omega.
 Qed.
 
 Lemma sizeof_struct_incr:
   forall fld pos, pos <= sizeof_struct fld pos.
 Proof.
-  induction fld; intros; simpl. omega. 
+  induction fld; intros; simpl. omega.
   eapply Zle_trans. 2: apply IHfld.
-  apply Zle_trans with (align pos (alignof t)). 
-  apply align_le. apply alignof_pos. 
+  apply Zle_trans with (align pos (alignof t)).
+  apply align_le. apply alignof_pos.
   assert (sizeof t > 0) by apply sizeof_pos. omega.
 Qed.
 
@@ -309,7 +309,7 @@ Fixpoint field_type (id: ident) (fld: fieldlist) {struct fld} : res type :=
   | Fcons id' t fld' => if ident_eq id id' then OK t else field_type id fld'
   end.
 
-(** Some sanity checks about field offsets.  First, field offsets are 
+(** Some sanity checks about field offsets.  First, field offsets are
   within the range of acceptable offsets. *)
 
 Remark field_offset_rec_in_range:
@@ -321,9 +321,9 @@ Proof.
   congruence.
   destruct (ident_eq id i); intros.
   inv H. inv H0. split. apply align_le. apply alignof_pos. apply sizeof_struct_incr.
-  exploit IHfld; eauto. intros [A B]. split; auto. 
+  exploit IHfld; eauto. intros [A B]. split; auto.
   eapply Zle_trans; eauto. apply Zle_trans with (align pos (alignof t)).
-  apply align_le. apply alignof_pos. generalize (sizeof_pos t). omega. 
+  apply align_le. apply alignof_pos. generalize (sizeof_pos t). omega.
 Qed.
 
 Lemma field_offset_in_range:
@@ -352,11 +352,11 @@ Proof.
   ofs1 + sizeof ty1 <= ofs2 \/ ofs2 + sizeof ty2 <= ofs1).
   induction fld; intro pos; simpl. congruence.
   destruct (ident_eq id1 i); destruct (ident_eq id2 i).
-  congruence. 
+  congruence.
   subst i. intros. inv H; inv H0.
-  exploit field_offset_rec_in_range. eexact H1. eauto. tauto.  
+  exploit field_offset_rec_in_range. eexact H1. eauto. tauto.
   subst i. intros. inv H1; inv H2.
-  exploit field_offset_rec_in_range. eexact H. eauto. tauto. 
+  exploit field_offset_rec_in_range. eexact H. eauto. tauto.
   intros. eapply IHfld; eauto.
 
   apply H with fld0 0; auto.
@@ -377,12 +377,12 @@ Lemma field_offset_prefix:
   field_offset id (fieldlist_app fld1 fld2) = OK ofs.
 Proof.
   intros until fld2.
-  assert (forall fld1 pos, 
+  assert (forall fld1 pos,
     field_offset_rec id fld1 pos = OK ofs ->
     field_offset_rec id (fieldlist_app fld1 fld2) pos = OK ofs).
   induction fld1; intros pos; simpl. congruence.
   destruct (ident_eq id i); auto.
-  intros. unfold field_offset; auto. 
+  intros. unfold field_offset; auto.
 Qed.
 
 (** Fourth, the position of each field respects its alignment. *)
@@ -397,8 +397,8 @@ Proof.
           (alignof ty | ofs)).
   induction fld; simpl; intros.
   discriminate.
-  destruct (ident_eq id i). inv H; inv H0. 
-  apply align_divides. apply alignof_pos. 
+  destruct (ident_eq id i). inv H; inv H0.
+  apply align_divides. apply alignof_pos.
   eapply IHfld; eauto.
   intros. eapply H with (pos := 0); eauto.
 Qed.
@@ -490,8 +490,8 @@ Proof.
   apply (type_ind2 (fun ty => alignof (unroll_composite ty) = alignof ty)
                    (fun fld => alignof_fields (unroll_composite_fields fld) = alignof_fields fld));
   simpl; intros; auto.
-  destruct (ident_eq i cid); auto. 
-  destruct (ident_eq i cid); auto. 
+  destruct (ident_eq i cid); auto.
+  destruct (ident_eq i cid); auto.
   destruct (ident_eq i cid); auto.
   decEq; auto.
 Qed.
@@ -501,7 +501,7 @@ Lemma sizeof_unroll_composite:
 Proof.
 Opaque alignof.
   apply (type_ind2 (fun ty => sizeof (unroll_composite ty) = sizeof ty)
-                   (fun fld => 
+                   (fun fld =>
                       sizeof_union (unroll_composite_fields fld) = sizeof_union fld
                    /\ forall pos,
                       sizeof_struct (unroll_composite_fields fld) pos = sizeof_struct fld pos));

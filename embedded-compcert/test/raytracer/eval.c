@@ -155,7 +155,7 @@ static void print_value(struct value * s)
   case Clos:
     printf("closure\n"); break;
   case Point:
-    printf("point %e %e %e\n", 
+    printf("point %e %e %e\n",
            s->u.point->x, s->u.point->y, s->u.point->z);
     break;
   case Obj:
@@ -561,7 +561,7 @@ static struct value * execute_list(struct array * code,
       check(1, R);
       check(0, R);
       sp[4].tag = Light;
-      sp[4].u.light = spotlight(sp[4].u.point, sp[3].u.point, sp[2].u.point, 
+      sp[4].u.light = spotlight(sp[4].u.point, sp[3].u.point, sp[2].u.point,
                                 degrees_to_radians(sp[1].u.r), sp[0].u.r);
       sp += 4;
       break;

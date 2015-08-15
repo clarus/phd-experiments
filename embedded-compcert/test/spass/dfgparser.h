@@ -157,9 +157,6 @@
 #define DFG_ID 317
 #define DFG_TEXT 318
 
-
-
-
 #ifndef YYSTYPE
 #line 165 "dfgparser.y"
 typedef union {
@@ -179,6 +176,4 @@ typedef union {
 
 extern YYSTYPE dfg_lval;
 
-
 #endif /* not BISON_DFGPARSER_H */
-

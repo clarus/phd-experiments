@@ -17,7 +17,7 @@ a:active {color : Red; text-decoration : underline; }
 #.title4 { font-size : 20pt ; background-color : #41CDFF }
 #.title5 { font-size : 20pt ; background-color : #41EDFF }
 #.title6 { font-size : 20pt ; background-color : #41FFFF }
-body { 
+body {
   color: black; background: white;
   margin-left: 10%; margin-right: 5%;
 }

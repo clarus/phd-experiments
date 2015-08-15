@@ -17,7 +17,7 @@
 //     * Neither the name of the <organization> nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,7 +33,7 @@
 // *********************************************************************
 
 // Helper functions for 64-bit integer arithmetic.  IA32 version.
-	
+
 #include "sysdeps.h"
 
 // Shift left
@@ -44,7 +44,7 @@ FUNCTION(__i64_shl)
         movl 12(%esp), %ecx             // ecx = shift amount, treated mod 64
         testb $32, %cl
         jne 1f
-  // shift amount < 32  
+  // shift amount < 32
         movl 4(%esp), %eax
         movl 8(%esp), %edx
         shldl %cl, %eax, %edx           // edx = high(XH:XL << amount)
@@ -56,4 +56,3 @@ FUNCTION(__i64_shl)
         xorl %eax, %eax                 // eax = 0
         ret
 ENDFUNCTION(__i64_shl)
-

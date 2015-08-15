@@ -81,7 +81,7 @@ Proof.
   intros until ty. destruct a; simpl; congruence.
 Qed.
 
-Local Open Scope option_monad_scope. 
+Local Open Scope option_monad_scope.
 
 Fixpoint is_val_list (al: exprlist) : option (list (val * type)) :=
   match al with
@@ -138,7 +138,7 @@ Proof.
   constructor.
   constructor.
   destruct (Float.is_single_dec f); inv H1. constructor; auto.
-  destruct (Genv.invert_symbol ge b) as [id|] eqn:?; inv H1. 
+  destruct (Genv.invert_symbol ge b) as [id|] eqn:?; inv H1.
   constructor. apply Genv.invert_find_symbol; auto.
 Qed.
 
@@ -147,7 +147,7 @@ Lemma eventval_of_val_complete:
 Proof.
   induction 1; simpl; auto.
   rewrite pred_dec_true; auto.
-  rewrite (Genv.find_invert_symbol _ _ H). auto. 
+  rewrite (Genv.find_invert_symbol _ _ H). auto.
 Qed.
 
 Lemma list_eventval_of_val_sound:
@@ -163,7 +163,7 @@ Qed.
 Lemma list_eventval_of_val_complete:
   forall evl tl vl, eventval_list_match ge evl tl vl -> list_eventval_of_val vl tl = Some evl.
 Proof.
-  induction 1; simpl. auto. 
+  induction 1; simpl. auto.
   rewrite (eventval_of_val_complete _ _ _ H). rewrite IHeventval_list_match. auto.
 Qed.
 
@@ -187,7 +187,7 @@ Qed.
 
 (** Volatile memory accesses. *)
 
-Definition do_volatile_load (w: world) (chunk: memory_chunk) (m: mem) (b: block) (ofs: int) 
+Definition do_volatile_load (w: world) (chunk: memory_chunk) (m: mem) (b: block) (ofs: int)
                              : option (world * trace * val) :=
   if block_is_volatile ge b then
     do id <- Genv.invert_symbol ge b;
@@ -227,11 +227,11 @@ Lemma do_volatile_load_sound:
   do_volatile_load w chunk m b ofs = Some(w', t, v) ->
   volatile_load ge chunk m b ofs t v /\ possible_trace w t w'.
 Proof.
-  intros until v. unfold do_volatile_load. mydestr. 
-  destruct p as [ev w'']. mydestr. 
-  split. constructor; auto. apply Genv.invert_find_symbol; auto. 
-  apply val_of_eventval_sound; auto. 
-  econstructor. constructor; eauto. constructor. 
+  intros until v. unfold do_volatile_load. mydestr.
+  destruct p as [ev w'']. mydestr.
+  split. constructor; auto. apply Genv.invert_find_symbol; auto.
+  apply val_of_eventval_sound; auto.
+  econstructor. constructor; eauto. constructor.
   split. constructor; auto. constructor.
 Qed.
 
@@ -240,7 +240,7 @@ Lemma do_volatile_load_complete:
   volatile_load ge chunk m b ofs t v -> possible_trace w t w' ->
   do_volatile_load w chunk m b ofs = Some(w', t, v).
 Proof.
-  unfold do_volatile_load; intros. inv H. 
+  unfold do_volatile_load; intros. inv H.
   rewrite H1. rewrite (Genv.find_invert_symbol _ _ H2). inv H0. inv H8. inv H6. rewrite H9.
   rewrite (val_of_eventval_complete _ _ _ H3). auto.
   rewrite H1. rewrite H2. inv H0. auto.
@@ -251,10 +251,10 @@ Lemma do_volatile_store_sound:
   do_volatile_store w chunk m b ofs v = Some(w', t, m') ->
   volatile_store ge chunk m b ofs v t m' /\ possible_trace w t w'.
 Proof.
-  intros until m'. unfold do_volatile_store. mydestr. 
-  split. constructor; auto. apply Genv.invert_find_symbol; auto. 
-  apply eventval_of_val_sound; auto. 
-  econstructor. constructor; eauto. constructor. 
+  intros until m'. unfold do_volatile_store. mydestr.
+  split. constructor; auto. apply Genv.invert_find_symbol; auto.
+  apply eventval_of_val_sound; auto.
+  econstructor. constructor; eauto. constructor.
   split. constructor; auto. constructor.
 Qed.
 
@@ -263,7 +263,7 @@ Lemma do_volatile_store_complete:
   volatile_store ge chunk m b ofs v t m' -> possible_trace w t w' ->
   do_volatile_store w chunk m b ofs v = Some(w', t, m').
 Proof.
-  unfold do_volatile_store; intros. inv H. 
+  unfold do_volatile_store; intros. inv H.
   rewrite H1. rewrite (Genv.find_invert_symbol _ _ H2).
   rewrite (eventval_of_val_complete _ _ _ H3).
   inv H0. inv H8. inv H6. rewrite H9. auto.
@@ -294,7 +294,7 @@ Remark check_assign_copy:
   forall (ty: type) (b: block) (ofs: int) (b': block) (ofs': int),
   { assign_copy_ok ty b ofs b' ofs' } + {~ assign_copy_ok ty b ofs b' ofs' }.
 Proof with try (right; intuition omega).
-  intros. unfold assign_copy_ok. 
+  intros. unfold assign_copy_ok.
   assert (alignof ty > 0). apply alignof_pos; auto.
   destruct (Zdivide_dec (alignof ty) (Int.unsigned ofs')); auto...
   destruct (Zdivide_dec (alignof ty) (Int.unsigned ofs)); auto...
@@ -311,7 +311,7 @@ Proof with try (right; intuition omega).
   destruct (zle (Int.unsigned ofs' + sizeof ty) (Int.unsigned ofs)); auto.
   destruct (zle (Int.unsigned ofs + sizeof ty) (Int.unsigned ofs')); auto.
   right; intuition omega.
-  destruct Y... left; intuition omega. 
+  destruct Y... left; intuition omega.
 Defined.
 
 Definition do_assign_loc (w: world) (ty: type) (m: mem) (b: block) (ofs: int) (v: val): option (world * trace * mem) :=
@@ -340,8 +340,8 @@ Lemma do_deref_loc_sound:
   deref_loc ge ty m b ofs t v /\ possible_trace w t w'.
 Proof.
   unfold do_deref_loc; intros until v.
-  destruct (access_mode ty) eqn:?; mydestr. 
-  intros. exploit do_volatile_load_sound; eauto. intuition. eapply deref_loc_volatile; eauto. 
+  destruct (access_mode ty) eqn:?; mydestr.
+  intros. exploit do_volatile_load_sound; eauto. intuition. eapply deref_loc_volatile; eauto.
   split. eapply deref_loc_value; eauto. constructor.
   split. eapply deref_loc_reference; eauto. constructor.
   split. eapply deref_loc_copy; eauto. constructor.
@@ -365,10 +365,10 @@ Lemma do_assign_loc_sound:
   assign_loc ge ty m b ofs v t m' /\ possible_trace w t w'.
 Proof.
   unfold do_assign_loc; intros until m'.
-  destruct (access_mode ty) eqn:?; mydestr. 
-  intros. exploit do_volatile_store_sound; eauto. intuition. eapply assign_loc_volatile; eauto. 
+  destruct (access_mode ty) eqn:?; mydestr.
+  intros. exploit do_volatile_store_sound; eauto. intuition. eapply assign_loc_volatile; eauto.
   split. eapply assign_loc_value; eauto. constructor.
-  destruct v; mydestr. destruct a as [P [Q R]]. 
+  destruct v; mydestr. destruct a as [P [Q R]].
   split. eapply assign_loc_copy; eauto. constructor.
 Qed.
 
@@ -382,7 +382,7 @@ Proof.
   rewrite H1; rewrite H2. apply do_volatile_store_complete; auto.
   rewrite H1. destruct (check_assign_copy ty b ofs b' ofs').
   inv H0. rewrite H5; rewrite H6; auto.
-  elim n. red; tauto. 
+  elim n. red; tauto.
 Qed.
 
 (** System calls and library functions *)
@@ -455,7 +455,7 @@ Remark memcpy_check_args:
   forall sz al bdst odst bsrc osrc,
   {memcpy_args_ok sz al bdst odst bsrc osrc} + {~memcpy_args_ok sz al bdst odst bsrc osrc}.
 Proof with try (right; intuition omega).
-  intros. 
+  intros.
   assert (X: {al = 1 \/ al = 2 \/ al = 4 \/ al = 8} + {~(al = 1 \/ al = 2 \/ al = 4 \/ al = 8)}).
     destruct (zeq al 1); auto. destruct (zeq al 2); auto.
     destruct (zeq al 4); auto. destruct (zeq al 8); auto...
@@ -528,29 +528,29 @@ Proof with try congruence.
              do_ef_external name sg w vargs m = Some(w', t, vres, m') ->
              extcall_io_sem name sg ge vargs m t vres m' /\ possible_trace w t w').
     intros until sg. unfold do_ef_external. mydestr. destruct p as [res w'']; mydestr.
-    split. econstructor. apply list_eventval_of_val_sound; auto. 
-    apply val_of_eventval_sound; auto. 
+    split. econstructor. apply list_eventval_of_val_sound; auto.
+    apply val_of_eventval_sound; auto.
     econstructor. constructor; eauto. constructor.
 
   assert (VLOAD: forall chunk vargs,
     do_ef_volatile_load chunk w vargs m = Some (w', t, vres, m') ->
     volatile_load_sem chunk ge vargs m t vres m' /\ possible_trace w t w').
   intros chunk vargs'.
-  unfold do_ef_volatile_load. destruct vargs'... destruct v... destruct vargs'... 
+  unfold do_ef_volatile_load. destruct vargs'... destruct v... destruct vargs'...
   mydestr. destruct p as [[w'' t''] v]; mydestr.
-  exploit do_volatile_load_sound; eauto. intuition. econstructor; eauto. 
+  exploit do_volatile_load_sound; eauto. intuition. econstructor; eauto.
 
   assert (VSTORE: forall chunk vargs,
     do_ef_volatile_store chunk w vargs m = Some (w', t, vres, m') ->
     volatile_store_sem chunk ge vargs m t vres m' /\ possible_trace w t w').
   intros chunk vargs'.
-  unfold do_ef_volatile_store. destruct vargs'... destruct v... destruct vargs'... destruct vargs'... 
-  mydestr. destruct p as [[w'' t''] m'']. mydestr. 
+  unfold do_ef_volatile_store. destruct vargs'... destruct v... destruct vargs'... destruct vargs'...
+  mydestr. destruct p as [[w'' t''] m'']. mydestr.
   exploit do_volatile_store_sound; eauto. intuition. econstructor; eauto.
 
   destruct ef; simpl.
 (* EF_external *)
-  auto. 
+  auto.
 (* EF_builtin *)
   auto.
 (* EF_vload *)
@@ -570,25 +570,25 @@ Proof with try congruence.
   destruct (Mem.alloc m (-4) (Int.unsigned i)) as [m1 b] eqn:?. mydestr.
   split. econstructor; eauto. constructor.
 (* EF_free *)
-  unfold do_ef_free. destruct vargs... destruct v... destruct vargs... 
-  mydestr. destruct v... mydestr. 
+  unfold do_ef_free. destruct vargs... destruct v... destruct vargs...
+  mydestr. destruct v... mydestr.
   split. econstructor; eauto. omega. constructor.
 (* EF_memcpy *)
-  unfold do_ef_memcpy. destruct vargs... destruct v... destruct vargs... 
-  destruct v... destruct vargs... mydestr. red in m0. 
+  unfold do_ef_memcpy. destruct vargs... destruct v... destruct vargs...
+  destruct v... destruct vargs... mydestr. red in m0.
   split. econstructor; eauto; tauto. constructor.
 (* EF_annot *)
-  unfold do_ef_annot. mydestr. 
+  unfold do_ef_annot. mydestr.
   split. constructor. apply list_eventval_of_val_sound; auto.
   econstructor. constructor; eauto. constructor.
 (* EF_annot_val *)
-  unfold do_ef_annot_val. destruct vargs... destruct vargs... mydestr. 
+  unfold do_ef_annot_val. destruct vargs... destruct vargs... mydestr.
   split. constructor. apply eventval_of_val_sound; auto.
   econstructor. constructor; eauto. constructor.
 (* EF_inline_asm *)
-  unfold do_ef_annot. destruct vargs; simpl... mydestr. 
+  unfold do_ef_annot. destruct vargs; simpl... mydestr.
   split. change (Event_annot text nil) with (Event_annot text (annot_eventvals nil nil)).
-  constructor. constructor. 
+  constructor. constructor.
   econstructor. constructor; eauto. constructor.
 Qed.
 
@@ -601,10 +601,10 @@ Proof.
   assert (IO: forall name sg,
              extcall_io_sem name sg ge vargs m t vres m' ->
              do_ef_external name sg w vargs m = Some (w', t, vres, m')).
-    intros. inv H1. inv H0. inv H8. inv H6. 
-    unfold do_ef_external. rewrite (list_eventval_of_val_complete _ _ _ H2). rewrite H8. 
+    intros. inv H1. inv H0. inv H8. inv H6.
+    unfold do_ef_external. rewrite (list_eventval_of_val_complete _ _ _ H2). rewrite H8.
     rewrite (val_of_eventval_complete _ _ _ H3). auto.
- 
+
   assert (VLOAD: forall chunk vargs,
              volatile_load_sem chunk ge vargs m t vres m' ->
              do_ef_volatile_load chunk w vargs m = Some (w', t, vres, m')).
@@ -627,13 +627,13 @@ Proof.
 (* EF_vstore *)
   auto.
 (* EF_vload_global *)
-  rewrite volatile_load_global_charact in H. destruct H as [b [P Q]]. 
-  unfold do_ef_volatile_load_global. rewrite P. auto. 
+  rewrite volatile_load_global_charact in H. destruct H as [b [P Q]].
+  unfold do_ef_volatile_load_global. rewrite P. auto.
 (* EF_vstore *)
-  rewrite volatile_store_global_charact in H. destruct H as [b [P Q]]. 
-  unfold do_ef_volatile_store_global. rewrite P. auto. 
+  rewrite volatile_store_global_charact in H. destruct H as [b [P Q]].
+  unfold do_ef_volatile_store_global. rewrite P. auto.
 (* EF_malloc *)
-  inv H; unfold do_ef_malloc. 
+  inv H; unfold do_ef_malloc.
   inv H0. rewrite H1. rewrite H2. auto.
 (* EF_free *)
   inv H; unfold do_ef_free.
@@ -641,12 +641,12 @@ Proof.
 (* EF_memcpy *)
   inv H; unfold do_ef_memcpy.
   inv H0. rewrite pred_dec_true. rewrite H7; rewrite H8; auto.
-  red. tauto. 
+  red. tauto.
 (* EF_annot *)
-  inv H; unfold do_ef_annot. inv H0. inv H6. inv H4. 
+  inv H; unfold do_ef_annot. inv H0. inv H6. inv H4.
   rewrite (list_eventval_of_val_complete _ _ _ H1). auto.
 (* EF_annot_val *)
-  inv H; unfold do_ef_annot_val. inv H0. inv H6. inv H4. 
+  inv H; unfold do_ef_annot_val. inv H0. inv H6. inv H4.
   rewrite (eventval_of_val_complete _ _ _ H1). auto.
 (* EF_inline_asm *)
   inv H; unfold do_ef_annot. inv H0. inv H6. inv H4. inv H1. simpl. auto.
@@ -857,7 +857,7 @@ Fixpoint step_expr (k: kind) (a: expr) (m: mem): reducts expr :=
           do w',t, v1 <- do_deref_loc w ty m b ofs;
           let op := match id with Incr => Oadd | Decr => Osub end in
           let r' :=
-            Ecomma (Eassign (Eloc b ofs ty) 
+            Ecomma (Eassign (Eloc b ofs ty)
                            (Ebinop op (Eval v1 ty) (Eval (Vint Int.one) type_int32s) (typeconv ty))
                            ty)
                    (Eval v1 ty) ty in
@@ -942,7 +942,7 @@ Inductive imm_safe_t: kind -> expr -> mem -> Prop :=
 Remark imm_safe_t_imm_safe:
   forall k a m, imm_safe_t k a m -> imm_safe ge e k a m.
 Proof.
-  induction 1. 
+  induction 1.
   constructor.
   constructor.
   eapply imm_safe_lred; eauto.
@@ -1010,7 +1010,7 @@ Definition invert_expr_prop (a: expr) (m: mem) : Prop :=
       exists t, exists v1, exists w',
       ty = ty1 /\ deref_loc ge ty1 m b ofs t v1 /\ possible_trace w t w'
   | Epostincr id (Eloc b ofs ty1) ty =>
-      exists t, exists v1, exists w', 
+      exists t, exists v1, exists w',
       ty = ty1 /\ deref_loc ge ty m b ofs t v1 /\ possible_trace w t w'
   | Ecomma (Eval v ty1) r2 ty =>
       typeof r2 = ty
@@ -1107,8 +1107,8 @@ Proof.
   intros. elim (H0 a m); auto.
   destruct (C a); auto; contradiction.
   destruct (C a); auto; contradiction.
-  red; intros. destruct (C a); auto. 
-  red; intros. destruct e1; auto. elim (H0 a m); auto. 
+  red; intros. destruct (C a); auto.
+  red; intros. destruct e1; auto. elim (H0 a m); auto.
 Qed.
 
 Lemma imm_safe_t_inv:
@@ -1121,7 +1121,7 @@ Lemma imm_safe_t_inv:
   end.
 Proof.
   destruct invert_expr_context as [A B].
-  intros. inv H. 
+  intros. inv H.
   auto.
   auto.
   assert (invert_expr_prop (C l) m).
@@ -1195,7 +1195,7 @@ Proof.
   induction rargs; simpl; intros.
   inv H. destruct tyargs; simpl in H0; inv H0. constructor.
   monadInv. inv H. simpl in H0. destruct p as [v1 t1]. destruct tyargs; try congruence. monadInv.
-  inv H0. rewrite (is_val_inv _ _ _ Heqo). constructor. auto. eauto. 
+  inv H0. rewrite (is_val_inv _ _ _ Heqo). constructor. auto. eauto.
 Qed.
 
 Lemma sem_cast_arguments_complete:
@@ -1205,7 +1205,7 @@ Lemma sem_cast_arguments_complete:
 Proof.
   induction 1.
   exists (@nil (val * type)); auto.
-  destruct IHcast_arguments as [vtl [A B]]. 
+  destruct IHcast_arguments as [vtl [A B]].
   exists ((v, ty) :: vtl); simpl. rewrite A; rewrite B; rewrite H. auto.
 Qed.
 
@@ -1214,7 +1214,7 @@ Lemma topred_ok:
   reduction_ok k a m rd ->
   reducts_ok k a m (topred rd).
 Proof.
-  intros. unfold topred; split; simpl; intros. 
+  intros. unfold topred; split; simpl; intros.
   destruct H0; try contradiction. inv H0. exists a; exists k; auto.
   congruence.
 Qed.
@@ -1234,7 +1234,7 @@ Lemma wrong_kind_ok:
   k <> Cstrategy.expr_kind a ->
   reducts_ok k a m stuck.
 Proof.
-  intros. apply stuck_ok. red; intros. exploit Cstrategy.imm_safe_kind; eauto. 
+  intros. apply stuck_ok. red; intros. exploit Cstrategy.imm_safe_kind; eauto.
   eapply imm_safe_t_imm_safe; eauto.
 Qed.
 
@@ -1247,9 +1247,9 @@ Lemma not_invert_ok:
   end ->
   reducts_ok k a m stuck.
 Proof.
-  intros. apply stuck_ok. red; intros. 
-  exploit imm_safe_t_inv; eauto. destruct a; auto. 
-Qed. 
+  intros. apply stuck_ok. red; intros.
+  exploit imm_safe_t_inv; eauto. destruct a; auto.
+Qed.
 
 Lemma incontext_ok:
   forall k a m C res k' a',
@@ -1307,7 +1307,7 @@ Lemma incontext2_list_ok:
   reducts_ok RV a1 m res1 ->
   list_reducts_ok a2 m res2 ->
   is_val a1 = None \/ is_val_list a2 = None ->
-  reducts_ok RV (Ecall a1 a2 ty) m 
+  reducts_ok RV (Ecall a1 a2 ty) m
                (incontext2 (fun x => Ecall x a2 ty) res1
                            (fun x => Ecall a1 x ty) res2).
 Proof.
@@ -1315,7 +1315,7 @@ Proof.
   destruct (in_app_or _ _ _ H4).
   exploit list_in_map_inv; eauto. intros [[C' rd'] [P Q]]. inv P.
   exploit H; eauto. intros [a'' [k'' [U [V W]]]].
-  exists a''; exists k''. split. eauto. rewrite V; auto. 
+  exists a''; exists k''. split. eauto. rewrite V; auto.
   exploit list_in_map_inv; eauto. intros [[C' rd'] [P Q]]. inv P.
   exploit H0; eauto. intros [a'' [k'' [U [V W]]]].
   exists a''; exists k''. split. eauto. rewrite V; auto.
@@ -1336,7 +1336,7 @@ Proof.
   destruct (in_app_or _ _ _ H3).
   exploit list_in_map_inv; eauto. intros [[C' rd'] [P Q]]. inv P.
   exploit H; eauto. intros [a'' [k'' [U [V W]]]].
-  exists a''; exists k''. split. eauto. rewrite V; auto. 
+  exists a''; exists k''. split. eauto. rewrite V; auto.
   exploit list_in_map_inv; eauto. intros [[C' rd'] [P Q]]. inv P.
   exploit H0; eauto. intros [a'' [k'' [U [V W]]]].
   exists a''; exists k''. split. eauto. rewrite V; auto.
@@ -1347,7 +1347,7 @@ Qed.
 Lemma is_val_list_all_values:
   forall al vtl, is_val_list al = Some vtl -> exprlist_all_values al.
 Proof.
-  induction al; simpl; intros. auto. 
+  induction al; simpl; intros. auto.
   destruct (is_val r1) as [[v ty]|] eqn:?; try discriminate.
   destruct (is_val_list al) as [vtl'|] eqn:?; try discriminate.
   rewrite (is_val_inv _ _ _ Heqo). eauto.
@@ -1381,14 +1381,14 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   destruct (is_val a) as [[v ty'] | ] eqn:?.
   rewrite (is_val_inv _ _ _ Heqo).
   destruct v...
-  destruct ty'... 
+  destruct ty'...
   (* top struct *)
   destruct (field_offset f f0) as [delta|] eqn:?...
   apply topred_ok; auto. apply red_field_struct; auto.
   (* top union *)
   apply topred_ok; auto. apply red_field_union; auto.
   (* in depth *)
-  eapply incontext_ok; eauto. 
+  eapply incontext_ok; eauto.
 (* Evalof *)
   destruct (is_loc a) as [[[b ofs] ty'] | ] eqn:?. rewrite (is_loc_inv _ _ _ _ Heqo).
   (* top *)
@@ -1402,7 +1402,7 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
 (* Ederef *)
   destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
-  destruct v... apply topred_ok; auto. apply red_deref; auto. 
+  destruct v... apply topred_ok; auto. apply red_deref; auto.
   (* depth *)
   eapply incontext_ok; eauto.
 (* Eaddrof *)
@@ -1412,31 +1412,31 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   (* depth *)
   eapply incontext_ok; eauto.
 (* unop *)
-  destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (sem_unary_operation op v ty') as [v'|] eqn:?...
-  apply topred_ok; auto. split. apply red_unop; auto. exists w; constructor. 
+  apply topred_ok; auto. split. apply red_unop; auto. exists w; constructor.
   (* depth *)
   eapply incontext_ok; eauto.
 (* binop *)
-  destruct (is_val a1) as [[v1 ty1] | ] eqn:?. 
+  destruct (is_val a1) as [[v1 ty1] | ] eqn:?.
   destruct (is_val a2) as [[v2 ty2] | ] eqn:?.
-  rewrite (is_val_inv _ _ _ Heqo). rewrite (is_val_inv _ _ _ Heqo0). 
+  rewrite (is_val_inv _ _ _ Heqo). rewrite (is_val_inv _ _ _ Heqo0).
   (* top *)
   destruct (sem_binary_operation op v1 ty1 v2 ty2 m) as [v|] eqn:?...
   apply topred_ok; auto. split. apply red_binop; auto. exists w; constructor.
   (* depth *)
-  eapply incontext2_ok; eauto. 
-  eapply incontext2_ok; eauto. 
+  eapply incontext2_ok; eauto.
+  eapply incontext2_ok; eauto.
 (* cast *)
-  destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (sem_cast v ty' ty) as [v'|] eqn:?...
-  apply topred_ok; auto. split. apply red_cast; auto. exists w; constructor. 
+  apply topred_ok; auto. split. apply red_cast; auto. exists w; constructor.
   (* depth *)
   eapply incontext_ok; eauto.
 (* seqand *)
-  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (bool_val v ty') as [v'|] eqn:?... destruct v'.
   apply topred_ok; auto. split. eapply red_seqand_true; eauto. exists w; constructor.
@@ -1444,7 +1444,7 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   (* depth *)
   eapply incontext_ok; eauto.
 (* seqor *)
-  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (bool_val v ty') as [v'|] eqn:?... destruct v'.
   apply topred_ok; auto. split. eapply red_seqor_true; eauto. exists w; constructor.
@@ -1452,7 +1452,7 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   (* depth *)
   eapply incontext_ok; eauto.
 (* condition *)
-  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (bool_val v ty') as [v'|] eqn:?...
   apply topred_ok; auto. split. eapply red_condition; eauto. exists w; constructor.
@@ -1463,8 +1463,8 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
 (* alignof *)
   apply topred_ok; auto. split. apply red_alignof. exists w; constructor.
 (* assign *)
-  destruct (is_loc a1) as [[[b ofs] ty1] | ] eqn:?. 
-  destruct (is_val a2) as [[v2 ty2] | ] eqn:?. 
+  destruct (is_loc a1) as [[[b ofs] ty1] | ] eqn:?.
+  destruct (is_val a2) as [[v2 ty2] | ] eqn:?.
   rewrite (is_loc_inv _ _ _ _ Heqo). rewrite (is_val_inv _ _ _ Heqo0).
   (* top *)
   destruct (type_eq ty1 ty)... subst ty1.
@@ -1477,9 +1477,9 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   eapply incontext2_ok; eauto.
   eapply incontext2_ok; eauto.
 (* assignop *)
-  destruct (is_loc a1) as [[[b ofs] ty1] | ] eqn:?. 
-  destruct (is_val a2) as [[v2 ty2] | ] eqn:?. 
-  rewrite (is_loc_inv _ _ _ _ Heqo). rewrite (is_val_inv _ _ _ Heqo0). 
+  destruct (is_loc a1) as [[[b ofs] ty1] | ] eqn:?.
+  destruct (is_val a2) as [[v2 ty2] | ] eqn:?.
+  rewrite (is_loc_inv _ _ _ _ Heqo). rewrite (is_val_inv _ _ _ Heqo0).
   (* top *)
   destruct (type_eq ty1 ty)... subst ty1.
   destruct (do_deref_loc w ty m b ofs) as [[[w' t] v] | ] eqn:?.
@@ -1490,7 +1490,7 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   eapply incontext2_ok; eauto.
   eapply incontext2_ok; eauto.
 (* postincr *)
-  destruct (is_loc a) as [[[b ofs] ty'] | ] eqn:?. rewrite (is_loc_inv _ _ _ _ Heqo). 
+  destruct (is_loc a) as [[[b ofs] ty'] | ] eqn:?. rewrite (is_loc_inv _ _ _ _ Heqo).
   (* top *)
   destruct (type_eq ty' ty)... subst ty'.
   destruct (do_deref_loc w ty m b ofs) as [[[w' t] v] | ] eqn:?.
@@ -1500,22 +1500,22 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   (* depth *)
   eapply incontext_ok; eauto.
 (* comma *)
-  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a1) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (type_eq (typeof a2) ty)... subst ty.
   apply topred_ok; auto. split. apply red_comma; auto. exists w; constructor.
   (* depth *)
   eapply incontext_ok; eauto.
 (* call *)
-  destruct (is_val a) as [[vf tyf] | ] eqn:?.  
-  destruct (is_val_list rargs) as [vtl | ] eqn:?. 
+  destruct (is_val a) as [[vf tyf] | ] eqn:?.
+  destruct (is_val_list rargs) as [vtl | ] eqn:?.
   rewrite (is_val_inv _ _ _ Heqo). exploit is_val_list_all_values; eauto. intros ALLVAL.
   (* top *)
   destruct (classify_fun tyf) as [tyargs tyres|] eqn:?...
   destruct (Genv.find_funct ge vf) as [fd|] eqn:?...
-  destruct (sem_cast_arguments vtl tyargs) as [vargs|] eqn:?... 
+  destruct (sem_cast_arguments vtl tyargs) as [vargs|] eqn:?...
   destruct (type_eq (type_of_fundef fd) (Tfunction tyargs tyres))...
-  apply topred_ok; auto. red. split; auto. eapply red_Ecall; eauto. 
+  apply topred_ok; auto. red. split; auto. eapply red_Ecall; eauto.
   eapply sem_cast_arguments_sound; eauto.
   apply not_invert_ok; simpl; intros; myinv. specialize (H ALLVAL). myinv. congruence.
   apply not_invert_ok; simpl; intros; myinv. specialize (H ALLVAL). myinv.
@@ -1526,31 +1526,31 @@ Proof with (try (apply not_invert_ok; simpl; intro; myinv; intuition congruence;
   eapply incontext2_list_ok; eauto.
   eapply incontext2_list_ok; eauto.
 (* builtin *)
-  destruct (is_val_list rargs) as [vtl | ] eqn:?. 
+  destruct (is_val_list rargs) as [vtl | ] eqn:?.
   exploit is_val_list_all_values; eauto. intros ALLVAL.
   (* top *)
-  destruct (sem_cast_arguments vtl tyargs) as [vargs|] eqn:?... 
+  destruct (sem_cast_arguments vtl tyargs) as [vargs|] eqn:?...
   destruct (do_external ef w vargs m) as [[[[? ?] v] m'] | ] eqn:?...
   exploit do_ef_external_sound; eauto. intros [EC PT].
-  apply topred_ok; auto. red. split; auto. eapply red_builtin; eauto. 
+  apply topred_ok; auto. red. split; auto. eapply red_builtin; eauto.
   eapply sem_cast_arguments_sound; eauto.
   exists w0; auto.
   apply not_invert_ok; simpl; intros; myinv. specialize (H ALLVAL). myinv.
-  assert (x = vargs). 
+  assert (x = vargs).
     exploit sem_cast_arguments_complete; eauto. intros [vtl' [A B]]. congruence.
   subst x. exploit do_ef_external_complete; eauto. congruence.
-  apply not_invert_ok; simpl; intros; myinv. specialize (H ALLVAL). myinv. 
+  apply not_invert_ok; simpl; intros; myinv. specialize (H ALLVAL). myinv.
   exploit sem_cast_arguments_complete; eauto. intros [vtl' [A B]]. congruence.
   (* depth *)
   eapply incontext_list_ok; eauto.
- 
+
 (* loc *)
   split; intros. tauto. simpl; congruence.
 (* paren *)
-  destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo). 
+  destruct (is_val a) as [[v ty'] | ] eqn:?. rewrite (is_val_inv _ _ _ Heqo).
   (* top *)
   destruct (sem_cast v ty' ty) as [v'|] eqn:?...
-  apply topred_ok; auto. split. apply red_paren; auto. exists w; constructor. 
+  apply topred_ok; auto. split. apply red_paren; auto. exists w; constructor.
   (* depth *)
   eapply incontext_ok; eauto.
 
@@ -1564,7 +1564,7 @@ Qed.
 Lemma step_exprlist_val_list:
   forall m al, is_val_list al <> None -> step_exprlist al m = nil.
 Proof.
-  induction al; simpl; intros. 
+  induction al; simpl; intros.
   auto.
   destruct (is_val r1) as [[v1 ty1]|] eqn:?; try congruence.
   destruct (is_val_list al) eqn:?; try congruence.
@@ -1584,7 +1584,7 @@ Proof.
   rewrite H. rewrite dec_eq_true; auto.
 (* var global *)
   rewrite H; rewrite H0; rewrite H1. rewrite dec_eq_true; auto.
-(* deref *) 
+(* deref *)
   auto.
 (* field struct *)
   rewrite H; auto.
@@ -1599,7 +1599,7 @@ Lemma rred_topred:
 Proof.
   induction 1; simpl; intros.
 (* valof *)
-  rewrite dec_eq_true; auto. rewrite (do_deref_loc_complete _ _ _ _ _ _ _ _ H H0). auto. 
+  rewrite dec_eq_true; auto. rewrite (do_deref_loc_complete _ _ _ _ _ _ _ _ H H0). auto.
 (* addrof *)
   inv H. auto.
 (* unop *)
@@ -1623,7 +1623,7 @@ Proof.
 (* assign *)
   rewrite dec_eq_true; auto. rewrite H. rewrite (do_assign_loc_complete _ _ _ _ _ _ _ _ _ H0 H1). auto.
 (* assignop *)
-  rewrite dec_eq_true; auto. rewrite (do_deref_loc_complete _ _ _ _ _ _ _ _ H H0). auto. 
+  rewrite dec_eq_true; auto. rewrite (do_deref_loc_complete _ _ _ _ _ _ _ _ H H0). auto.
 (* postincr *)
   rewrite dec_eq_true; auto. subst. rewrite (do_deref_loc_complete _ _ _ _ _ _ _ _ H H1). auto.
 (* comma *)
@@ -1632,7 +1632,7 @@ Proof.
   inv H0. rewrite H; auto.
 (* builtin *)
   exploit sem_cast_arguments_complete; eauto. intros [vtl [A B]].
-  exploit do_ef_external_complete; eauto. intros C. 
+  exploit do_ef_external_complete; eauto. intros C.
   rewrite A. rewrite B. rewrite C. auto.
 Qed.
 
@@ -1655,7 +1655,7 @@ Lemma reducts_incl_trans:
   reducts_incl C' res2 res3 ->
   reducts_incl (fun x => C'(C x)) res1 res3.
 Proof.
-  unfold reducts_incl; intros. auto. 
+  unfold reducts_incl; intros. auto.
 Qed.
 
 Lemma reducts_incl_nil:
@@ -1787,11 +1787,11 @@ Proof.
   eapply reducts_incl_trans with (C' := fun x => Ecall x el ty); eauto.
   destruct (is_val (C a)) as [[v ty']|] eqn:?; eauto.
 (* call right *)
-  eapply reducts_incl_trans with (C' := fun x => Ecall e1 x ty). apply step_exprlist_context. auto. 
+  eapply reducts_incl_trans with (C' := fun x => Ecall e1 x ty). apply step_exprlist_context. auto.
   destruct (is_val e1) as [[v1 ty1]|] eqn:?; eauto.
   destruct (is_val_list (C a)) as [vl|] eqn:?; eauto.
 (* builtin *)
-  eapply reducts_incl_trans with (C' := fun x => Ebuiltin ef tyargs x ty). apply step_exprlist_context. auto. 
+  eapply reducts_incl_trans with (C' := fun x => Ebuiltin ef tyargs x ty). apply step_exprlist_context. auto.
   destruct (is_val_list (C a)) as [vl|] eqn:?; eauto.
 (* comma *)
   eapply reducts_incl_trans with (C' := fun x => Ecomma x e2 ty); eauto.
@@ -1816,18 +1816,18 @@ Lemma not_stuckred_imm_safe:
   forall m a k,
   (forall C, ~In (C, Stuckred) (step_expr k a m)) -> imm_safe_t k a m.
 Proof.
-  intros. generalize (step_expr_sound a k m). intros [A B]. 
+  intros. generalize (step_expr_sound a k m). intros [A B].
   destruct (step_expr k a m) as [|[C rd] res] eqn:?.
   specialize (B (refl_equal _)). destruct k.
   destruct a; simpl in B; try congruence. constructor.
   destruct a; simpl in B; try congruence. constructor.
   assert (NOTSTUCK: rd <> Stuckred).
     red; intros. elim (H C); subst rd; auto with coqlib.
-  exploit A. eauto with coqlib. intros [a' [k' [P [Q R]]]]. 
+  exploit A. eauto with coqlib. intros [a' [k' [P [Q R]]]].
   destruct k'; destruct rd; simpl in R; intuition.
   subst a. eapply imm_safe_t_lred; eauto.
-  subst a. destruct H1 as [w' PT]. eapply imm_safe_t_rred; eauto. 
-  subst. eapply imm_safe_t_callred; eauto. 
+  subst a. destruct H1 as [w' PT]. eapply imm_safe_t_rred; eauto.
+  subst. eapply imm_safe_t_callred; eauto.
 Qed.
 
 Lemma not_imm_safe_stuck_red:
@@ -1836,14 +1836,14 @@ Lemma not_imm_safe_stuck_red:
   ~imm_safe_t k a m ->
   exists C', In (C', Stuckred) (step_expr RV (C a) m).
 Proof.
-  intros. 
+  intros.
   assert (exists C', In (C', Stuckred) (step_expr k a m)).
     destruct (classic (exists C', In (C', Stuckred) (step_expr k a m))); auto.
-    elim H0. apply not_stuckred_imm_safe. apply not_ex_all_not. auto. 
+    elim H0. apply not_stuckred_imm_safe. apply not_ex_all_not. auto.
   destruct H1 as [C' IN].
-  specialize (step_expr_context _ _ _ H a m). unfold reducts_incl. 
+  specialize (step_expr_context _ _ _ H a m). unfold reducts_incl.
   intro.
-  exists (fun x => (C (C' x))). apply H1; auto. 
+  exists (fun x => (C (C' x))). apply H1; auto.
 Qed.
 
 (** Connections between [imm_safe_t] and [imm_safe] *)
@@ -1855,12 +1855,12 @@ Lemma imm_safe_imm_safe_t:
   exists C, exists a1, exists t, exists a1', exists m',
     context RV k C /\ a = C a1 /\ rred ge a1 m t a1' m' /\ forall w', ~possible_trace w t w'.
 Proof.
-  intros. inv H. 
+  intros. inv H.
   left. apply imm_safe_t_val.
   left. apply imm_safe_t_loc.
   left. eapply imm_safe_t_lred; eauto.
   destruct (classic (exists w', possible_trace w t w')) as [[w' A] | A].
-  left. eapply imm_safe_t_rred; eauto. 
+  left. eapply imm_safe_t_rred; eauto.
   right. exists C; exists e0; exists t; exists e'; exists m'; intuition. apply A; exists w'; auto.
   left. eapply imm_safe_t_callred; eauto.
 Qed.
@@ -1878,10 +1878,10 @@ Theorem not_imm_safe_t:
   Csem.step ge (ExprState f (C a) k e m) E0 Stuckstate \/ can_crash_world w (ExprState f (C a) k e m).
 Proof.
   intros. destruct (classic (imm_safe ge e K a m)).
-  exploit imm_safe_imm_safe_t; eauto. 
+  exploit imm_safe_imm_safe_t; eauto.
   intros [A | [C1 [a1 [t [a1' [m' [A [B [D E]]]]]]]]]. contradiction.
-  right. red. exists t; econstructor; split; auto. 
-  left. rewrite B. eapply step_rred with (C := fun x => C(C1 x)). eauto. eauto. 
+  right. red. exists t; econstructor; split; auto.
+  left. rewrite B. eapply step_rred with (C := fun x => C(C1 x)). eauto. eauto.
   left. left. eapply step_stuck; eauto.
 Qed.
 
@@ -1893,14 +1893,14 @@ Fixpoint do_alloc_variables (e: env) (m: mem) (l: list (ident * type)) {struct l
   match l with
   | nil => (e,m)
   | (id, ty) :: l' =>
-      let (m1,b1) := Mem.alloc m 0 (sizeof ty) in 
+      let (m1,b1) := Mem.alloc m 0 (sizeof ty) in
       do_alloc_variables (PTree.set id (b1, ty) e) m1 l'
 end.
 
 Lemma do_alloc_variables_sound:
   forall l e m, alloc_variables e m l (fst (do_alloc_variables e m l)) (snd (do_alloc_variables e m l)).
 Proof.
-  induction l; intros; simpl. 
+  induction l; intros; simpl.
   constructor.
   destruct a as [id ty]. destruct (Mem.alloc m 0 (sizeof ty)) as [m1 b1] eqn:?; simpl.
   econstructor; eauto.
@@ -1910,12 +1910,12 @@ Lemma do_alloc_variables_complete:
   forall e1 m1 l e2 m2, alloc_variables e1 m1 l e2 m2 ->
   do_alloc_variables e1 m1 l = (e2, m2).
 Proof.
-  induction 1; simpl. 
+  induction 1; simpl.
   auto.
-  rewrite H; rewrite IHalloc_variables; auto. 
+  rewrite H; rewrite IHalloc_variables; auto.
 Qed.
 
-Function sem_bind_parameters (w: world) (e: env) (m: mem) (l: list (ident * type)) (lv: list val) 
+Function sem_bind_parameters (w: world) (e: env) (m: mem) (l: list (ident * type)) (lv: list val)
                           {struct l} : option mem :=
   match l, lv  with
   | nil, nil => Some m
@@ -1931,7 +1931,7 @@ Function sem_bind_parameters (w: world) (e: env) (m: mem) (l: list (ident * type
 end.
 
 Lemma sem_bind_parameters_sound : forall w e m l lv m',
-  sem_bind_parameters w e m l lv = Some m' -> 
+  sem_bind_parameters w e m l lv = Some m' ->
   bind_parameters ge e m l lv m'.
 Proof.
    intros; functional induction (sem_bind_parameters w e m l lv); try discriminate.
@@ -1947,7 +1947,7 @@ Proof.
    rewrite H. rewrite dec_eq_true.
    assert (possible_trace w E0 w) by constructor.
    rewrite (do_assign_loc_complete _ _ _ _ _ _ _ _ _ H0 H2).
-   simpl. auto. 
+   simpl. auto.
 Qed.
 
 Definition expr_final_state (f: function) (k: cont) (e: env) (C_rd: (expr -> expr) * reduction) :=
@@ -1973,7 +1973,7 @@ Definition do_step (w: world) (s: state) : list (trace * state) :=
         | Kifthenelse s1 s2 k =>
             do b <- bool_val v ty; ret (State f (if b then s1 else s2) k e m)
         | Kwhile1 x s k =>
-            do b <- bool_val v ty; 
+            do b <- bool_val v ty;
             if b then ret (State f s (Kwhile2 x s k) e m) else ret (State f Sskip k e m)
         | Kdowhile2 x s k =>
             do b <- bool_val v ty;
@@ -2027,7 +2027,7 @@ Definition do_step (w: world) (s: state) : list (trace * state) :=
       do m' <- Mem.free_list m (blocks_of_env e);
       ret (Returnstate Vundef (call_cont k) m')
   | State f (Sreturn (Some x)) k e m => ret (ExprState f x (Kreturn k) e m)
-  | State f Sskip ((Kstop | Kcall _ _ _ _ _) as k) e m => 
+  | State f Sskip ((Kstop | Kcall _ _ _ _ _) as k) e m =>
       do m' <- Mem.free_list m (blocks_of_env e);
       ret (Returnstate Vundef k m')
 
@@ -2061,10 +2061,10 @@ Definition do_step (w: world) (s: state) : list (trace * state) :=
 Ltac myinv :=
   match goal with
   | [ |- In _ nil -> _ ] => intro X; elim X
-  | [ |- In _ (ret _) -> _ ] => 
+  | [ |- In _ (ret _) -> _ ] =>
         intro X; elim X; clear X;
         [intro EQ; unfold ret in EQ; inv EQ; myinv | myinv]
-  | [ |- In _ (_ :: nil) -> _ ] => 
+  | [ |- In _ (_ :: nil) -> _ ] =>
         intro X; elim X; clear X; [intro EQ; inv EQ; myinv | myinv]
   | [ |- In _ (match ?x with Some _ => _ | None => _ end) -> _ ] => destruct x eqn:?; myinv
   | [ |- In _ (match ?x with false => _ | true => _ end) -> _ ] => destruct x eqn:?; myinv
@@ -2101,7 +2101,7 @@ Proof with try (left; right; econstructor; eauto; fail).
   generalize (step_expr_sound e w r RV m). unfold reducts_ok. intros [P Q].
   exploit P; eauto. intros [a' [k' [CTX [EQ RD]]]].
   unfold expr_final_state in A. simpl in A.
-  destruct k'; destruct rd; inv A; simpl in RD; try contradiction. 
+  destruct k'; destruct rd; inv A; simpl in RD; try contradiction.
   (* lred *)
   left; left; apply step_lred; auto.
   (* stuck lred *)
@@ -2116,11 +2116,11 @@ Proof with try (left; right; econstructor; eauto; fail).
   destruct fd; myinv.
   (* internal *)
   destruct (do_alloc_variables empty_env m (fn_params f ++ fn_vars f)) as [e m1] eqn:?.
-  myinv. left; right; apply step_internal_function with m1. auto. 
-  change e with (fst (e,m1)). change m1 with (snd (e,m1)) at 2. rewrite <- Heqp. 
+  myinv. left; right; apply step_internal_function with m1. auto.
+  change e with (fst (e,m1)). change m1 with (snd (e,m1)) at 2. rewrite <- Heqp.
   apply do_alloc_variables_sound. eapply sem_bind_parameters_sound; eauto.
   (* external *)
-  destruct p as [[[w' tr] v] m']. myinv. left; right; constructor. 
+  destruct p as [[[w' tr] v] m']. myinv. left; right; constructor.
   eapply do_ef_external_sound; eauto.
 (* returnstate *)
   destruct k; myinv...
@@ -2131,10 +2131,10 @@ Qed.
 Remark estep_not_val:
   forall f a k e m t S, estep ge (ExprState f a k e m) t S -> is_val a = None.
 Proof.
-  intros. 
+  intros.
   assert (forall b from to C, context from to C -> (from = to /\ C = fun x => x) \/ is_val (C b) = None).
-    induction 1; simpl; auto. 
-  inv H. 
+    induction 1; simpl; auto.
+  inv H.
   destruct (H0 a0 _ _ _ H9) as [[A B] | A]. subst. inv H8; auto. auto.
   destruct (H0 a0 _ _ _ H9) as [[A B] | A]. subst. inv H8; auto. auto.
   destruct (H0 a0 _ _ _ H9) as [[A B] | A]. subst. inv H8; auto. auto.
@@ -2145,7 +2145,7 @@ Theorem do_step_complete:
   forall w S t S' w', possible_trace w t w' -> Csem.step ge S t S' -> In (t, S') (do_step w S).
 Proof with (unfold ret; auto with coqlib).
   intros until w'; intros PT H.
-  destruct H. 
+  destruct H.
   (* Expression step *)
   inversion H; subst; exploit estep_not_val; eauto; intro NOTVAL.
 (* lred *)
@@ -2153,7 +2153,7 @@ Proof with (unfold ret; auto with coqlib).
   change (E0, ExprState f (C a') k e m') with (expr_final_state f k e (C, Lred a' m')).
   apply in_map.
   generalize (step_expr_context e w _ _ _ H1 a m). unfold reducts_incl.
-  intro. replace C with (fun x => C x). apply H2. 
+  intro. replace C with (fun x => C x). apply H2.
   rewrite (lred_topred _ _ _ _ _ _ H0). unfold topred; auto with coqlib.
   apply extensionality; auto.
 (* rred *)
@@ -2161,7 +2161,7 @@ Proof with (unfold ret; auto with coqlib).
   change (t, ExprState f (C a') k e m') with (expr_final_state f k e (C, Rred a' m' t)).
   apply in_map.
   generalize (step_expr_context e w _ _ _ H1 a m). unfold reducts_incl.
-  intro. replace C with (fun x => C x). apply H2. 
+  intro. replace C with (fun x => C x). apply H2.
   rewrite (rred_topred _ _ _ _ _ _ _ _ H0 PT). unfold topred; auto with coqlib.
   apply extensionality; auto.
 (* callred *)
@@ -2169,15 +2169,15 @@ Proof with (unfold ret; auto with coqlib).
   change (E0, Callstate fd vargs (Kcall f e C ty k) m) with (expr_final_state f k e (C, Callred fd vargs ty m)).
   apply in_map.
   generalize (step_expr_context e w _ _ _ H1 a m). unfold reducts_incl.
-  intro. replace C with (fun x => C x). apply H2. 
+  intro. replace C with (fun x => C x). apply H2.
   rewrite (callred_topred _ _ _ _ _ _ _ H0). unfold topred; auto with coqlib.
   apply extensionality; auto.
 (* stuck *)
   exploit not_imm_safe_stuck_red. eauto. red; intros; elim H1. eapply imm_safe_t_imm_safe. eauto.
   instantiate (1 := w). intros [C' IN].
-  simpl do_step. rewrite NOTVAL. 
+  simpl do_step. rewrite NOTVAL.
   change (E0, Stuckstate) with (expr_final_state f k e (C', Stuckred)).
-  apply in_map. auto. 
+  apply in_map. auto.
 
   (* Statement step *)
   inv H; simpl...

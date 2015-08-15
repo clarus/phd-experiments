@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "rules-red.h"
@@ -55,14 +54,12 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* Needed for term stamping in red_RewriteRedUnitClause */
 static NAT red_STAMPID;
- 
+
 const NAT red_USABLE    = 1;
 const NAT red_WORKEDOFF = 2;
 const NAT red_ALL       = 3;
-
 
 /**************************************************************/
 /* FUNTION PROTOTYPES                                         */
@@ -73,7 +70,6 @@ static BOOL red_SortSimplification(SORTTHEORY, CLAUSE, NAT, BOOL, FLAGSTORE,
 static BOOL red_SelectedStaticReductions(PROOFSEARCH, CLAUSE*, CLAUSE*, LIST*,
 					 NAT);
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *                                                        * */
@@ -81,8 +77,6 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH, CLAUSE*, CLAUSE*, LIST*,
 /* *                                                        * */
 /* ********************************************************** */
 /**************************************************************/
-
-
 
 static void red_HandleRedundantIndexedClauses(PROOFSEARCH Search, LIST Blocked,
 					      CLAUSE RedClause)
@@ -146,7 +140,6 @@ static void red_HandleRedundantDerivedClauses(PROOFSEARCH Search, LIST Blocked,
   }
 }
 
-
 void red_Init(void)
 /*********************************************************
   INPUT:   None.
@@ -157,7 +150,6 @@ void red_Init(void)
 {
   red_STAMPID = term_GetStampID();
 }
-
 
 static void red_DocumentObviousReductions(CLAUSE Clause, LIST Indexes)
 /*********************************************************
@@ -178,7 +170,6 @@ static void red_DocumentObviousReductions(CLAUSE Clause, LIST Indexes)
   clause_SetFromObviousReductions(Clause);
 }
 
-
 static BOOL red_ObviousReductions(CLAUSE Clause, BOOL Document,
 				  FLAGSTORE Flags, PRECEDENCE Precedence,
 				  CLAUSE *Changed)
@@ -190,7 +181,7 @@ static BOOL red_ObviousReductions(CLAUSE Clause, BOOL Document,
 	   destructively changed,
 	   else a reduced copy of  the clause is returned
 	   in <*Changed>.
-  EFFECT:  Multiple occurrences of the same literal as 
+  EFFECT:  Multiple occurrences of the same literal as
            well as trivial equations are removed.
 ********************************************************/
 {
@@ -204,14 +195,14 @@ static BOOL red_ObviousReductions(CLAUSE Clause, BOOL Document,
 
   Indexes = list_Nil();
   end     = clause_LastAntecedentLitIndex(Clause);
-    
+
   for (i = clause_FirstConstraintLitIndex(Clause); i <= end; i++) {
     Atom = clause_LiteralAtom(clause_GetLiteral(Clause,i));
     if (fol_IsEquality(Atom) &&
 	!clause_LiteralIsOrientedEquality(clause_GetLiteral(Clause, i)) &&
 	term_Equal(term_FirstArgument(Atom),term_SecondArgument(Atom))) {
       Indexes = list_Cons((POINTER)i,Indexes);
-    } 
+    }
     else
       for (j = i+1; j <= end; j++) {
 	PartnerAtom = clause_LiteralAtom(clause_GetLiteral(Clause,j));
@@ -227,7 +218,7 @@ static BOOL red_ObviousReductions(CLAUSE Clause, BOOL Document,
   }
 
   end = clause_LastSuccedentLitIndex(Clause);
-    
+
   for (i = clause_FirstSuccedentLitIndex(Clause); i <= end; i++) {
     Atom = clause_LiteralAtom(clause_GetLiteral(Clause,i));
     for (j = i+1; j <= end; j++) {
@@ -260,7 +251,7 @@ static BOOL red_ObviousReductions(CLAUSE Clause, BOOL Document,
       fputs("\nObvious: ", stdout);
       clause_Print(Clause);
       fputs(" ==> ", stdout);
-    }      
+    }
     if (Document) {
       CLAUSE Copy;
       Copy = clause_Copy(Clause);
@@ -281,7 +272,6 @@ static BOOL red_ObviousReductions(CLAUSE Clause, BOOL Document,
 
   return FALSE;
 }
-
 
 static void red_DocumentCondensing(CLAUSE Clause, LIST Indexes)
 /*********************************************************
@@ -308,20 +298,20 @@ static BOOL red_Condensing(CLAUSE Clause, BOOL Document, FLAGSTORE Flags,
            concerning proof documentation, a flag store and
 	   a precedence.
   RETURNS: TRUE iff condensing is applicable to <Clause>.
-           If <Document> is false the clause is 
-	   destructively changed else a condensed copy of 
+           If <Document> is false the clause is
+	   destructively changed else a condensed copy of
 	   the clause is returned in <*Changed>.
 ***********************************************************/
 {
   LIST Indexes;
 
 #ifdef CHECK
-  if (!clause_IsClause(Clause, Flags, Precedence) || 
+  if (!clause_IsClause(Clause, Flags, Precedence) ||
       (*Changed != (CLAUSE)NULL)) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In red_Condensing : ");
     misc_ErrorReport("Illegal input.\n");
-    misc_FinishErrorReport();    
+    misc_FinishErrorReport();
   }
   clause_Check(Clause, Flags, Precedence);
 #endif
@@ -354,7 +344,6 @@ static BOOL red_Condensing(CLAUSE Clause, BOOL Document, FLAGSTORE Flags,
   return FALSE;
 }
 
-
 static void red_DocumentAssignmentEquationDeletion(CLAUSE Clause, LIST Indexes,
 						   NAT NonTrivClauseNumber)
 /*********************************************************
@@ -381,7 +370,6 @@ static void red_DocumentAssignmentEquationDeletion(CLAUSE Clause, LIST Indexes,
   }
 }
 
-
 static BOOL red_AssignmentEquationDeletion(CLAUSE Clause, FLAGSTORE Flags,
 					   PRECEDENCE Precedence, CLAUSE *Changed,
 					   NAT NonTrivClauseNumber,
@@ -394,8 +382,8 @@ static BOOL red_AssignmentEquationDeletion(CLAUSE Clause, FLAGSTORE Flags,
 	   more than one element.
   RETURNS: TRUE iff equations are removed.
            If the <DocProof> flag is false the clause is
-	   destructively changed else a copy of the clause 
-	   where redundant equations are removed is 
+	   destructively changed else a copy of the clause
+	   where redundant equations are removed is
 	   returned in <*Changed>.
 ***********************************************************/
 {
@@ -411,7 +399,7 @@ static BOOL red_AssignmentEquationDeletion(CLAUSE Clause, FLAGSTORE Flags,
     misc_StartErrorReport();
     misc_ErrorReport("\n In red_AssignmentEquationDeletion: ");
     misc_ErrorReport("Illegal input.\n");
-    misc_FinishErrorReport();    
+    misc_FinishErrorReport();
   }
   clause_Check(Clause, Flags, Precedence);
 #endif
@@ -473,8 +461,7 @@ static BOOL red_AssignmentEquationDeletion(CLAUSE Clause, FLAGSTORE Flags,
   return FALSE;
 }
 
-
-static BOOL red_Tautology(CLAUSE Clause, FLAGSTORE Flags, 
+static BOOL red_Tautology(CLAUSE Clause, FLAGSTORE Flags,
 			  PRECEDENCE Precedence)
 /**********************************************************
   INPUT:   A non-empty clause, a flag store and a
@@ -496,7 +483,7 @@ static BOOL red_Tautology(CLAUSE Clause, FLAGSTORE Flags,
   }
   clause_Check(Clause, Flags, Precedence);
 #endif
-  
+
   la     = clause_LastAntecedentLitIndex(Clause);
   n      = clause_Length(Clause);
   Result = FALSE;
@@ -509,14 +496,13 @@ static BOOL red_Tautology(CLAUSE Clause, FLAGSTORE Flags,
 	!clause_LiteralIsOrientedEquality(clause_GetLiteral(Clause, j)) &&
 	term_Equal(term_FirstArgument(Atom),term_SecondArgument(Atom)))
       Result = TRUE;
-    
+
     for (i = clause_FirstLitIndex(); i <= la && !Result; i++)
       if (term_Equal(Atom, clause_LiteralAtom(clause_GetLiteral(Clause, i))))
 	Result = TRUE;
   }
 
-
-  if (!Result && 
+  if (!Result &&
       flag_GetFlagValue(Flags, flag_RTAUT) == flag_RTAUTSEMANTIC &&
       clause_NumOfAnteLits(Clause) != 0 &&
       clause_NumOfSuccLits(Clause) != 0) {
@@ -592,7 +578,7 @@ static void red_DocumentMatchingReplacementResolution(CLAUSE Clause, LIST LitInd
   list_Delete(clause_ParentLiterals(Clause));
   clause_SetParentClauses(Clause, list_Nconc(Help,ClauseNums));
   clause_SetParentLiterals(Clause, list_Nconc(LitInds,PLitInds));
-  
+
   clause_SetNumber(Clause, clause_IncreaseCounter());
   clause_SetFromMatchingReplacementResolution(Clause);
 }
@@ -629,7 +615,7 @@ static BOOL red_MatchingReplacementResolution(CLAUSE Clause, SHARED_INDEX ShInde
   }
   clause_Check(Clause, Flags, Precedence);
 #endif
-  
+
   Copy        = Clause;
   length      = clause_Length(Clause);
   ReducedBy   = list_Nil();
@@ -638,10 +624,10 @@ static BOOL red_MatchingReplacementResolution(CLAUSE Clause, SHARED_INDEX ShInde
   i           = clause_FirstLitIndex();
   j           = 0;
   Document    = flag_GetFlagValue(Flags, flag_DOCPROOF);
-  
+
   while (i < length) {
     ActLit = clause_GetLiteral(Copy, i);
-    
+
     if (!fol_IsEquality(clause_LiteralAtom(ActLit)) ||   /* Reduce with negative equations. */
 	clause_LiteralIsPositive(ActLit)) {
       PLit = red_GetMRResLit(ActLit, ShIndex);
@@ -657,7 +643,7 @@ static BOOL red_MatchingReplacementResolution(CLAUSE Clause, SHARED_INDEX ShInde
 	if (Copy == Clause &&
 	    (Document || prfs_SplitLevelCondition(clause_SplitLevel(PClause),clause_SplitLevel(Copy),Level)))
 	  Copy = clause_Copy(Clause);
-	clause_UpdateSplitDataFromPartner(Copy, PClause);	  
+	clause_UpdateSplitDataFromPartner(Copy, PClause);
 	clause_DeleteLiteral(Copy,i, Flags, Precedence);
 	length--;
 	j++;
@@ -668,7 +654,7 @@ static BOOL red_MatchingReplacementResolution(CLAUSE Clause, SHARED_INDEX ShInde
     else
       i++;
   }
-  
+
   if (!list_Empty(ReducedBy)) {
     if (Document) {
       ReducedBy   = list_NReverse(ReducedBy);
@@ -716,11 +702,10 @@ static void red_DocumentUnitConflict(CLAUSE Clause, LIST LitInds,
   list_Delete(clause_ParentLiterals(Clause));
   clause_SetParentClauses(Clause, list_Nconc(list_List((POINTER)clause_Number(Clause)),ClauseNums));
   clause_SetParentLiterals(Clause, list_Nconc(LitInds,PLitInds));
-  
+
   clause_SetNumber(Clause, clause_IncreaseCounter());
   clause_SetFromUnitConflict(Clause);
 }
-
 
 static BOOL red_UnitConflict(CLAUSE Clause, SHARED_INDEX ShIndex,
 			     FLAGSTORE Flags, PRECEDENCE Precedence,
@@ -729,10 +714,10 @@ static BOOL red_UnitConflict(CLAUSE Clause, SHARED_INDEX ShIndex,
   INPUT:   A clause, an Index, a flag store  and a splitlevel
            indicating the need of a copy if <Clause> is reduced
 	   by a clause of higher split level than <Level>.
-  RETURNS: TRUE if a unit conflict with <Clause> and the 
+  RETURNS: TRUE if a unit conflict with <Clause> and the
            clauses in <ShIndex> happened.
-           If the <DocProof> flag is true or the clauses used for 
-	   reductions have a higher split level then a changed 
+           If the <DocProof> flag is true or the clauses used for
+	   reductions have a higher split level then a changed
 	   copy is returned in <*Changed>.
 	   Otherwise <Clause> is destructively changed.
 ***************************************************************/
@@ -752,7 +737,7 @@ static BOOL red_UnitConflict(CLAUSE Clause, SHARED_INDEX ShIndex,
   }
   clause_Check(Clause, Flags, Precedence);
 #endif
-  
+
   if (clause_Length(Clause) == 1) {
     Copy     = Clause;
     Document = flag_GetFlagValue(Flags, flag_DOCPROOF);
@@ -806,7 +791,7 @@ static BOOL red_UnitConflict(CLAUSE Clause, SHARED_INDEX ShIndex,
       list_Delete(term_ArgumentList(Atom));
       term_Free(Atom);
     }
-      
+
     if (clause_LiteralExists(PLit)) {
       if (flag_GetFlagValue(Flags, flag_PUNC)) {
 	fputs("\nUnitConflict: ", stdout);
@@ -816,14 +801,14 @@ static BOOL red_UnitConflict(CLAUSE Clause, SHARED_INDEX ShIndex,
       if (Copy == Clause &&
 	  (Document || prfs_SplitLevelCondition(clause_SplitLevel(PClause),clause_SplitLevel(Copy),Level)))
 	Copy = clause_Copy(Clause);
-      clause_UpdateSplitDataFromPartner(Copy, PClause);	  
+      clause_UpdateSplitDataFromPartner(Copy, PClause);
       clause_DeleteLiteral(Copy,clause_FirstLitIndex(), Flags, Precedence);
-      if (Document) 
-	red_DocumentUnitConflict(Copy, list_List((POINTER)clause_FirstLitIndex()), 
-				 list_List((POINTER)clause_Number(PClause)), 
+      if (Document)
+	red_DocumentUnitConflict(Copy, list_List((POINTER)clause_FirstLitIndex()),
+				 list_List((POINTER)clause_Number(PClause)),
 				 list_List((POINTER)clause_FirstLitIndex()));
       if (flag_GetFlagValue(Flags, flag_PUNC)) {
-	printf(" ==> [ %d.%d ]", clause_Number(PClause), clause_FirstLitIndex());	
+	printf(" ==> [ %d.%d ]", clause_Number(PClause), clause_FirstLitIndex());
 	clause_Print(Copy);
       }
       if (Copy != Clause)
@@ -834,11 +819,10 @@ static BOOL red_UnitConflict(CLAUSE Clause, SHARED_INDEX ShIndex,
   return FALSE;
 }
 
-
 static CLAUSE red_ForwardSubsumer(CLAUSE RedCl, SHARED_INDEX ShIndex,
 				  FLAGSTORE Flags, PRECEDENCE Precedence)
 /**********************************************************
-  INPUT:   A pointer to a non-empty clause, an index of 
+  INPUT:   A pointer to a non-empty clause, an index of
            clauses, a flag store and a precedence.
   RETURNS: A clause that subsumes <RedCl>, or NULL if no such
            clause exists.
@@ -893,7 +877,7 @@ static CLAUSE red_ForwardSubsumer(CLAUSE RedCl, SHARED_INDEX ShIndex,
       AtomGen = st_NextCandidate();
     }
 
-    if (fol_IsEquality(Atom) && 
+    if (fol_IsEquality(Atom) &&
 	clause_LiteralIsNotOrientedEquality(clause_GetLiteral(RedCl,i))) {
       Atom = term_Create(fol_Equality(),list_Reverse(term_ArgumentList(Atom)));
       AtomGen = st_ExistGen(cont_LeftContext(), sharing_Index(ShIndex), Atom);
@@ -928,15 +912,14 @@ static CLAUSE red_ForwardSubsumer(CLAUSE RedCl, SHARED_INDEX ShIndex,
   return((CLAUSE)NULL);
 }
 
-
-static CLAUSE red_ForwardSubsumption(CLAUSE RedClause, SHARED_INDEX ShIndex, 
+static CLAUSE red_ForwardSubsumption(CLAUSE RedClause, SHARED_INDEX ShIndex,
 				     FLAGSTORE Flags, PRECEDENCE Precedence)
 /**********************************************************
   INPUT:   A clause, an index of clauses, a flag store and
            a precedence.
   RETURNS: The clause <RedClause> is subsumed by in <ShIndex>.
 ***********************************************************/
-{ 
+{
   CLAUSE Subsumer;
 
 #ifdef CHECK
@@ -960,7 +943,6 @@ static CLAUSE red_ForwardSubsumption(CLAUSE RedClause, SHARED_INDEX ShIndex,
   return Subsumer;
 }
 
-
 static void red_DocumentRewriting(CLAUSE Clause, int i, CLAUSE Rule, int ri)
 /*********************************************************
   INPUT:   Two clauses and the literal indices involved in the rewrite step.
@@ -982,7 +964,6 @@ static void red_DocumentRewriting(CLAUSE Clause, int i, CLAUSE Rule, int ri)
   clause_AddParentLiteral(Clause,ri);
 }
 
-
 static void red_DocumentFurtherRewriting(CLAUSE Clause, int i, CLAUSE Rule, int ri)
 /*********************************************************
   INPUT:   Two clauses and the literal indices involved in the rewrite step.
@@ -997,7 +978,6 @@ static void red_DocumentFurtherRewriting(CLAUSE Clause, int i, CLAUSE Rule, int 
   clause_AddParentLiteral(Clause, ri);
 }
 
-
 static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 				     FLAGSTORE Flags, PRECEDENCE Precedence,
 				     CLAUSE *Changed, int Level)
@@ -1009,7 +989,7 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
   RETURNS: TRUE iff rewriting was possible.
            If the <DocProof> flag is true or the split level of
 	   the rewrite rule is higher a copy of RedClause that
-	   is rewritten wrt. the indexed clauses is returned in 
+	   is rewritten wrt. the indexed clauses is returned in
 	   <*Changed>.
            Otherwise the clause is destructively rewritten.
 ***************************************************************/
@@ -1038,7 +1018,7 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
   Copy      = RedClause;
   RedAtom   = clause_GetLiteralAtom(Copy, clause_FirstLitIndex());
   Rewritten = TRUE;
-  Document  = flag_GetFlagValue(Flags, flag_DOCPROOF);    
+  Document  = flag_GetFlagValue(Flags, flag_DOCPROOF);
 
   /* Don't apply this rule on constraint or propositional literals */
   if (clause_FirstLitIndex() <= clause_LastConstraintLitIndex(RedClause) ||
@@ -1053,7 +1033,7 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
     Rewritten = FALSE;
     B_Stack = stack_Bottom();
     sharing_PushListOnStackNoStamps(term_ArgumentList(RedAtom));
-    
+
     while (!stack_Empty(B_Stack)) {
       RedTermS = (TERM)stack_PopResult();
       TermS    = st_ExistGen(cont_LeftContext(), sharing_Index(ShIndex), RedTermS);
@@ -1072,23 +1052,23 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 	    else
 	      Right = term_FirstArgument(PartnerEq);
 
-	    for (LitScan = sharing_NAtomDataList(PartnerEq); 
+	    for (LitScan = sharing_NAtomDataList(PartnerEq);
 		 !list_Empty(LitScan) && !Rewritten;
 		 LitScan = list_Cdr(LitScan)) {
 	      RewriteLit    = list_Car(LitScan);
 	      RewriteClause = clause_LiteralOwningClause(RewriteLit);
 	      if (clause_LiteralIsPositive(RewriteLit) &&
 		  clause_Length(RewriteClause) == 1) {
-		Oriented = (clause_LiteralIsOrientedEquality(RewriteLit) && 
+		Oriented = (clause_LiteralIsOrientedEquality(RewriteLit) &&
 			    TermS == term_FirstArgument(PartnerEq));
-		if (!Oriented && !clause_LiteralIsOrientedEquality(RewriteLit)) { 
+		if (!Oriented && !clause_LiteralIsOrientedEquality(RewriteLit)) {
 		  Renamed = TRUE;                            /* If oriented, no renaming needed! */
 		  term_StartMaxRenaming(clause_MaxVar(RewriteClause));
 		  term_Rename(RedAtom); /* Renaming destructive, no extra match needed !! */
 		  Oriented = ord_ContGreater(cont_LeftContext(), TermS,
 					     cont_LeftContext(), Right,
 					     Flags, Precedence);
-		  
+
 		  /*if (Oriented) {
 		    fputs("\n\n\tRedAtom: ",stdout);term_PrintPrefix(RedAtom);
 		    fputs("\n\tSubTerm: ",stdout);term_PrintPrefix(RedTermS);
@@ -1099,28 +1079,28 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 		}
 		if (Oriented) {
 		  TERM   TermT;
-		  
+
 		  if (RedClause == Copy &&
-		      (Document || 
+		      (Document ||
 		       prfs_SplitLevelCondition(clause_SplitLevel(RewriteClause),
 						clause_SplitLevel(RedClause),Level))) {
 		    Copy    = clause_Copy(RedClause);
 		    RedAtom = clause_GetLiteralAtom(Copy, clause_FirstLitIndex());
 		  }
-		  
+
 		  if (!Result)
 		    if (flag_GetFlagValue(Flags, flag_PREW)) {
 		      fputs("\nFRewriting: ", stdout);
 		      clause_Print(Copy);
 		      fputs(" ==>[ ", stdout);
 		    }
-		  
+
 		  if (Document) {
 		    if (!Result)
 		      red_DocumentRewriting(Copy, clause_FirstLitIndex(),
 					    RewriteClause, clause_FirstLitIndex());
 		    else
-		      red_DocumentFurtherRewriting(Copy, clause_FirstLitIndex(), 
+		      red_DocumentFurtherRewriting(Copy, clause_FirstLitIndex(),
 						   RewriteClause, clause_FirstLitIndex());
 		  }
 		  Result = TRUE;
@@ -1132,7 +1112,7 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 		  clause_UpdateSplitDataFromPartner(Copy, RewriteClause);
 		  term_Delete(TermT);
 		  stack_SetBottom(B_Stack);
-		  
+
 		  if (flag_GetFlagValue(Flags, flag_PREW))
 		    printf("%d.%d ",clause_Number(RewriteClause), clause_FirstLitIndex());
 		  clause_UpdateWeight(Copy, Flags);
@@ -1149,7 +1129,7 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 	term_SetTermStamp(RedTermS);
     }
   }
-  term_StopStamp(); 
+  term_StopStamp();
 
   if (Result) {
     clause_OrientAndReInit(Copy, Flags, Precedence);
@@ -1165,16 +1145,14 @@ static BOOL red_RewriteRedUnitClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
   else
     if (Renamed)
       clause_OrientAndReInit(Copy, Flags, Precedence);
-	
-      
+
 #ifdef CHECK
   clause_Check(Copy, Flags, Precedence);
   clause_Check(RedClause, Flags, Precedence);
 #endif
-  
+
   return Result;
 }
-
 
 static BOOL red_RewriteRedClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 				 FLAGSTORE Flags, PRECEDENCE Precedence,
@@ -1209,9 +1187,9 @@ static BOOL red_RewriteRedClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
   }
   clause_Check(RedClause, Flags, Precedence);
 #endif
-  
+
   length   = clause_Length(RedClause);
-  Document = flag_GetFlagValue(Flags, flag_DOCPROOF); 
+  Document = flag_GetFlagValue(Flags, flag_DOCPROOF);
 
   if (length == 1)
     return red_RewriteRedUnitClause(RedClause, ShIndex, Flags, Precedence,
@@ -1250,27 +1228,27 @@ static BOOL red_RewriteRedClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 		  CLAUSE  RewriteClause;
 		  LITERAL RewriteLit;
 		  int     ri;
-		  
-		  for (LitScan = sharing_NAtomDataList(PartnerEq); 
+
+		  for (LitScan = sharing_NAtomDataList(PartnerEq);
 		       !list_Empty(LitScan) && !Rewritten;
 		       LitScan = list_Cdr(LitScan)) {
 		    RewriteLit    = list_Car(LitScan);
 		    RewriteClause = clause_LiteralOwningClause(RewriteLit);
 		    ri            = clause_LiteralGetIndex(RewriteLit);
-		    
+
 		    if (clause_LiteralIsPositive(RewriteLit) &&
 			clause_LiteralIsOrientedEquality(RewriteLit) &&
 			subs_SubsumesBasic(RewriteClause, Copy, ri, ci)) {
 		      TERM   TermT;
-		      
+
 		      if (RedClause == Copy &&
-			  (Document || 
+			  (Document ||
 			   prfs_SplitLevelCondition(clause_SplitLevel(RewriteClause),
 						    clause_SplitLevel(RedClause),Level))) {
 			Copy    = clause_Copy(RedClause);
 			RedAtom = clause_GetLiteralAtom(Copy, ci);
 		      }
-		      
+
 		      if (!Result) {
 			if (flag_GetFlagValue(Flags, flag_PREW)) {
 			  fputs("\nFRewriting: ", stdout);
@@ -1278,7 +1256,7 @@ static BOOL red_RewriteRedClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 			  fputs(" ==>[ ", stdout);
 			}
 		      }
-		      
+
 		      if (Document) {
 			if (!Result)
 			  red_DocumentRewriting(Copy, ci, RewriteClause, ri);
@@ -1302,7 +1280,7 @@ static BOOL red_RewriteRedClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 		      clause_UpdateSplitDataFromPartner(Copy,RewriteClause);
 		      term_Delete(TermT);
 		      stack_SetBottom(B_Stack);
-		      
+
 		      if (flag_GetFlagValue(Flags, flag_PREW))
 			printf("%d.%d ",clause_Number(RewriteClause), ri);
 		      clause_UpdateWeight(Copy, Flags);
@@ -1338,7 +1316,6 @@ static BOOL red_RewriteRedClause(CLAUSE RedClause, SHARED_INDEX ShIndex,
 
   return Result;
 }
-
 
 /**************************************************************/
 /* FORWARD CONTEXTUAL REWRITING                               */
@@ -1399,7 +1376,6 @@ static BOOL red_LeftTermOfEquationIsStrictlyMaximalTerm(CLAUSE Clause,
   return TRUE;
 }
 
-
 static void red_CRwCalculateAdditionalParents(CLAUSE Reduced,
 					      LIST RedundantClauses,
 					      CLAUSE Subsumer,
@@ -1433,7 +1409,7 @@ static void red_CRwCalculateAdditionalParents(CLAUSE Reduced,
 {
   LIST Parents, Scan;
   int  ActNum;
-  
+
   /* First collect all parent clause numbers from the redundant clauses. */
   /* Also add number of <Subsumer> if it exists. */
   Parents = clause_ParentClauses(Reduced);
@@ -1464,7 +1440,6 @@ static void red_CRwCalculateAdditionalParents(CLAUSE Reduced,
   clause_SetParentLiterals(Reduced, Parents);
 }
 
-
 static BOOL red_LiteralIsDefinition(LITERAL Literal)
 /**************************************************************
   INPUT:   A literal.
@@ -1488,7 +1463,6 @@ static BOOL red_LiteralIsDefinition(LITERAL Literal)
   else
     return FALSE;
 }
-
 
 static BOOL red_PropagateDefinitions(CLAUSE Clause, TERM LeadingTerm,
 				     FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -1584,7 +1558,7 @@ static BOOL red_PropagateDefinitions(CLAUSE Clause, TERM LeadingTerm,
 #ifdef CHECK
       cont_CheckState();
 #endif
- 
+
       if (success) {
 	/* Replace variable <Var> in <Clause> by <Term> */
 	clause_ReplaceVariable(Clause, Var, Term);
@@ -1596,7 +1570,7 @@ static BOOL red_PropagateDefinitions(CLAUSE Clause, TERM LeadingTerm,
       }
     }
   }
-  
+
   if (applied) {
     /* Now remove the definition literals. */
     clause_DeleteLiterals(Clause, litsToRemove, Flags, Precedence);
@@ -1617,7 +1591,6 @@ static BOOL red_PropagateDefinitions(CLAUSE Clause, TERM LeadingTerm,
 
   return applied;
 }
-
 
 static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
 				       int Except, CLAUSE RuleClause, int i,
@@ -1644,11 +1617,11 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
   BOOL       DocProof, Negative, Redundant;
   LIST       NegLits, PosLits, RedundantList;
   int        OrigNum;
-  
+
   Flags      = prfs_Store(Search);
   Precedence = prfs_Precedence(Search);
   DocProof   = flag_GetFlagValue(Flags, flag_DOCPROOF);
-  
+
   Lit      = clause_GetLiteral(RuleClause, i);
   Atom     = clause_LiteralAtom(Lit);
   Negative = clause_LiteralIsNegative(Lit);
@@ -1660,7 +1633,7 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
   else
     printf("Succ");
   printf(" aux = ");
-#endif  
+#endif
 
   if (i <= clause_LastConstraintLitIndex(RuleClause)) {
 
@@ -1673,7 +1646,7 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
 #ifdef CRW_DEBUG
     clause_Print(aux);
 #endif
-    
+
     NewClause = NULL;
     OrigNum   = clause_Number(aux);
     if (red_SortSimplification(prfs_DynamicSortTheory(Search), aux, NAT_MAX,
@@ -1699,7 +1672,7 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
     printf("\n  Cons aux2 = ");
 #endif
   }
-  
+
   /* Collect literals for tautology test */
   if (Negative) {
     if (i <= clause_LastConstraintLitIndex(RuleClause))
@@ -1711,13 +1684,13 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
     NegLits = list_List(term_Copy(Atom));
     PosLits = clause_CopySuccedentExcept(RedClause, Except);
   }
-  
+
   /* Create clause for tautology test */
   aux = clause_Create(list_Nil(), NegLits, PosLits, Flags, Precedence);
   clause_SetTemporary(aux);
   list_Delete(NegLits);
   list_Delete(PosLits);
-  
+
 #ifdef CRW_DEBUG
   clause_Print(aux);
 #endif
@@ -1741,14 +1714,14 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
   clause_SetTemporary(aux);
   /* <aux> was possibly changed by some reductions, so mark it as */
   /* temporary again. */
-  
+
   /* Invoke tautology test if <aux> isn't redundant. */
   if (Redundant || (!clause_IsEmptyClause(aux) && cc_Tautology(aux))) {
 
     if (NewClause != NULL)
       /* <aux> is subsumed by <NewClause> */
       clause_UpdateSplitDataFromPartner(aux, NewClause);
-    
+
     if (DocProof)
       red_CRwCalculateAdditionalParents(aux, RedundantList, NewClause, OrigNum);
   } else {
@@ -1757,7 +1730,7 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
     clause_Delete(aux);
     aux = NULL;
   }
-  
+
 #ifdef CRW_DEBUG
   if (aux != NULL) {
     if (NewClause != NULL) {
@@ -1768,19 +1741,18 @@ static CLAUSE red_CRwLitTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause,
       printf("\n  RedundantList: ");
       clause_ListPrint(RedundantList);
     }
-    
+
     printf("\n  aux reduced = ");
     clause_Print(aux);
-  } 
+  }
   printf("\n  ----------");
 #endif
-  
+
   /* Delete list of redundant clauses */
   clause_DeleteClauseList(RedundantList);
-  
+
   return aux;
 }
-
 
 static BOOL red_CRwTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause, int i,
 				  TERM TermSInstance, CLAUSE RuleClause,
@@ -1830,7 +1802,7 @@ static BOOL red_CRwTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause, int i,
   Flags      = prfs_Store(Search);
   Precedence = prfs_Precedence(Search);
   *Result    = NULL;
-  
+
   /* copy <RuleClause> and rename variables in copy */
   RuleCopy = clause_Copy(RuleClause);
   clause_RenameVarsBiggerThan(RuleCopy, clause_MaxVar(RedClause));
@@ -1887,7 +1859,7 @@ static BOOL red_CRwTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause, int i,
 					 clause_GetLiteralAtom(RuleCopy, h),
 					 FALSE);
     }
-    
+
     /* Backtrack bindings before reduction rules are invoked */
     cont_BackTrack();
 
@@ -1901,7 +1873,7 @@ static BOOL red_CRwTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause, int i,
 #else
     { /* HACK: turn on all printing flags for debugging */
       FLAG_ID f;
-      
+
       for (f = (FLAG_ID) 0; f < flag_MAXFLAG; f++) {
 	if (flag_IsPrinting(f))
 	  flag_SetFlagValue(Flags, f, flag_ON);
@@ -1914,7 +1886,7 @@ static BOOL red_CRwTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause, int i,
     /* flag_SetFlagValue(Flags, flag_RFCRW, flag_RFCRWON); */
     flag_SetFlagValue(Flags, flag_RBCRW, flag_RBCRWOFF);
     flag_SetFlagValue(Flags, flag_RFCRW, flag_RFCRWOFF);
-    
+
     /* Examine all literals of <RuleCopy> except <j> */
     Rewrite          = TRUE;
     last             = clause_LastLitIndex(RuleCopy);
@@ -1961,7 +1933,6 @@ static BOOL red_CRwTautologyCheck(PROOFSEARCH Search, CLAUSE RedClause, int i,
   return Rewrite;
 }
 
-
 static void red_DocumentContextualRewriting(CLAUSE Clause, int i,
 					    CLAUSE RuleClause, int ri,
 					    LIST AdditionalPClauses,
@@ -2002,7 +1973,6 @@ static void red_DocumentContextualRewriting(CLAUSE Clause, int i,
   clause_SetFromContextualRewriting(Clause);
 }
 
-
 static void red_DocumentFurtherCRw(CLAUSE Clause, int i, CLAUSE RuleClause,
 				   int ri, LIST AdditionalPClauses,
 				   LIST AdditionalPLits)
@@ -2042,7 +2012,6 @@ static void red_DocumentFurtherCRw(CLAUSE Clause, int i, CLAUSE RuleClause,
   clause_AddParentClause(Clause, clause_Number(RuleClause));
   clause_AddParentLiteral(Clause, ri);
 }
-
 
 static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 				    NAT Mode, int Level, CLAUSE *Changed)
@@ -2085,7 +2054,7 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
   }
   clause_Check(RedClause, Flags, Precedence);
 #endif
-  
+
   /* Select clause index */
   if (red_WorkedOffMode(Mode))
     ShIndex = prfs_WorkedOffSharingIndex(Search);
@@ -2093,7 +2062,7 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
     ShIndex = prfs_UsableSharingIndex(Search);
 
   last     = clause_LastSuccedentLitIndex(RedClause);
-  Document = flag_GetFlagValue(Flags, flag_DOCPROOF); 
+  Document = flag_GetFlagValue(Flags, flag_DOCPROOF);
 
   Result = FALSE;
   Copy   = RedClause;
@@ -2113,15 +2082,15 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 	while (!stack_Empty(B_Stack))  {
 	  RedTermS = (TERM)stack_PopResult();
 	  Gen = st_GetGen(cont_LeftContext(), sharing_Index(ShIndex), RedTermS);
-	  
+
 	  for ( ; !list_Empty(Gen) && !Rewritten; Gen = list_Pop(Gen)) {
 	    TermS = list_Car(Gen);
-	    
+
 	    /* A variable can't be greater than any other term, */
 	    /* so don't consider any variables here.            */
 	    if (!term_IsVariable(TermS)) {
 	      EqScan = term_SupertermList(TermS);
-	      
+
 	      for ( ; !list_Empty(EqScan) && !Rewritten;
 		    EqScan = list_Cdr(EqScan)) {
 		PartnerEq = list_Car(EqScan);
@@ -2130,15 +2099,15 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 		  CLAUSE  RuleClause, HelpClause;
 		  LITERAL RuleLit;
 		  int     i;
-		  
-		  for (LitScan = sharing_NAtomDataList(PartnerEq); 
+
+		  for (LitScan = sharing_NAtomDataList(PartnerEq);
 		       !list_Empty(LitScan) && !Rewritten;
 		       LitScan = list_Cdr(LitScan)) {
 		    RuleLit    = list_Car(LitScan);
 		    RuleClause = clause_LiteralOwningClause(RuleLit);
 		    i         = clause_LiteralGetIndex(RuleLit);
 		    HelpClause = NULL;
-		    
+
 #ifdef CRW_DEBUG
 		    if (clause_LiteralIsPositive(RuleLit) &&
 			clause_LiteralGetFlag(RuleLit,STRICTMAXIMAL) &&
@@ -2166,9 +2135,9 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 					      RuleClause, i, Mode,
 					      &HelpClause)) {
 		      TERM   TermT;
-		      
+
 		      if (RedClause == Copy &&
-			  (Document || 
+			  (Document ||
 			   prfs_SplitLevelCondition(clause_SplitLevel(RuleClause),
 						    clause_SplitLevel(RedClause),Level) ||
 			   prfs_SplitLevelCondition(clause_SplitLevel(HelpClause),
@@ -2177,7 +2146,7 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 			Copy    = clause_Copy(RedClause);
 			RedAtom = clause_GetLiteralAtom(Copy, ri);
 		      }
-		      
+
 		      if (!Result && flag_GetFlagValue(Flags, flag_PCRW)) {
 			/* Clause is rewitten for the first time and */
 			/* printing is turned on. */
@@ -2185,7 +2154,7 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 			clause_Print(Copy);
 			fputs(" ==>[ ", stdout);
 		      }
-		      
+
 		      if (Document) {
 			LIST PClauses, PLits;
 
@@ -2209,14 +2178,14 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 						 PClauses, PLits);
 		      }
 		      Result = TRUE;
-		      
+
 		      cont_StartBinding();
 		      unify_MatchBindings(cont_LeftContext(), TermS, RedTermS);
 		      TermT = cont_ApplyBindingsModuloMatching(cont_LeftContext(),
 							       term_Copy(term_SecondArgument(PartnerEq)),
 							       TRUE);
 		      cont_BackTrack();
-		      
+
 		      term_ReplaceSubtermBy(RedAtom, RedTermS, TermT);
 		      Rewritten = TRUE;
 		      /* Set splitting data from parents */
@@ -2228,7 +2197,7 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
 		      }
 		      term_Delete(TermT);
 		      stack_SetBottom(B_Stack);
-		      
+
 		      if (flag_GetFlagValue(Flags, flag_PCRW))
 			printf("%d.%d ",clause_Number(RuleClause), i);
 		      clause_UpdateWeight(Copy, Flags);
@@ -2264,13 +2233,12 @@ static BOOL red_ContextualRewriting(PROOFSEARCH Search, CLAUSE RedClause,
   return Result;
 }
 
-
 static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
 				FLAGSTORE Flags, PRECEDENCE Precedence)
 /**********************************************************
-  INPUT:   A pointer to a non-empty clause, an index of 
+  INPUT:   A pointer to a non-empty clause, an index of
            clauses, a flag store and a precedence.
-  RETURNS: The list of clauses that are subsumed by the 
+  RETURNS: The list of clauses that are subsumed by the
            clause RedCl.
 ***********************************************************/
 {
@@ -2279,7 +2247,7 @@ static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
   LITERAL CandLit;
   LIST    CandLits, Scan, SubsumedList;
   int     i, j, lc, fa, la, fs, l;
-  
+
 #ifdef CHECK
   if (!clause_IsClause(RedCl, Flags, Precedence)) {
     misc_StartErrorReport();
@@ -2289,19 +2257,19 @@ static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
   }
   clause_Check(RedCl, Flags, Precedence);
 #endif
-  
+
   /* Special case: clause is empty */
   if (clause_IsEmptyClause(RedCl))
     return list_Nil();
 
   SubsumedList = list_Nil();
-  
+
   lc = clause_LastConstraintLitIndex(RedCl);
   fa = clause_FirstAntecedentLitIndex(RedCl);
   la = clause_LastAntecedentLitIndex(RedCl);
   fs = clause_FirstSuccedentLitIndex(RedCl);
   l  = clause_LastLitIndex(RedCl);
-    
+
   /* Choose the literal with the greatest weight to start the search */
   i          = clause_FirstLitIndex();
   for (j = i + 1; j <= l; j++) {
@@ -2309,18 +2277,18 @@ static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
 	clause_LiteralWeight(clause_GetLiteral(RedCl, i)))
       i = j;
   }
-  
+
   Atom       = clause_GetLiteralAtom(RedCl, i);
   CandTerm   = st_ExistInstance(cont_LeftContext(), sharing_Index(ShIndex), Atom);
-    
+
   while (CandTerm) {
     CandLits = sharing_NAtomDataList(CandTerm);
-      
+
     for (Scan = CandLits; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
       CandLit    = list_Car(Scan);
       SubsumedCl = clause_LiteralOwningClause(CandLit);
       j          = clause_LiteralGetIndex(CandLit);
-	
+
       if (RedCl != SubsumedCl &&
 	  /* Literals must be from same part of the clause */
 	  ((i<=lc && clause_LiteralIsFromConstraint(CandLit)) ||
@@ -2330,26 +2298,26 @@ static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
 	  subs_SubsumesBasic(RedCl, SubsumedCl, i, j))
 	SubsumedList = list_Cons(SubsumedCl, SubsumedList);
     }
-      
+
     CandTerm = st_NextCandidate();
   }
-    
-  if (fol_IsEquality(Atom) && 
+
+  if (fol_IsEquality(Atom) &&
       clause_LiteralIsNotOrientedEquality(clause_GetLiteral(RedCl, i))) {
     Atom      = term_Create(fol_Equality(),
 			    list_Reverse(term_ArgumentList(Atom)));
     CandTerm  = st_ExistInstance(cont_LeftContext(), sharing_Index(ShIndex), Atom);
-      
+
     while (CandTerm) {
       CandLits = sharing_NAtomDataList(CandTerm);
-	
+
       for (Scan = CandLits; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
 	CandLit    = list_Car(Scan);
 	SubsumedCl = clause_LiteralOwningClause(list_Car(Scan));
 	/* if (!clause_GetFlag(SubsumedCl, BLOCKED)) { */
 	j          = clause_LiteralGetIndex(list_Car(Scan));
-	  
-	if ((RedCl != SubsumedCl) && 
+
+	if ((RedCl != SubsumedCl) &&
 	    /* Literals must be from same part of the clause */
 	    ((i<=lc && clause_LiteralIsFromConstraint(CandLit)) ||
 	     (i>=fa && i<=la && clause_LiteralIsFromAntecedent(CandLit)) ||
@@ -2359,14 +2327,14 @@ static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
 	  SubsumedList = list_Cons(SubsumedCl, SubsumedList);
 	/* } */
       }
-	
+
       CandTerm = st_NextCandidate();
     }
-      
+
     list_Delete(term_ArgumentList(Atom));
     term_Free(Atom);
   }
-      
+
   if (flag_GetFlagValue(Flags, flag_PSUB)) {
     for (Scan = SubsumedList; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
       SubsumedCl = list_Car(Scan);
@@ -2378,11 +2346,10 @@ static LIST red_BackSubsumption(CLAUSE RedCl, SHARED_INDEX ShIndex,
   return SubsumedList;
 }
 
-
 static LIST red_GetBackMRResLits(CLAUSE Clause, LITERAL ActLit, SHARED_INDEX ShIndex)
 /**************************************************************
   INPUT:   A clause, one of its literals and an Index.
-  RETURNS: A list of clauses with a complementary literal instance 
+  RETURNS: A list of clauses with a complementary literal instance
            that are subsumed if these literals are ignored.
 	   the empty list if no such clause exists.
   MEMORY:  Allocates the needed listnodes.
@@ -2415,25 +2382,24 @@ static LIST red_GetBackMRResLits(CLAUSE Clause, LITERAL ActLit, SHARED_INDEX ShI
 	  subs_SubsumesBasic(Clause,PClause,i,clause_LiteralGetIndex(PLit)))
 	PClLits = list_Cons(PLit, PClLits);
     }
-    
+
     CandTerm = st_NextCandidate();
   }
   return PClLits;
 }
 
-
 static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX ShIndex,
 						  FLAGSTORE Flags, PRECEDENCE Precedence,
 						  LIST* Result)
 /**************************************************************
-  INPUT:   A clause, a shared index, a flag store, a 
+  INPUT:   A clause, a shared index, a flag store, a
            precedence, and a pointer to a result list.
-  RETURNS: The return value itself contains a list of clauses 
-           from <ShIndex> that is reducible by <RedClause> via 
+  RETURNS: The return value itself contains a list of clauses
+           from <ShIndex> that is reducible by <RedClause> via
 	   clause reduction.
-	   The return value stored in <*Result> contains the 
+	   The return value stored in <*Result> contains the
 	   result of this operation.
-	   If the <DocProof> flag is true then the clauses in 
+	   If the <DocProof> flag is true then the clauses in
 	   <*Result> contain information about the reduction.
 ***************************************************************/
 {
@@ -2459,7 +2425,7 @@ static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX
     LIST    LitList, Scan, Iter;
     TERM    CandTerm;
     int     RedClNum;
-    
+
     ActLit      = clause_GetLiteral(RedClause, clause_FirstLitIndex());
 
     if (!fol_IsEquality(clause_LiteralAtom(ActLit)) ||  /* Reduce with negative equations too */
@@ -2480,7 +2446,7 @@ static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX
 
       /* It is important to get all literals first,
 	 because there may be several literals in the same clause which can be reduced by <ActLit> */
-      
+
       while (!list_Empty(LitList)) {
 	PLit    = list_Car(LitList);
 	PIndL   = list_List(PLit);
@@ -2512,22 +2478,22 @@ static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX
 	for(Scan=PIndL;!list_Empty(Scan);Scan=list_Cdr(Scan))       /* Change lits to indexes */
 	  list_Rplaca(Scan,(POINTER)clause_LiteralGetIndex(list_Car(Scan)));
 	clause_DeleteLiterals(Copy, PIndL, Flags, Precedence);
-	
+
 	if (Document)
 	  /* Lists are consumed */
 	  red_DocumentMatchingReplacementResolution(Copy, PIndL, list_List((POINTER)RedClNum),
 						    list_List((POINTER)clause_FirstLitIndex()));
 
 	else
-	  list_Delete(PIndL);	
-	
+	  list_Delete(PIndL);
+
 	if (flag_GetFlagValue(Flags, flag_PMRR))
 	  clause_Print(Copy);
 	*Result = list_Cons(Copy, *Result);
       }
     }
     return Blocked;
-  } 
+  }
   else {
     CLAUSE  PClause;
     LITERAL ActLit, PLit;
@@ -2539,10 +2505,10 @@ static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX
 
     for (i = clause_FirstLitIndex(); i < length; i++) {
       ActLit = clause_GetLiteral(RedClause, i);
-      
+
       if (!fol_IsEquality(clause_LiteralAtom(ActLit))) {
 	LitList = red_GetBackMRResLits(RedClause, ActLit, ShIndex);
-	
+
 	for (LitScan = LitList;!list_Empty(LitScan);LitScan = list_Cdr(LitScan)) {
 	  PLit    = list_Car(LitScan);
 	  PClause = clause_LiteralOwningClause(PLit);
@@ -2559,10 +2525,10 @@ static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX
 	  clause_DeleteLiteral(Copy, PInd, Flags, Precedence);
 
 	  if (Document)
-	    red_DocumentMatchingReplacementResolution(Copy, list_List((POINTER)PInd), 
-						      list_List((POINTER)RedClNum), 
+	    red_DocumentMatchingReplacementResolution(Copy, list_List((POINTER)PInd),
+						      list_List((POINTER)RedClNum),
 						      list_List((POINTER)i));
-	  
+
 	  if (flag_GetFlagValue(Flags, flag_PMRR)) {
 	    fputs("\nBMatchingReplacementResolution: ", stdout);
 	    clause_Print(PClause);
@@ -2578,12 +2544,11 @@ static LIST red_BackMatchingReplacementResolution(CLAUSE RedClause, SHARED_INDEX
   }
 }
 
-
 static void red_ApplyRewriting(CLAUSE RuleCl, int ri, CLAUSE PartnerClause,
 			       int pli, TERM PartnerTermS, FLAGSTORE Flags,
 			       PRECEDENCE Precedence)
 /**************************************************************
-  INPUT:   A clause to use for rewriting, the index of a 
+  INPUT:   A clause to use for rewriting, the index of a
            positive equality literal where the first equality
 	   argument is greater, a clause, the index of a
 	   literal with subterm <PartnerTermS> that can be
@@ -2608,7 +2573,7 @@ static void red_ApplyRewriting(CLAUSE RuleCl, int ri, CLAUSE PartnerClause,
   if (flag_GetFlagValue(Flags, flag_PREW)) {
     fputs("\nBRewriting: ", stdout);
     clause_Print(PartnerClause);
-    printf(" ==>[ %d.%d ] ", clause_Number(RuleCl), ri); 
+    printf(" ==>[ %d.%d ] ", clause_Number(RuleCl), ri);
   }
 
   PartnerLit = clause_GetLiteral(PartnerClause, pli);
@@ -2616,7 +2581,7 @@ static void red_ApplyRewriting(CLAUSE RuleCl, int ri, CLAUSE PartnerClause,
   ReplaceTermT =
     cont_ApplyBindingsModuloMatchingReverse(cont_LeftContext(),
 			     term_Copy(term_SecondArgument(clause_GetLiteralTerm(RuleCl, ri))));
-  
+
   NewAtom = clause_LiteralSignedAtom(PartnerLit);
   term_ReplaceSubtermBy(NewAtom, PartnerTermS, ReplaceTermT);
   term_Delete(ReplaceTermT);
@@ -2628,16 +2593,15 @@ static void red_ApplyRewriting(CLAUSE RuleCl, int ri, CLAUSE PartnerClause,
     clause_Print(PartnerClause);
 }
 
-
 static LIST red_LiteralRewriting(CLAUSE RedClause, LITERAL ActLit, int ri,
 				 SHARED_INDEX ShIndex, FLAGSTORE Flags,
 				 PRECEDENCE Precedence, LIST* Result)
 /**************************************************************
   INPUT:   A clause, a positive equality literal where the
-           first equality argument is greater, its index, an 
+           first equality argument is greater, its index, an
 	   index of clauses, a flag store, a precedence and a
 	   pointer to a list of clauses that were rewritten.
-  RETURNS: The list of clauses from the index that can be 
+  RETURNS: The list of clauses from the index that can be
            rewritten by <ActLit> and <RedClause>.
            The rewritten clauses are stored in <*Result>.
   EFFECT:  The <DocProof> flag is considered.
@@ -2666,7 +2630,7 @@ static LIST red_LiteralRewriting(CLAUSE RedClause, LITERAL ActLit, int ri,
     if (!term_IsVariable(CandTerm) &&
 	!symbol_IsPredicate(term_TopSymbol(CandTerm))) {
       LIST LitList;
-      
+
       LitList = sharing_GetDataList(CandTerm, ShIndex);
 
       for ( ; !list_Empty(LitList); LitList = list_Pop(LitList)){
@@ -2699,7 +2663,6 @@ static LIST red_LiteralRewriting(CLAUSE RedClause, LITERAL ActLit, int ri,
   return Blocked;
 }
 
-
 static LIST red_BackRewriting(CLAUSE RedClause, SHARED_INDEX ShIndex,
 			      FLAGSTORE Flags, PRECEDENCE Precedence,
 			      LIST* Result)
@@ -2725,10 +2688,10 @@ static LIST red_BackRewriting(CLAUSE RedClause, SHARED_INDEX ShIndex,
   }
   clause_Check(RedClause, Flags, Precedence);
 #endif
-  
+
   Blocked = list_Nil();
   length  = clause_Length(RedClause);
-  
+
   for (i=clause_FirstSuccedentLitIndex(RedClause); i < length; i++) {
     ActLit = clause_GetLiteral(RedClause, i);
     if (clause_LiteralIsOrientedEquality(ActLit)) {
@@ -2737,16 +2700,16 @@ static LIST red_BackRewriting(CLAUSE RedClause, SHARED_INDEX ShIndex,
 						Result),
 			   Blocked);
     }
-      
+
 #ifdef CHECK
     if (fol_IsEquality(clause_LiteralSignedAtom(ActLit))) {
       ord_RESULT HelpRes;
-      
+
       HelpRes =
-	ord_Compare(term_FirstArgument(clause_LiteralSignedAtom(ActLit)), 
+	ord_Compare(term_FirstArgument(clause_LiteralSignedAtom(ActLit)),
 		    term_SecondArgument(clause_LiteralSignedAtom(ActLit)),
 		    Flags, Precedence);
-	
+
       if (ord_IsSmallerThan(HelpRes)){ /* For Debugging */
 	misc_StartErrorReport();
 	misc_ErrorReport("\n In red_BackRewriting:");
@@ -2759,7 +2722,6 @@ static LIST red_BackRewriting(CLAUSE RedClause, SHARED_INDEX ShIndex,
   Blocked = list_PointerDeleteDuplicates(Blocked);
   return Blocked;
 }
-
 
 /**************************************************************/
 /* BACKWARD CONTEXTUAL REWRITING                              */
@@ -2816,23 +2778,23 @@ static LIST red_BackCRwOnLiteral(PROOFSEARCH Search, CLAUSE RuleClause,
 
   for ( ; !list_Empty(Inst); Inst = list_Pop(Inst)) {
     CandTerm = list_Car(Inst);
-    
+
     if (!term_IsVariable(CandTerm) &&
 	!symbol_IsPredicate(term_TopSymbol(CandTerm))) {
       LIST LitList;
-      
+
       LitList = sharing_GetDataList(CandTerm, ShIndex);
-      
+
       for ( ; !list_Empty(LitList); LitList = list_Pop(LitList)){
 	LITERAL RedLit;
 	CLAUSE  RedClause, HelpClause;
 	int     ri;
-	
+
 	RedLit     = list_Car(LitList);
 	ri         = clause_LiteralGetIndex(RedLit);
 	RedClause  = clause_LiteralOwningClause(RedLit);
 	HelpClause = NULL;
-	
+
 #ifdef CRW_DEBUG
 	if (clause_Number(RuleClause) != clause_Number(RedClause) &&
 	    ri >= clause_FirstAntecedentLitIndex(RedClause) &&
@@ -2855,12 +2817,12 @@ static LIST red_BackCRwOnLiteral(PROOFSEARCH Search, CLAUSE RuleClause,
 	    red_CRwTautologyCheck(Search, RedClause, ri, CandTerm,
 				  RuleClause, i, Mode, &HelpClause)) {
 	  CLAUSE Copy;
-	  
+
 	  /* The <PartnerClause> has to be copied because it's indexed. */
 	  Blocked = list_Cons(RedClause, Blocked);
 	  Copy    = clause_Copy(RedClause);
 	  clause_RemoveFlag(Copy, WORKEDOFF);
-	 	  	  
+
 	  /* Establish bindings */
 	  cont_StartBinding();
 	  if (!unify_MatchBindings(cont_LeftContext(), TermS, CandTerm)) {
@@ -2884,7 +2846,7 @@ static LIST red_BackCRwOnLiteral(PROOFSEARCH Search, CLAUSE RuleClause,
 	  term_ReplaceSubtermBy(clause_GetLiteralAtom(Copy, ri), CandTerm,
 				ReplaceTermT);
 	  term_Delete(ReplaceTermT);
-	  
+
 	  /* Proof documentation */
 	  if (flag_GetFlagValue(Flags, flag_DOCPROOF)) {
 	    LIST PClauses, PLits;
@@ -2898,7 +2860,7 @@ static LIST red_BackCRwOnLiteral(PROOFSEARCH Search, CLAUSE RuleClause,
 	      clause_SetParentLiterals(HelpClause, list_Nil());
 	    } else
 	      PClauses = PLits = list_Nil();
-	    
+
 	    red_DocumentContextualRewriting(Copy, ri, RuleClause, i,
 					    PClauses, PLits);
 	  }
@@ -2911,14 +2873,14 @@ static LIST red_BackCRwOnLiteral(PROOFSEARCH Search, CLAUSE RuleClause,
 	  }
 
 	  clause_OrientAndReInit(Copy, Flags, Precedence);
-	  
+
 	  if (flag_GetFlagValue(Flags, flag_PCRW)) {
 	    fputs("\nBContRewriting: ", stdout);
 	    clause_Print(RedClause);
 	    printf(" ==>[ %d.%d ] ", clause_Number(RuleClause), i);
 	    clause_Print(Copy);
 	  }
-	  	  
+
 	  *Result = list_Cons(Copy, *Result);
 	}
       }
@@ -2927,7 +2889,6 @@ static LIST red_BackCRwOnLiteral(PROOFSEARCH Search, CLAUSE RuleClause,
 
   return Blocked;
 }
-
 
 static LIST red_BackContextualRewriting(PROOFSEARCH Search, CLAUSE RuleClause,
 					NAT Mode, LIST* Result)
@@ -2963,7 +2924,7 @@ static LIST red_BackContextualRewriting(PROOFSEARCH Search, CLAUSE RuleClause,
   }
   clause_Check(RuleClause, Flags, Precedence);
 #endif
-  
+
   Blocked = list_Nil();
   ls      = clause_LastSuccedentLitIndex(RuleClause);
   found   = FALSE;
@@ -2986,7 +2947,6 @@ static LIST red_BackContextualRewriting(PROOFSEARCH Search, CLAUSE RuleClause,
   return Blocked;
 }
 
-
 static void red_DocumentSortSimplification(CLAUSE Clause, LIST Indexes,
 					   LIST Clauses)
 /*********************************************************
@@ -3002,11 +2962,11 @@ static void red_DocumentSortSimplification(CLAUSE Clause, LIST Indexes,
   Self         = list_Nil();
 
   list_Delete(clause_ParentClauses(Clause));
-  list_Delete(clause_ParentLiterals(Clause));  
-  
+  list_Delete(clause_ParentLiterals(Clause));
+
   for(Scan=Indexes;!list_Empty(Scan);Scan=list_Cdr(Scan))
     Self = list_Cons((POINTER)clause_Number(Clause),Self);
-  
+
   for(Scan=Clauses;!list_Empty(Scan);Scan=list_Cdr(Scan)) {
     Declarations = list_Cons((POINTER)clause_FirstSuccedentLitIndex(list_Car(Scan)),Declarations);
     list_Rplaca(Scan,(POINTER)clause_Number(list_Car(Scan)));
@@ -3019,7 +2979,6 @@ static void red_DocumentSortSimplification(CLAUSE Clause, LIST Indexes,
   clause_SetFromSortSimplification(Clause);
 }
 
-
 static BOOL red_SortSimplification(SORTTHEORY Theory, CLAUSE Clause, NAT Level,
 				   BOOL Document, FLAGSTORE Flags,
 				   PRECEDENCE Precedence, CLAUSE *Changed)
@@ -3030,13 +2989,13 @@ static BOOL red_SortSimplification(SORTTHEORY Theory, CLAUSE Clause, NAT Level,
 	   store and a precedence.
   RETURNS: TRUE iff sort simplification was possible.
            If <Document> is true or the split level of the
-	   used declaration clauses requires copying a 
-	   simplified copy of the clause is returned in 
+	   used declaration clauses requires copying a
+	   simplified copy of the clause is returned in
 	   <*Changed>.
 	   Otherwise the clause is destructively
 	   simplified.
 ***********************************************************/
-{ 
+{
   if (Theory != (SORTTHEORY)NULL) {
     TERM      Atom,Term;
     SOJU      SortPair;
@@ -3063,7 +3022,7 @@ static BOOL red_SortSimplification(SORTTHEORY Theory, CLAUSE Clause, NAT Level,
     Copy          = Clause;
     Indexes       = list_Nil();
     Clauses       = list_Nil();
-  
+
     while (i <= lc) {
 
       Atom        = clause_LiteralAtom(clause_GetLiteral(Copy, i));
@@ -3088,8 +3047,8 @@ static BOOL red_SortSimplification(SORTTHEORY Theory, CLAUSE Clause, NAT Level,
 	sort_ConditionDelete(Cond);
 
 	for (Scan = NewClauses; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
-	  if (Clause == Copy && 
-	      (Document || 
+	  if (Clause == Copy &&
+	      (Document ||
 	       prfs_SplitLevelCondition(clause_SplitLevel(list_Car(Scan)),OldSplitLevel,Level)))
 	    Copy   = clause_Copy(Clause);
 	  clause_UpdateSplitDataFromPartner(Copy, list_Car(Scan));
@@ -3104,7 +3063,7 @@ static BOOL red_SortSimplification(SORTTHEORY Theory, CLAUSE Clause, NAT Level,
 	Clauses = list_Nconc(NewClauses,Clauses);
 	j++;
 	lc--;
-      }	   
+      }
       else {
 	list_Delete(NewClauses);
 	i++;
@@ -3151,8 +3110,6 @@ static void red_ExchangeClauses(CLAUSE *RedClause, CLAUSE *Copy, LIST *Result)
     *Copy      = (CLAUSE)NULL;
   }
 }
-     
-
 
 static BOOL red_SimpleStaticReductions(CLAUSE *RedClause, FLAGSTORE Flags,
 				       PRECEDENCE Precedence, LIST* Result)
@@ -3163,7 +3120,7 @@ static BOOL red_SimpleStaticReductions(CLAUSE *RedClause, FLAGSTORE Flags,
 	   If the <DocProof> flag is false and no copying is necessary
 	   with respect to splitting, the clause is destructively changed,
 	   otherwise (intermediate) copies are made and returned in <*Result>.
-  EFFECT:  Used reductions are tautology deletion and 
+  EFFECT:  Used reductions are tautology deletion and
            obvious reductions.
 ***********************************************************/
 {
@@ -3197,16 +3154,13 @@ static BOOL red_SimpleStaticReductions(CLAUSE *RedClause, FLAGSTORE Flags,
     red_ExchangeClauses(RedClause, &Copy, Result);
   }
 
-  return FALSE;    
+  return FALSE;
 }
-
-  
-
 
 static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
 				 CLAUSE *Subsumer, LIST* Result, NAT Mode)
 /**********************************************************
-  INPUT:   A proof search object, a clause (by reference) to be reduced, 
+  INPUT:   A proof search object, a clause (by reference) to be reduced,
            a shared index of clauses and the mode of the reductions,
 	   determining which sets (Usable, WorkedOff) in <Search>
 	   are considered for reductions.
@@ -3223,7 +3177,7 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
 	   Depending on <Mode>, then clauses are reduced with respect
 	   to WorkedOff or  Usable Clauses.
 ***********************************************************/
-{ 
+{
   CLAUSE       Copy;
   BOOL         Redundant;
   SHARED_INDEX Index;
@@ -3243,7 +3197,7 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   clause_Check(*Clause, Flags, Precedence);
 #endif
 
-  Index     = (red_OnlyWorkedOffMode(Mode) ? 
+  Index     = (red_OnlyWorkedOffMode(Mode) ?
 	       prfs_WorkedOffSharingIndex(Search) : prfs_UsableSharingIndex(Search));
   Copy      = (CLAUSE)NULL;
   Redundant = red_SimpleStaticReductions(Clause, Flags, Precedence, Result);
@@ -3254,7 +3208,7 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   /* Assignment Equation Deletion */
   if (flag_GetFlagValue(Flags, flag_RAED) != flag_RAEDOFF &&
       red_AssignmentEquationDeletion(*Clause, Flags, Precedence, &Copy,
-				     prfs_NonTrivClauseNumber(Search), 
+				     prfs_NonTrivClauseNumber(Search),
 				     (flag_GetFlagValue(Flags, flag_RAED) == flag_RAEDPOTUNSOUND))) {
     red_ExchangeClauses(Clause, &Copy, Result);
     if (clause_IsEmptyClause(*Clause))
@@ -3269,7 +3223,7 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   }
 
   /* Forward Rewriting and Forward Contextual Rewriting */
-  if ((flag_GetFlagValue(Flags, flag_RFREW) && 
+  if ((flag_GetFlagValue(Flags, flag_RFREW) &&
        red_RewriteRedClause(*Clause, Index, Flags, Precedence,
 			   &Copy, prfs_LastBacktrackLevel(Search))) ||
       (flag_GetFlagValue(Flags, flag_RFCRW) &&
@@ -3289,19 +3243,19 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   }
 
   /* Sort Simplification */
-  if (red_OnlyWorkedOffMode(Mode) && flag_GetFlagValue(Flags, flag_RSSI)) { 
+  if (red_OnlyWorkedOffMode(Mode) && flag_GetFlagValue(Flags, flag_RSSI)) {
     red_SortSimplification(prfs_DynamicSortTheory(Search), *Clause,
 			   prfs_LastBacktrackLevel(Search),
 			   flag_GetFlagValue(Flags, flag_DOCPROOF),
 			   Flags, Precedence, &Copy);
     red_ExchangeClauses(Clause, &Copy, Result);
     if (clause_IsEmptyClause(*Clause))
-      return FALSE;    
+      return FALSE;
   }
 
   /* Matching Replacement Resolution */
   if (flag_GetFlagValue(Flags, flag_RFMRR)) {
-    red_MatchingReplacementResolution(*Clause, Index, Flags, Precedence, 
+    red_MatchingReplacementResolution(*Clause, Index, Flags, Precedence,
 				      &Copy, prfs_LastBacktrackLevel(Search));
     red_ExchangeClauses(Clause, &Copy, Result);
     if (clause_IsEmptyClause(*Clause))
@@ -3321,7 +3275,7 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   if (red_OnlyWorkedOffMode(Mode) && flag_GetFlagValue(Flags, flag_RSST))
     Redundant = red_ClauseDeletion(prfs_StaticSortTheory(Search),*Clause,
 				   Flags, Precedence);
-  
+
 #ifdef CHECK
   clause_Check(*Clause, Flags, Precedence);
 #endif
@@ -3329,11 +3283,11 @@ static BOOL red_StaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   return Redundant;
 }
 
-static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause, 
+static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
 					 CLAUSE *Subsumer, LIST* Result,
 					 NAT Mode)
 /**********************************************************
-  INPUT:   A proof search object, a clause (by reference) to be reduced, 
+  INPUT:   A proof search object, a clause (by reference) to be reduced,
            and the mode of the reductions, determining which sets
 	   (Usable, WorkedOff) in <Search> are considered for reductions.
   EFFECT:  Used reductions are tautology deletion, obvious reductions,
@@ -3349,7 +3303,7 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
            If <Clause> gets redundant with respect to forward subsumption,
 	   the subsuming clause is returned in <*Subsumer>.
 ***********************************************************/
-{ 
+{
   CLAUSE       Copy;
   BOOL         Redundant ,Rewritten, Tried, ContextualRew, StandardRew;
   SHARED_INDEX WoIndex,UsIndex;
@@ -3383,7 +3337,7 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
 
   if (flag_GetFlagValue(Flags, flag_RAED) != flag_RAEDOFF &&
       red_AssignmentEquationDeletion(*Clause, Flags, Precedence, &Copy,
-				     prfs_NonTrivClauseNumber(Search), 
+				     prfs_NonTrivClauseNumber(Search),
 				     (flag_GetFlagValue(Flags, flag_RAED)==flag_RAEDPOTUNSOUND))) {
     red_ExchangeClauses(Clause, &Copy, Result);
     if (clause_IsEmptyClause(*Clause))
@@ -3414,10 +3368,10 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
 
     if (WoIndex != NULL &&
 	((StandardRew &&
-	  red_RewriteRedClause(*Clause, WoIndex, Flags, Precedence, &Copy, 
+	  red_RewriteRedClause(*Clause, WoIndex, Flags, Precedence, &Copy,
 			       prfs_LastBacktrackLevel(Search))) ||
 	 (ContextualRew &&
-	  red_ContextualRewriting(Search, *Clause, red_WORKEDOFF, 
+	  red_ContextualRewriting(Search, *Clause, red_WORKEDOFF,
 				  prfs_LastBacktrackLevel(Search), &Copy)))) {
       Rewritten = TRUE;
       red_ExchangeClauses(Clause, &Copy, Result);
@@ -3443,9 +3397,9 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
     }
 
     if (UsIndex != NULL &&
-	(!Tried || Rewritten) && 
+	(!Tried || Rewritten) &&
 	((StandardRew &&
-	  red_RewriteRedClause(*Clause, UsIndex, Flags, Precedence, 
+	  red_RewriteRedClause(*Clause, UsIndex, Flags, Precedence,
 			       &Copy, prfs_LastBacktrackLevel(Search))) ||
 	 (ContextualRew &&
 	  red_ContextualRewriting(Search, *Clause, red_USABLE,
@@ -3475,17 +3429,16 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
     Tried = TRUE;
   } /* end of while(Rewritten) */
 
-
-  if (flag_GetFlagValue(Flags, flag_RSSI)) { 
+  if (flag_GetFlagValue(Flags, flag_RSSI)) {
     red_SortSimplification(prfs_DynamicSortTheory(Search), *Clause,
 			   prfs_LastBacktrackLevel(Search),
 			   flag_GetFlagValue(Flags, flag_DOCPROOF),
 			   Flags, Precedence, &Copy);
     red_ExchangeClauses(Clause, &Copy, Result);
     if (clause_IsEmptyClause(*Clause))
-      return FALSE; 
+      return FALSE;
   }
-     
+
   if (flag_GetFlagValue(Flags, flag_RFMRR)) {
     if (WoIndex)
       red_MatchingReplacementResolution(*Clause, WoIndex, Flags, Precedence,
@@ -3519,14 +3472,13 @@ static BOOL red_SelectedStaticReductions(PROOFSEARCH Search, CLAUSE *Clause,
   if (flag_GetFlagValue(Flags, flag_RSST))
     Redundant = red_ClauseDeletion(prfs_StaticSortTheory(Search),*Clause,
 				   Flags, Precedence);
-  
+
 #ifdef CHECK
   clause_Check(*Clause, Flags, Precedence);
 #endif
 
   return Redundant;
 }
-
 
 CLAUSE red_ReductionOnDerivedClause(PROOFSEARCH Search, CLAUSE Clause,
 				    NAT Mode)
@@ -3606,7 +3558,7 @@ CLAUSE red_CompleteReductionOnDerivedClause(PROOFSEARCH Search, CLAUSE Clause,
     /* <Clause> is redundant */
     red_HandleRedundantDerivedClauses(Search, Redundant, Clause);
     list_Delete(Redundant);
-    if (RedClause && 
+    if (RedClause &&
 	prfs_SplitLevelCondition(clause_SplitLevel(RedClause),clause_SplitLevel(Clause),
 				 prfs_LastBacktrackLevel(Search))) {
       split_KeepClauseAtLevel(Search, Clause, clause_SplitLevel(RedClause));
@@ -3629,7 +3581,6 @@ CLAUSE red_CompleteReductionOnDerivedClause(PROOFSEARCH Search, CLAUSE Clause,
 
   return Clause;
 }
-
 
 LIST red_BackReduction(PROOFSEARCH Search, CLAUSE Clause, NAT Mode)
 /**************************************************************
@@ -3724,17 +3675,15 @@ LIST red_BackReduction(PROOFSEARCH Search, CLAUSE Clause, NAT Mode)
   return Result;
 }
 
-
 static __inline__ LIST red_MergeClauseListsByWeight(LIST L1, LIST L2)
 /**************************************************************
   INPUT:   Two lists of clauses, sorted by weight.
-  RETURNS: 
-  EFFECT:  
+  RETURNS:
+  EFFECT:
 ***************************************************************/
 {
   return list_NNumberMerge(L1, L2, (NAT (*)(POINTER))clause_Weight);
 }
-
 
 LIST red_CompleteReductionOnDerivedClauses(PROOFSEARCH Search,
 					   LIST DerivedClauses, NAT Mode,
@@ -3808,11 +3757,11 @@ LIST red_CompleteReductionOnDerivedClauses(PROOFSEARCH Search,
     if (Clause != (CLAUSE)NULL &&       /* For clauses below bound, splitting is */
 	!prfs_SplitStackEmpty(Search))  /* compatible with bound deletion */
       Clause = red_CompleteReductionOnDerivedClause(Search, Clause, Mode);
-	
-    if (Clause) {	
+
+    if (Clause) {
       prfs_IncKeptClauses(Search);
       if (flag_GetFlagValue(Flags, flag_PKEPT)) {
-	fputs("\nKept: ", stdout); 
+	fputs("\nKept: ", stdout);
 	clause_Print(Clause);
       }
       if (clause_IsEmptyClause(Clause))
@@ -3822,7 +3771,7 @@ LIST red_CompleteReductionOnDerivedClauses(PROOFSEARCH Search,
 	prfs_IncDerivedClauses(Search, list_Length(NewClauses));
 	if (flag_GetFlagValue(Flags, flag_PDER))
 	  for (Scan=NewClauses; !list_Empty(Scan); Scan=list_Cdr(Scan)) {
-	    fputs("\nDerived: ", stdout); 
+	    fputs("\nDerived: ", stdout);
 	    clause_Print(list_Car(Scan));
 	  }
 	NewClauses = split_ExtractEmptyClauses(NewClauses,&EmptyClauses);
@@ -3841,14 +3790,12 @@ LIST red_CompleteReductionOnDerivedClauses(PROOFSEARCH Search,
   return EmptyClauses;
 }
 
-
-
 static CLAUSE red_CDForwardSubsumer(CLAUSE RedCl, st_INDEX Index,
 				    FLAGSTORE Flags, PRECEDENCE Precedence)
 /**********************************************************
-  INPUT:   A pointer to a non-empty clause, an index of 
+  INPUT:   A pointer to a non-empty clause, an index of
            clauses, a flag store and a precedence.
-  RETURNS: The first clause from the Approx Set which 
+  RETURNS: The first clause from the Approx Set which
            subsumes 'RedCl'.
 ***********************************************************/
 {
@@ -3874,7 +3821,7 @@ static CLAUSE red_CDForwardSubsumer(CLAUSE RedCl, st_INDEX Index,
     AtomGen  = st_ExistGen(cont_LeftContext(), Index, Atom);
 
     while (AtomGen) {
-      for (LitScan = term_SupertermList(AtomGen); 
+      for (LitScan = term_SupertermList(AtomGen);
 	   !list_Empty(LitScan); LitScan = list_Cdr(LitScan)) {
 	CandCl = clause_LiteralOwningClause(list_Car(LitScan));
 
@@ -3884,12 +3831,11 @@ static CLAUSE red_CDForwardSubsumer(CLAUSE RedCl, st_INDEX Index,
 	  return CandCl;
 	}
       }
-      AtomGen = st_NextCandidate();  
+      AtomGen = st_NextCandidate();
     }
   }
   return (CLAUSE)NULL;
 }
-
 
 static BOOL red_CDForwardSubsumption(CLAUSE RedClause, st_INDEX Index,
 				     FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -3900,7 +3846,7 @@ static BOOL red_CDForwardSubsumption(CLAUSE RedClause, st_INDEX Index,
            by an indexed clause, if so, the clause is deleted,
 	   either really or locally.
 ***********************************************************/
-{ 
+{
   BOOL   IsSubsumed;
   CLAUSE Subsumer;
 
@@ -3929,13 +3875,12 @@ static BOOL red_CDForwardSubsumption(CLAUSE RedClause, st_INDEX Index,
   return IsSubsumed;
 }
 
-
 static void red_CDBackSubsumption(CLAUSE RedCl, FLAGSTORE Flags,
 				  PRECEDENCE Precedence,
 				  LIST* UsListPt, LIST* WOListPt,
 				  st_INDEX Index)
 /**********************************************************
-  INPUT:   A pointer to a non-empty clause, a flag store, 
+  INPUT:   A pointer to a non-empty clause, a flag store,
            a precedence, and an index of clauses.
   RETURNS: Nothing.
 ***********************************************************/
@@ -3959,19 +3904,19 @@ static void red_CDBackSubsumption(CLAUSE RedCl, FLAGSTORE Flags,
   if (!clause_IsEmptyClause(RedCl)) {
     Atom     = clause_GetLiteralAtom(RedCl, clause_FirstLitIndex());
     AtomInst = st_ExistInstance(cont_LeftContext(), Index, Atom);
-    
+
     while(AtomInst) {
       for (Scan = term_SupertermList(AtomInst); !list_Empty(Scan); Scan = list_Cdr(Scan)) {
 	SubsumedCl = clause_LiteralOwningClause(list_Car(Scan));
 	if ((RedCl != SubsumedCl) &&
-	    subs_Subsumes(RedCl, SubsumedCl, clause_FirstLitIndex(), 
+	    subs_Subsumes(RedCl, SubsumedCl, clause_FirstLitIndex(),
 			  clause_LiteralGetIndex(list_Car(Scan))) &&
 	    !list_PointerMember(SubsumedList, SubsumedCl))
 	  SubsumedList = list_Cons(SubsumedCl, SubsumedList);
       }
       AtomInst = st_NextCandidate();
     }
-    
+
     for (Scan = SubsumedList; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
       SubsumedCl = list_Car(Scan);
 
@@ -3980,7 +3925,6 @@ static void red_CDBackSubsumption(CLAUSE RedCl, FLAGSTORE Flags,
 	clause_Print(SubsumedCl);
 	printf(" by %d ",clause_Number(RedCl));
       }
-	     
 
       if (clause_GetFlag(SubsumedCl,WORKEDOFF)) {
 	*WOListPt = list_PointerDeleteOneElement(*WOListPt, SubsumedCl);
@@ -3992,7 +3936,6 @@ static void red_CDBackSubsumption(CLAUSE RedCl, FLAGSTORE Flags,
     list_Delete(SubsumedList);
   }
 }
-
 
 static LIST red_CDDerivables(SORTTHEORY Theory, CLAUSE GivenClause,
 			     FLAGSTORE Flags, PRECEDENCE Precedence)
@@ -4014,7 +3957,7 @@ static LIST red_CDDerivables(SORTTHEORY Theory, CLAUSE GivenClause,
   }
   clause_Check(GivenClause, Flags, Precedence);
 #endif
-  
+
   if (clause_HasTermSortConstraintLits(GivenClause))
     ListOfDerivedClauses = inf_ForwardSortResolution(GivenClause,
 						     sort_TheoryIndex(Theory),
@@ -4025,20 +3968,19 @@ static LIST red_CDDerivables(SORTTHEORY Theory, CLAUSE GivenClause,
 						sort_TheoryIndex(Theory),
 						Theory, TRUE,
 						Flags, Precedence);
-  
+
   return ListOfDerivedClauses;
 }
 
-
 static BOOL red_CDReduce(SORTTHEORY Theory, CLAUSE RedClause,
-			 FLAGSTORE Flags, PRECEDENCE Precedence, 
+			 FLAGSTORE Flags, PRECEDENCE Precedence,
 			 LIST *ApproxUsListPt, LIST *ApproxWOListPt,
 			 st_INDEX Index)
 /**************************************************************
-  INPUT:   A sort theory, an unshared clause, a flag store, 
+  INPUT:   A sort theory, an unshared clause, a flag store,
            a precedence, their index and two pointers to the
 	   sort reduction subproof usable and worked off list.
-  RETURNS: TRUE iff <RedClause> is redundant with respect to 
+  RETURNS: TRUE iff <RedClause> is redundant with respect to
            clauses in the index or theory.
   EFFECT:  <RedClause> is destructively changed.
            The <DocProof> flag is changed temporarily.
@@ -4051,11 +3993,11 @@ static BOOL red_CDReduce(SORTTHEORY Theory, CLAUSE RedClause,
 #endif
 
   Copy = (CLAUSE)NULL; /* Only needed for interface */
-  
+
   red_ObviousReductions(RedClause, FALSE, Flags, Precedence, &Copy);
   red_SortSimplification(Theory, RedClause, NAT_MAX, FALSE,
 			 Flags, Precedence, &Copy);
-  
+
   if (clause_IsEmptyClause(RedClause))
     return FALSE;
 
@@ -4078,19 +4020,18 @@ static BOOL red_CDReduce(SORTTHEORY Theory, CLAUSE RedClause,
     misc_ErrorReport(" Illegal input.\n");
     misc_FinishErrorReport();
   }
-    
+
 #endif
 
   return FALSE;
 }
-
 
 BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
 			PRECEDENCE Precedence)
 /**************************************************************
   INPUT:   A sort theory, a clause (unshared), a flag store
            and a precedence.
-  RETURNS: TRUE iff the sort constraint of the clause is 
+  RETURNS: TRUE iff the sort constraint of the clause is
            unsolvable with respect to the sort theory.
 ***************************************************************/
 {
@@ -4112,7 +4053,7 @@ BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
 
     if (clause_HasEmptyConstraint(RedClause) || !flag_GetFlagValue(Flags, flag_RSST))
       return FALSE;
- 
+
     if (flag_GetFlagValue(Flags, flag_DOCSST)) {
       fputs("\n\nStatic Soft Typing tried on: ", stdout);
       clause_Print(RedClause);
@@ -4158,7 +4099,7 @@ BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
 	 clause_PrintAllIndexedClauses(ShIndex); */
     }
     while (!list_Empty(ApproxUsableList) && list_Empty(EmptyClauses)) {
-      GivenClause      = list_Car(ApproxUsableList); 
+      GivenClause      = list_Car(ApproxUsableList);
       clause_SetFlag(GivenClause,WORKEDOFF);
 
       if (flag_GetFlagValue(Flags, flag_DOCSST)) {
@@ -4169,13 +4110,13 @@ BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
       ApproxUsableList = list_PointerDeleteOneElement(ApproxUsableList,GivenClause);
       ApproxDerivables = red_CDDerivables(Theory,GivenClause, Flags, Precedence);
       ApproxDerivables = split_ExtractEmptyClauses(ApproxDerivables, &EmptyClauses);
-    
+
       if (!list_Empty(EmptyClauses)) { /* Exit while loop! */
 	if (flag_GetFlagValue(Flags, flag_DOCSST)) {
 	  fputs("\nStatic Soft Typing not successful: ", stdout);
 	  clause_Print(list_Car(EmptyClauses));
 	}
-	clause_DeleteClauseList(ApproxDerivables); 
+	clause_DeleteClauseList(ApproxDerivables);
 	ApproxDerivables = list_Nil();
       }
       else {
@@ -4184,7 +4125,7 @@ BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
 	     Scan = list_Cdr(Scan)) {
 	  DerClause = (CLAUSE)list_Car(Scan);
 	  if (red_CDReduce(Theory, DerClause, Flags, Precedence,
-			   &ApproxUsableList, &ApproxWOList, Index)) 
+			   &ApproxUsableList, &ApproxWOList, Index))
 	    clause_Delete(DerClause);
 	  else{
 	    Count++;
@@ -4207,7 +4148,7 @@ BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
 	  ApproxDerivables = list_Nil();
 	}
 	else {
-	  list_Delete(ApproxDerivables); 
+	  list_Delete(ApproxDerivables);
 	  ApproxDerivables = list_Nil();
 	}
       }
@@ -4234,7 +4175,7 @@ BOOL red_ClauseDeletion(SORTTHEORY Theory, CLAUSE RedClause, FLAGSTORE Flags,
     if (!list_Empty(EmptyClauses)) {
       clause_DeleteClauseList(EmptyClauses);
       return FALSE;
-    } 
+    }
 
     return TRUE;
 
@@ -4266,7 +4207,7 @@ LIST red_SatUnit(PROOFSEARCH Search, LIST ClauseList)
   EmptyClauses = list_Nil();
 
   ClauseList = clause_ListSortWeighed(ClauseList);
-  
+
   while (!list_Empty(ClauseList) && list_Empty(EmptyClauses)) {
     Given = (CLAUSE)list_NCar(&ClauseList);
     Given = red_ReductionOnDerivedClause(Search, Given, red_USABLE);
@@ -4286,12 +4227,12 @@ LIST red_SatUnit(PROOFSEARCH Search, LIST ClauseList)
 	  else
 	    Derived = Derived - n;
 	}
-	else 
+	else
 	  Derivables = list_Nil();
 
 	Derivables  = list_Nconc(BackReduced,Derivables);
 	Derivables  = split_ExtractEmptyClauses(Derivables, &EmptyClauses);
-    
+
 	prfs_InsertUsableClause(Search, Given);
 
 	for(Scan = Derivables; !list_Empty(Scan); Scan = list_Cdr(Scan)) {
@@ -4328,27 +4269,26 @@ static CLAUSE red_SpecialInputReductions(CLAUSE Clause, FLAGSTORE Flags,
 
   Indexes = list_Nil();
   end     = clause_LastAntecedentLitIndex(Clause);
-    
+
   for (i = clause_FirstConstraintLitIndex(Clause); i <= end; i++) {
     Atom = clause_LiteralAtom(clause_GetLiteral(Clause,i));
-    if (fol_IsTrue(Atom)) 
+    if (fol_IsTrue(Atom))
       Indexes = list_Cons((POINTER)i,Indexes);
   }
 
   end    = clause_LastSuccedentLitIndex(Clause);
-    
+
   for (i = clause_FirstSuccedentLitIndex(Clause); i <= end; i++) {
     Atom = clause_LiteralAtom(clause_GetLiteral(Clause,i));
-    if (fol_IsFalse(Atom)) 
+    if (fol_IsFalse(Atom))
       Indexes = list_Cons((POINTER)i,Indexes);
   }
-  
+
   clause_DeleteLiterals(Clause,Indexes, Flags, Precedence);
   list_Delete(Indexes);
 
   return Clause;
 }
-
 
 LIST red_ReduceInput(PROOFSEARCH Search, LIST ClauseList)
 /*********************************************************
@@ -4369,7 +4309,7 @@ LIST red_ReduceInput(PROOFSEARCH Search, LIST ClauseList)
   EmptyClauses = list_Nil();
   ClauseList   = clause_ListSortWeighed(list_Copy(ClauseList));
   ClauseList   = split_ExtractEmptyClauses(ClauseList, &EmptyClauses);
-  
+
   while (!list_Empty(ClauseList) && list_Empty(EmptyClauses) &&
 	 (flag_GetFlagValue(Flags,flag_TIMELIMIT) == flag_TIMELIMITUNLIMITED ||
 	  flag_GetFlagValue(Flags, flag_TIMELIMIT) > clock_GetSeconds(clock_OVERALL))) {
@@ -4381,7 +4321,7 @@ LIST red_ReduceInput(PROOFSEARCH Search, LIST ClauseList)
       misc_ErrorReport(" Illegal input.\n");
       misc_FinishErrorReport();
     }
-#endif 
+#endif
     Given = red_SpecialInputReductions(Given, Flags, Precedence);
     Given = red_ReductionOnDerivedClause(Search, Given, red_USABLE);
     if (Given) {
@@ -4404,8 +4344,7 @@ LIST red_ReduceInput(PROOFSEARCH Search, LIST ClauseList)
   return EmptyClauses;
 }
 
-
-LIST red_SatInput(PROOFSEARCH Search) 
+LIST red_SatInput(PROOFSEARCH Search)
 /*********************************************************
   INPUT:   A proof search object.
   RETURNS: A list of derived empty clauses.
@@ -4443,7 +4382,7 @@ LIST red_SatInput(PROOFSEARCH Search)
     }
     Scan = list_Cdr(Scan);
   }
-  
+
   prfs_IncDerivedClauses(Search, list_Length(ClauseList));
   EmptyClauses = red_ReduceInput(Search, ClauseList);
   list_Delete(ClauseList);
@@ -4457,7 +4396,7 @@ LIST red_SatInput(PROOFSEARCH Search)
       Given = (CLAUSE)list_Car(Scan);
       if (clause_GetFlag(Given,CONCLAUSE) &&  clause_IsFromInput(Given)) {
 	Derivables = inf_BoundedDepthUnitResolution(Given,
-						    prfs_UsableSharingIndex(Search), 
+						    prfs_UsableSharingIndex(Search),
 						    TRUE, Flags, Precedence);
 	n         -= list_Length(Derivables);
 	ClauseList = list_Nconc(Derivables,ClauseList);

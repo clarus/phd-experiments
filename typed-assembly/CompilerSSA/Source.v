@@ -15,12 +15,12 @@ End Typ.
 Module UnOp.
   Inductive t : Set :=
   | uminus.
-  
+
   Module Typing.
     Inductive t : t -> Type -> Type -> Type :=
     | uminus : t uminus Z Z.
   End Typing.
-  
+
   (* Definition eval (op : t) (z1 : Z) : Z :=
     match op with
     | uminus => - z1
@@ -32,14 +32,14 @@ Module BinOp.
   | plus
   | minus
   | times.
-  
+
   Module Typing.
     Inductive t : t -> Type -> Type -> Type -> Type :=
     | plus : t plus Z Z Z
     | minus : t plus Z Z Z
     | times : t plus Z Z Z.
   End Typing.
-  
+
   (* Definition eval (op : t) (z1 z2 : Z) : Z :=
     match op with
     | plus => z1 + z2
@@ -58,23 +58,22 @@ Module Source.
     t gvar T1 -> t gvar T2 -> t gvar T.
   | let_ : forall (T1 : Type) (T2 : gvar T1 -> Type),
     t gvar T1 -> (forall v1 : gvar T1, t gvar (T2 gvar v1)) -> t gvar (T2 id .
-  
-  
+
   (*| _let : forall (P1 : Z -> Prop) (P2 : Z -> Z -> Prop) (P : Z -> Prop), t P1 -> (forall z1, t (P2 z1)) ->
     (forall z1 z2, P1 z1 -> P2 z1 z2 -> P z2) ->
     t P*).
-  
+
   Fixpoint eval P (e : t P) {struct e} : {z : Z | P z}.
     destruct e as [P z H | P1 P op e1 Hcast | P1 P2 P op e1 e2 Hcast | P1 P2 P e1 e2 Hcast].
     - exists z; trivial.
-    
+
     - destruct (eval _ e1) as (z1, H1).
       exists (UnOp.eval op z1); auto.
-    
+
     - destruct (eval _ e1) as (z1, H1).
       destruct (eval _ e2) as (z2, H2).
       exists (BinOp.eval op z1 z2); auto.
-    
+
     - destruct (eval _ e1) as (z1, H1).
       destruct (eval _ (e2 z1)) as (z2, H2).
       exists z2.

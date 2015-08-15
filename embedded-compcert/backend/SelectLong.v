@@ -80,12 +80,11 @@ Definition splitlong_match (e: expr)  :=
 
 Definition splitlong (e: expr) (f: expr -> expr -> expr) :=
   match splitlong_match e with
-  | splitlong_case1 h l => (* Eop Omakelong (h ::: l ::: Enil) *) 
+  | splitlong_case1 h l => (* Eop Omakelong (h ::: l ::: Enil) *)
       f h l
   | splitlong_default e =>
       Elet e (f (Eop Ohighlong (Eletvar O ::: Enil)) (Eop Olowlong (Eletvar O ::: Enil)))
   end.
-
 
 (** Original definition:
 <<
@@ -123,16 +122,15 @@ Definition splitlong2_match (e1 e2: expr)  :=
 
 Definition splitlong2 (e1 e2: expr) (f: expr -> expr -> expr -> expr -> expr) :=
   match splitlong2_match e1 e2 with
-  | splitlong2_case1 h1 l1 h2 l2 => (* Eop Omakelong (h1 ::: l1 ::: Enil), Eop Omakelong (h2 ::: l2 ::: Enil) *) 
+  | splitlong2_case1 h1 l1 h2 l2 => (* Eop Omakelong (h1 ::: l1 ::: Enil), Eop Omakelong (h2 ::: l2 ::: Enil) *)
       f h1 l1 h2 l2
-  | splitlong2_case2 h1 l1 t2 => (* Eop Omakelong (h1 ::: l1 ::: Enil), t2 *) 
+  | splitlong2_case2 h1 l1 t2 => (* Eop Omakelong (h1 ::: l1 ::: Enil), t2 *)
       Elet t2 (f (lift h1) (lift l1) (Eop Ohighlong (Eletvar O ::: Enil)) (Eop Olowlong (Eletvar O ::: Enil)))
-  | splitlong2_case3 t1 h2 l2 => (* t1, Eop Omakelong (h2 ::: l2 ::: Enil) *) 
+  | splitlong2_case3 t1 h2 l2 => (* t1, Eop Omakelong (h2 ::: l2 ::: Enil) *)
       Elet t1 (f (Eop Ohighlong (Eletvar O ::: Enil)) (Eop Olowlong (Eletvar O ::: Enil)) (lift h2) (lift l2))
   | splitlong2_default e1 e2 =>
       Elet e1 (Elet (lift e2) (f (Eop Ohighlong (Eletvar 1 ::: Enil)) (Eop Olowlong (Eletvar 1 ::: Enil)) (Eop Ohighlong (Eletvar O ::: Enil)) (Eop Olowlong (Eletvar O ::: Enil))))
   end.
-
 
 (** Original definition:
 <<
@@ -156,12 +154,11 @@ Definition lowlong_match (e: expr) :=
 
 Definition lowlong (e: expr) :=
   match lowlong_match e with
-  | lowlong_case1 e1 e2 => (* Eop Omakelong (e1 ::: e2 ::: Enil) *) 
+  | lowlong_case1 e1 e2 => (* Eop Omakelong (e1 ::: e2 ::: Enil) *)
       e2
   | lowlong_default e =>
       Eop Olowlong (e ::: Enil)
   end.
-
 
 (** Original definition:
 <<
@@ -185,12 +182,11 @@ Definition highlong_match (e: expr) :=
 
 Definition highlong (e: expr) :=
   match highlong_match e with
-  | highlong_case1 e1 e2 => (* Eop Omakelong (e1 ::: e2 ::: Enil) *) 
+  | highlong_case1 e1 e2 => (* Eop Omakelong (e1 ::: e2 ::: Enil) *)
       e1
   | highlong_default e =>
       Eop Ohighlong (e ::: Enil)
   end.
-
 
 Definition longconst (n: int64) : expr :=
   makelong (Eop (Ointconst (Int64.hiword n)) Enil)
@@ -220,12 +216,11 @@ Definition is_longconst_match (e: expr) :=
 
 Definition is_longconst (e: expr) :=
   match is_longconst_match e with
-  | is_longconst_case1 h l => (* Eop Omakelong (Eop (Ointconst h) Enil ::: Eop (Ointconst l) Enil ::: Enil) *) 
+  | is_longconst_case1 h l => (* Eop Omakelong (Eop (Ointconst h) Enil ::: Eop (Ointconst l) Enil ::: Enil) *)
       Some(Int64.ofwords h l)
   | is_longconst_default e =>
       None
   end.
-
 
 Definition is_longconst_zero (e: expr) :=
   match is_longconst e with
@@ -250,7 +245,7 @@ Definition negl (e: expr) :=
 Definition notl (e: expr) :=
   splitlong e (fun h l => makelong (notint h) (notint l)).
 
-Definition longoffloat (arg: expr) := 
+Definition longoffloat (arg: expr) :=
   Eexternal hf.(i64_dtos) sig_f_l (arg ::: Enil).
 Definition longuoffloat (arg: expr) :=
   Eexternal hf.(i64_dtou) sig_f_l (arg ::: Enil).

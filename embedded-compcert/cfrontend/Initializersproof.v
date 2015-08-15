@@ -146,7 +146,7 @@ with eval_simple_rvalue: expr -> val -> Prop :=
       eval_simple_rvalue r1 v1 -> bool_val v1 (typeof r1) = Some true ->
       eval_simple_rvalue (Eseqor r1 r2 ty) (Vint Int.one)
   | esr_condition: forall r1 r2 r3 ty v v1 b v',
-      eval_simple_rvalue r1 v1 -> bool_val v1 (typeof r1) = Some b -> 
+      eval_simple_rvalue r1 v1 -> bool_val v1 (typeof r1) = Some b ->
       eval_simple_rvalue (if b then r2 else r3) v' ->
       sem_cast v' (typeof (if b then r2 else r3)) ty = Some v ->
       eval_simple_rvalue (Econdition r1 r2 r3 ty) v
@@ -193,7 +193,7 @@ Qed.
 Lemma rred_simple:
   forall r m t r' m', rred ge r m t r' m' -> simple r -> simple r'.
 Proof.
-  induction 1; simpl; intuition. destruct b; auto. 
+  induction 1; simpl; intuition. destruct b; auto.
 Qed.
 
 Lemma rred_compat:
@@ -202,20 +202,20 @@ Lemma rred_compat:
   m = m' /\ compat_eval RV e r r' m.
 Proof.
   intros until m'; intros RED SIMP. inv RED; simpl in SIMP; try contradiction; split; auto; split; auto; intros vx EV.
-  inv EV. econstructor. constructor. auto. auto. 
+  inv EV. econstructor. constructor. auto. auto.
   inv EV. econstructor. constructor.
-  inv EV. econstructor; eauto. constructor. 
+  inv EV. econstructor; eauto. constructor.
   inv EV. econstructor; eauto. constructor. constructor.
   inv EV. econstructor; eauto. constructor.
   inv EV. inv H2. eapply esr_seqand_true; eauto. constructor.
   inv EV. eapply esr_seqand_false; eauto. constructor.
   inv EV. eapply esr_seqor_true; eauto. constructor.
   inv EV. inv H2. eapply esr_seqor_false; eauto. constructor.
-  inv EV. eapply esr_condition; eauto. constructor. 
+  inv EV. eapply esr_condition; eauto. constructor.
   inv EV. constructor.
   inv EV. constructor.
   econstructor; eauto. constructor.
-  inv EV. econstructor. constructor. auto. 
+  inv EV. econstructor. constructor. auto.
 Qed.
 
 Lemma compat_eval_context:
@@ -228,19 +228,19 @@ Proof.
   try (generalize (IHcontext CE); intros [TY EV]; red; split; simpl; auto; intros).
   inv H0. constructor; auto.
   inv H0.
-    eapply esl_field_struct; eauto. rewrite TY; eauto. 
+    eapply esl_field_struct; eauto. rewrite TY; eauto.
     eapply esl_field_union; eauto. rewrite TY; eauto.
   inv H0. econstructor. eauto. auto. auto.
-  inv H0. econstructor; eauto. 
+  inv H0. econstructor; eauto.
   inv H0. econstructor; eauto. congruence.
   inv H0. econstructor; eauto. congruence.
   inv H0. econstructor; eauto. congruence.
   inv H0. econstructor; eauto. congruence.
-  inv H0. 
-    eapply esr_seqand_true; eauto. rewrite TY; auto. 
+  inv H0.
+    eapply esr_seqand_true; eauto. rewrite TY; auto.
     eapply esr_seqand_false; eauto. rewrite TY; auto.
-  inv H0. 
-    eapply esr_seqor_false; eauto. rewrite TY; auto. 
+  inv H0.
+    eapply esr_seqor_false; eauto. rewrite TY; auto.
     eapply esr_seqor_true; eauto. rewrite TY; auto.
   inv H0. eapply esr_condition; eauto. congruence.
   inv H0.
@@ -252,19 +252,19 @@ Proof.
   red; split; intros. auto. inv H0.
   red; split; intros. auto. inv H0.
   inv H0. econstructor; eauto.
-  inv H0. econstructor; eauto. congruence. 
+  inv H0. econstructor; eauto. congruence.
 Qed.
 
 Lemma simple_context_1:
   forall a from to C, context from to C -> simple (C a) -> simple a.
 Proof.
-  induction 1; simpl; tauto. 
+  induction 1; simpl; tauto.
 Qed.
 
 Lemma simple_context_2:
   forall a a', simple a' -> forall from to C, context from to C -> simple (C a) -> simple (C a').
 Proof.
-  induction 2; simpl; try tauto. 
+  induction 2; simpl; try tauto.
 Qed.
 
 Lemma compat_eval_steps_aux f r e m r' m' s2 :
@@ -299,16 +299,16 @@ Qed.
 Lemma compat_eval_steps:
   forall f r e m  r' m',
   star step ge (ExprState f r Kstop e m) E0 (ExprState f r' Kstop e m') ->
-  simple r -> 
+  simple r ->
   m' = m /\ compat_eval RV e r r' m.
 Proof.
-  intros. 
+  intros.
   remember (ExprState f r Kstop e m) as S1.
   remember E0 as t.
   remember (ExprState f r' Kstop e m') as S2.
   revert S1 t S2 H r m r' m' HeqS1 Heqt HeqS2 H0.
   induction 1; intros; subst.
-  (* base case *) 
+  (* base case *)
   inv HeqS2. split. auto. red; auto.
   (* inductive case *)
   destruct (app_eq_nil t1 t2); auto. subst. inv H.
@@ -316,7 +316,7 @@ Proof.
   exploit compat_eval_steps_aux; eauto.
   intros [r1 [A [B C]]]. subst s2.
   exploit IHstar; eauto. intros [D E].
-  split. auto. destruct B; destruct E. split. congruence. auto. 
+  split. auto. destruct B; destruct E. split. congruence. auto.
   (* statement steps *)
   inv H1.
 Qed.
@@ -327,7 +327,7 @@ Theorem eval_simple_steps:
   simple r ->
   m' = m /\ ty = typeof r /\ eval_simple_rvalue e m r v.
 Proof.
-  intros. exploit compat_eval_steps; eauto. intros [A [B C]]. 
+  intros. exploit compat_eval_steps; eauto. intros [A [B C]].
   intuition. apply C. constructor.
 Qed.
 
@@ -347,7 +347,7 @@ Lemma mem_empty_not_valid_pointer:
   forall b ofs, Mem.valid_pointer Mem.empty b ofs = false.
 Proof.
   intros. unfold Mem.valid_pointer. destruct (Mem.perm_dec Mem.empty b ofs Cur Nonempty); auto.
-  eelim Mem.perm_empty; eauto. 
+  eelim Mem.perm_empty; eauto.
 Qed.
 
 Lemma mem_empty_not_weak_valid_pointer:
@@ -365,7 +365,7 @@ Lemma sem_cast_match:
   val_inject inj v2' v2.
 Proof.
   intros. unfold do_cast in H0. destruct (sem_cast v1' ty1 ty2) as [v2''|] eqn:E; inv H0.
-  exploit sem_cast_inject. eexact E. eauto. 
+  exploit sem_cast_inject. eexact E. eauto.
   intros [v' [A B]]. congruence.
 Qed.
 
@@ -389,12 +389,12 @@ Proof.
   (* val *)
   destruct v; monadInv CV; constructor.
   (* rval *)
-  inv H1; rewrite H2 in CV; try congruence. eauto. eauto. 
+  inv H1; rewrite H2 in CV; try congruence. eauto. eauto.
   (* addrof *)
   eauto.
   (* unop *)
   destruct (sem_unary_operation op x (typeof r1)) as [v1'|] eqn:E; inv EQ0.
-  exploit sem_unary_operation_inject. eexact E. eauto. 
+  exploit sem_unary_operation_inject. eexact E. eauto.
   intros [v' [A B]]. congruence.
   (* binop *)
   destruct (sem_binary_operation op x (typeof r1) x0 (typeof r2) Mem.empty) as [v1'|] eqn:E; inv EQ2.
@@ -403,34 +403,34 @@ Proof.
   intros. rewrite mem_empty_not_weak_valid_pointer in H3; discriminate.
   intros. rewrite mem_empty_not_weak_valid_pointer in H3; discriminate.
   intros. rewrite mem_empty_not_valid_pointer in H3; discriminate.
-  eauto. eauto. eauto. 
+  eauto. eauto. eauto.
   intros [v' [A B]]. congruence.
   (* cast *)
-  eapply sem_cast_match; eauto. 
+  eapply sem_cast_match; eauto.
   (* sizeof *)
   constructor.
   (* alignof *)
   constructor.
   (* seqand *)
-  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2. 
+  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2.
   exploit bool_val_inject. eexact E. eauto. intros E'.
-  assert (b = true) by congruence. subst b. monadInv H5. 
+  assert (b = true) by congruence. subst b. monadInv H5.
   eapply sem_cast_match; eauto. eapply sem_cast_match; eauto.
-  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2. 
+  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2.
   exploit bool_val_inject. eexact E. eauto. intros E'.
   assert (b = false) by congruence. subst b. inv H2. auto.
   (* seqor *)
-  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2. 
+  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2.
   exploit bool_val_inject. eexact E. eauto. intros E'.
-  assert (b = false) by congruence. subst b. monadInv H5. 
+  assert (b = false) by congruence. subst b. monadInv H5.
   eapply sem_cast_match; eauto. eapply sem_cast_match; eauto.
-  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2. 
+  destruct (bool_val x (typeof r1)) as [b|] eqn:E; inv EQ2.
   exploit bool_val_inject. eexact E. eauto. intros E'.
   assert (b = true) by congruence. subst b. inv H2. auto.
   (* conditional *)
   destruct (bool_val x (typeof r1)) as [b'|] eqn:E; inv EQ3.
   exploit bool_val_inject. eexact E. eauto. intros E'.
-  assert (b' = b) by congruence. subst b'. 
+  assert (b' = b) by congruence. subst b'.
   destruct b; eapply sem_cast_match; eauto.
   (* comma *)
   auto.
@@ -442,13 +442,13 @@ Proof.
   (* var local *)
   unfold empty_env in H. rewrite PTree.gempty in H. congruence.
   (* var_global *)
-  econstructor. unfold inj. rewrite H0. eauto. auto. 
+  econstructor. unfold inj. rewrite H0. eauto. auto.
   (* deref *)
   eauto.
   (* field struct *)
   rewrite H0 in CV. monadInv CV. exploit constval_rvalue; eauto. intro MV. inv MV.
-  simpl. replace x with delta by congruence. econstructor; eauto. 
-  rewrite ! Int.add_assoc. f_equal. apply Int.add_commut. 
+  simpl. replace x with delta by congruence. econstructor; eauto.
+  rewrite ! Int.add_assoc. f_equal. apply Int.add_commut.
   simpl. auto.
   (* field union *)
   rewrite H0 in CV. eauto.
@@ -472,7 +472,7 @@ Theorem constval_steps:
   constval r = OK v ->
   m' = m /\ ty = typeof r /\ val_inject inj v v'.
 Proof.
-  intros. exploit eval_simple_steps; eauto. eapply constval_simple; eauto. 
+  intros. exploit eval_simple_steps; eauto. eapply constval_simple; eauto.
   intros [A [B C]]. intuition. eapply constval_rvalue; eauto.
 Qed.
 
@@ -489,30 +489,30 @@ Theorem transl_init_single_steps:
   Mem.store chunk m' b ofs v = Some m'' ->
   Genv.store_init_data ge m b ofs data = Some m''.
 Proof.
-  intros. monadInv H. 
+  intros. monadInv H.
   exploit constval_steps; eauto. intros [A [B C]]. subst m' ty1.
   exploit sem_cast_match; eauto. intros D.
-  unfold Genv.store_init_data. 
-  inv D. 
+  unfold Genv.store_init_data.
+  inv D.
   (* int *)
-  destruct ty; try discriminate. 
+  destruct ty; try discriminate.
   destruct i0; inv EQ2.
   destruct s; simpl in H2; inv H2. rewrite <- Mem.store_signed_unsigned_8; auto. auto.
   destruct s; simpl in H2; inv H2. rewrite <- Mem.store_signed_unsigned_16; auto. auto.
   simpl in H2; inv H2. assumption.
-  simpl in H2; inv H2. assumption. 
+  simpl in H2; inv H2. assumption.
   inv EQ2. simpl in H2; inv H2. assumption.
   (* long *)
   destruct ty; inv EQ2. simpl in H2; inv H2. assumption.
   (* float *)
-  destruct ty; try discriminate. 
+  destruct ty; try discriminate.
   destruct f1; inv EQ2; simpl in H2; inv H2; assumption.
   (* pointer *)
   unfold inj in H.
   assert (data = Init_addrof b1 ofs1 /\ chunk = Mint32).
     destruct ty; inv EQ2; inv H2.
     destruct i; inv H5. intuition congruence. auto.
-  destruct H4; subst. destruct (Genv.find_symbol ge b1); inv H. 
+  destruct H4; subst. destruct (Genv.find_symbol ge b1); inv H.
   rewrite Int.add_zero in H3. auto.
   (* undef *)
   discriminate.
@@ -525,13 +525,13 @@ Lemma transl_init_single_size:
   transl_init_single ty a = OK data ->
   Genv.init_data_size data = sizeof ty.
 Proof.
-  intros. monadInv H. destruct x0. 
+  intros. monadInv H. destruct x0.
   monadInv EQ2.
-  destruct ty; try discriminate. 
+  destruct ty; try discriminate.
   destruct i0; inv EQ2; reflexivity.
   inv EQ2; reflexivity.
   inv EQ2; reflexivity.
-  destruct ty; inv EQ2; reflexivity. 
+  destruct ty; inv EQ2; reflexivity.
   destruct ty; try discriminate.
   destruct f0; inv EQ2; reflexivity.
   destruct ty; try discriminate.
@@ -546,16 +546,16 @@ Remark padding_size:
   forall frm to,
   frm <= to -> idlsize (padding frm to) = to - frm.
 Proof.
-  intros. unfold padding. 
-  destruct (zle (to - frm) 0). 
+  intros. unfold padding.
+  destruct (zle (to - frm) 0).
   simpl. omega.
   simpl. rewrite Zmax_spec. rewrite zlt_true. omega. omega.
-Qed. 
+Qed.
 
 Remark idlsize_app:
   forall d1 d2, idlsize (d1 ++ d2) = idlsize d1 + idlsize d2.
 Proof.
-  induction d1; simpl; intros. 
+  induction d1; simpl; intros.
   auto.
   rewrite IHd1. omega.
 Qed.
@@ -563,7 +563,7 @@ Qed.
 Remark sizeof_struct_incr:
   forall fl pos, pos <= sizeof_struct fl pos.
 Proof.
-  induction fl; intros; simpl. 
+  induction fl; intros; simpl.
   omega.
   eapply Zle_trans. apply align_le with (y := alignof t). apply alignof_pos.
   eapply Zle_trans. 2: apply IHfl.
@@ -575,10 +575,10 @@ Remark sizeof_struct_eq:
   fl <> Fnil ->
   sizeof (Tstruct id fl a) = align (sizeof_struct fl 0) (alignof (Tstruct id fl a)).
 Proof.
-  intros. simpl. f_equal. rewrite Zmax_spec. apply zlt_false. 
-  destruct fl. congruence. simpl. 
-  apply Zle_ge. eapply Zle_trans. 2: apply sizeof_struct_incr. 
-  assert (0 <= align 0 (alignof t)). apply align_le. apply alignof_pos. 
+  intros. simpl. f_equal. rewrite Zmax_spec. apply zlt_false.
+  destruct fl. congruence. simpl.
+  apply Zle_ge. eapply Zle_trans. 2: apply sizeof_struct_incr.
+  assert (0 <= align 0 (alignof t)). apply align_le. apply alignof_pos.
   generalize (sizeof_pos t). omega.
 Qed.
 
@@ -587,8 +587,8 @@ Remark sizeof_union_eq:
   fl <> Fnil ->
   sizeof (Tunion id fl a) = align (sizeof_union fl) (alignof (Tunion id fl a)).
 Proof.
-  intros. simpl. f_equal. rewrite Zmax_spec. apply zlt_false. 
-  destruct fl. congruence. simpl. 
+  intros. simpl. f_equal. rewrite Zmax_spec. apply zlt_false.
+  destruct fl. congruence. simpl.
   apply Zle_ge. apply Zmax_bound_l. generalize (sizeof_pos t). omega.
 Qed.
 
@@ -614,37 +614,37 @@ with transl_init_list_size:
    idlsize data = sizeof ty).
 
 Proof.
-  induction i; intros. 
+  induction i; intros.
   (* single *)
   monadInv H. simpl. rewrite (transl_init_single_size _ _ _ EQ). omega.
   (* compound *)
   simpl in H. destruct ty; try discriminate.
   (* compound array *)
-  destruct (zle z 0). 
+  destruct (zle z 0).
   monadInv H. simpl. repeat rewrite Zmax_spec. rewrite zlt_true. rewrite zlt_true. ring.
   omega. generalize (sizeof_pos ty); omega.
   simpl. rewrite Zmax_spec. rewrite zlt_false.
   eapply (proj1 (transl_init_list_size il)). auto. omega.
   (* compound struct *)
-  destruct f. 
+  destruct f.
   inv H. reflexivity.
   replace (idlsize data) with (idlsize data + 0) by omega.
   eapply (proj1 (proj2 (transl_init_list_size il))). eauto.
-  rewrite sizeof_struct_eq. 2: congruence. 
+  rewrite sizeof_struct_eq. 2: congruence.
   apply align_le. apply alignof_pos.
   (* compound union *)
   destruct f.
   inv H. reflexivity.
-  eapply (proj2 (proj2 (transl_init_list_size il))). eauto. 
-  rewrite sizeof_union_eq. 2: congruence. 
-  eapply Zle_trans. 2: apply align_le. simpl. apply Zmax_bound_l. omega. 
+  eapply (proj2 (proj2 (transl_init_list_size il))). eauto.
+  rewrite sizeof_union_eq. 2: congruence.
+  eapply Zle_trans. 2: apply align_le. simpl. apply Zmax_bound_l. omega.
   apply alignof_pos.
 
   induction il.
   (* base cases *)
-  simpl. intuition. 
+  simpl. intuition.
   (* arrays *)
-  destruct (zeq sz 0); inv H. simpl. ring. 
+  destruct (zeq sz 0); inv H. simpl. ring.
   (* structs *)
   destruct fl; inv H.
   simpl in H0. generalize (padding_size pos (sizeof ty) H0). omega.
@@ -654,22 +654,22 @@ Proof.
   destruct IHil as [A [B C]]. split.
   (* arrays *)
   intros. monadInv H.
-  rewrite idlsize_app. 
-  rewrite (transl_init_size _ _ _ EQ). 
+  rewrite idlsize_app.
+  rewrite (transl_init_size _ _ _ EQ).
   rewrite (A _ _ _ EQ1).
   ring.
   (* structs *)
   split. intros. simpl in H. destruct fl; monadInv H.
-  repeat rewrite idlsize_app. 
-  simpl in H0. 
+  repeat rewrite idlsize_app.
+  simpl in H0.
   rewrite padding_size.
-  rewrite (transl_init_size _ _ _ EQ). 
+  rewrite (transl_init_size _ _ _ EQ).
   rewrite <- (B _ _ _ _ _ EQ1). omega.
-  auto. apply align_le. apply alignof_pos. 
+  auto. apply align_le. apply alignof_pos.
   (* unions *)
-  intros. simpl in H. monadInv H. 
+  intros. simpl in H. monadInv H.
   rewrite idlsize_app.
-  rewrite (transl_init_size _ _ _ EQ). 
+  rewrite (transl_init_size _ _ _ EQ).
   rewrite padding_size. omega. auto.
 Qed.
 
@@ -686,7 +686,7 @@ Fixpoint fields_of_struct (id: ident) (ty: type) (fl: fieldlist) (pos: Z) : list
 
 Inductive exec_init: mem -> block -> Z -> type -> initializer -> mem -> Prop :=
   | exec_init_single: forall m b ofs ty a v1 ty1 chunk m' v m'',
-      star step ge (ExprState dummy_function a Kstop empty_env m) 
+      star step ge (ExprState dummy_function a Kstop empty_env m)
                 E0 (ExprState dummy_function (Eval v1 ty1) Kstop empty_env m') ->
       sem_cast v1 ty1 ty = Some v ->
       access_mode ty = By_value chunk ->
@@ -724,11 +724,11 @@ Scheme exec_init_ind3 := Minimality for exec_init Sort Prop
 Combined Scheme exec_init_scheme from exec_init_ind3, exec_init_array_ind3, exec_init_list_ind3.
 
 Remark exec_init_array_length:
-  forall m b ofs ty sz il m', 
+  forall m b ofs ty sz il m',
   exec_init_array m b ofs ty sz il m' ->
   match il with Init_nil => sz = 0 | Init_cons _ _ => sz > 0 end.
 Proof.
-  induction 1. auto. destruct il; omega. 
+  induction 1. auto. destruct il; omega.
 Qed.
 
 Lemma store_init_data_list_app:
@@ -737,7 +737,7 @@ Lemma store_init_data_list_app:
   Genv.store_init_data_list ge m' b (ofs + idlsize data1) data2 = Some m'' ->
   Genv.store_init_data_list ge m b ofs (data1 ++ data2) = Some m''.
 Proof.
-  induction data1; simpl; intros. 
+  induction data1; simpl; intros.
   inv H. rewrite Zplus_0_r in H0. auto.
   destruct (Genv.store_init_data ge m b ofs a); try discriminate.
   rewrite Zplus_assoc in H0. eauto.
@@ -766,7 +766,7 @@ Proof.
   apply exec_init_scheme; simpl; intros.
   (* single *)
   monadInv H3.
-  exploit transl_init_single_steps; eauto. intros. 
+  exploit transl_init_single_steps; eauto. intros.
   simpl. rewrite H3. auto.
   (* array *)
   destruct (zle sz 0).
@@ -778,24 +778,24 @@ Proof.
   inv H. inv H1. auto.
   replace ofs with (ofs + 0) by omega. eauto.
   (* union *)
-  monadInv H1. eapply store_init_data_list_app. eauto. apply store_init_data_list_padding. 
+  monadInv H1. eapply store_init_data_list_app. eauto. apply store_init_data_list_padding.
 
   (* array, empty *)
   inv H. auto.
   (* array, nonempty *)
-  monadInv H3. 
+  monadInv H3.
   eapply store_init_data_list_app.
   eauto.
   rewrite (transl_init_size _ _ _ EQ). eauto.
 
   (* struct, empty *)
-  destruct fl; simpl in H; inv H. 
+  destruct fl; simpl in H; inv H.
   inv H0. apply store_init_data_list_padding.
   (* struct, nonempty *)
   destruct fl; simpl in H3; inv H3.
-  monadInv H4. 
+  monadInv H4.
   eapply store_init_data_list_app. apply store_init_data_list_padding.
-  rewrite padding_size. 
+  rewrite padding_size.
   replace (ofs + pos0 + (align pos0 (alignof t) - pos0))
      with (ofs + align pos0 (alignof t)) by omega.
   eapply store_init_data_list_app.
@@ -815,5 +815,3 @@ Proof.
 Qed.
 
 End SOUNDNESS.
-
-

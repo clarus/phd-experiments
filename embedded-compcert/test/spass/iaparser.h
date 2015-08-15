@@ -63,9 +63,6 @@
 #define IA_NUM 270
 #define IA_ID 271
 
-
-
-
 #ifndef YYSTYPE
 #line 113 "iaparser.y"
 typedef union {
@@ -82,6 +79,4 @@ typedef union {
 
 extern YYSTYPE ia_lval;
 
-
 #endif /* not BISON_IAPARSER_H */
-

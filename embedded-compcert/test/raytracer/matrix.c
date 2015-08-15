@@ -99,4 +99,3 @@ struct matrix * mcompose(struct matrix * m, struct matrix * n)
 
   return r;
 }
-

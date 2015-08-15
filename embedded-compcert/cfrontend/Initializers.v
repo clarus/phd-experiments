@@ -227,5 +227,3 @@ with transl_init_union (id: ident) (ty ty1: type) (il: initializer_list)
       do d <- transl_init ty1 i1;
       OK (d ++ padding (sizeof ty1) (sizeof ty))
   end.
-
-

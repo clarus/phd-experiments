@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             SIGNATURE TABLE                            * */
 /* *                                                        * */
-/* *  $Module:   TABLE                                      * */ 
+/* *  $Module:   TABLE                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,13 +41,11 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /**************************************************************/
 /* Includes                                                   */
 /**************************************************************/
 
 #include "table.h"
-
 
 /**************************************************************/
 /* Inline functions                                           */
@@ -61,12 +59,10 @@ static __inline__ int table_Index(SYMBOL symbol)
     return symbol_Index(symbol);
 }
 
-
 static __inline__ TERM table_GetTerm(TERMARRAY ta)
 {
   return ta->term;
 }
-
 
 static __inline__ TERMARRAY table_SetTerm(TERMARRAY ta, TERM term)
 {
@@ -74,12 +70,10 @@ static __inline__ TERMARRAY table_SetTerm(TERMARRAY ta, TERM term)
   return ta;
 }
 
-
 static __inline__ int table_GetStamp(TERMARRAY ta)
 {
   return ta->stamp;
 }
-
 
 static __inline__ TERMARRAY table_SetStamp(TERMARRAY ta, int stamp)
 {
@@ -87,12 +81,10 @@ static __inline__ TERMARRAY table_SetStamp(TERMARRAY ta, int stamp)
   return ta;
 }
 
-
 static __inline__ TERMARRAY table_GetChild(TERMARRAY ta)
 {
   return ta->child;
 }
-
 
 static __inline__ TERMARRAY table_SetChild(TERMARRAY ta, TERMARRAY child)
 {
@@ -100,12 +92,10 @@ static __inline__ TERMARRAY table_SetChild(TERMARRAY ta, TERMARRAY child)
   return ta;
 }
 
-
 static __inline__ TERMARRAY table_GetTermarray(TABLE table)
 {
   return table->ta;
 }
-
 
 static __inline__ TABLE table_SetTermarray(TABLE table, TERMARRAY ta)
 {
@@ -113,18 +103,15 @@ static __inline__ TABLE table_SetTermarray(TABLE table, TERMARRAY ta)
   return table;
 }
 
-
 static __inline__ TERMARRAY *table_GetPoss(TABLE table)
 {
   return table->pos;
 }
 
-
 static __inline__ TERMARRAY table_GetPos(TABLE table, int index)
 {
   return table_GetPoss(table)[index];
 }
-
 
 static __inline__ TABLE table_SetPoss(TABLE table, TERMARRAY *ref)
 {
@@ -132,25 +119,21 @@ static __inline__ TABLE table_SetPoss(TABLE table, TERMARRAY *ref)
   return table;
 }
 
-
 static __inline__ TABLE table_SetPos(TABLE table, int index, TERMARRAY ta)
 {
   table_GetPoss(table)[index] = ta;
   return table;
 }
 
-
 static __inline__ int *table_GetPosstamps(TABLE table)
 {
   return table->posstamp;
 }
 
-
 static __inline__ int table_GetPosstamp(TABLE table, int index)
 {
   return table_GetPosstamps(table)[index];
 }
-
 
 static __inline__ TABLE table_SetPosstamps(TABLE table, int *ref)
 {
@@ -158,19 +141,16 @@ static __inline__ TABLE table_SetPosstamps(TABLE table, int *ref)
   return table;
 }
 
-
 static __inline__ TABLE table_SetPosstamp(TABLE table, int index, int stamp)
 {
   table_GetPosstamps(table)[index] = stamp;
   return table;
 }
 
-
 static __inline__ int table_GetStampcounter(TABLE table)
 {
   return table->stampcounter;
 }
-
 
 static __inline__ TABLE table_SetStampcounter(TABLE table, int stampcounter)
 {
@@ -178,12 +158,10 @@ static __inline__ TABLE table_SetStampcounter(TABLE table, int stampcounter)
   return table;
 }
 
-
 static __inline__ int table_GetOpbound(TABLE table)
 {
   return table->opbound;
 }
-
 
 static __inline__ TABLE table_SetOpbound(TABLE table, int opbound)
 {
@@ -191,12 +169,10 @@ static __inline__ TABLE table_SetOpbound(TABLE table, int opbound)
   return table;
 }
 
-
 static __inline__ int table_GetVarbound(TABLE table)
 {
   return table->varbound;
 }
-
 
 static __inline__ TABLE table_SetVarbound(TABLE table, int varbound)
 {
@@ -204,12 +180,10 @@ static __inline__ TABLE table_SetVarbound(TABLE table, int varbound)
   return table;
 }
 
-
 static __inline__ int table_GetTermbound(TABLE table)
 {
   return table->termbound;
 }
-
 
 static __inline__ TABLE table_SetTermbound(TABLE table, int termbound)
 {
@@ -217,18 +191,15 @@ static __inline__ TABLE table_SetTermbound(TABLE table, int termbound)
   return table;
 }
 
-
 static __inline__ BOOL table_LegalPosIndex(TABLE table, int index)
 {
   return 0 <= index && index <= table_GetTermbound(table);
 }
 
-
 static __inline__ BOOL table_Stamped(TABLE table, TERMARRAY ta)
 {
   return table_GetStamp(ta) == table_GetStampcounter(table);
 }
-
 
 static __inline__ TERMARRAY table_DelayedInit(TABLE table, TERMARRAY ta)
 /***************************************************************
@@ -245,12 +216,10 @@ static __inline__ TERMARRAY table_DelayedInit(TABLE table, TERMARRAY ta)
   return ta;
 }
 
-
 static __inline__ BOOL table_PosStamped(TABLE table, int index)
 {
   return table_GetPosstamp(table, index) == table_GetStampcounter(table);
 }
-
 
 static __inline__ int table_DelayedPosInit(TABLE table, int index)
 /***************************************************************
@@ -268,7 +237,6 @@ static __inline__ int table_DelayedPosInit(TABLE table, int index)
   return index;
 }
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -278,7 +246,6 @@ TABLE table_Null(void)
   return (TABLE) NULL;
 }
 
-
 TABLE table_Create(int opbound, int varbound, int termbound)
 /***************************************************************
   INPUT:   bounds for the operator symbol, variable and term
@@ -287,7 +254,7 @@ TABLE table_Create(int opbound, int varbound, int termbound)
 	   has to be in [1, opbound] and the term numbers of its
 	   arguments in [0, termbound] - or its variable index
 	   in [1, varbound] if it is a variable)
-  RETURNS: a new (and empty) signature table 
+  RETURNS: a new (and empty) signature table
 ***************************************************************/
 {
   TABLE result;
@@ -328,7 +295,6 @@ TABLE table_Create(int opbound, int varbound, int termbound)
   return result;
 }
 
-
 static void table_FreeTermarray(TERMARRAY ta, int size)
 /***************************************************************
   INPUT:  the termarray to free and its size
@@ -344,7 +310,6 @@ static void table_FreeTermarray(TERMARRAY ta, int size)
     memory_Free(ta, size * sizeof(struct termarray));
   }
 }
-
 
 void table_Free(TABLE table)
 {
@@ -373,7 +338,6 @@ void table_Free(TABLE table)
   }
 }
 
-
 TABLE table_Init(TABLE table, int opbound, int varbound, int termbound)
 /***************************************************************
   INPUT:   the table to recycle and bounds for the operator
@@ -383,7 +347,7 @@ TABLE table_Init(TABLE table, int opbound, int varbound, int termbound)
 	   and the term numbers of its arguments in
 	   [0, termbound] - or its variable index in
 	   [1, varbound] if it is a variable)
-  RETURNS: a cleaned up signature table 
+  RETURNS: a cleaned up signature table
   CAUTION: potentially frees the old table, therefore must be
 	   called inside of an assignment like:
 	     table = table_Init(table, ...)
@@ -460,7 +424,6 @@ TABLE table_Init(TABLE table, int opbound, int varbound, int termbound)
   }
 }
 
-
 TERM table_QueryAndEnter(TABLE table, PARTITION p, TERM term)
 /***************************************************************
   RETURNS: a term with the same p-signature (sigtab_Index(top
@@ -517,7 +480,6 @@ TERM table_QueryAndEnter(TABLE table, PARTITION p, TERM term)
   }
 }
 
-
 TABLE table_Delete(TABLE table, TERM term)
 /***************************************************************
   EFFECT: if term has entered table before, it is deleted
@@ -550,4 +512,3 @@ TABLE table_Delete(TABLE table, TERM term)
   }
   return table;
 }
-

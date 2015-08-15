@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                STRING HANDLING                         * */
 /* *                                                        * */
-/* *  $Module:   STRINGS                                    * */ 
+/* *  $Module:   STRINGS                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2000, 2001 MPI fuer Informatik    * */
 /* *                                                        * */
@@ -41,7 +41,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 /**************************************************************/
@@ -56,8 +55,6 @@
 /* Functions                                                  */
 /**************************************************************/
 
-
-
 BOOL string_StringIsNumber(const char* String)
 /**************************************************************
   INPUT:   A string.
@@ -65,10 +62,10 @@ BOOL string_StringIsNumber(const char* String)
 ***************************************************************/
 {
   int i;
-  
+
   if (String == NULL || String[0] == '\0')
     return FALSE;
-  
+
   i = 0;
 
   while (String[i] != '\0')
@@ -77,9 +74,8 @@ BOOL string_StringIsNumber(const char* String)
     else
       return FALSE;
 
-  return TRUE;  
+  return TRUE;
 }
-
 
 char* string_StringCopy(const char* String)
 /**************************************************************
@@ -95,7 +91,6 @@ char* string_StringCopy(const char* String)
   return copy;
 }
 
-
 void  string_StringFree(char* String)
 /**************************************************************
   INPUT:   A string.
@@ -105,7 +100,6 @@ void  string_StringFree(char* String)
 {
   memory_Free(String, strlen(String)+1);
 }
-
 
 char* string_IntToString(int Number)
 /**************************************************************
@@ -128,7 +122,6 @@ char* string_IntToString(int Number)
   sprintf(result, "%d", Number);
   return result;
 }
-
 
 BOOL string_StringToInt(const char* String, BOOL PrintError, int* Result)
 /**************************************************************
@@ -173,21 +166,19 @@ BOOL string_StringToInt(const char* String, BOOL PrintError, int* Result)
   }
 }
 
-
 char* string_Conc(const char* s1, const char* s2)
 /**************************************************************
   INPUT:   Two strings.
   RETURNS: A new string s1.s2
   EFFECTS: Memory is allocated for the new string.
 **************************************************************/
-{ 
+{
   char* dst;
 
   dst = memory_Malloc(strlen(s1) + strlen(s2) + 1);
   strcpy(dst, s1);
   return strcat(dst,s2);
 }
-
 
 char* string_Nconc(char* s1, char* s2)
 /**************************************************************
@@ -197,19 +188,18 @@ char* string_Nconc(char* s1, char* s2)
           allocated.
  CAUTION: Both strings must have been allocated by the memory module!
 **************************************************************/
-{ 
+{
   char* dst;
 
   dst = memory_Malloc(strlen(s1) + strlen(s2) + 1);
   strcpy(dst, s1);
   dst = strcat(dst, s2);
-  
+
   string_StringFree(s1);
   string_StringFree(s2);
 
   return dst;
 }
-
 
 char* string_EmptyString(void)
 /**************************************************************
@@ -224,7 +214,6 @@ char* string_EmptyString(void)
   s[0] = '\0';
   return s;
 }
-
 
 char* string_Prefix(const char* s, int i)
 /**************************************************************
@@ -241,7 +230,6 @@ char* string_Prefix(const char* s, int i)
   return dst;
 }
 
-
 char* string_Suffix(const char* s, int i)
 /**************************************************************
   INPUT:   A string and a string length.
@@ -253,7 +241,7 @@ char* string_Suffix(const char* s, int i)
 {
   int  l;
   char *dst;
-  
+
   l = strlen(s);
   if (i >= l)
     return string_EmptyString();
@@ -262,7 +250,6 @@ char* string_Suffix(const char* s, int i)
   strcpy(dst, s+i);
   return dst;
 }
-
 
 char** string_Tokens(char* String, int* ArraySize)
 /**************************************************************
@@ -301,11 +288,11 @@ char** string_Tokens(char* String, int* ArraySize)
 
     if (Scan >= String) {
       LastNonSpace = Scan;
-      
+
       do {
 	Scan--;
       } while (Scan >= String && !isspace((int)*Scan));
-      
+
       Help = *(LastNonSpace + 1);
       *(LastNonSpace + 1) = '\0';
       Substrings = list_Cons(string_StringCopy(Scan+1), Substrings);

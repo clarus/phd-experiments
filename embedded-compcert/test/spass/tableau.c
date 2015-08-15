@@ -41,7 +41,7 @@
 
 /* $RCSfile$ */
 
-#include "tableau.h" 
+#include "tableau.h"
 
 /* for graph output */
 extern BOOL        pcheck_ClauseCg;
@@ -61,7 +61,7 @@ TABPATH tab_PathCreate(int MaxLevel, TABLEAU Tab)
   TabPath->Path[0]   = Tab;
   TabPath->MaxLength = MaxLevel;
   TabPath->Length    = 0;
-  
+
   return TabPath;
 }
 
@@ -76,7 +76,6 @@ void tab_PathDelete(TABPATH TabPath)
   memory_Free(TabPath, sizeof(TABPATH_NODE));
 }
 
-
 BOOL tab_PathContainsClause(TABPATH Path, CLAUSE Clause)
 /**************************************************************
   INPUT:   A tableau path, a clause
@@ -89,7 +88,7 @@ BOOL tab_PathContainsClause(TABPATH Path, CLAUSE Clause)
   if (clause_SplitLevel(Clause) > tab_PathLength(Path))
     return FALSE;
 
-  for (Scan = tab_Clauses(tab_PathNthNode(Path, clause_SplitLevel(Clause))); 
+  for (Scan = tab_Clauses(tab_PathNthNode(Path, clause_SplitLevel(Clause)));
        !list_Empty(Scan); Scan = list_Cdr(Scan)) {
     if (list_Car(Scan) == Clause)
       return TRUE;
@@ -111,9 +110,9 @@ static BOOL tab_PathContainsClauseSoft(TABPATH Path, CLAUSE Clause)
 
   if (clause_SplitLevel(Clause) > tab_PathLength(Path))
     return FALSE;
-  
+
   for (Level = 0; Level <= tab_PathLength(Path); Level++) {
-    for (Scan = tab_Clauses(tab_PathNthNode(Path, Level));  
+    for (Scan = tab_Clauses(tab_PathNthNode(Path, Level));
 	 !list_Empty(Scan); Scan = list_Cdr(Scan)) {
       if (list_Car(Scan) == Clause)
 	return TRUE;
@@ -132,7 +131,7 @@ static BOOL tab_PathContainsClauseSoft(TABPATH Path, CLAUSE Clause)
            its level. Intended for debugging.
 ***************************************************************/
 {
-  if (tab_PathContainsClause(P,C)) 
+  if (tab_PathContainsClause(P,C))
     return TRUE;
 
   if (tab_PathContainsClauseSoft(P,C)) {
@@ -144,13 +143,12 @@ static BOOL tab_PathContainsClauseSoft(TABPATH Path, CLAUSE Clause)
   return FALSE;
 }
 
-
 void tab_AddSplitAtCursor(TABPATH Path, BOOL LeftSide)
 /**************************************************************
   INPUT:   A tableau path, a flag
   RETURNS: Nothing.
   EFFECTS: Extends the tableau containing the path <Path> to
-           the left if <LeftSide> is TRUE, to the right 
+           the left if <LeftSide> is TRUE, to the right
 	   otherwise
 ***************************************************************/
 {
@@ -172,7 +170,7 @@ void tab_AddSplitAtCursor(TABPATH Path, BOOL LeftSide)
     tab_SetLeftBranch(Tab,NewBranch);
   } else {
 
-#ifdef CHECK    
+#ifdef CHECK
     if (!tab_RightBranchIsEmpty(Tab)) {
       misc_StartErrorReport();
       misc_ErrorReport("\n In tab_AddSplitAtCursor: Recreating existing");
@@ -187,26 +185,25 @@ void tab_AddSplitAtCursor(TABPATH Path, BOOL LeftSide)
 
 void tab_AddClauseOnItsLevel(CLAUSE C, TABPATH Path)
 /**************************************************************
-  INPUT:   A clause, a tableau path 
+  INPUT:   A clause, a tableau path
   RETURNS: Nothing
   EFFECTS: Adds the clause on its split level which
            must belong to <Path>
 ***************************************************************/
 {
-  int Level; 
+  int Level;
 
   Level = clause_SplitLevel(C);
   if (Level > tab_PathLength(Path)) {
     misc_StartUserErrorReport();
     misc_UserErrorReport("\nError: Split level of some clause ");
-    misc_UserErrorReport("\nis higher than existing level."); 
-    misc_UserErrorReport("\nThis may be a bug in the proof file."); 
-    misc_FinishUserErrorReport();  
+    misc_UserErrorReport("\nis higher than existing level.");
+    misc_UserErrorReport("\nThis may be a bug in the proof file.");
+    misc_FinishUserErrorReport();
   }
-  
+
   tab_AddClause(C, tab_PathNthNode(Path, clause_SplitLevel(C)));
 }
-
 
 int tab_Depth(TABLEAU T)
 /**************************************************************
@@ -218,30 +215,29 @@ int tab_Depth(TABLEAU T)
     return 0;
   if (tab_IsLeaf(T))
     return 0;
-  else 
+  else
     return (misc_Max(tab_Depth(tab_RightBranch(T))+1, tab_Depth(tab_LeftBranch(T)))+1);
 }
 
 static BOOL tab_HasEmptyClause(TABLEAU T)
 /**************************************************************
-  INPUT:   A tableau                                                     
+  INPUT:   A tableau
   RETURNS: TRUE iff an empty clause is among the clauses
            on this level
 ***************************************************************/
 {
   LIST Scan;
-  
-  for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)) 
+
+  for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan))
     if (clause_IsEmptyClause(list_Car(Scan)))
       return TRUE;
 
   return FALSE;
 }
 
-
 BOOL tab_IsClosed(TABLEAU T)
 /**************************************************************
-  INPUT:   A Tableau   
+  INPUT:   A Tableau
   RETURNS: TRUE iff the tableau is closed. (NOTE: FALSE
            if the tableau is empty)
 ***************************************************************/
@@ -251,12 +247,12 @@ BOOL tab_IsClosed(TABLEAU T)
 
   if (tab_HasEmptyClause(T))
       return TRUE;
-  /* 
+  /*
    *  now tableau can only be closed
    *  if there has been a split, and
-   *  both subtableaus are closed 
+   *  both subtableaus are closed
    */
-  
+
   if (tab_RightBranchIsEmpty(T) || tab_LeftBranchIsEmpty(T)) {
     printf("\nopen node label: %d", T->Label);
     fflush(stdout);
@@ -278,14 +274,13 @@ static LIST tab_DeleteFlat(TABLEAU T)
 
   Clauses = tab_Clauses(T);
   memory_Free(T, sizeof(TABLEAU_NODE));
-  
+
   return Clauses;
 }
 
-
 static void tab_DeleteGen(TABLEAU T, LIST* Clauses, BOOL DeleteClauses)
 /**************************************************************
-  INPUT:   A tableau, a list of clauses by reference, a flag 
+  INPUT:   A tableau, a list of clauses by reference, a flag
   RETURNS: Nothing
   EFFECTS: Depending on <DeleteClauses>, all clauses in the
            tableau are added to <Clauses> or just deleted.
@@ -295,18 +290,18 @@ static void tab_DeleteGen(TABLEAU T, LIST* Clauses, BOOL DeleteClauses)
 {
   if (tab_IsEmpty(T))
     return;
-  
+
   tab_DeleteGen(tab_RightBranch(T), Clauses, DeleteClauses);
   tab_DeleteGen(tab_LeftBranch(T),  Clauses, DeleteClauses);
 
   list_Delete(tab_RightSplitClauses(T));
-  if (DeleteClauses) 
-    list_Delete(tab_Clauses(T)); 
+  if (DeleteClauses)
+    list_Delete(tab_Clauses(T));
   else
     *Clauses = list_Nconc(tab_Clauses(T), *Clauses);
-  
+
   tab_DeleteFlat(T);
-  
+
 }
 
 static void tab_DeleteCollectClauses(TABLEAU T, LIST* Clauses)
@@ -328,7 +323,7 @@ void tab_Delete(TABLEAU T)
 ***************************************************************/
 {
   LIST Redundant;
-  
+
   Redundant = list_Nil();
   tab_DeleteGen(T, &Redundant, TRUE);
 }
@@ -336,7 +331,7 @@ void tab_Delete(TABLEAU T)
 static void tab_SetSplitLevelsRec(TABLEAU T, int Level)
 /**************************************************************
   INPUT:   A tableau
-  RETURNS: Nothing                                                     
+  RETURNS: Nothing
   EFFECTS: The split levels of the clauses in the
            tableau are set to the level of the
 	   tableau level they are contained in.
@@ -346,25 +341,25 @@ static void tab_SetSplitLevelsRec(TABLEAU T, int Level)
 
   if (tab_IsEmpty(T))
     return;
-  
+
   for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)) {
-    clause_SetSplitLevel(list_Car(Scan), Level); 
+    clause_SetSplitLevel(list_Car(Scan), Level);
     if (Level >0) {
       clause_ClearSplitField(list_Car(Scan));
       clause_SetSplitFieldBit(list_Car(Scan), Level);
     }
-    else 
+    else
       clause_SetSplitField(list_Car(Scan), (SPLITFIELD)NULL,0);
   }
-  
+
   tab_SetSplitLevelsRec(tab_RightBranch(T), Level+1);
   tab_SetSplitLevelsRec(tab_LeftBranch(T), Level+1);
 }
 
 void tab_SetSplitLevels(TABLEAU T)
 /**************************************************************
-  INPUT:   A tableau                                                     
-  RETURNS: Nothing                                                     
+  INPUT:   A tableau
+  RETURNS: Nothing
   EFFECTS: The split levels of the clauses in the
            tableau are set to the level of the
 	   tableau they belong to.
@@ -373,8 +368,7 @@ void tab_SetSplitLevels(TABLEAU T)
   tab_SetSplitLevelsRec(T,0);
 }
 
-
-TABLEAU tab_PruneClosedBranches(TABLEAU T, LIST* Clauses) 
+TABLEAU tab_PruneClosedBranches(TABLEAU T, LIST* Clauses)
 /**************************************************************
   INPUT:   A tableau, a list of clauses by reference.
   RETURNS: The (destructively) reduced tableau: Descendants of
@@ -389,10 +383,10 @@ TABLEAU tab_PruneClosedBranches(TABLEAU T, LIST* Clauses)
 
   if (tab_HasEmptyClause(T)) {
 
-    tab_DeleteCollectClauses(tab_RightBranch(T), Clauses); 
-    tab_DeleteCollectClauses(tab_LeftBranch(T), Clauses); 
+    tab_DeleteCollectClauses(tab_RightBranch(T), Clauses);
+    tab_DeleteCollectClauses(tab_LeftBranch(T), Clauses);
     tab_SetRightBranch(T, tab_EmptyTableau());
-    tab_SetLeftBranch(T, tab_EmptyTableau()); 
+    tab_SetLeftBranch(T, tab_EmptyTableau());
     list_Delete(tab_RightSplitClauses(T));
     tab_SetRightSplitClauses(T, list_Nil());
     tab_SetSplitClause(T,clause_Null());
@@ -403,10 +397,9 @@ TABLEAU tab_PruneClosedBranches(TABLEAU T, LIST* Clauses)
     tab_SetRightBranch(T, tab_PruneClosedBranches(tab_RightBranch(T), Clauses));
     tab_SetLeftBranch(T, tab_PruneClosedBranches(tab_LeftBranch(T), Clauses));
   }
-  
+
   return T;
 }
-
 
 TABLEAU tab_RemoveIncompleteSplits(TABLEAU T, LIST* Clauses)
 /**************************************************************
@@ -429,19 +422,19 @@ TABLEAU tab_RemoveIncompleteSplits(TABLEAU T, LIST* Clauses)
     return T;
 
   if (!tab_IsEmpty(tab_RightBranch(T)) &&
-      !tab_IsEmpty(tab_LeftBranch(T))) {	   
+      !tab_IsEmpty(tab_LeftBranch(T))) {
     tab_SetRightBranch(T, tab_RemoveIncompleteSplits(tab_RightBranch(T), Clauses));
     tab_SetLeftBranch(T, tab_RemoveIncompleteSplits(tab_LeftBranch(T), Clauses));
     return T;
   }
-  if (tab_IsEmpty(tab_RightBranch(T))) 
+  if (tab_IsEmpty(tab_RightBranch(T)))
     Child = tab_LeftBranch(T);
-  else 
+  else
     Child = tab_RightBranch(T);
 
   Child = tab_RemoveIncompleteSplits(Child, Clauses);
 
-  tab_SetLeftBranch(T, tab_LeftBranch(Child));   
+  tab_SetLeftBranch(T, tab_LeftBranch(Child));
   tab_SetRightBranch(T, tab_RightBranch(Child));
 
   /* copy split data */
@@ -458,10 +451,9 @@ TABLEAU tab_RemoveIncompleteSplits(TABLEAU T, LIST* Clauses)
   return T;
 }
 
-
 void tab_CheckEmpties(TABLEAU T)
 /**************************************************************
-  INPUT:   A tableau 
+  INPUT:   A tableau
   RETURNS: Nothing.
   EFFECTS: Prints warnings if non-leaf nodes contain
            empty clauses (which should not be the case
@@ -475,7 +467,7 @@ void tab_CheckEmpties(TABLEAU T)
   if (tab_IsEmpty(T))
     return;
 
-  /* get all empty clauses in this node */ 
+  /* get all empty clauses in this node */
   Empties = list_Nil();
   for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)) {
     if (clause_IsEmptyClause(list_Car(Scan)))
@@ -486,7 +478,7 @@ void tab_CheckEmpties(TABLEAU T)
     puts("\nNOTE: non-leaf node contains empty clauses.");
     Printem = TRUE;
   }
-  
+
   if (tab_IsLeaf(T) && list_Length(Empties) > 1) {
     puts("\nNOTE: Leaf contains more than one empty clauses.");
     Printem = TRUE;
@@ -500,7 +492,6 @@ void tab_CheckEmpties(TABLEAU T)
   tab_CheckEmpties(tab_RightBranch(T));
 }
 
-
 void tab_GetAllEmptyClauses(TABLEAU T, LIST* L)
 /**************************************************************
   INPUT:   A tableau, a list by reference
@@ -509,16 +500,15 @@ void tab_GetAllEmptyClauses(TABLEAU T, LIST* L)
 {
   if (tab_IsEmpty(T))
     return;
-  
+
   tab_GetAllEmptyClauses(tab_LeftBranch(T), L);
   tab_GetAllEmptyClauses(tab_RightBranch(T), L);
 }
 
-
 void tab_GetEarliestEmptyClauses(TABLEAU T, LIST* L)
 /**************************************************************
   INPUT  : A tableau, a list of clauses by reference
-  RETURNS: Nothing. 
+  RETURNS: Nothing.
   EFFECTS: For each leaf node, adds empty clauses in
            leaf nodes to <L>. If the leaf node contains only one
 	   empty clause, it is added to <L> anyway.
@@ -532,18 +522,18 @@ void tab_GetEarliestEmptyClauses(TABLEAU T, LIST* L)
   if (tab_IsEmpty(T))
     return;
 
-  if (tab_IsLeaf(T)) {  
+  if (tab_IsLeaf(T)) {
     FirstEmpty = clause_Null();
-  
+
     for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)) {
       if (clause_IsEmptyClause(list_Car(Scan))) {
-	if (FirstEmpty == clause_Null()) 
+	if (FirstEmpty == clause_Null())
 	  FirstEmpty = list_Car(Scan);
 	else if (clause_Number(FirstEmpty) > clause_Number(list_Car(Scan)))
 	  FirstEmpty = list_Car(Scan);
       }
     }
-    
+
     if (FirstEmpty != clause_Null())
       (*L) = list_Cons(FirstEmpty, *L);
   }
@@ -554,35 +544,34 @@ void tab_GetEarliestEmptyClauses(TABLEAU T, LIST* L)
 
 void tab_ToClauseList(TABLEAU T, LIST* Proof)
 /**************************************************************
-  INPUT:   A tableau <T>, a list of clauses 
+  INPUT:   A tableau <T>, a list of clauses
   RETURNS: Nothing.
   EFFECTS: All clauses in T are added to <Proof>
 ***************************************************************/
 {
   if (tab_IsEmpty(T))
     return;
-  
+
   (*Proof) = list_Nconc(list_Copy(tab_Clauses(T)), *Proof);
 
   tab_ToClauseList(tab_LeftBranch(T),Proof);
   tab_ToClauseList(tab_RightBranch(T),Proof);
 }
 
-
 static void tab_ToSeqProofOrdered(TABLEAU T, LIST* Proof)
 /**************************************************************
-  INPUT:   A tableau <T>, a list of clauses <Proof> representing a 
+  INPUT:   A tableau <T>, a list of clauses <Proof> representing a
            proof by reference
   RETURNS: The sequential proof corresponding to the tableau.
 ***************************************************************/
 {
   LIST Scan;
   BOOL RightSplitRead, LeftSplitRead;
-  
+
   if (tab_IsEmpty(T))
     return;
 
-  Scan = tab_Clauses(T); 
+  Scan = tab_Clauses(T);
   RightSplitRead = LeftSplitRead = FALSE;
 
   while (!list_Empty(Scan)) {
@@ -595,15 +584,15 @@ static void tab_ToSeqProofOrdered(TABLEAU T, LIST* Proof)
       RightSplitRead = TRUE;
     }
     if (!LeftSplitRead && !tab_LeftBranchIsEmpty(T) &&
-	clause_Number(list_Car(Scan)) < 
+	clause_Number(list_Car(Scan)) <
 	clause_Number(tab_LeftSplitClause(T))) {
       tab_ToSeqProofOrdered(tab_LeftBranch(T), Proof);
       LeftSplitRead  = TRUE;
     }
-    (*Proof) = list_Cons(list_Car(Scan), *Proof); 
+    (*Proof) = list_Cons(list_Car(Scan), *Proof);
     Scan  = list_Cdr(Scan);
   }
-  /* if a split clause with descendants has not been inserted yet, 
+  /* if a split clause with descendants has not been inserted yet,
      it been generated after all other clauses */
 
   if (!RightSplitRead)
@@ -611,7 +600,6 @@ static void tab_ToSeqProofOrdered(TABLEAU T, LIST* Proof)
   if (!LeftSplitRead)
     tab_ToSeqProofOrdered(tab_LeftBranch(T), Proof);
 }
-
 
 /****************************************************************/
 /*  SPECIALS FOR GRAPHS                                         */
@@ -632,7 +620,6 @@ static void tab_LabelNodesRec(TABLEAU T, int* Num)
   tab_LabelNodesRec(tab_RightBranch(T), Num);
 }
 
-
 void tab_LabelNodes(TABLEAU T)
 /**************************************************************
   INPUT:   A Tableau, a number by reference
@@ -646,10 +633,9 @@ void tab_LabelNodes(TABLEAU T)
   tab_LabelNodesRec(T, &Num);
 }
 
-
 static void tab_FPrintNodeLabel(FILE *File, TABLEAU T)
 /**************************************************************
-  INPUT:   A file handle, a tableau 
+  INPUT:   A file handle, a tableau
   RETURNS: Nothing.
   EFFECTS: Prints the root node information to <File>:
            clauses, split information
@@ -658,11 +644,11 @@ static void tab_FPrintNodeLabel(FILE *File, TABLEAU T)
   LIST Scan;
 
   /* start printing of node label string */
-  
+
   fprintf(File, "\"label: %d\\n", T->Label);
-  
+
   /* print left and right parts of split */
-  fputs("SplitClause : ", File); 
+  fputs("SplitClause : ", File);
   clause_PParentsFPrint(File, tab_SplitClause(T));
   fputs("\\nLeft Clause : ", File);
   clause_PParentsFPrint(File, tab_LeftSplitClause(T));
@@ -684,14 +670,13 @@ static void tab_FPrintNodeLabel(FILE *File, TABLEAU T)
       fputs("[]", File);
     else {
       for (Scan = tab_Clauses(T); !list_Empty(Scan); Scan = list_Cdr(Scan)){
-	clause_PParentsFPrint(File, list_Car(Scan)); 
+	clause_PParentsFPrint(File, list_Car(Scan));
 	fputs("\\n", File);
       }
     }
   }
   putc('"', File); /* close string */
 }
-
 
 static void tab_FPrintEdgeCgFormat(FILE* File, int Source, int Target, BOOL Left)
 /**************************************************************
@@ -707,13 +692,12 @@ static void tab_FPrintEdgeCgFormat(FILE* File, int Source, int Target, BOOL Left
   fprintf(File, "\nsourcename: \"%d\"", Source);
   fprintf(File, "\ntargetname: \"%d\"\n", Target);
   fputs("\nlabel: \"", File);
-  if (Left) 
+  if (Left)
     putc('0', File);
   else
     putc('1', File);
   fputs("\"  }\n", File);
-} 
-
+}
 
 static void tab_FPrintEdgesCgFormat(FILE* File, TABLEAU T)
 /**************************************************************
@@ -730,18 +714,17 @@ static void tab_FPrintEdgesCgFormat(FILE* File, TABLEAU T)
     tab_FPrintEdgeCgFormat(File, T->Label, tab_LeftBranch(T)->Label, TRUE);
   if (!tab_RightBranchIsEmpty(T))
     tab_FPrintEdgeCgFormat(File, T->Label, tab_RightBranch(T)->Label, FALSE);
-  
+
   tab_FPrintEdgesCgFormat(File, tab_LeftBranch(T));
   tab_FPrintEdgesCgFormat(File, tab_RightBranch(T));
 }
-
 
 static void tab_FPrintNodesCgFormat(FILE* File, TABLEAU T)
 /**************************************************************
   INPUT:   A file handle, a tableau
   RETURNS: Nothing
   EFFECTS: Prints egde information of <T> in xvcg graph format
-           to <File>.                                            
+           to <File>.
 ***************************************************************/
 {
   if (tab_IsEmpty(T))
@@ -750,15 +733,15 @@ static void tab_FPrintNodesCgFormat(FILE* File, TABLEAU T)
   fputs("\nnode: {\n\nlabel: ", File);
   tab_FPrintNodeLabel(File, T);
   putc('\n', File); /* end label section */
-  
+
   fprintf(File, "title: \"%d\"\n", T->Label);
   fputs("  }\n", File);
-  
+
   /* recursion */
   tab_FPrintNodesCgFormat(File, tab_LeftBranch(T));
   tab_FPrintNodesCgFormat(File, tab_RightBranch(T));
-  
-} 
+
+}
 
 static void tab_FPrintCgFormat(FILE* File, TABLEAU T)
 /**************************************************************
@@ -768,23 +751,22 @@ static void tab_FPrintCgFormat(FILE* File, TABLEAU T)
 ***************************************************************/
 {
   fputs("graph: \n{\ndisplay_edge_labels: yes\n", File);
-  
+
   tab_FPrintNodesCgFormat(File, T);
-  tab_FPrintEdgesCgFormat(File, T); 
+  tab_FPrintEdgesCgFormat(File, T);
   fputs("}\n", File);
 }
 
 /* unused */
 /*static*/ void tab_PrintCgFormat(TABLEAU T)
 /**************************************************************
-  INPUT:   A tableau. 
-  RETURNS: Nothing.                                                     
+  INPUT:   A tableau.
+  RETURNS: Nothing.
   EFFECTS: Print tableau in xvcg format to stdout
 ***************************************************************/
 {
   tab_FPrintCgFormat(stdout, T);
 }
-
 
 /**************************************************************/
 /* procedures for printing graph in da Vinci format           */
@@ -792,8 +774,8 @@ static void tab_FPrintCgFormat(FILE* File, TABLEAU T)
 
 static void tab_FPrintDaVinciEdge(FILE* File, int L1, int L2)
 /**************************************************************
-  INPUT:   A file handle, two numbers 
-  RETURNS: Nothing 
+  INPUT:   A file handle, two numbers
+  RETURNS: Nothing
   EFFECTS: Print an edge in daVinci format
 ***************************************************************/
 {
@@ -802,7 +784,6 @@ static void tab_FPrintDaVinciEdge(FILE* File, int L1, int L2)
   /* print child node as reference */
   fprintf(File, "r(\"%d\")))\n", L2);
 }
-
 
 static void tab_FPrintDaVinciFormatRec(FILE* File, TABLEAU T)
 /**************************************************************
@@ -814,14 +795,14 @@ static void tab_FPrintDaVinciFormatRec(FILE* File, TABLEAU T)
   /* print node label */
   fprintf(File, "l(\"%d\",", T->Label);
   /* print node attributes */
-  fputs("n(\"\", [a(\"OBJECT\",", File); 
+  fputs("n(\"\", [a(\"OBJECT\",", File);
   tab_FPrintNodeLabel(File, T);
   fputs(")],\n", File);
-  
+
   /* print egde list  */
   putc('[', File);
-  if (!tab_LeftBranchIsEmpty(T)) 
-    tab_FPrintDaVinciEdge(File, T->Label, tab_LeftBranch(T)->Label); 
+  if (!tab_LeftBranchIsEmpty(T))
+    tab_FPrintDaVinciEdge(File, T->Label, tab_LeftBranch(T)->Label);
 
   if (!tab_RightBranchIsEmpty(T)) {
     if (!tab_LeftBranchIsEmpty(T))
@@ -840,7 +821,6 @@ static void tab_FPrintDaVinciFormatRec(FILE* File, TABLEAU T)
   }
 }
 
-
 static void tab_FPrintDaVinciFormat(FILE* File, TABLEAU T)
 /**************************************************************
   INPUT:   A file handle <File>, a tableau
@@ -853,15 +833,14 @@ static void tab_FPrintDaVinciFormat(FILE* File, TABLEAU T)
   fputs("]\n", File);
 }
 
-
 void tab_WriteTableau(TABLEAU T, const char* Filename, GRAPHFORMAT Format)
 /**************************************************************
-  INPUT:   A tableau, a filename 
+  INPUT:   A tableau, a filename
   RETURNS: Nothing.
 ***************************************************************/
 {
   FILE*  File;
-  
+
   if (Format != DAVINCI && Format != XVCG) {
     misc_StartUserErrorReport();
     misc_UserErrorReport("\nError: unknown output format for tableau.\n");
@@ -872,7 +851,7 @@ void tab_WriteTableau(TABLEAU T, const char* Filename, GRAPHFORMAT Format)
 
   if (Format == DAVINCI)
     tab_FPrintDaVinciFormat(File, T);
-  else 
+  else
     if (Format == XVCG)
       tab_FPrintCgFormat(File, T);
 

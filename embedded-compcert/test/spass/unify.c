@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                STANDARD UNIFICATION                    * */
 /* *                                                        * */
-/* *  $Module:   UNIFY                                      * */ 
+/* *  $Module:   UNIFY                                      * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "unify.h"
@@ -54,7 +53,6 @@
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 void unify_Init(void)
 /**********************************************************
@@ -76,7 +74,6 @@ void unify_Free(void)
 
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -85,7 +82,6 @@ void unify_Free(void)
 /* ********************************************************** */
 /**************************************************************/
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -93,7 +89,6 @@ void unify_Free(void)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL unify_OccurCheckCom(SYMBOL Top, CONTEXT Context, TERM Term)
 /**********************************************************
@@ -139,7 +134,6 @@ BOOL unify_OccurCheckCom(SYMBOL Top, CONTEXT Context, TERM Term)
     }
   }
 }
-
 
 BOOL unify_OccurCheck(CONTEXT CTop, SYMBOL Top, CONTEXT CTerm, TERM Term)
 /**********************************************************
@@ -195,7 +189,6 @@ BOOL unify_OccurCheck(CONTEXT CTop, SYMBOL Top, CONTEXT CTerm, TERM Term)
   }
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -203,7 +196,6 @@ BOOL unify_OccurCheck(CONTEXT CTop, SYMBOL Top, CONTEXT CTerm, TERM Term)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL unify_Unify(CONTEXT CtL, TERM TermL, CONTEXT CtR, TERM TermR)
 /**********************************************************
@@ -340,7 +332,7 @@ BOOL unify_UnifyCom(CONTEXT Context, TERM TermL, TERM TermR)
 	return FALSE;
       } else
 	cont_CreateBinding(Context, term_TopSymbol(TermL), Context, TermR);
-      
+
     } else if (term_IsVariable(TermR)) {
       if (unify_OccurCheckCom(term_TopSymbol(TermR), Context, TermL)) {
 	stack_SetBottom(Bottom);
@@ -367,8 +359,6 @@ BOOL unify_UnifyCom(CONTEXT Context, TERM TermL, TERM TermR)
     }
   }
 }
-
-
 
 BOOL unify_UnifyNoOC(CONTEXT CtL, TERM TermL, CONTEXT CtR, TERM TermR)
 /**********************************************************
@@ -408,7 +398,7 @@ BOOL unify_UnifyNoOC(CONTEXT CtL, TERM TermL, CONTEXT CtR, TERM TermR)
       if (term_IsVariable(TermR)) {
 	if (!(CtL == CtR && term_EqualTopSymbols(TermL, TermR)))
 	  cont_CreateBinding(CtR, term_TopSymbol(TermR), CtL, TermL);
-      } else 
+      } else
 	cont_CreateBinding(CtL, term_TopSymbol(TermL), CtR, TermR);
 
     } else if (term_IsVariable(TermR))
@@ -452,7 +442,6 @@ BOOL unify_UnifyNoOC(CONTEXT CtL, TERM TermL, CONTEXT CtR, TERM TermR)
   }
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -460,7 +449,6 @@ BOOL unify_UnifyNoOC(CONTEXT CtL, TERM TermL, CONTEXT CtR, TERM TermR)
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL unify_UnifyAllOC(CONTEXT IndexContext, CONTEXT CtL, TERM TermL, CONTEXT CtR, TERM TermR)
 {
@@ -493,39 +481,39 @@ BOOL unify_UnifyAllOC(CONTEXT IndexContext, CONTEXT CtL, TERM TermL, CONTEXT CtR
     } else
       break;
   }
-  
+
   if (term_IsVariable(TermL)) {
-    
+
     if (term_IsVariable(TermR)) {
       if ((CtL != CtR || !term_EqualTopSymbols(TermL, TermR))) {
 	if (term_IsIndexVariable(TermL))
 	  cont_CreateBinding(CtL, term_TopSymbol(TermL), CtR, TermR);
-	else 
+	else
 	  if (term_IsIndexVariable(TermR) || (CtR == IndexContext))
 	    cont_CreateBinding(CtR, term_TopSymbol(TermR), CtL, TermL);
 	  else
 	    cont_CreateBinding(CtL, term_TopSymbol(TermL), CtR, TermR);
       }
       return TRUE;
-    } 
-    else 
+    }
+    else
       if (unify_OccurCheck(CtL, term_TopSymbol(TermL), CtR, TermR))
 	return FALSE;
       else {
 	cont_CreateBinding(CtL, term_TopSymbol(TermL), CtR, TermR);
 	return TRUE;
       }
-  } 
-  else 
-    if (term_IsVariable(TermR)) { 
+  }
+  else
+    if (term_IsVariable(TermR)) {
       if (unify_OccurCheck(CtR, term_TopSymbol(TermR), CtL, TermL))
 	return FALSE;
       else {
 	cont_CreateBinding(CtR, term_TopSymbol(TermR), CtL, TermL);
 	return TRUE;
       }
-    } 
-    else 
+    }
+    else
       if (term_EqualTopSymbols(TermL, TermR)) {
 	if (term_IsComplex(TermL)) {
 	  LIST ArgL, ArgR;
@@ -536,11 +524,10 @@ BOOL unify_UnifyAllOC(CONTEXT IndexContext, CONTEXT CtL, TERM TermL, CONTEXT CtR
 	      return FALSE;
 	}
 	return TRUE;
-      } 
+      }
       else
 	return FALSE;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -549,7 +536,6 @@ BOOL unify_UnifyAllOC(CONTEXT IndexContext, CONTEXT CtL, TERM TermL, CONTEXT CtR
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL unify_Match(CONTEXT Context, TERM TermL, TERM TermR)
 {
@@ -578,7 +564,7 @@ BOOL unify_Match(CONTEXT Context, TERM TermL, TERM TermR)
 BOOL unify_MatchFlexible(CONTEXT Context, TERM TermL, TERM TermR)
 /**************************************************************
   INPUT:   Two terms where symbols with flexible arity are allowed.
-  RETURNS: TRUE if <TermL> matches <TermR>.        
+  RETURNS: TRUE if <TermL> matches <TermR>.
 ***************************************************************/
 {
   if (term_IsVariable(TermL)) {
@@ -588,8 +574,8 @@ BOOL unify_MatchFlexible(CONTEXT Context, TERM TermL, TERM TermR)
       cont_CreateBinding(Context, term_TopSymbol(TermL), cont_InstanceContext(), TermR);
       return TRUE;
     }
-  } else 
-    if (term_EqualTopSymbols(TermL, TermR) 
+  } else
+    if (term_EqualTopSymbols(TermL, TermR)
 	&& list_Length(term_ArgumentList(TermL)) == list_Length(term_ArgumentList(TermR))) {
       if (term_IsComplex(TermL)) {
 	LIST ArgL;
@@ -601,11 +587,10 @@ BOOL unify_MatchFlexible(CONTEXT Context, TERM TermL, TERM TermR)
 	    return FALSE;
       }
       return TRUE;
-    } 
+    }
     else
       return FALSE;
 }
-
 
 void unify_EstablishMatcher(CONTEXT Context, SUBST Subst)
 {
@@ -615,7 +600,6 @@ void unify_EstablishMatcher(CONTEXT Context, SUBST Subst)
     Subst = subst_Next(Subst);
   }
 }
-
 
 BOOL unify_MatchBindingsHelp(const CONTEXT IndexContext, TERM TermL, CONTEXT CtR, TERM TermR)
 {
@@ -672,12 +656,10 @@ BOOL unify_MatchBindingsHelp(const CONTEXT IndexContext, TERM TermL, CONTEXT CtR
     return FALSE;
 }
 
-
 BOOL unify_MatchBindings(const CONTEXT IndexContext, TERM TermL, TERM TermR)
 {
   return unify_MatchBindingsHelp(IndexContext, TermL, cont_InstanceContext(), TermR);
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -687,8 +669,7 @@ BOOL unify_MatchBindings(const CONTEXT IndexContext, TERM TermL, TERM TermR)
 /* ********************************************************** */
 /**************************************************************/
 
-
-BOOL unify_MatchReverse(const CONTEXT IndexContext, TERM TermL,	CONTEXT CtR, 
+BOOL unify_MatchReverse(const CONTEXT IndexContext, TERM TermL,	CONTEXT CtR,
 			TERM TermR)
 /*********************************************************
   INPUT:   'TermL' is in IndexContext and the codomain of a subst.,
@@ -745,7 +726,7 @@ BOOL unify_MatchReverse(const CONTEXT IndexContext, TERM TermL,	CONTEXT CtR,
       return FALSE;
 
   } else if (term_EqualTopSymbols(TermL, TermR)) {
-    
+
     if (term_IsComplex(TermL)) {
       LIST ArgL, ArgR;
       for (ArgL = term_ArgumentList(TermL), ArgR = term_ArgumentList(TermR);
@@ -762,7 +743,6 @@ BOOL unify_MatchReverse(const CONTEXT IndexContext, TERM TermL,	CONTEXT CtR,
     return FALSE;
 }
 
-
 /**************************************************************/
 /* ********************************************************** */
 /* *							    * */
@@ -770,7 +750,6 @@ BOOL unify_MatchReverse(const CONTEXT IndexContext, TERM TermL,	CONTEXT CtR,
 /* *							    * */
 /* ********************************************************** */
 /**************************************************************/
-
 
 BOOL unify_Variation(const CONTEXT Context, TERM TermL, TERM TermR)
 {
@@ -804,10 +783,9 @@ BOOL unify_Variation(const CONTEXT Context, TERM TermL, TERM TermR)
 	  return FALSE;
     }
     return TRUE;
-  } else 
+  } else
     return FALSE;
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -817,7 +795,6 @@ BOOL unify_Variation(const CONTEXT Context, TERM TermL, TERM TermR)
 /* ********************************************************** */
 /**************************************************************/
 
-
 TERM unify_ComGenLinear(const CONTEXT IndexContext,
 			SUBST* SubstL, TERM TermL, SUBST* SubstR, TERM TermR)
 {
@@ -825,9 +802,9 @@ TERM unify_ComGenLinear(const CONTEXT IndexContext,
     *SubstL = subst_Add(term_TopSymbol(TermR), term_Copy(TermL), *SubstL);
 
     return term_Copy(TermR);
-  
+
   } else if (term_EqualTopSymbols(TermL, TermR)) {
-   
+
     LIST ArgList, ArgL, ArgR;
 
     ArgList   = list_Nil();
@@ -841,17 +818,16 @@ TERM unify_ComGenLinear(const CONTEXT IndexContext,
 							SubstR,
 							list_Car(ArgR))));
     return term_Create(term_TopSymbol(TermL), ArgList);
-    
+
   } else {
-    
+
     SYMBOL Symbol;
-    
+
     Symbol  = cont_NextIndexVariable(IndexContext);
 
     *SubstL = subst_Add(Symbol, term_Copy(TermL), *SubstL);
     *SubstR = subst_Add(Symbol, term_Copy(TermR), *SubstR);
-    
+
     return term_Create(Symbol, list_Nil());
   }
 }
-

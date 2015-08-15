@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                     LISTS                              * */
 /* *                                                        * */
-/* *  $Module:   LIST                                       * */ 
+/* *  $Module:   LIST                                       * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #include "list.h"
@@ -67,7 +66,6 @@ LIST list_Copy(const LIST List)
   LIST Copy;
   LIST Scan1,Scan2;
 
- 
   if (list_Empty(List))
     return list_Nil();
 
@@ -82,7 +80,6 @@ LIST list_Copy(const LIST List)
   }
   return Copy;
 }
-
 
 LIST list_CopyWithElement(const LIST List, POINTER (*CopyElement)(POINTER))
 /**************************************************************
@@ -112,7 +109,6 @@ LIST list_CopyWithElement(const LIST List, POINTER (*CopyElement)(POINTER))
   return Copy;
 }
 
-
 void list_InsertNext(LIST List, POINTER Pointer)
 /**************************************************************
   INPUT:   A list and a pointer to anything.
@@ -133,11 +129,10 @@ void list_InsertNext(LIST List, POINTER Pointer)
   list_Rplacd(List, list_Cons(Pointer, list_Cdr(List)));
 }
 
-
 void list_NMapCar(LIST List, POINTER (*ElementFunc)(POINTER))
 /**************************************************************
   INPUT:   A List and a function for the elements.
-  RETURNS: The List where all elements are replaced by the result of 
+  RETURNS: The List where all elements are replaced by the result of
            the function calls of <ElementFunc> to the elements
   CAUTION: The List is not copied !
            The function needs time O(n*f), where <n> is the length
@@ -150,7 +145,6 @@ void list_NMapCar(LIST List, POINTER (*ElementFunc)(POINTER))
   for (Scan = List; !list_Empty(Scan); Scan = list_Cdr(Scan))
     list_Rplaca(Scan, ElementFunc(list_Car(Scan)));
 }
-
 
 void list_Apply(void (*Function)(POINTER),  LIST List)
 /**************************************************************
@@ -167,7 +161,6 @@ void list_Apply(void (*Function)(POINTER),  LIST List)
   }
 }
 
-
 LIST list_Reverse(const LIST List)
 /**************************************************************
   INPUT:   A list.
@@ -178,15 +171,14 @@ LIST list_Reverse(const LIST List)
 {
   LIST ReverseList;
   LIST Scan;
-  
+
   ReverseList = list_Nil();
 
-  for (Scan=List;!list_Empty(Scan);Scan=list_Cdr(Scan)) 
+  for (Scan=List;!list_Empty(Scan);Scan=list_Cdr(Scan))
     ReverseList = list_Cons(list_Car(Scan), ReverseList);
 
   return ReverseList;
 }
-
 
 LIST list_NReverse(LIST List)
 /**************************************************************
@@ -200,21 +192,20 @@ LIST list_NReverse(LIST List)
   LIST ReverseList;
   LIST Scan1;
   LIST Scan2;
-  
+
   ReverseList = list_Nil();
 
-  for (Scan1=List; !list_Empty(Scan1); Scan1=list_Cdr(Scan1)) 
+  for (Scan1=List; !list_Empty(Scan1); Scan1=list_Cdr(Scan1))
     ReverseList = list_Cons(list_Car(Scan1),ReverseList);
 
   for (Scan1=List, Scan2=ReverseList;
        !list_Empty(Scan1);
-       Scan1=list_Cdr(Scan1), Scan2=list_Cdr(Scan2)) 
+       Scan1=list_Cdr(Scan1), Scan2=list_Cdr(Scan2))
     list_Rplaca(Scan1, list_Car(Scan2));
 
   list_Delete(ReverseList);
   return List;
 }
-
 
 static __inline__ BOOL list_PointerLower (POINTER A, POINTER B)
 {
@@ -233,13 +224,12 @@ LIST list_PointerSort(LIST List)
   return list_Sort(List, list_PointerLower);
 }
 
-
-BOOL list_SortedInOrder(LIST L, BOOL (*Test)(POINTER, POINTER)) 
+BOOL list_SortedInOrder(LIST L, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   A list, and an ordering function.
   RETURNS: TRUE, if the list is ordered with respect to the
            ordering function, FALSE otherwise.
-  EFFECT:  The function needs time O(n), where <n> is the 
+  EFFECT:  The function needs time O(n), where <n> is the
            length of the list.
 ***************************************************************/
 {
@@ -270,8 +260,7 @@ BOOL list_SortedInOrder(LIST L, BOOL (*Test)(POINTER, POINTER))
   return TRUE;
 }
 
-
-LIST list_Merge(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER)) 
+LIST list_Merge(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   Two sorted lists List1 and List2, and an ordering function.
   RETURNS: The merged list ordered with respect to the ordering function.
@@ -344,17 +333,16 @@ LIST list_Merge(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
   return ResultStart;
 }
 
-
-void list_Split(LIST L, LIST *Half1, LIST *Half2) 
+void list_Split(LIST L, LIST *Half1, LIST *Half2)
 /**************************************************************
   INPUT:   A list, and two pointers to lists.
   RETURNS: Nothing.
-  EFFECT:  The input list is split in two. <Half1> and 
+  EFFECT:  The input list is split in two. <Half1> and
            <Half2> point to the resulting halves.
 	   The input list is destructively changed!
 	   If the list length is odd, <Half2> is assigned the
-	   bigger part. 
-	   The function needs time O(n), where <n> is the 
+	   bigger part.
+	   The function needs time O(n), where <n> is the
            length of the input list.
 ***************************************************************/
 {
@@ -371,30 +359,29 @@ void list_Split(LIST L, LIST *Half1, LIST *Half2)
     Prev = L;
     SingleStep = list_Cdr(L);
     DoubleStep = list_Cdr(SingleStep);
-    
+
     while (!list_Empty(DoubleStep) && !list_Empty(list_Cdr(DoubleStep))) {
       Prev       = SingleStep;
       SingleStep = list_Cdr(SingleStep);
       DoubleStep = list_Cdr(list_Cdr(DoubleStep));
     }
-    
+
     *Half1 = L;
     *Half2 = SingleStep;
     list_Rplacd(Prev, list_Nil());
   }
 }
 
-
-LIST list_MergeSort (LIST L, BOOL (*Test) (POINTER, POINTER)) 
+LIST list_MergeSort (LIST L, BOOL (*Test) (POINTER, POINTER))
 /**************************************************************
   INPUT:   A list, and an ordering function.
   RETURNS: The list sorted with respect to the ordering function.
-  EFFECT:  The function needs time O((n log n) * t), where 
+  EFFECT:  The function needs time O((n log n) * t), where
 	   <n> is the length of the input list and <t> is the
 	   execution time of the ordering function.
 ***************************************************************/
 {
-  LIST Result; 
+  LIST Result;
 #ifdef CHECK
   NAT  originallength;
 
@@ -415,7 +402,7 @@ LIST list_MergeSort (LIST L, BOOL (*Test) (POINTER, POINTER))
     list_Split(L, lowerhalfptr, greaterhalfptr);
 
 #ifdef CHECK
-    if((list_Length(lowerhalf) + list_Length(greaterhalf)) 
+    if((list_Length(lowerhalf) + list_Length(greaterhalf))
        != originallength) {
       /* output an error message and exit */
       misc_StartErrorReport();
@@ -430,7 +417,7 @@ LIST list_MergeSort (LIST L, BOOL (*Test) (POINTER, POINTER))
     greaterhalf = list_MergeSort(greaterhalf, Test);
 
 #ifdef CHECK
-    if((list_Length(lowerhalf) + list_Length(greaterhalf)) 
+    if((list_Length(lowerhalf) + list_Length(greaterhalf))
        != originallength) {
       /* output an error message and exit */
       misc_StartErrorReport();
@@ -441,7 +428,7 @@ LIST list_MergeSort (LIST L, BOOL (*Test) (POINTER, POINTER))
 #endif
 
     Result = list_Merge(lowerhalf, greaterhalf, Test);
-    
+
 #ifdef CHECK
     if(list_Length(Result) != originallength) {
       /* output an error message and exit */
@@ -459,7 +446,6 @@ LIST list_MergeSort (LIST L, BOOL (*Test) (POINTER, POINTER))
 
   return Result;
 }
-
 
 LIST list_InsertionSort(LIST List, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
@@ -488,14 +474,13 @@ LIST list_InsertionSort(LIST List, BOOL (*Test)(POINTER, POINTER))
   return List;
 }
 
-
 LIST list_Sort(LIST List, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   A list and a 'less' function on the elements.
   RETURNS: The same list where the elements are sorted with
            respect to Test.
-  EFFECT:  The function needs time O((n log n) *t), where <n> 
-           is the length of the list and <t> is the time for 
+  EFFECT:  The function needs time O((n log n) *t), where <n>
+           is the length of the list and <t> is the time for
 	   the test function.
   CAUTION: Destructive.
 ***************************************************************/
@@ -526,23 +511,22 @@ LIST list_Sort(LIST List, BOOL (*Test)(POINTER, POINTER))
   return Result;
 }
 
-
 /* Help Variable used to store a pointer to the numbering function to use
    in element comparisons.
 */
 static NAT (*NumberFunction)(POINTER) = NULL;
 
-static __inline__ BOOL list_PointerNumberedLower(POINTER A, POINTER B) 
+static __inline__ BOOL list_PointerNumberedLower(POINTER A, POINTER B)
 {
   return (BOOL) (NumberFunction(A) < NumberFunction(B));
 }
 
-static __inline__ BOOL list_PointerNumberedLowerOrEqual(POINTER A, POINTER B) 
+static __inline__ BOOL list_PointerNumberedLowerOrEqual(POINTER A, POINTER B)
 {
   return (BOOL) (NumberFunction(A) <= NumberFunction(B));
 }
 
-static __inline__ BOOL list_PointerNumberedGreater(POINTER A, POINTER B) 
+static __inline__ BOOL list_PointerNumberedGreater(POINTER A, POINTER B)
 {
   return (BOOL) (NumberFunction(A) > NumberFunction(B));
 }
@@ -552,13 +536,13 @@ LIST list_NumberSort(LIST List, NAT (*Number)(POINTER))
   INPUT:   A list and function mapping elements to numbers.
   RETURNS: The same list where the elements are sorted with
            respect to < and the Number function.
-  EFFECT:  The function needs time O((n log n) * f), where <n> 
-           is the length of the list and <f> is the time for a 
+  EFFECT:  The function needs time O((n log n) * f), where <n>
+           is the length of the list and <f> is the time for a
 	   call of the <Number> function.
   CAUTION: Destructive.
 ***************************************************************/
 {
-  /* Use number function as temporary variable. It is used as 
+  /* Use number function as temporary variable. It is used as
      an implicit parameter in list_PointerLower.
      We can't make it an explicit parameter, because of the
      prototype of list_Sort.
@@ -570,19 +554,18 @@ LIST list_NumberSort(LIST List, NAT (*Number)(POINTER))
 
 }
 
-
 LIST list_GreaterNumberSort(LIST List, NAT (*Number)(POINTER))
 /**************************************************************
   INPUT:   A list and function mapping elements to numbers.
-  RETURNS: The same list where the elements are sorted with 
+  RETURNS: The same list where the elements are sorted with
            respect to > and the Number function.
-  EFFECT:  The function needs time O((n log n) * f), where <n> 
-           is the length of the list and <f> is the time for a 
+  EFFECT:  The function needs time O((n log n) * f), where <n>
+           is the length of the list and <f> is the time for a
 	   call of the <Number> function.
   CAUTION: Destructive.
 ***************************************************************/
 {
-  /* Use number function as temporary variable. It is used as 
+  /* Use number function as temporary variable. It is used as
      an implicit parameter in list_PointerLower.
      We can't make it an explicit parameter, because of the
      prototype of list_Sort.
@@ -592,7 +575,6 @@ LIST list_GreaterNumberSort(LIST List, NAT (*Number)(POINTER))
 
   return list_Sort(List, list_PointerNumberedGreater);
 }
-
 
 LIST list_NNumberMerge(LIST List1, LIST List2, NAT (*Number)(POINTER))
 /**************************************************************
@@ -607,7 +589,6 @@ LIST list_NNumberMerge(LIST List1, LIST List2, NAT (*Number)(POINTER))
 
   return list_Merge(List1, List2, list_PointerNumberedLowerOrEqual);
 }
-      
 
 POINTER list_DequeueNext(LIST List)
 /**************************************************************
@@ -626,13 +607,12 @@ POINTER list_DequeueNext(LIST List)
   Memo = list_Cdr(List);
   if (list_Empty(Memo))
     return NULL;
-      
+
   Pointer = list_Car(Memo);
   list_Rplacd(List, Memo->cdr);
   list_Free(Memo);
   return Pointer;
 }
-
 
 POINTER list_NthElement(LIST List, NAT Number)
 /**************************************************************
@@ -643,13 +623,12 @@ POINTER list_NthElement(LIST List, NAT Number)
 {
   while (!list_Empty(List) && --Number > 0)
     List = list_Cdr(List);
-  
+
   if (list_Empty(List))
     return NULL;
   else
     return list_Car(List);
 }
-
 
 void list_DeleteWithElement(LIST List, void (*ElementDelete)(POINTER))
 /**************************************************************
@@ -669,7 +648,6 @@ void list_DeleteWithElement(LIST List, void (*ElementDelete)(POINTER))
     List = Scan;
   }
 }
-
 
 NAT list_DeleteWithElementCount(LIST List, void (*ElementDelete)(POINTER))
 /**************************************************************
@@ -696,12 +674,11 @@ NAT list_DeleteWithElementCount(LIST List, void (*ElementDelete)(POINTER))
   return Result;
 }
 
-
 LIST list_DeleteElement(LIST List, POINTER Element, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
-  INPUT:   A list, an element pointer, an equality test for 
+  INPUT:   A list, an element pointer, an equality test for
            elements
-  RETURNS: The list where Element is deleted from List with 
+  RETURNS: The list where Element is deleted from List with
            respect to Test.
   EFFECTS: If List contains Element with respect to EqualityTest,
            Element is deleted from List
@@ -720,7 +697,7 @@ LIST list_DeleteElement(LIST List, POINTER Element, BOOL (*Test)(POINTER, POINTE
 
   if (list_Empty(List))
     return list_Nil();
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -737,7 +714,6 @@ LIST list_DeleteElement(LIST List, POINTER Element, BOOL (*Test)(POINTER, POINTE
   }
   return List;
 }
-
 
 LIST list_DeleteElementIf(LIST List, BOOL (*Test)(POINTER))
 /**************************************************************
@@ -757,9 +733,9 @@ LIST list_DeleteElementIf(LIST List, BOOL (*Test)(POINTER))
     List = Scan1;
   }
 
-  if (list_Empty(List)) 
+  if (list_Empty(List))
     return list_Nil();
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -776,7 +752,6 @@ LIST list_DeleteElementIf(LIST List, BOOL (*Test)(POINTER))
   }
   return List;
 }
-
 
 LIST list_DeleteElementIfFree(LIST List, BOOL (*Test)(POINTER),
 			      void (*Delete)(POINTER))
@@ -801,7 +776,7 @@ LIST list_DeleteElementIfFree(LIST List, BOOL (*Test)(POINTER),
 
   if (list_Empty(List))
     return list_Nil();
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -819,8 +794,6 @@ LIST list_DeleteElementIfFree(LIST List, BOOL (*Test)(POINTER),
   }
   return List;
 }
-
-
 
 LIST list_DeleteElementFree(LIST List, POINTER Element,
 			    BOOL (*Test)(POINTER, POINTER),
@@ -847,7 +820,7 @@ LIST list_DeleteElementFree(LIST List, POINTER Element,
 
   if (list_Empty(List))
     return list_Nil();
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -865,7 +838,6 @@ LIST list_DeleteElementFree(LIST List, POINTER Element,
   }
   return List;
 }
-
 
 LIST list_DeleteOneElement(LIST List, POINTER Element, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
@@ -891,7 +863,7 @@ LIST list_DeleteOneElement(LIST List, POINTER Element, BOOL (*Test)(POINTER, POI
     if (Test(Element, list_Car(List)))
       return list_Pop(List);
   }
-  
+
   for (scan2 = List, scan1 = list_Cdr(List); !list_Empty(scan1);
        scan2 = scan1, scan1 = list_Cdr(scan1)) {
     if (Test(Element, list_Car(scan1))) {
@@ -903,7 +875,6 @@ LIST list_DeleteOneElement(LIST List, POINTER Element, BOOL (*Test)(POINTER, POI
   }
   return List;
 }
-
 
 LIST list_PointerDeleteElement(LIST List, POINTER Element)
 /**************************************************************
@@ -927,7 +898,7 @@ LIST list_PointerDeleteElement(LIST List, POINTER Element)
 
   if (list_Empty(List))
     return list_Nil();
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -955,12 +926,12 @@ LIST list_PointerDeleteElementFree(LIST List, POINTER Element,
   EFFECTS: If List contains Element with respect to pointer
            equality, Element is deleted from List
   CAUTION: Destructive. Be careful, the first element of a list
-           cannot be changed destructively by call by 
+           cannot be changed destructively by call by
 	   reference.
 ***************************************************************/
 {
   LIST   Scan1,Scan2;
-  
+
   while (!list_Empty(List) && Element == list_Car(List)) {
     Scan1 = list_Cdr(List);
     Free(list_Car(List));
@@ -970,7 +941,7 @@ LIST list_PointerDeleteElementFree(LIST List, POINTER Element,
 
   if (list_Empty(List))
     return list_Nil();
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -988,12 +959,11 @@ LIST list_PointerDeleteElementFree(LIST List, POINTER Element,
   }
   return List;
 }
- 
 
 LIST list_PointerDeleteOneElement(LIST List, POINTER Element)
 /**************************************************************
   INPUT:   A list and an element pointer.
-  RETURNS: The list where one occurrence of Element is deleted from List 
+  RETURNS: The list where one occurrence of Element is deleted from List
            with respect to pointer equality.
   EFFECTS: If List contains Element with respect to pointer equality,
            Element is deleted from List.
@@ -1009,7 +979,7 @@ LIST list_PointerDeleteOneElement(LIST List, POINTER Element)
     if (Element == list_Car(List))
       return list_Pop(List);
   }
-  
+
   Scan2 = List;
   Scan1 = list_Cdr(List);
 
@@ -1025,9 +995,8 @@ LIST list_PointerDeleteOneElement(LIST List, POINTER Element)
       Scan1 = list_Cdr(Scan1);
     }
   }
-  return List;     
+  return List;
 }
-
 
 BOOL list_DeleteFromList(LIST* List, POINTER Element)
 /**************************************************************
@@ -1073,7 +1042,6 @@ BOOL list_DeleteFromList(LIST* List, POINTER Element)
   return Found;
 }
 
-
 BOOL list_DeleteOneFromList(LIST* List, POINTER Element)
 /**************************************************************
   INPUT:   A list and an element pointer
@@ -1111,7 +1079,6 @@ BOOL list_DeleteOneFromList(LIST* List, POINTER Element)
   return FALSE;
 }
 
-
 BOOL list_IsSetOfPointers(LIST L)
 /**************************************************************
   INPUT:   A list.
@@ -1129,7 +1096,6 @@ BOOL list_IsSetOfPointers(LIST L)
   return TRUE;
 }
 
-
 LIST list_DeleteDuplicates(LIST List, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   A list, an equality test for elements
@@ -1138,7 +1104,7 @@ LIST list_DeleteDuplicates(LIST List, BOOL (*Test)(POINTER, POINTER))
 ***************************************************************/
 {
   LIST Scan;
-  
+
   Scan = List;
 
   while (!list_Empty(Scan)) {
@@ -1149,8 +1115,7 @@ LIST list_DeleteDuplicates(LIST List, BOOL (*Test)(POINTER, POINTER))
   return List;
 }
 
-
-LIST list_DeleteDuplicatesFree(LIST List, BOOL (*Test)(POINTER, POINTER), 
+LIST list_DeleteDuplicatesFree(LIST List, BOOL (*Test)(POINTER, POINTER),
 			       void (*Free)(POINTER))
 /**************************************************************
   INPUT:   A list, an equality test for elements, and a free
@@ -1160,7 +1125,7 @@ LIST list_DeleteDuplicatesFree(LIST List, BOOL (*Test)(POINTER, POINTER),
 ***************************************************************/
 {
   LIST Scan;
-  
+
   Scan = List;
 
   while (!list_Empty(Scan)) {
@@ -1170,17 +1135,16 @@ LIST list_DeleteDuplicatesFree(LIST List, BOOL (*Test)(POINTER, POINTER),
   return List;
 }
 
-
 LIST list_PointerDeleteDuplicates(LIST List)
 /**************************************************************
   INPUT:   A list
   RETURNS: The list where multiple occurrences are deleted.
   CAUTION: Destructive.
-  EFFECT:  The function needs 
+  EFFECT:  The function needs
 ***************************************************************/
 {
   LIST Scan;
-  
+
   Scan = List;
 
   while (!list_Empty(Scan)) {
@@ -1190,7 +1154,6 @@ LIST list_PointerDeleteDuplicates(LIST List)
   }
   return List;
 }
-
 
 LIST list_NPointerUnion(LIST List1, LIST List2)
 /**************************************************************
@@ -1202,7 +1165,6 @@ LIST list_NPointerUnion(LIST List1, LIST List2)
   return list_PointerDeleteDuplicates(list_Nconc(List1,List2));
 }
 
-
 LIST list_NUnion(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   Two lists and an equality test for the elements.
@@ -1212,7 +1174,6 @@ LIST list_NUnion(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 {
   return list_DeleteDuplicates(list_Nconc(List1,List2), Test);
 }
-
 
 LIST list_NListTimes(LIST List1, LIST List2)
 /**************************************************************
@@ -1238,7 +1199,6 @@ LIST list_NListTimes(LIST List1, LIST List2)
   return Result;
 }
 
-
 LIST list_NIntersect(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   Two lists and an equality test for the elements.
@@ -1247,7 +1207,7 @@ LIST list_NIntersect(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 ***************************************************************/
 {
   LIST Scan1, Scan2;
-  
+
   while (!list_Empty(List1) && !list_Member(List2, list_Car(List1), Test)) {
     Scan1 = list_Cdr(List1);
     list_Free(List1);
@@ -1274,7 +1234,6 @@ LIST list_NIntersect(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
   return List1;
 }
 
-
 LIST list_NPointerIntersect(LIST List1, LIST List2)
 /**************************************************************
   INPUT:   Two lists.
@@ -1283,7 +1242,7 @@ LIST list_NPointerIntersect(LIST List1, LIST List2)
 ***************************************************************/
 {
   LIST Scan1, Scan2;
-  
+
   while (!list_Empty(List1) && !list_PointerMember(List2, list_Car(List1))) {
     Scan1 = list_Cdr(List1);
     list_Free(List1);
@@ -1309,7 +1268,6 @@ LIST list_NPointerIntersect(LIST List1, LIST List2)
   }
   return List1;
 }
-
 
 void list_NInsert(LIST List1, LIST List2)
 /**************************************************************
@@ -1340,7 +1298,6 @@ void list_NInsert(LIST List1, LIST List2)
   list_Rplacd(List2,Help);
 }
 
-      
 BOOL list_HasIntersection(LIST List1, LIST List2)
 /**************************************************************
   INPUT:   Two lists .
@@ -1348,7 +1305,7 @@ BOOL list_HasIntersection(LIST List1, LIST List2)
   EFFECT:  The function needs time O(n*m), where n and m are the
            lengths of the lists.
 ***************************************************************/
-{ 
+{
   LIST Scan;
 
   if (!list_Empty(List2)) {
@@ -1359,14 +1316,13 @@ BOOL list_HasIntersection(LIST List1, LIST List2)
   return FALSE;
 }
 
-
 LIST list_NPointerDifference(LIST List1, LIST List2)
 /**************************************************************
   INPUT:   Two lists.
   RETURNS: The list List1-List2.
   CAUTION: Destructive on List1.
 ***************************************************************/
-{ 
+{
   LIST Scan;
 
   if (!list_Empty(List1)) {
@@ -1376,23 +1332,21 @@ LIST list_NPointerDifference(LIST List1, LIST List2)
   return List1;
 }
 
-
 LIST list_NDifference(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
   INPUT:   Two lists and an equality test for elements.
   RETURNS: The list List1-List2 wrt. <Test>.
   CAUTION: Destructive on List1.
 ***************************************************************/
-{ 
+{
   LIST Scan;
-  
+
   if (!list_Empty(List1)) {
     for (Scan=List2; !list_Empty(Scan); Scan=list_Cdr(Scan))
       List1 = list_DeleteElement(List1, list_Car(Scan), Test);
   }
   return List1;
 }
-
 
 LIST list_NMultisetDifference(LIST List1, LIST List2, BOOL (*Test)(POINTER, POINTER))
 /**************************************************************
@@ -1414,7 +1368,6 @@ LIST list_NMultisetDifference(LIST List1, LIST List2, BOOL (*Test)(POINTER, POIN
   return List1;
 }
 
-    
 BOOL list_PointerReplaceMember(LIST List, POINTER Old, POINTER New)
 /**************************************************************
   INPUT:   A list, a pointer to an old element, a pointer to a new element
@@ -1430,9 +1383,8 @@ BOOL list_PointerReplaceMember(LIST List, POINTER Old, POINTER New)
     List = list_Cdr(List);
   }
   return FALSE;
-}   
+}
 
-  
 void list_DeleteAssocListWithValues(LIST List, void (*ValueDelete)(POINTER))
 /**************************************************************
   INPUT:   An association list and a delete function for the values.
@@ -1450,7 +1402,6 @@ void list_DeleteAssocListWithValues(LIST List, void (*ValueDelete)(POINTER))
   list_Delete(List);
 }
 
-
 POINTER list_AssocListValue(LIST List, POINTER Key)
 /**************************************************************
   INPUT:   An association list and a key.
@@ -1466,7 +1417,6 @@ POINTER list_AssocListValue(LIST List, POINTER Key)
 
   return NULL;
 }
-
 
 LIST list_AssocListPair(LIST List, POINTER Key)
 /**************************************************************
@@ -1484,11 +1434,10 @@ LIST list_AssocListPair(LIST List, POINTER Key)
   return list_PairNull();
 }
 
-
-LIST list_MultisetDistribution(LIST Multiset) 
+LIST list_MultisetDistribution(LIST Multiset)
 /**************************************************************
   INPUT:   A list representing a multiset.
-  RETURNS: The associative list of pairs (<element>.<occurrences>) 
+  RETURNS: The associative list of pairs (<element>.<occurrences>)
            representing the distribution of elements in the list.
 	   If the input multiset is empty, the NULL pair.
 ***************************************************************/
@@ -1518,10 +1467,9 @@ LIST list_MultisetDistribution(LIST Multiset)
   return Distribution;
 }
 
-
-int list_CompareElementDistribution(LIST LeftPair, LIST RightPair) 
+int list_CompareElementDistribution(LIST LeftPair, LIST RightPair)
 /**************************************************************
-  INPUT:   Two lists, representing single element frequency 
+  INPUT:   Two lists, representing single element frequency
            counts.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
   EFFECT:  Compares two element frequencies.
@@ -1537,10 +1485,9 @@ int list_CompareElementDistribution(LIST LeftPair, LIST RightPair)
   return 0;
 }
 
-
 BOOL list_CompareElementDistributionLEQ(LIST LeftPair, LIST RightPair) {
 /**************************************************************
-  INPUT:   Two lists, representing single element frequency 
+  INPUT:   Two lists, representing single element frequency
            counts.
   RETURNS: TRUE if left <= right, FALSE otherwise.
   EFFECT:  Compares two element frequencies.
@@ -1548,12 +1495,11 @@ BOOL list_CompareElementDistributionLEQ(LIST LeftPair, LIST RightPair) {
   return (list_CompareElementDistribution(LeftPair, RightPair) <= 0);
 }
 
-
-static int list_CompareDistributions(LIST Left, LIST Right) 
+static int list_CompareDistributions(LIST Left, LIST Right)
 /**************************************************************
   INPUT:   Two lists, representing element distributions.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
-  EFFECT:  Compares the two distributions by comparing the 
+  EFFECT:  Compares the two distributions by comparing the
            element frequencies from left to right.
   CAUTION: Expects the distributions to be sorted.
 ***************************************************************/
@@ -1573,7 +1519,7 @@ static int list_CompareDistributions(LIST Left, LIST Right)
     if (result != 0) {
       break;
     }
-    
+
     scan  = list_Cdr(scan);
     scan2 = list_Cdr(scan2);
   }
@@ -1591,13 +1537,12 @@ static int list_CompareDistributions(LIST Left, LIST Right)
   return result;
 }
 
-
-int list_CompareMultisetsByElementDistribution(LIST Left, LIST Right) 
+int list_CompareMultisetsByElementDistribution(LIST Left, LIST Right)
 /**************************************************************
   INPUT:   Two lists, representing multisets.
   RETURNS: 1 if left > right, -1 if left < right, 0 otherwise.
-  EFFECT:  Compares two multisets by counting their element 
-           frequencies, sorting them, and comparing the 
+  EFFECT:  Compares two multisets by counting their element
+           frequencies, sorting them, and comparing the
 	   resulting multisets over natural numbers.
 ***************************************************************/
 {
@@ -1611,8 +1556,8 @@ int list_CompareMultisetsByElementDistribution(LIST Left, LIST Right)
   lmsd = list_MultisetDistribution(Left);
   rmsd = list_MultisetDistribution(Right);
 
-  /* Sort multiset distributions in order 
-     to make them comparable. 
+  /* Sort multiset distributions in order
+     to make them comparable.
    */
 
   lmsd = list_Sort(lmsd, (BOOL (*) (POINTER, POINTER)) list_CompareElementDistributionLEQ);
@@ -1625,7 +1570,6 @@ int list_CompareMultisetsByElementDistribution(LIST Left, LIST Right)
 
   return result;
 }
-
 
 NAT list_Length(LIST List)
 /**************************************************************
@@ -1646,7 +1590,6 @@ NAT list_Length(LIST List)
 
   return Result;
 }
-
 
 NAT list_Bytes(LIST List)
 /**************************************************************

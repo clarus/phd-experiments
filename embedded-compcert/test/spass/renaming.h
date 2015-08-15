@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                   RENAMING                             * */
 /* *                                                        * */
-/* *  $Module:   REN                                        * */ 
+/* *  $Module:   REN                                        * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,9 +42,7 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #ifndef _SPASS_RENAMING_
 #define _SPASS_RENAMING_
@@ -76,11 +74,9 @@ typedef struct {
 /*             be replaced                                             */
 /* <polarity>  is the most general polarity of <hit> and all <matches> */
 
- 
 /**************************************************************/
 /* Functions                                                 */
 /**************************************************************/
-
 
 static __inline__ int ren_OverallPolarity(RENAMING ren)
 {
@@ -122,8 +118,6 @@ static __inline__ void ren_SetGeneral(RENAMING ren, BOOL general)
   ren->general = general;
 }
 
-
-
 static __inline__ RENAMING ren_Create(TERM hit, LIST matches, int polarity)
 /**************************************************************
   INPUT:   A formula, a list of further matching formulae
@@ -155,7 +149,6 @@ static __inline__ void ren_Delete(RENAMING ren)
   list_Delete(ren->matches);
   memory_Free(ren,sizeof(RENAMING_NODE));
 }
-
 
 /**************************************************************/
 /* Function Prototypes                                        */

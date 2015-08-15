@@ -17,7 +17,7 @@
 @     * Neither the name of the <organization> nor the
 @       names of its contributors may be used to endorse or promote products
 @       derived from this software without specific prior written permission.
-@ 
+@
 @ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 @ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 @ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,8 +36,8 @@
 
         .text
 
-@@@ Signed division	
-	
+@@@ Signed division
+
 	.global __i64_sdiv
 __i64_sdiv:
         push {r4, r5, r6, r7, r8, r10, lr}
@@ -63,4 +63,3 @@ __i64_sdiv:
         bx lr
 	.type __i64_sdiv, %function
 	.size __i64_sdiv, . - __i64_sdiv
-	

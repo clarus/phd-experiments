@@ -42,9 +42,7 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #ifndef _TERM_
 #define _TERM_
@@ -76,7 +74,6 @@ typedef struct term {
   NAT    size;
 } *TERM, TERM_NODE;
 
-
 /* Data Structures and Macros for Marking of variables, used in */
 /* all functions extracting variables from terms.               */
 
@@ -98,24 +95,20 @@ static __inline__ NAT term_NullMark(void)
   return 0;
 }
 
-
 static __inline__ NAT term_BindingMark(SYMBOL Var)
 {
   return (NAT) term_BIND[symbol_VarIndex(Var)][0];
 }
-
 
 static __inline__ void term_SetBindingMark(SYMBOL Var, NAT Mark)
 {
   term_BIND[symbol_VarIndex(Var)][0] = (POINTER) Mark;
 }
 
-
 static __inline__ POINTER term_BindingValue(SYMBOL Var)
 {
   return term_BIND[symbol_VarIndex(Var)][1];
 }
-
 
 static __inline__ void term_SetBindingValue(SYMBOL Var, POINTER Value)
 {
@@ -138,12 +131,10 @@ static __inline__ void term_CreateValueBinding(SYMBOL Var, NAT Mark, POINTER Val
   term_SetBindingValue(Var, Value);
 }
 
-
 static __inline__ BOOL term_VarIsMarked(SYMBOL Var, NAT Mark)
 {
   return term_BindingMark(Var) >= Mark;
 }
-
 
 static __inline__ NAT term_ActMark(void)
 {
@@ -158,7 +149,6 @@ static __inline__ NAT term_ActMark(void)
   return MarkVar;
 }
 
-
 static __inline__ void term_NewMark(void)
 {
   if (term_MARK == NAT_MAX) {
@@ -170,12 +160,10 @@ static __inline__ void term_NewMark(void)
   term_MARK++;
 }
 
-
 static __inline__ NAT term_OldMark(void)
 {
   return term_MARK - 1;
 }
-
 
 /**************************************************************/
 /* Macros                                                     */
@@ -191,84 +179,70 @@ static __inline__ SYMBOL term_TopSymbol(TERM T)
   return T->symbol;
 }
 
-
 static __inline__ void term_RplacTop(TERM T, SYMBOL S)
 {
   T->symbol = S;
 }
-
 
 static __inline__ LIST term_SupertermList(TERM T)
 {
   return T->super.termlist;
 }
 
-
 static __inline__ void term_RplacSupertermList(TERM T, LIST L)
 {
   T->super.termlist = L;
 }
-
 
 static __inline__ LIST term_AtomsLiterals(TERM T)
 {
   return T->super.termlist;
 }
 
-
 static __inline__ TERM term_Superterm(TERM T)
 {
   return T->super.term;
 }
-
 
 static __inline__ void term_RplacSuperterm(TERM T1, TERM T2)
 {
   T1->super.term = T2;
 }
 
-
 static __inline__ BOOL term_IsVariable(TERM T)
 {
   return symbol_IsVariable(term_TopSymbol(T));
 }
-
 
 static __inline__ BOOL term_IsStandardVariable(TERM T)
 {
   return symbol_IsStandardVariable(term_TopSymbol(T));
 }
 
-
 static __inline__ BOOL term_IsIndexVariable(TERM T)
 {
   return symbol_IsIndexVariable(term_TopSymbol(T));
 }
-
 
 static __inline__ LIST term_ArgumentList(TERM T)
 {
   return T->args;
 }
 
-
 static __inline__ void term_RplacArgumentList(TERM T, LIST A)
 {
   T->args = A;
 }
-
 
 static __inline__ BOOL term_IsComplex(TERM T)
 {
   return term_ArgumentList(T) != NULL;
 }
 
-
 static __inline__ BOOL term_IsConstant(TERM T)
 {
   return !term_IsComplex(T) && !term_IsVariable(T);
 }
-
 
 static __inline__ BOOL term_IsAtom(TERM T)
 {
@@ -284,42 +258,35 @@ static __inline__ BOOL term_IsDeclaration(TERM Term)
   return (term_IsAtom(Term) && symbol_IsBaseSort(term_TopSymbol(Term)));
 }
 
-
 static __inline__ TERM term_FirstArgument(TERM T)
 {
   return (TERM) list_First(T->args);
 }
-
 
 static __inline__ void term_RplacFirstArgument(TERM T1, TERM T2)
 {
   list_Rplaca(T1->args, T2);
 }
 
-
 static __inline__ TERM term_SecondArgument(TERM T)
 {
   return (TERM) list_Second(T->args);
 }
-
 
 static __inline__ void term_RplacSecondArgument(TERM T1, TERM T2)
 {
   list_RplacSecond(T1->args, T2);
 }
 
-
 static __inline__ void term_Free(TERM T)
 {
   memory_Free((char*) T, sizeof(TERM_NODE));
 }
 
-
 static __inline__ BOOL term_EqualTopSymbols(TERM T, TERM S)
 {
   return symbol_Equal(term_TopSymbol(T), term_TopSymbol(S));
 }
-
 
 static __inline__ void term_EqualitySwap(TERM T)
 {
@@ -328,7 +295,6 @@ static __inline__ void term_EqualitySwap(TERM T)
   list_Rplaca(term_ArgumentList(T), (POINTER) term_SecondArgument(T));
   list_Rplaca(list_Cdr(term_ArgumentList(T)), (POINTER) Aux);
 }
-
 
 /**************************************************************/
 /* Macros and Variables for the term's stamp                  */
@@ -349,7 +315,6 @@ static __inline__ BOOL term_StampBlocked(void)
 {
   return term_STAMPBLOCKED;
 }
-
 
 #ifdef CHECK
 
@@ -377,7 +342,6 @@ static __inline__ void term_StopStamp(void)
 { }
 
 #endif
-
 
 static __inline__ NAT term_TermStamp(TERM T)
 {
@@ -419,7 +383,6 @@ static __inline__ BOOL term_StampAlreadyReset(TERM T)
   return T->stamp == 0;
 }
 
-
 /**************************************************************/
 /* Functions on Term Creation And Deletion                    */
 /**************************************************************/
@@ -446,7 +409,6 @@ BOOL  term_AllArgsAreVar(TERM);
 int   term_CompareBySymbolOccurences(TERM, TERM);
 int   term_CompareAbstract(TERM, TERM);
 BOOL  term_CompareAbstractLEQ(TERM, TERM);
-
 
 /**************************************************************/
 /* Low Level Term Functions                                   */
@@ -489,7 +451,7 @@ static __inline__ LIST term_CopyTermList(LIST List)
 static __inline__ void term_CopyTermsInList(LIST List)
 /**************************************************************
   INPUT:   A list of TERMs.
-  EFFECT:  Replaces every term in the list with its copy. 
+  EFFECT:  Replaces every term in the list with its copy.
 ***************************************************************/
 {
   list_NMapCar(List, (POINTER (*)(POINTER)) term_Copy);
@@ -526,7 +488,6 @@ static __inline__ LIST term_DeleteDuplicatesFromList(LIST List)
   return list_DeleteDuplicates(List, (BOOL (*)(POINTER, POINTER))term_Equal);
 }
 
-
 static __inline__ LIST term_DestroyDuplicatesInList(LIST Terms)
 /**************************************************************
   INPUT:   A list of terms.
@@ -539,8 +500,6 @@ static __inline__ LIST term_DestroyDuplicatesInList(LIST Terms)
 				   (void (*)(POINTER))term_Delete);
 }
 
-
-
 /**************************************************************/
 /* Term Input and Output Functions                            */
 /**************************************************************/
@@ -550,7 +509,6 @@ void   term_PrettyPrint(TERM);
 void   term_FPrint(FILE*, TERM);
 void   term_TermListPrint(LIST);
 void   term_TermListFPrint(FILE*, LIST);
-
 
 void   term_PrintPrefix(TERM);
 void   term_FPrintPrefix(FILE*, TERM);
@@ -607,6 +565,5 @@ void   term_SetTermSubtermStamp(TERM T);
 
 NAT    term_GetStampID(void);
 BOOL   term_StampOverflow(NAT);
-
 
 #endif

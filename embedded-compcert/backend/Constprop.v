@@ -137,22 +137,22 @@ Fixpoint eval_load_init (chunk: memory_chunk) (pos: Z) (il: list init_data): app
         end
       else eval_load_init chunk (pos - 2) il'
   | Init_int32 n :: il' =>
-      if zeq pos 0 
+      if zeq pos 0
       then match chunk with Mint32 => I n | _ => Unknown end
       else eval_load_init chunk (pos - 4) il'
   | Init_int64 n :: il' =>
-      if zeq pos 0 
+      if zeq pos 0
       then match chunk with Mint64 => L n | _ => Unknown end
       else eval_load_init chunk (pos - 8) il'
   | Init_float32 n :: il' =>
       if zeq pos 0
-      then match chunk with 
+      then match chunk with
            | Mfloat32 => if propagate_float_constants tt then F (Float.singleoffloat n) else Unknown
            | _ => Unknown
            end
       else eval_load_init chunk (pos - 4) il'
   | Init_float64 n :: il' =>
-      if zeq pos 0 
+      if zeq pos 0
       then match chunk with
            | Mfloat64 => if propagate_float_constants tt then F n else Unknown
            | _ => Unknown
@@ -190,7 +190,7 @@ Definition eval_static_load (gapp: global_approx) (chunk: memory_chunk) (addr: a
   Other instructions keep the approximations unchanged, as they preserve
   the values of all registers. *)
 
-Definition approx_reg (app: D.t) (r: reg) := 
+Definition approx_reg (app: D.t) (r: reg) :=
   D.get r app.
 
 Definition approx_regs (app: D.t) (rl: list reg):=
@@ -240,7 +240,7 @@ Module DS := Dataflow_Solver(D)(NodeSetForward).
 
 Definition analyze (gapp: global_approx) (f: RTL.function): PMap.t D.t :=
   let lu := Liveness.last_uses f in
-  match DS.fixpoint (successors f) (transfer' gapp f lu) 
+  match DS.fixpoint (successors f) (transfer' gapp f lu)
                     ((f.(fn_entrypoint), D.top) :: nil) with
   | None => PMap.init D.top
   | Some res => res
@@ -374,11 +374,11 @@ Definition transf_instr (gapp: global_approx) (f: function) (apps: PMap.t D.t)
           Iop cop nil dst s
       | None =>
           let (addr', args') := addr_strength_reduction addr args (approx_regs app args) in
-          Iload chunk addr' args' dst s      
+          Iload chunk addr' args' dst s
       end
   | Istore chunk addr args src s =>
       let (addr', args') := addr_strength_reduction addr args (approx_regs app args) in
-      Istore chunk addr' args' src s      
+      Istore chunk addr' args' src s
   | Icall sig ros args res s =>
       Icall sig (transf_ros app ros) args res s
   | Itailcall sig ros args =>

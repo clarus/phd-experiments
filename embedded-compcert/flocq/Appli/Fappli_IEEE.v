@@ -317,14 +317,11 @@ rewrite <- F2R_opp.
 now case sx.
 Qed.
 
-
 Theorem is_finite_Bopp: forall x,
   is_finite (Bopp x) = is_finite x.
 Proof.
 now intros [| | |].
 Qed.
-
-
 
 Theorem bounded_lt_emax :
   forall mx ex,
@@ -958,7 +955,6 @@ Proof.
 intros m [sx|sx| |sx mx ex Hx] [sy|sy| |sy my ey Hy] ; try easy.
 apply B2FF_FF2B.
 Qed.
-
 
 Definition shl_align mx ex ex' :=
   match (ex' - ex)%Z with

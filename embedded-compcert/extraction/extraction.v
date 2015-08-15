@@ -130,5 +130,3 @@ Separate Extraction
    RTL.instr_defs RTL.instr_uses
    Machregs.mregs_for_operation Machregs.mregs_for_builtin
    Machregs.two_address_op.
-
-

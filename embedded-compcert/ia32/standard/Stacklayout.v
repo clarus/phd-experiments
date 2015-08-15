@@ -127,4 +127,3 @@ Proof.
   assert (4 | x8). unfold x8; apply Zdivide_plus_r; auto. exists 1; auto.
   tauto.
 Qed.
-

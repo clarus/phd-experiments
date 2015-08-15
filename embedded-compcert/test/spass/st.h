@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                    ST INDEXING                         * */
 /* *                                                        * */
-/* *  $Module:   ST                                         * */ 
+/* *  $Module:   ST                                         * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,7 +42,6 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
 
 #ifndef _ST_
@@ -72,7 +71,6 @@ typedef enum {st_STANDARD, st_NOC} st_WHERE_TYPE;
 
 typedef unsigned short int st_MINMAX;
 
-
 /**************************************************************/
 /* Type st_INDEX and Inline Functions                         */
 /**************************************************************/
@@ -83,7 +81,6 @@ typedef struct st {
   LIST      entries;
   st_MINMAX max, min;
 } st_INDEX_NODE, *st_INDEX;
-
 
 static __inline__ st_INDEX st_Get(void)
 {
@@ -169,10 +166,8 @@ static __inline__ st_INDEX st_CreateNode(SUBST Subst, LIST Subnodes,
   return index;
 }
 
-
 typedef enum {st_EMPTY = 1, st_FCT, st_CONST, st_VAR,
 	      st_STAR, st_FIRST} NODETYPE;
-
 
 /**************************************************************/
 /* A special ST-Stack for sequential retrieval operations     */
@@ -202,7 +197,7 @@ static __inline__ void st_StackPush(POINTER Entry)
     misc_FinishErrorReport();
   }
 #endif
-  
+
   st_STACK[st_STACKPOINTER++] = Entry;
 }
 
@@ -261,12 +256,11 @@ static __inline__ BOOL st_StackEmpty(int Pointer)
   return st_STACKPOINTER == Pointer;
 }
 
-
 /**************************************************************/
 /* Functions for Creation and Deletion of an st_INDEX         */
 /**************************************************************/
 
-st_INDEX st_IndexCreate(void); 
+st_INDEX st_IndexCreate(void);
 void     st_IndexDelete(st_INDEX);
 
 /**************************************************************/

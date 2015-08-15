@@ -250,7 +250,7 @@ extern "gc_alarm" : int -> void
       /* reclaim this block */
       if (scan_ptr == end_last_free_block) {
         /* coalesce it with last free block */
-        int32[last_free_block - 4] = 
+        int32[last_free_block - 4] =
           int32[last_free_block - 4] + ((size + 4) << 2);
         end_last_free_block = end_last_free_block + size + 4;
       } else {
@@ -295,4 +295,3 @@ extern "malloc" : int -> int
 #endif
   return 0;
 }
-

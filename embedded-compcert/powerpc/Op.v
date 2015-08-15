@@ -17,7 +17,7 @@
 - [operation]: arithmetic and logical operations;
 - [addressing]: addressing modes for load and store operations.
 
-  These types are PowerPC-specific and correspond roughly to what the 
+  These types are PowerPC-specific and correspond roughly to what the
   processor can compute in one instruction.  In other terms, these
   types reflect the state of the program after instruction selection.
   For a processor-independent set of operations, see the abstract
@@ -104,7 +104,7 @@ Inductive operation : Type :=
 (*c Boolean tests: *)
   | Ocmp: condition -> operation.       (**r [rd = 1] if condition holds, [rd = 0] otherwise. *)
 
-(** Addressing modes.  [r1], [r2], etc, are the arguments to the 
+(** Addressing modes.  [r1], [r2], etc, are the arguments to the
   addressing. *)
 
 Inductive addressing: Type :=
@@ -122,7 +122,6 @@ Proof.
   assert (forall (x y: comparison), {x=y}+{x<>y}). decide equality.
   decide equality.
 Defined.
-
 
 Definition eq_operation (x y: operation): {x=y} + {x<>y}.
 Proof.
@@ -175,7 +174,7 @@ Definition eval_operation
   | Omove, v1::nil => Some v1
   | Ointconst n, nil => Some (Vint n)
   | Ofloatconst n, nil => Some (Vfloat n)
-  | Oaddrsymbol s ofs, nil => Some (symbol_address genv s ofs) 
+  | Oaddrsymbol s ofs, nil => Some (symbol_address genv s ofs)
   | Oaddrstack ofs, nil => Some (Val.add sp (Vint ofs))
   | Ocast8signed, v1::nil => Some (Val.sign_ext 8 v1)
   | Ocast16signed, v1::nil => Some (Val.sign_ext 16 v1)
@@ -340,7 +339,7 @@ Proof with (try exact I).
   destruct op; simpl in H0; FuncInv; subst; simpl.
   congruence.
   exact I.
-  destruct (Float.is_single_dec f); auto. 
+  destruct (Float.is_single_dec f); auto.
   unfold symbol_address. destruct (Genv.find_symbol genv i)...
   destruct sp...
   destruct v0...
@@ -386,7 +385,7 @@ Proof with (try exact I).
   destruct v0; destruct v1...
   destruct v0...
   destruct v0...
-  destruct (eval_condition c vl m); simpl... destruct b... 
+  destruct (eval_condition c vl m); simpl... destruct b...
 Qed.
 
 End SOUNDNESS.
@@ -410,7 +409,7 @@ Proof.
   intros until a. unfold is_move_operation; destruct op;
   try (intros; discriminate).
   destruct args. intros; discriminate.
-  destruct args. intros. intuition congruence. 
+  destruct args. intros. intuition congruence.
   intros; discriminate.
 Qed.
 
@@ -438,9 +437,9 @@ Proof.
   repeat (destruct vl; auto). apply Val.negate_cmpu_bool.
   repeat (destruct vl; auto). apply Val.negate_cmp_bool.
   repeat (destruct vl; auto). apply Val.negate_cmpu_bool.
-  repeat (destruct vl; auto). 
+  repeat (destruct vl; auto).
   repeat (destruct vl; auto). destruct (Val.cmpf_bool c v v0); auto. destruct b; auto.
-  destruct vl; auto. destruct v; auto. destruct vl; auto. 
+  destruct vl; auto. destruct v; auto. destruct vl; auto.
   destruct vl; auto. destruct v; auto. destruct vl; auto. simpl. rewrite negb_involutive. auto.
 Qed.
 
@@ -461,7 +460,7 @@ Definition shift_stack_operation (delta: int) (op: operation) :=
 Lemma type_shift_stack_addressing:
   forall delta addr, type_of_addressing (shift_stack_addressing delta addr) = type_of_addressing addr.
 Proof.
-  intros. destruct addr; auto. 
+  intros. destruct addr; auto.
 Qed.
 
 Lemma type_shift_stack_operation:
@@ -509,10 +508,10 @@ Lemma eval_offset_addressing:
 Proof.
   intros. destruct addr; simpl in H; inv H; simpl in *; FuncInv; subst.
   rewrite Val.add_assoc; auto.
-  unfold symbol_address. destruct (Genv.find_symbol ge i); auto. 
   unfold symbol_address. destruct (Genv.find_symbol ge i); auto.
-  rewrite Val.add_assoc. rewrite Val.add_permut. rewrite Val.add_commut. auto. 
-  rewrite Val.add_assoc. auto. 
+  unfold symbol_address. destruct (Genv.find_symbol ge i); auto.
+  rewrite Val.add_assoc. rewrite Val.add_permut. rewrite Val.add_commut. auto.
+  rewrite Val.add_assoc. auto.
 Qed.
 
 (** Transformation of addressing modes with two operands or more
@@ -569,7 +568,7 @@ Lemma op_depends_on_memory_correct:
   eval_operation ge sp op args m1 = eval_operation ge sp op args m2.
 Proof.
   intros until m2. destruct op; simpl; try congruence.
-  destruct c; simpl; auto; discriminate. 
+  destruct c; simpl; auto; discriminate.
 Qed.
 
 (** Checking whether two addressings, applied to the same arguments, produce
@@ -578,11 +577,11 @@ Qed.
 Definition addressing_separated (chunk1: memory_chunk) (addr1: addressing)
                                (chunk2: memory_chunk) (addr2: addressing) : bool :=
   match addr1, addr2 with
-  | Aindexed ofs1, Aindexed ofs2 => 
+  | Aindexed ofs1, Aindexed ofs2 =>
       Int.no_overlap ofs1 (size_chunk chunk1) ofs2 (size_chunk chunk2)
-  | Aglobal s1 ofs1, Aglobal s2 ofs2 => 
+  | Aglobal s1 ofs1, Aglobal s2 ofs2 =>
       if ident_eq s1 s2 then Int.no_overlap ofs1 (size_chunk chunk1) ofs2 (size_chunk chunk2) else true
-  | Abased s1 ofs1, Abased s2 ofs2 => 
+  | Abased s1 ofs1, Abased s2 ofs2 =>
       if ident_eq s1 s2 then Int.no_overlap ofs1 (size_chunk chunk1) ofs2 (size_chunk chunk2) else true
   | Ainstack ofs1, Ainstack ofs2 =>
       Int.no_overlap ofs1 (size_chunk chunk1) ofs2 (size_chunk chunk2)
@@ -601,30 +600,30 @@ Proof.
   destruct addr1; destruct addr2; try discriminate; simpl in *; FuncInv.
 (* Aindexed *)
   destruct v; simpl in *; inv H1; inv H2.
-  right. apply Int.no_overlap_sound; auto. 
+  right. apply Int.no_overlap_sound; auto.
 (* Aglobal *)
-  unfold symbol_address in *. 
+  unfold symbol_address in *.
   destruct (Genv.find_symbol ge i1) eqn:?; inv H2.
   destruct (Genv.find_symbol ge i) eqn:?; inv H1.
   destruct (ident_eq i i1). subst.
   replace (Int.unsigned n1) with (Int.unsigned (Int.add Int.zero n1)).
   replace (Int.unsigned n2) with (Int.unsigned (Int.add Int.zero n2)).
-  right. apply Int.no_overlap_sound; auto. 
+  right. apply Int.no_overlap_sound; auto.
   rewrite Int.add_commut; rewrite Int.add_zero; auto.
   rewrite Int.add_commut; rewrite Int.add_zero; auto.
   left. red; intros; elim n. subst. eapply Genv.genv_vars_inj; eauto.
 (* Abased *)
-  unfold symbol_address in *. 
+  unfold symbol_address in *.
   destruct (Genv.find_symbol ge i1) eqn:?; simpl in *; try discriminate.
   destruct v; inv H2.
   destruct (Genv.find_symbol ge i) eqn:?; inv H1.
   destruct (ident_eq i i1). subst.
   rewrite (Int.add_commut i0 i3). rewrite (Int.add_commut i2 i3).
-  right. apply Int.no_overlap_sound; auto. 
+  right. apply Int.no_overlap_sound; auto.
   left. red; intros; elim n. subst. eapply Genv.genv_vars_inj; eauto.
 (* Ainstack *)
   destruct sp; simpl in *; inv H1; inv H2.
-  right. apply Int.no_overlap_sound; auto. 
+  right. apply Int.no_overlap_sound; auto.
 Qed.
 
 (** * Invariance and compatibility properties. *)
@@ -646,7 +645,7 @@ Lemma eval_operation_preserved:
   forall sp op vl m,
   eval_operation ge2 sp op vl m = eval_operation ge1 sp op vl m.
 Proof.
-  intros. destruct op; simpl; auto. 
+  intros. destruct op; simpl; auto.
   destruct vl; auto. decEq. unfold symbol_address. rewrite agree_on_symbols. auto.
 Qed.
 
@@ -667,7 +666,7 @@ Variable F V: Type.
 Variable genv: Genv.t F V.
 Variable f: meminj.
 
-Hypothesis symbol_address_inj: 
+Hypothesis symbol_address_inj:
   forall id ofs,
   val_inject f (symbol_address genv id ofs) (symbol_address genv id ofs).
 
@@ -752,17 +751,17 @@ Proof.
   inv H4; simpl; auto.
   apply Values.val_add_inject; auto.
   apply Values.val_add_inject; auto.
-  inv H4; inv H2; simpl; auto. econstructor; eauto. 
+  inv H4; inv H2; simpl; auto. econstructor; eauto.
     rewrite Int.sub_add_l. auto.
-    destruct (eq_block b1 b0); auto. subst. rewrite H1 in H0. inv H0. rewrite dec_eq_true. 
+    destruct (eq_block b1 b0); auto. subst. rewrite H1 in H0. inv H0. rewrite dec_eq_true.
     rewrite Int.sub_shifted. auto.
-  inv H4; auto. 
+  inv H4; auto.
   inv H4; inv H2; simpl; auto.
   inv H4; simpl; auto.
-  inv H4; inv H3; simpl in H1; inv H1. simpl. 
+  inv H4; inv H3; simpl in H1; inv H1. simpl.
     destruct (Int.eq i0 Int.zero
          || Int.eq i (Int.repr Int.min_signed) && Int.eq i0 Int.mone); inv H2. TrivialExists.
-  inv H4; inv H3; simpl in H1; inv H1. simpl. 
+  inv H4; inv H3; simpl in H1; inv H1. simpl.
     destruct (Int.eq i0 Int.zero); inv H2. TrivialExists.
   inv H4; inv H2; simpl; auto.
   inv H4; simpl; auto.
@@ -829,7 +828,7 @@ Remark valid_pointer_extends:
   Mem.valid_pointer m1 b1 (Int.unsigned ofs) = true ->
   Mem.valid_pointer m2 b2 (Int.unsigned (Int.add ofs (Int.repr delta))) = true.
 Proof.
-  intros. inv H0. rewrite Int.add_zero. eapply Mem.valid_pointer_extends; eauto. 
+  intros. inv H0. rewrite Int.add_zero. eapply Mem.valid_pointer_extends; eauto.
 Qed.
 
 Remark weak_valid_pointer_extends:
@@ -897,8 +896,8 @@ Proof.
   apply weak_valid_pointer_no_overflow_extends; auto.
   apply valid_different_pointers_extends; auto.
   rewrite <- val_inject_lessdef; auto.
-  eauto. auto. 
-  destruct H2 as [v2 [A B]]. exists v2; split; auto. rewrite val_inject_lessdef; auto. 
+  eauto. auto.
+  destruct H2 as [v2 [A B]]. exists v2; split; auto. rewrite val_inject_lessdef; auto.
 Qed.
 
 Lemma eval_addressing_lessdef:
@@ -914,8 +913,8 @@ Proof.
   eapply eval_addressing_inj with (sp1 := sp).
   intros. rewrite <- val_inject_lessdef; auto.
   rewrite <- val_inject_lessdef; auto.
-  eauto. auto. 
-  destruct H1 as [v2 [A B]]. exists v2; split; auto. rewrite val_inject_lessdef; auto. 
+  eauto. auto.
+  destruct H1 as [v2 [A B]]. exists v2; split; auto. rewrite val_inject_lessdef; auto.
 Qed.
 
 End EVAL_LESSDEF.
@@ -937,7 +936,7 @@ Remark symbol_address_inject:
   forall id ofs, val_inject f (symbol_address genv id ofs) (symbol_address genv id ofs).
 Proof.
   intros. unfold symbol_address. destruct (Genv.find_symbol genv id) eqn:?; auto.
-  exploit (proj1 globals); eauto. intros. 
+  exploit (proj1 globals); eauto. intros.
   econstructor; eauto. rewrite Int.add_zero; auto.
 Qed.
 
@@ -959,11 +958,11 @@ Lemma eval_addressing_inject:
   forall addr vl1 vl2 v1,
   val_list_inject f vl1 vl2 ->
   eval_addressing genv (Vptr sp1 Int.zero) addr vl1 = Some v1 ->
-  exists v2, 
+  exists v2,
      eval_addressing genv (Vptr sp2 Int.zero) (shift_stack_addressing (Int.repr delta) addr) vl2 = Some v2
   /\ val_inject f v1 v2.
 Proof.
-  intros. 
+  intros.
   rewrite eval_shift_stack_addressing. simpl.
   eapply eval_addressing_inj with (sp1 := Vptr sp1 Int.zero); eauto.
   exact symbol_address_inject.
@@ -978,7 +977,7 @@ Lemma eval_operation_inject:
      eval_operation genv (Vptr sp2 Int.zero) (shift_stack_operation (Int.repr delta) op) vl2 m2 = Some v2
   /\ val_inject f v1 v2.
 Proof.
-  intros. 
+  intros.
   rewrite eval_shift_stack_operation. simpl.
   eapply eval_operation_inj with (sp1 := Vptr sp1 Int.zero) (m1 := m1); eauto.
   exact symbol_address_inject.
@@ -1003,7 +1002,7 @@ End EVAL_INJECT.
               / \        / \        / \
               \ /        \ /        \ /
         -0--> [1] --1--> [2] --0--> [3]
-       /     
+       /
      [0]
        \
         -1--> [4] --0--> [5] --1--> [6]

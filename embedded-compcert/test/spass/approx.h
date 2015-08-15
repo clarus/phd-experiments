@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *                  CLAUSE APPROXIMATION                  * */
 /* *                                                        * */
-/* *  $Module:   APPROX                                     * */ 
+/* *  $Module:   APPROX                                     * */
 /* *                                                        * */
 /* *  Copyright (C) 1998, 1999, 2000, 2001                  * */
 /* *  MPI fuer Informatik                                   * */

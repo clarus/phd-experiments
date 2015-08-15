@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *          REPRESENTATION OF PROOF SEARCH                * */
 /* *                                                        * */
-/* *  $Module:   PROOF SEARCH                               * */ 
+/* *  $Module:   PROOF SEARCH                               * */
 /* *                                                        * */
 /* *  Copyright (C) 1997, 1998, 1999, 2000, 2001            * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,13 +42,10 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /* $RCSfile$ */
-
 
 #include "search.h"
 #include "defs.h"
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -75,10 +72,9 @@ static SPLIT prfs_SplitCreate(PROOFSEARCH PS)
   return Result;
 }
 
-
 static void prfs_SplitDelete(SPLIT S)
 /**************************************************************
-  INPUT:   A split 
+  INPUT:   A split
   RETURNS: Nothing.
   MEMORY:  Deletes blocked and deleted clauses. Frees the split.
 ***************************************************************/
@@ -89,7 +85,6 @@ static void prfs_SplitDelete(SPLIT S)
     clause_Delete(S->father);
   prfs_SplitFree(S);
 }
-
 
 /**************************************************************/
 /* ********************************************************** */
@@ -136,7 +131,7 @@ BOOL prfs_Check(PROOFSEARCH Search)
       } else {
 	for (Clauses=prfs_UsableClauses(Search);!list_Empty(Clauses);Clauses=list_Cdr(Clauses))
 	  if (clause_SplitLevel(list_Car(Clauses)) == prfs_SplitSplitLevel(Split)) {
-	    /*puts("\n");prfs_PrintSplit(Split); 
+	    /*puts("\n");prfs_PrintSplit(Split);
 	      fputs("\n Clause must not exist: ",stdout);
 	      clause_Print(list_Car(Clauses)); putchar('\n');*/
 	    return FALSE;
@@ -149,9 +144,9 @@ BOOL prfs_Check(PROOFSEARCH Search)
 	    return FALSE;
 	  }
       }
-    } 
+    }
   }
-  
+
   if (prfs_ValidLevel(Search) == 0) {
     if (!prfs_SplitStackEmpty(Search))
       return FALSE;
@@ -192,7 +187,7 @@ static void prfs_InsertInSortTheories(PROOFSEARCH Search, CLAUSE Clause)
     l = clause_Length(Clause);
     for (i = clause_FirstSuccedentLitIndex(Clause); i < l; i++) {
       lit = clause_GetLiteral(Clause,i);
-      if (clause_LiteralIsMaximal(lit) && 
+      if (clause_LiteralIsMaximal(lit) &&
 	  symbol_IsBaseSort(term_TopSymbol(clause_LiteralSignedAtom(lit)))) {
 	if (prfs_DynamicSortTheory(Search) != (SORTTHEORY)NULL) {
 	  copy = clause_Copy(Clause);
@@ -210,7 +205,7 @@ static void prfs_InsertInSortTheories(PROOFSEARCH Search, CLAUSE Clause)
 	  for ( ; !list_Empty(approx); approx = list_Pop(approx)) {
 	    copy = (CLAUSE)list_Car(approx);
 	    sort_TheoryInsertClause(prfs_ApproximatedDynamicSortTheory(Search),
-				    Clause, copy, 
+				    Clause, copy,
 				    clause_GetLiteral(copy,clause_FirstSuccedentLitIndex(copy)));
 	  }
 	}
@@ -218,7 +213,6 @@ static void prfs_InsertInSortTheories(PROOFSEARCH Search, CLAUSE Clause)
     }
   }
 }
-
 
 static void prfs_DeleteFromSortTheories(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -236,7 +230,6 @@ static void prfs_DeleteFromSortTheories(PROOFSEARCH Search, CLAUSE Clause)
   }
 }
 
-
 void prfs_DeleteDocProof(PROOFSEARCH Search)
 /**************************************************************
   INPUT:   A proof search object.
@@ -252,7 +245,6 @@ void prfs_DeleteDocProof(PROOFSEARCH Search)
   Search->dpindex = NULL;
   Search->dplist  = list_Nil();
 }
-
 
 static void prfs_InternalDelete(PROOFSEARCH Search)
 /**************************************************************
@@ -287,12 +279,11 @@ static void prfs_InternalDelete(PROOFSEARCH Search)
   list_Delete(prfs_SplitStack(Search));
 }
 
-
 void prfs_Delete(PROOFSEARCH Search)
 /**************************************************************
   INPUT:   A proof search object.
   RETURNS: Nothing.
-  EFFECT:  The whole structure including all its substructures 
+  EFFECT:  The whole structure including all its substructures
            is deleted.
 ***************************************************************/
 {
@@ -306,7 +297,6 @@ void prfs_Delete(PROOFSEARCH Search)
   symbol_DeletePrecedence(prfs_Precedence(Search));
   memory_Free(Search,sizeof(PROOFSEARCH_NODE));
 }
-
 
 void prfs_Clean(PROOFSEARCH Search)
 /**************************************************************
@@ -328,7 +318,7 @@ void prfs_Clean(PROOFSEARCH Search)
   Search->adynamic         = (SORTTHEORY)NULL;
   Search->dynamic          = (SORTTHEORY)NULL;
   Search->dplist           = list_Nil();
-  
+
   Search->stack               = list_StackBottom();
   Search->validlevel          = 0;
   Search->lastbacktrack       = 0;
@@ -341,7 +331,6 @@ void prfs_Clean(PROOFSEARCH Search)
 
   symbol_ClearPrecedence(prfs_Precedence(Search));
 }
-
 
 void prfs_SwapIndexes(PROOFSEARCH Search)
 /**************************************************************
@@ -365,7 +354,6 @@ void prfs_SwapIndexes(PROOFSEARCH Search)
   for (Scan=prfs_WorkedOffClauses(Search);!list_Empty(Scan);Scan=list_Cdr(Scan))
     clause_SetFlag(list_Car(Scan), WORKEDOFF);
 }
-
 
 PROOFSEARCH prfs_Create(void)
 /**************************************************************
@@ -397,10 +385,10 @@ PROOFSEARCH prfs_Create(void)
 
   Result->store        = flag_CreateStore();
   flag_InitStoreByDefaults(Result->store);
-  
+
   Result->dpindex      = (SHARED_INDEX)NULL;
   Result->dplist       = list_Nil();
-  
+
   Result->stack               = list_StackBottom();
   Result->validlevel          = 0;
   Result->lastbacktrack       = 0;
@@ -410,12 +398,11 @@ PROOFSEARCH prfs_Create(void)
   Result->loops               = 0;
   Result->backtracked         = 0;
   Result->nontrivclausenumber = 0;
-    
-  return Result;  
+
+  return Result;
 }
 
-
-void prfs_CopyIndices(PROOFSEARCH Search, PROOFSEARCH SearchCopy) 
+void prfs_CopyIndices(PROOFSEARCH Search, PROOFSEARCH SearchCopy)
 /**************************************************************
   INPUT:   A proof search object and a clean proof search object.
   RETURNS: Nothing.
@@ -442,7 +429,6 @@ void prfs_CopyIndices(PROOFSEARCH Search, PROOFSEARCH SearchCopy)
     prfs_InsertDocProofClause(SearchCopy, clause_Copy((CLAUSE) list_Car(Scan)));
 }
 
-
 void prfs_InsertWorkedOffClause(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
   INPUT:   A proof search object and a clause.
@@ -458,7 +444,7 @@ void prfs_InsertWorkedOffClause(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_InsertWorkedOffClause: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   clause_SetFlag(Clause,WORKEDOFF);
   prfs_SetWorkedOffClauses(Search,list_Cons(Clause, prfs_WorkedOffClauses(Search)));
@@ -467,14 +453,13 @@ void prfs_InsertWorkedOffClause(PROOFSEARCH Search, CLAUSE Clause)
   prfs_InsertInSortTheories(Search, Clause);
 }
 
-
 void prfs_InsertUsableClause(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
   INPUT:   A proof search object and a clause.
   RETURNS: Nothing.
   MEMORY:  The clause is assumed to be unshared.
   EFFECT:  The clause is inserted into the usable sharing index
-           and list of <Search> sorted with respect to their weight. 
+           and list of <Search> sorted with respect to their weight.
 	   The unshared literals are deleted.
 ***************************************************************/
 {
@@ -489,8 +474,8 @@ void prfs_InsertUsableClause(PROOFSEARCH Search, CLAUSE Clause)
   /* The invariant that no two clauses have the same clause number cannot  */
   /* be guaranteed as long as e.g. several directly subsequent reductions */
   /* are applied to a clause that eventually gets a greater split level.   */
-#endif 
-    
+#endif
+
   prfs_SetUsableClauses(Search,clause_InsertWeighed(Clause,
 						    prfs_UsableClauses(Search),
 						    prfs_Store(Search),
@@ -498,7 +483,6 @@ void prfs_InsertUsableClause(PROOFSEARCH Search, CLAUSE Clause)
   clause_InsertIntoSharing(Clause, prfs_UsableSharingIndex(Search),
 			   prfs_Store(Search), prfs_Precedence(Search));
 }
-
 
 void prfs_InsertDocProofClause(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -508,15 +492,15 @@ void prfs_InsertDocProofClause(PROOFSEARCH Search, CLAUSE Clause)
   EFFECT:  The clause is inserted into the proof documentation sharing index.
 	   The unshared literals are deleted.
 ***************************************************************/
-{ 
+{
 #ifdef CHECK
   if (!clause_IsClause(Clause, prfs_Store(Search), prfs_Precedence(Search))) {
     misc_StartErrorReport();
     misc_ErrorReport("\n In prfs_InsertDocProofClause: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif   
-  
+#endif
+
   if (prfs_DocProofSharingIndex(Search) == (SHARED_INDEX)NULL)
     clause_Delete(Clause);
   else {
@@ -526,14 +510,13 @@ void prfs_InsertDocProofClause(PROOFSEARCH Search, CLAUSE Clause)
   }
 }
 
-
 void prfs_MoveUsableWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
   INPUT:   A proof search object and a clause.
   RETURNS: Nothing.
   EFFECT:  The clause is inserted into the worked off sharing index
            and list and it is deleted from the usable index and list.
-	   In particular, the WorkedOff flag is set and if <Clause> is a 
+	   In particular, the WorkedOff flag is set and if <Clause> is a
 	   declaration clause, it is inserted into the respective sort theories.
 ***************************************************************/
 {
@@ -544,7 +527,7 @@ void prfs_MoveUsableWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_MoveUsableWorkedOff: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_SetUsableClauses(Search,list_PointerDeleteElement(prfs_UsableClauses(Search),Clause));
   clause_SetFlag(Clause,WORKEDOFF);
@@ -554,7 +537,6 @@ void prfs_MoveUsableWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
   prfs_SetWorkedOffClauses(Search,list_Cons(Clause, prfs_WorkedOffClauses(Search)));
   prfs_InsertInSortTheories(Search, Clause);
 }
-
 
 void prfs_MoveWorkedOffDocProof(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -572,7 +554,7 @@ void prfs_MoveWorkedOffDocProof(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_MoveWorkedOffDocProof: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_DeleteFromSortTheories(Search, Clause);
   prfs_SetWorkedOffClauses(Search,list_PointerDeleteElement(prfs_WorkedOffClauses(Search),Clause));
@@ -588,7 +570,6 @@ void prfs_MoveWorkedOffDocProof(PROOFSEARCH Search, CLAUSE Clause)
     prfs_SetDocProofClauses(Search,list_Cons(Clause, prfs_DocProofClauses(Search)));
   }
 }
-
 
 void prfs_MoveUsableDocProof(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -606,7 +587,7 @@ void prfs_MoveUsableDocProof(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_MoveUsableDocProof: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_SetUsableClauses(Search,list_PointerDeleteElement(prfs_UsableClauses(Search),Clause));
 
@@ -620,7 +601,6 @@ void prfs_MoveUsableDocProof(PROOFSEARCH Search, CLAUSE Clause)
     prfs_SetDocProofClauses(Search,list_Cons(Clause, prfs_DocProofClauses(Search)));
   }
 }
-
 
 void prfs_MoveInvalidClausesDocProof(PROOFSEARCH Search)
 /**************************************************************
@@ -665,7 +645,6 @@ void prfs_MoveInvalidClausesDocProof(PROOFSEARCH Search)
     prfs_MoveUsableDocProof(Search,list_Car(invalid));
 }
 
-
 void prfs_ExtractWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
   INPUT:   A proof search object and a clause.
@@ -689,7 +668,6 @@ void prfs_ExtractWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
   clause_MakeUnshared(Clause,prfs_WorkedOffSharingIndex(Search));
 }
 
-
 void prfs_ExtractUsable(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
   INPUT:   A proof search object and a clause.
@@ -704,12 +682,11 @@ void prfs_ExtractUsable(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_ExtractUsable: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_SetUsableClauses(Search,list_PointerDeleteElement(prfs_UsableClauses(Search),Clause));
   clause_MakeUnshared(Clause,prfs_UsableSharingIndex(Search));
 }
-
 
 void prfs_ExtractDocProof(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -725,12 +702,11 @@ void prfs_ExtractDocProof(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_ExtractDocProof: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_SetDocProofClauses(Search,list_PointerDeleteElement(prfs_DocProofClauses(Search),Clause));
   clause_MakeUnshared(Clause,prfs_DocProofSharingIndex(Search));
 }
-
 
 void prfs_DeleteWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -747,14 +723,13 @@ void prfs_DeleteWorkedOff(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_DeleteWorkedOff: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_DeleteFromSortTheories(Search, Clause);
   prfs_SetWorkedOffClauses(Search,list_PointerDeleteElement(prfs_WorkedOffClauses(Search),Clause));
   clause_DeleteFromSharing(Clause, prfs_WorkedOffSharingIndex(Search),
 			   prfs_Store(Search), prfs_Precedence(Search));
 }
-
 
 void prfs_DeleteUsable(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
@@ -770,13 +745,12 @@ void prfs_DeleteUsable(PROOFSEARCH Search, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_DeleteUsable: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   prfs_SetUsableClauses(Search,list_PointerDeleteElement(prfs_UsableClauses(Search),Clause));
   clause_DeleteFromSharing(Clause,prfs_UsableSharingIndex(Search),
 			   prfs_Store(Search), prfs_Precedence(Search));
 }
-
 
 void prfs_PrintSplit(SPLIT Split)
 /**************************************************************
@@ -793,7 +767,7 @@ void prfs_PrintSplit(SPLIT Split)
     clause_Print(prfs_SplitFatherClause(Split));
   else
     fputs("No father, unnecessary split.", stdout);
-  
+
   fputs("\n Split is ", stdout);
   if (prfs_SplitIsUnused(Split))
     puts("unused.");
@@ -813,7 +787,6 @@ void prfs_PrintSplit(SPLIT Split)
   }
 }
 
-
 void prfs_PrintSplitStack(PROOFSEARCH PS)
 /**************************************************************
   INPUT:   A proof search object.
@@ -832,7 +805,6 @@ void prfs_PrintSplitStack(PROOFSEARCH PS)
   }
 }
 
-
 void prfs_Print(PROOFSEARCH Search)
 /**************************************************************
   INPUT:   A proof search object.
@@ -848,7 +820,7 @@ void prfs_Print(PROOFSEARCH Search)
     misc_ErrorReport("\n In prfs_Print: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   printf("\n\n Proofsearch: Current Level: %d Last Backtrack Level: %d Splits: %d Loops: %d Backtracked: %d",
 	 prfs_ValidLevel(Search),prfs_LastBacktrackLevel(Search),prfs_SplitCounter(Search),
@@ -897,7 +869,6 @@ void prfs_Print(PROOFSEARCH Search)
   putchar('\n');
 }
 
-
 CLAUSE prfs_DoSplitting(PROOFSEARCH PS, CLAUSE SplitClause, LIST Literals)
 /**************************************************************
   INPUT:   An proof search object, an unshared clause to be splitted
@@ -905,7 +876,7 @@ CLAUSE prfs_DoSplitting(PROOFSEARCH PS, CLAUSE SplitClause, LIST Literals)
 	   order in the SplitClause).
   RETURNS: A pointer to the (stack-, not sharing-) inserted splitted clause.
   MEMORY:  The blocked parts and the actparts literals are created
-           unshared, memory for the two (more for HornSplits) new 
+           unshared, memory for the two (more for HornSplits) new
 	   clausenodes is allocated.
   EFFECT:  A new SPLIT object is created on the split stack of the proof
            search object. The clause for the right branch will get clause
@@ -973,7 +944,7 @@ CLAUSE prfs_DoSplitting(PROOFSEARCH PS, CLAUSE SplitClause, LIST Literals)
 	nc++;
       else if (i <= la)
 	na++;
-      else 
+      else
 	ns++;
 
     } else { /* NewLit is literal for the BlockedClause. */
@@ -1007,7 +978,6 @@ CLAUSE prfs_DoSplitting(PROOFSEARCH PS, CLAUSE SplitClause, LIST Literals)
   prfs_SplitAddBlockedClause(NewSplit, BlockedClause);
   prfs_SplitSetDeletedClauses(NewSplit, list_Nil());
 
-  
   prfs_SplitStackPush(PS, NewSplit);
 
   clause_ReInit(NewClause, prfs_Store(PS), prfs_Precedence(PS));
@@ -1072,11 +1042,10 @@ CLAUSE prfs_DoSplitting(PROOFSEARCH PS, CLAUSE SplitClause, LIST Literals)
   return NewClause;
 }
 
-
 static LIST prfs_GetSplitLiterals(PROOFSEARCH PS, CLAUSE Clause)
 /**************************************************************
   INPUT:   A Clause and a proofsearch object
-  RETURNS: A list of literals building the bigger part of a 
+  RETURNS: A list of literals building the bigger part of a
            variable-disjunct literal partition if one exists,
 	   an empty list, else.
   MEMORY:  Allocates memory for the literal list.
@@ -1093,7 +1062,7 @@ static LIST prfs_GetSplitLiterals(PROOFSEARCH PS, CLAUSE Clause)
     misc_ErrorReport("\n In prfs_GetSplitLiterals: Illegal input.");
     misc_FinishErrorReport();
   }
-#endif 
+#endif
 
   LitList = list_Nil();
 
@@ -1126,10 +1095,10 @@ static LIST prfs_GetSplitLiterals(PROOFSEARCH PS, CLAUSE Clause)
 	for (i=clause_LastSuccedentLitIndex(Clause)-1; i>=clause_FirstLitIndex(); i--) {
 
 	  NextLit = clause_GetLiteral(Clause, i);
-	
+
 	  if (!list_PointerMember(LitList, NextLit)) {
 	    NextOcc = term_VariableSymbols(clause_LiteralAtom(NextLit));
-	    if (list_HasIntersection(VarOcc, NextOcc)) { 
+	    if (list_HasIntersection(VarOcc, NextOcc)) {
 	      OldLength = list_Length(VarOcc);
 	      VarOcc    = list_NPointerUnion(VarOcc, NextOcc);
 	      LitList   = list_Cons(NextLit, LitList);
@@ -1159,7 +1128,6 @@ static LIST prfs_GetSplitLiterals(PROOFSEARCH PS, CLAUSE Clause)
   return LitList;
 }
 
-
 CLAUSE prfs_PerformSplitting(PROOFSEARCH Search, CLAUSE Clause)
 /**************************************************************
   INPUT:   A proof search object and an unshared clause.
@@ -1173,7 +1141,7 @@ CLAUSE prfs_PerformSplitting(PROOFSEARCH Search, CLAUSE Clause)
   CLAUSE Result;
 
   Result = (CLAUSE)NULL;
-  
+
   if (clause_HasSolvedConstraint(Clause)) {
     LIST LitList;
 
@@ -1187,7 +1155,6 @@ CLAUSE prfs_PerformSplitting(PROOFSEARCH Search, CLAUSE Clause)
 
   return Result;
 }
-
 
 void prfs_InstallFiniteMonadicPredicates(PROOFSEARCH Search, LIST Clauses,
 					 LIST Predicates)
@@ -1216,22 +1183,21 @@ void prfs_InstallFiniteMonadicPredicates(PROOFSEARCH Search, LIST Clauses,
 	if (Pair != list_PairNull())
 	  list_PairRplacSecond(Pair, list_Cons(term_Copy(term_FirstArgument(Atom)),list_PairSecond(Pair)));
 	else
-	  Result = list_AssocCons(Result, (POINTER)term_TopSymbol(Atom), 
+	  Result = list_AssocCons(Result, (POINTER)term_TopSymbol(Atom),
 				  list_List(term_Copy(term_FirstArgument(Atom))));
       }
     }
   }
-  
+
   prfs_DeleteFinMonPreds(Search);
   prfs_SetFinMonPreds(Search, Result);
 }
-
 
 NAT prfs_GetNumberOfInstances(PROOFSEARCH Search, LITERAL Literal, BOOL Usables)
 /**************************************************************
   INPUT:   A proof search object, a literal, and a boolean flag.
   RETURNS: The number of instances of the literal's atom.
-  EFFECT:  
+  EFFECT:
 ***************************************************************/
 {
   TERM         Atom;
@@ -1266,6 +1232,6 @@ NAT prfs_GetNumberOfInstances(PROOFSEARCH Search, LITERAL Literal, BOOL Usables)
 						      UsIndex);
     }
   }
-    
+
   return NrOfInstances;
 }

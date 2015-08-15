@@ -30,7 +30,7 @@ void test_intoffloat(double x)
 {
   int r;
   intoffloat(&r, &x);
-  if (r != (int) x) 
+  if (r != (int) x)
     printf("intoffloat(%g): expected %d, got %d\n", x, r, (int) x);
 }
 
@@ -38,7 +38,7 @@ void test_intuoffloat(double x)
 {
   unsigned int r;
   intuoffloat(&r, &x);
-  if (r != (unsigned int) x) 
+  if (r != (unsigned int) x)
     printf("intuoffloat(%g): expected %d, got %d\n", x, r, (unsigned int) x);
 }
 
@@ -46,7 +46,7 @@ void test_floatofint(int x)
 {
   double r;
   floatofint(&r, &x);
-  if (r != (double) x) 
+  if (r != (double) x)
     printf("floatofint(%d): expected %g, got %g\n", x, r, (double) x);
 }
 
@@ -54,7 +54,7 @@ void test_floatofintu(unsigned int x)
 {
   double r;
   floatofintu(&r, &x);
-  if (r != (double) x) 
+  if (r != (double) x)
     printf("floatofint(%u): expected %g, got %g\n", x, r, (double) x);
 }
 
@@ -63,16 +63,16 @@ void test_floatofintu(unsigned int x)
 double cases_intoffloat[] = {
   0.0, 0.1, 0.5, 0.9, 1.0, 1.1, 1.6,
   -0.1, -0.5, -0.9, -1.0, -1.1, -1.6,
-  2147483647.0, 2147483647.6, 2147483648.0, 2147483647.5, 
+  2147483647.0, 2147483647.6, 2147483648.0, 2147483647.5,
   2147483648.0, 2147483648.5, 2147483649.0, 10000000000.0,
-  -2147483647.0, -2147483647.6, -2147483648.0, -2147483647.5, 
+  -2147483647.0, -2147483647.6, -2147483648.0, -2147483647.5,
   -2147483648.0, -2147483648.5, -2147483649.0, -10000000000.0
 };
 
 double cases_intuoffloat[] = {
   0.0, 0.1, 0.5, 0.9, 1.0, 1.1, 1.6,
   -0.1, -0.5, -0.9, -1.0, -1.1, -1.6,
-  2147483647.0, 2147483647.6, 2147483648.0, 2147483647.5, 
+  2147483647.0, 2147483647.6, 2147483648.0, 2147483647.5,
   2147483648.0, 2147483648.5, 2147483649.0,
   4294967295.0, 4294967295.6, 4294967296.0, 4294967296.5,
   10000000000.0
@@ -107,9 +107,3 @@ int main(int argc, char ** argv)
        random_uint());
   return 0;
 }
-
-
-
-  
-
-

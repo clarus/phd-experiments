@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *             PARTITION                                  * */
 /* *                                                        * */
-/* *  $Module:   PARTITION                                  * */ 
+/* *  $Module:   PARTITION                                  * */
 /* *                                                        * */
 /* *  Copyright (C) 1999, 2001 MPI fuer Informatik          * */
 /* *                                                        * */
@@ -41,13 +41,11 @@
 /* ********************************************************** */
 /**************************************************************/
 
-
 /**************************************************************/
 /* Include                                                    */
 /**************************************************************/
 
 #include "partition.h"
-
 
 /**************************************************************/
 /* Inline functions                                           */
@@ -58,19 +56,16 @@ static __inline__ ECLASS part_GetClass(PARTITION p, ELEMENT e)
   return p[e];
 }
 
-
 static __inline__ PARTITION part_SetClass(PARTITION p, ELEMENT e, ECLASS c)
 {
   p[e] = c;
   return p;
 }
 
-
 static __inline__ int part_GetClassSize(PARTITION p, ELEMENT e)
 {
   return p[p[part_CARD] + e];
 }
-
 
 static __inline__ PARTITION part_SetClassSize(PARTITION p, ELEMENT e, int
     classsize)
@@ -79,12 +74,10 @@ static __inline__ PARTITION part_SetClassSize(PARTITION p, ELEMENT e, int
   return p;
 }
 
-
 static __inline__ int part_GetStamp(PARTITION p, ELEMENT e)
 {
   return p[-part_HEAD - 1 - e];
 }
-
 
 static __inline__ PARTITION part_SetStamp(PARTITION p, ELEMENT e, int stamp)
 {
@@ -92,12 +85,10 @@ static __inline__ PARTITION part_SetStamp(PARTITION p, ELEMENT e, int stamp)
   return p;
 }
 
-
 static __inline__ BOOL part_Stamped(PARTITION p, ELEMENT e)
 {
   return part_GetStamp(p, e) == p[part_STAMPCOUNTER];
 }
-
 
 static __inline__ ELEMENT part_DelayedInit(PARTITION p, ELEMENT e)
 /***************************************************************
@@ -114,7 +105,6 @@ static __inline__ ELEMENT part_DelayedInit(PARTITION p, ELEMENT e)
   }
   return e;
 }
-
 
 /**************************************************************/
 /* Functions                                                  */
@@ -144,7 +134,6 @@ PARTITION part_Create(int size)
   result[part_STAMPCOUNTER] = 1;
   return result;
 }
-
 
 PARTITION part_Init(PARTITION p, int size)
 /****************************************************************
@@ -186,10 +175,9 @@ PARTITION part_Init(PARTITION p, int size)
   return p;
 }
 
-
 static ELEMENT part_NF(PARTITION p, ELEMENT e)
 /***************************************************************
-  RETURNS: the normal form element of the class [e]; this is an 
+  RETURNS: the normal form element of the class [e]; this is an
            element of [e] that sometimes differ from the
            representative
   EFFECT:  makes the normal form to the direct parent of all
@@ -221,7 +209,6 @@ static ELEMENT part_NF(PARTITION p, ELEMENT e)
   return nf;
 }
 
-
 ECLASS part_Find(PARTITION p, ELEMENT e)
 /***************************************************************
   RETURNS: (the representative of) class [e]
@@ -239,7 +226,6 @@ ECLASS part_Find(PARTITION p, ELEMENT e)
   return -part_GetClass(p, part_NF(p, e)) - 1;
     /* representative e is coded as -e - 1 (cf. part_DelayedInit) */
 }
-
 
 PARTITION part_Union(PARTITION p, ECLASS c1, ECLASS c2)
 /***************************************************************
@@ -284,4 +270,3 @@ PARTITION part_Union(PARTITION p, ECLASS c1, ECLASS c2)
   }
   return p;
 }
-

@@ -65,7 +65,6 @@ Coq development:
 - The LTL intermediate language is now a CFG of basic blocks.
 - Suppressed the LTLin intermediate language, no longer used.
 
-
 Release 1.13, 2013-03-12
 ========================
 
@@ -103,12 +102,10 @@ Coq development:
 - A number of definitions that were opaque for no good reason are now
   properly transparent.
 
-
 Release 1.12.1, 2013-01-29
 ==========================
 
 Ported to Coq 8.4pl1.  Otherwise functionally identical to release 1.12.
-
 
 Release 1.12, 2013-01-11
 ========================
@@ -170,7 +167,6 @@ Other changes:
 - PowerPC/MacOS X: this port was removed, as recent version of MacOS X
   no longer support PowerPC.
 
-
 Release 1.11, 2012-07-13
 ========================
 
@@ -219,7 +215,6 @@ Other changes:
   in faster interpretation of source files by "ccomp -interp".
 - Added option "-falign-functions" to control alignment of function code.
 
-
 Release 1.10, 2012-03-13
 ========================
 
@@ -264,7 +259,6 @@ Other improvements:
   specific options to the preprocessor, assembler, or linker, respectively.
 - More complete Cminor parser and printer (contributed by Andrew Tolmach).
 
-
 Release 1.9.1, 2011-11-28
 =========================
 
@@ -282,7 +276,6 @@ Improvements:
   (-fpacked-structs)
 - Coq->Caml extraction: extract Coq pairs to Caml pairs and Coq
   characters to Caml "char" type.
-
 
 Release 1.9, 2011-08-22
 =======================
@@ -343,7 +336,6 @@ Release 1.9, 2011-08-22
 - PowerPC code generator: more efficient instruction sequences generated
   for insertion in a bit field and for some comparisons against 0.
 
-
 Release 1.8.2, 2011-05-24
 =========================
 
@@ -378,7 +370,6 @@ Release 1.8.2, 2011-05-24
     .  support for .s (assembly) and .S (assembly to be preprocessed)
        input files
 
-
 Release 1.8.1, 2011-03-14
 =========================
 
@@ -400,7 +391,6 @@ Release 1.8.1, 2011-03-14
      . nontermination with some recursive struct types
      . issues with zero-width bit fields
      . elimination of struct assignments duplicating some volatile accesses
-
 
 Release 1.8, 2010-09-21
 =======================
@@ -449,7 +439,6 @@ Release 1.8, 2010-09-21
 
 - Fixed some bugs in the emulation of bit fields.
 
-
 Release 1.7.1, 2010-04-13
 =========================
 
@@ -465,7 +454,6 @@ Small improvements to the PowerPC port:
 - Support for '#pragma reserve_register' (EABI)
 - Less aggressive alignment of global variables.
 - Generate '.type' and '.size' directives (EABI).
-
 
 Release 1.7, 2010-03-31
 =======================
@@ -512,7 +500,6 @@ Release 1.7, 2010-03-31
 
 - The C test suite was enriched and restructured.
 
-
 Release 1.6, 2010-01-13
 =======================
 
@@ -534,7 +521,6 @@ Release 1.6, 2010-01-13
 
 - PowerPC code generator: force conversion to single precision before
   doing a "store single float" instruction.
-
 
 Release 1.5, 2009-08-28
 =======================
@@ -569,7 +555,6 @@ Release 1.5, 2009-08-28
 - Improved modularization between processor-dependent and
   processor-independent parts.
 
-
 Release 1.4.1, 2009-06-05
 =========================
 
@@ -603,7 +588,6 @@ Release 1.4, 2009-04-20
 
 - Back-end: removed "alloc heap" instruction; removed pointer validity
   checks in pointer comparisons.
-
 
 Release 1.3, 2008-08-11
 =======================
@@ -640,7 +624,6 @@ Release 1.3, 2008-08-11
     complex expressions as condition.
 
 - More benchmark programs in test/
-
 
 Release 1.2, 2008-04-03
 =======================

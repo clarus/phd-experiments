@@ -77,11 +77,11 @@ static void test1(u64 x, u64 y)
   if (y != 0) {
 
   z = __i64_udiv(x, y);
-  if (z != x / y) 
+  if (z != x / y)
     error++, printf("%llu /u %llu = %llu, expected %llu\n", x, y, z, x / y);
 
   z = __i64_umod(x, y);
-  if (z != x % y) 
+  if (z != x % y)
     error++, printf("%llu %%u %llu = %llu, expected %llu\n", x, y, z, x % y);
 
   }
@@ -89,11 +89,11 @@ static void test1(u64 x, u64 y)
   if (y != 0 && !(x == 0x800000000000LLU && y == -1)) {
 
   t = __i64_sdiv(x, y);
-  if (t != (s64) x / (s64) y) 
+  if (t != (s64) x / (s64) y)
     error++, printf("%lld /s %lld = %lld, expected %lld\n", x, y, t, (s64) x / (s64) y);
 
   t = __i64_smod(x, y);
-  if (t != (s64) x % (s64) y) 
+  if (t != (s64) x % (s64) y)
     error++, printf("%lld %%s %lld = %lld, expected %lld\n", x, y, t, (s64) x % (s64) y);
 
   }
@@ -105,11 +105,11 @@ static void test1(u64 x, u64 y)
   if (uy != 0) {
 
   z = __i64_udiv(x, uy);
-  if (z != x / uy) 
+  if (z != x / uy)
     error++, printf("%llu /u %llu = %llu, expected %llu\n", x, uy, z, x / uy);
 
   z = __i64_umod(x, uy);
-  if (z != x % uy) 
+  if (z != x % uy)
     error++, printf("%llu %%u %llu = %llu, expected %llu\n", x, uy, z, x % uy);
 
   }
@@ -117,11 +117,11 @@ static void test1(u64 x, u64 y)
   if (sy != 0 && !(x == 0x800000000000LLU && sy == -1)) {
 
   t = __i64_sdiv(x, sy);
-  if (t != (s64) x / sy) 
+  if (t != (s64) x / sy)
     error++, printf("%lld /s %lld = %lld, expected %lld\n", x, sy, t, (s64) x / sy);
 
   t = __i64_smod(x, sy);
-  if (t != (s64) x % sy) 
+  if (t != (s64) x % sy)
     error++, printf("%lld %%s %lld = %lld, expected %lld\n", x, sy, t, (s64) x % sy);
 
   }
@@ -129,15 +129,15 @@ static void test1(u64 x, u64 y)
   i = y & 63;
 
   z = __i64_shl(x, i);
-  if (z != x << i) 
+  if (z != x << i)
     error++, printf("%016llx << %d = %016llx, expected %016llx\n", x, i, z, x << i);
 
   z = __i64_shr(x, i);
-  if (z != x >> i) 
+  if (z != x >> i)
     error++, printf("%016llx >>u %d = %016llx, expected %016llx\n", x, i, z, x >> i);
 
   t = __i64_sar(x, i);
-  if (t != (s64) x >> i) 
+  if (t != (s64) x >> i)
     error++, printf("%016llx >>s %d = %016llx, expected %016llx\n", x, i, t, (s64) x >> i);
 
   f = __i64_utod(x);
@@ -210,4 +210,3 @@ int main()
     printf ("TEST FAILED, %d error(s) detected\n", error);
   return 0;
 }
-

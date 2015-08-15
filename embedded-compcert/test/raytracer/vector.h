@@ -20,4 +20,3 @@ void vscale(struct vector * a, flt s,
 void vnormalize(struct vector * a, /*out*/ struct vector * v);
 void vsub(struct vector * a, struct vector * b,
           /*out*/ struct vector * v);
-  

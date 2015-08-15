@@ -14,20 +14,20 @@ End WellFounded.
     Inductive t (S : Set) : Type :=
     | nil
     | cons (A : Type) (WF : WellFounded.t A) (C : t S).
-    
+
     Fixpoint append S (C1 C2 : t S) : t S :=
       match C1 with
       | nil _ => C2
       | cons WF C1 => cons WF (append C1 C2)
       end.
   End T.
-  
+
   Module I.
     Inductive t (S : Set) : T.t S -> Type :=
     | nil : t (T.nil S)
     | cons : forall A WF (C : T.t S) (a : A) (c : t C), t (T.cons (A := A) WF C).
   End I.
-  
+
   Inductive lt S : {C : T.t S & I.t C} -> {C : T.t S & I.t C} -> Prop :=
   | lt_nil : forall A WF a C c,
     lt (existT _ _ (I.cons (A := A) WF (C := C) a c))
@@ -41,7 +41,7 @@ End WellFounded.
        (existT _ _ c2) ->
     lt (existT _ _ (I.cons (A := A) WF (C := C1) a c1))
        (existT _ _ (I.cons (A := A) WF (C := C2) a c2)).
-  
+
   Lemma lt_wf (S : Set) : well_founded (lt (S := S)).
     intro x.
     constructor; intros y H.
@@ -78,7 +78,7 @@ Module Context.
   Inductive t (S : Set) : Type :=
   | nil
   | cons (A : Type) (WF : WellFounded.t A) (L : S -> Type) (context : t S).
-  
+
   Fixpoint append S (C1 C2 : t S) : t S :=
     match C1 with
     | nil _ => C2
@@ -104,7 +104,7 @@ Module CFG.
     t context (Shape.loop (A := A) WF shape_in shape_next) Lin Lout
   | goto : forall context1 A WF context2 Lin L Lout,
     t (Context.append context1 (Context.cons (A := A) WF L context2)) Shape.nil Lin Lout.
-  
+
   (*Inductive t (S : Set) : (S -> Type) -> (S -> Type) -> Type :=
   | op : forall (f : S -> S) (Lin L Lout : S -> Type)
     (fl : forall s, Lin s -> L (f s)),
@@ -114,7 +114,7 @@ Module CFG.
     (fl : forall s, if c s then Lin s -> Lin_true s else Lin s -> Lin_false s),
     t S Lin_true Lmerge -> t S Lin_false Lmerge -> t S Lmerge Lout ->
     t S Lin Lout.*)
-  
+
   Fixpoint eval S Lin Lout (p : t S Lin Lout)
     (s : S) (l : Lin s) {struct p} : {s' : S & Lout s'}.
     destruct p as [Lin L Lout f p
@@ -122,7 +122,7 @@ Module CFG.
     - exact (
         let (_, fl) := f s in
         eval _ _ _ p _ (fl l)).
-    
+
     - exact (
         match f s with
         | inl fl_true =>

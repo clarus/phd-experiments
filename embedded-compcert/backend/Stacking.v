@@ -71,13 +71,13 @@ Definition save_callee_save_regs
   List.fold_right (save_callee_save_reg bound number mkindex ty fe) k csl.
 
 Definition save_callee_save_int (fe: frame_env) :=
-  save_callee_save_regs 
+  save_callee_save_regs
     fe_num_int_callee_save index_int_callee_save FI_saved_int
     Tint fe int_callee_save_regs.
 
 Definition save_callee_save_float (fe: frame_env) :=
   save_callee_save_regs
-    fe_num_float_callee_save index_float_callee_save FI_saved_float 
+    fe_num_float_callee_save index_float_callee_save FI_saved_float
     Tfloat fe float_callee_save_regs.
 
 Definition save_callee_save (fe: frame_env) (k: Mach.code) :=
@@ -101,13 +101,13 @@ Definition restore_callee_save_regs
   List.fold_right (restore_callee_save_reg bound number mkindex ty fe) k csl.
 
 Definition restore_callee_save_int (fe: frame_env) :=
-  restore_callee_save_regs 
+  restore_callee_save_regs
     fe_num_int_callee_save index_int_callee_save FI_saved_int
     Tint fe int_callee_save_regs.
 
 Definition restore_callee_save_float (fe: frame_env) :=
   restore_callee_save_regs
-    fe_num_float_callee_save index_float_callee_save FI_saved_float 
+    fe_num_float_callee_save index_float_callee_save FI_saved_float
     Tfloat fe float_callee_save_regs.
 
 Definition restore_callee_save (fe: frame_env) (k: Mach.code) :=
@@ -136,7 +136,6 @@ Definition transl_annot_param (fe: frame_env) (l: loc) : annot_param :=
   | S Local ofs ty => APstack (chunk_of_type ty) (offset_of_index fe (FI_local ofs ty))
   | S _ _ _ => APstack Mint32 (-1)     (**r never happens *)
   end.
-
 
 (** Translation of a Linear instruction.  Prepends the corresponding
   Mach instructions to the given list of instructions.

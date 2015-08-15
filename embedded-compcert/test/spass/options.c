@@ -3,7 +3,7 @@
 /* *                                                        * */
 /* *               SPASS OPTIONS HANDLING                   * */
 /* *                                                        * */
-/* *  $Module:   OPTIONS                                    * */ 
+/* *  $Module:   OPTIONS                                    * */
 /* *                                                        * */
 /* *  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001      * */
 /* *  MPI fuer Informatik                                   * */
@@ -42,26 +42,24 @@
 
 /* $RCSfile$ */
 
-
 /***************************************************************
 
 		 COPYRIGHT NOTICE:
 
-                 This file contains code that               
-                 has been copied with minor modifications   
-                 from the 'getopt' module in the            
+                 This file contains code that
+                 has been copied with minor modifications
+                 from the 'getopt' module in the
                  GNU gcc library 2.0. The copyright for
                  this code is claimed by
-		 
-		 Copyright 1991 Regents of the 
+
+		 Copyright 1991 Regents of the
 		 University of California.
 		 All rights reserved.
 
 		 The copying and modification of the
-		 original code is in accordance 
-		 with the copyright conditions for the      
-                 GNU gcc library, which are listed below.           
-
+		 original code is in accordance
+		 with the copyright conditions for the
+                 GNU gcc library, which are listed below.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
@@ -114,7 +112,6 @@ static LIST opts_PARAMETERS;
 
 static OPTID opts_IdNextAvailable;
 
-
 /**************************************************************/
 /* Forwarding functions                                       */
 /**************************************************************/
@@ -130,9 +127,8 @@ static void     opts_PrintDeclarationList(LIST);
 static OPTID    opts_IdNext(OPTID);
 static OPTID    opts_IdEqual(OPTID, OPTID);
 
-
 /*************************************************************
-  Local variables and types from the former getopt module code. 
+  Local variables and types from the former getopt module code.
 **************************************************************/
 
 /* Describe how to deal with options that follow non-option ARGV-elements.
@@ -176,7 +172,6 @@ static int opts_LastNonOpt;
    indicating ARGV elements that should not be considered arguments.  */
 
 static int opts_NonOptionFlagslen;
-
 
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -227,7 +222,6 @@ static int opts_Err = 1;
 
 static int opts_Opt = '?';
 
-
 /**************************************************************/
 /* Functions                                                  */
 /**************************************************************/
@@ -254,7 +248,7 @@ static __inline__ OPTID opts_IdNull(void)
 BOOL opts_IdIsNull(OPTID Id)
 /**************************************************************
   INPUT:   An option id.
-  RETURNS: TRUE iff it is the NULL id. 
+  RETURNS: TRUE iff it is the NULL id.
 ***************************************************************/
 {
   return opts_IdEqual(opts_IdNull(), Id);
@@ -299,7 +293,6 @@ static __inline__ char* opts_DeclGetClName(OPTDECL* D)
   return D->clname;
 }
 
-
 static __inline__ void opts_DeclSetType(OPTDECL* D, OPTTYPE type)
 /**************************************************************
   INPUT:   An option declaration and an option type.
@@ -329,7 +322,7 @@ static __inline__ BOOL opts_DeclIsShortOpt(OPTDECL* D)
   return (strlen(opts_DeclGetClName(D)) == 1);
 }
 
-static __inline__ BOOL opts_DeclHasOptArg(OPTDECL* D) 
+static __inline__ BOOL opts_DeclHasOptArg(OPTDECL* D)
 /**************************************************************
   INPUT:   An option declaration.
   RETURNS: TRUE iff <D> is a declaration of an option
@@ -339,7 +332,7 @@ static __inline__ BOOL opts_DeclHasOptArg(OPTDECL* D)
   return (opts_DeclGetType(D) == opts_OPTARGTYPE);
 }
 
-static __inline__ BOOL opts_DeclHasReqArg(OPTDECL* D) 
+static __inline__ BOOL opts_DeclHasReqArg(OPTDECL* D)
 /**************************************************************
   INPUT:   An option declaration.
   RETURNS: TRUE iff <D> is a declaration of an option
@@ -349,7 +342,7 @@ static __inline__ BOOL opts_DeclHasReqArg(OPTDECL* D)
   return (opts_DeclGetType(D) == opts_REQARGTYPE);
 }
 
-static __inline__ BOOL opts_DeclHasNoArg(OPTDECL* D) 
+static __inline__ BOOL opts_DeclHasNoArg(OPTDECL* D)
 /**************************************************************
   INPUT:   An option declaration.
   RETURNS: TRUE iff <D> is a declaration of an option
@@ -380,7 +373,7 @@ OPTID opts_Declare(const char* ClName, OPTTYPE OptType)
 
   opts_DeclSetClName(D, string_StringCopy(ClName));
   opts_DeclSetType(D,OptType);
-  
+
   opts_DECLARATIONS = list_Nconc(opts_DECLARATIONS, list_List(D));
 
   Id = opts_IdGetNextAvailable();
@@ -389,7 +382,7 @@ OPTID opts_Declare(const char* ClName, OPTTYPE OptType)
   return Id;
 }
 
-OPTID opts_DeclareVector(OPTDECL Decls[]) 
+OPTID opts_DeclareVector(OPTDECL Decls[])
 /**************************************************************
   INPUT:   An option declaration vector, which must have
            a NULL pointer in the clname field of the last
@@ -402,7 +395,7 @@ OPTID opts_DeclareVector(OPTDECL Decls[])
 
   i = 0;
   while (strlen(opts_DeclGetClName(&Decls[i])) != 0) {
-    opts_Declare(opts_DeclGetClName(&Decls[i]), opts_DeclGetType(&Decls[i])); 
+    opts_Declare(opts_DeclGetClName(&Decls[i]), opts_DeclGetType(&Decls[i]));
     i++;
   }
   return opts_IdGetNextAvailable();
@@ -423,21 +416,21 @@ static char* opts_TranslateShortOptDeclarations(void)
   ShortDecl = string_StringCopy("\0");
 
   Scan = opts_DECLARATIONS;
-  
+
   while (Scan) {
     /* option is short iff:
          - it was declared with a one letter command line name or
 	 - it has an abbreviation
 	 */
     Decl = (OPTDECL*)list_Car(Scan);
-    
+
     if (opts_DeclIsShortOpt(Decl)) {
-      ShortDecl = string_Nconc(ShortDecl, string_StringCopy(opts_DeclGetClName(Decl)));      
+      ShortDecl = string_Nconc(ShortDecl, string_StringCopy(opts_DeclGetClName(Decl)));
 
       /*
-	  add colon if optional or required argument 
+	  add colon if optional or required argument
        */
-      if (opts_DeclHasReqArg(Decl)||opts_DeclHasOptArg(Decl)) 
+      if (opts_DeclHasReqArg(Decl)||opts_DeclHasOptArg(Decl))
 	ShortDecl = string_Nconc(ShortDecl, string_StringCopy(":"));
     }
     Scan = list_Cdr(Scan);
@@ -453,9 +446,9 @@ static char* opts_TranslateShortOptDeclarations(void)
 static LIST opts_GetLongOptDeclarations(void)
 /**************************************************************
   INPUT:   None.
-  RETURNS: A list of all 'long option' (with command line name 
+  RETURNS: A list of all 'long option' (with command line name
            length > 1) declarations in opts_DECLARATIONS.
-  EFFECTS: Allocates list. 
+  EFFECTS: Allocates list.
 ***************************************************************/
 {
   LIST     Scan, Long;
@@ -471,7 +464,7 @@ static LIST opts_GetLongOptDeclarations(void)
       Long = list_Cons(Decl, Long);
     }
     Scan = list_Cdr(Scan);
-  }  
+  }
   return Long;
 }
 
@@ -501,7 +494,6 @@ static void opts_FreeLongOptsArray(struct OPTION *LongOpts)
   memory_Free(LongOpts, (i+1)*sizeof(struct OPTION));
 }
 
-
 static struct OPTION* opts_TranslateLongOptDeclarations(void)
 /**************************************************************
   INPUT  : None
@@ -526,18 +518,18 @@ static struct OPTION* opts_TranslateLongOptDeclarations(void)
 
   while (!list_Empty(Scan)) {
     Decl = list_Car(Scan);
-    
+
     LongOpts[OptCnt].name = opts_DeclGetClName(Decl);
 
     if (opts_DeclHasOptArg(Decl))
       LongOpts[OptCnt].has_arg = 2;
-    else if (opts_DeclHasReqArg(Decl)) 
-      LongOpts[OptCnt].has_arg = 1; 
-    else 
-      LongOpts[OptCnt].has_arg = 0; 
+    else if (opts_DeclHasReqArg(Decl))
+      LongOpts[OptCnt].has_arg = 1;
+    else
+      LongOpts[OptCnt].has_arg = 0;
     LongOpts[OptCnt].flag    = 0;
-    LongOpts[OptCnt].val     = 0; 
-    
+    LongOpts[OptCnt].val     = 0;
+
     Scan = list_Cdr(Scan);
     OptCnt++;
   }
@@ -552,10 +544,9 @@ static struct OPTION* opts_TranslateLongOptDeclarations(void)
   return LongOpts;
 }
 
-
 static void opts_PrintLongOpts(struct OPTION *LongOpts)
 /**************************************************************
-  INPUT:   An array with OPTIONS structs  
+  INPUT:   An array with OPTIONS structs
   RETURNS: Nothing
   EFFECTS: Prints contents of array
 ***************************************************************/
@@ -567,7 +558,7 @@ static void opts_PrintLongOpts(struct OPTION *LongOpts)
     return;
   }
   puts("\nLong options array:");
-  
+
   i = 0;
   while (LongOpts[i].name != NULL) {
     printf("\nentry %d:\n",i);
@@ -582,8 +573,8 @@ static void opts_PrintLongOpts(struct OPTION *LongOpts)
 
 static __inline__ OPTID opts_IdCmp(OPTID Id1, OPTID Id2)
 /**************************************************************
-  INPUT:   Two option ids  
-  RETURNS: Analogously to strcmp: 
+  INPUT:   Two option ids
+  RETURNS: Analogously to strcmp:
               '0'   if Id1 == Id2
 	      '<0'  if Id1 <  Id2
 	      '>0'  if Id1 >  Id2
@@ -594,7 +585,7 @@ static __inline__ OPTID opts_IdCmp(OPTID Id1, OPTID Id2)
 
 static OPTID opts_IdEqual(OPTID Id1, OPTID Id2)
 /**************************************************************
-  INPUT:   Two options ids  
+  INPUT:   Two options ids
   RETURNS: TRUE if they are equal
 ***************************************************************/
 {
@@ -603,13 +594,12 @@ static OPTID opts_IdEqual(OPTID Id1, OPTID Id2)
 
 static OPTID opts_IdNext(OPTID Id)
 /**************************************************************
-  INPUT:   An option id  
+  INPUT:   An option id
   RETURNS: The next option id in the ordering
 ***************************************************************/
 {
   return (Id+1);
 }
-
 
 const char* opts_ClName(OPTID Id)
 /**************************************************************
@@ -623,9 +613,9 @@ const char* opts_ClName(OPTID Id)
   return opts_DeclGetClName(Decl);
 }
 
-OPTID opts_Id(const char* ClName) 
+OPTID opts_Id(const char* ClName)
 /**************************************************************
-  INPUT:   The command line name of an option 
+  INPUT:   The command line name of an option
   RETURNS: The corresponding id of the option,
            the NULL id if no option with <ClName> exist.
 ***************************************************************/
@@ -669,8 +659,8 @@ static OPTID opts_ShortOptId(char c)
 void opts_Init(void)
 /**************************************************************
   INPUT:   None
-  RETURNS: Nothing 
-  EFFECT:  Initialize option module 
+  RETURNS: Nothing
+  EFFECT:  Initialize option module
 ***************************************************************/
 {
   opts_DECLARATIONS = list_Nil();
@@ -682,8 +672,8 @@ void opts_Init(void)
 void opts_DeclareSPASSFlagsAsOptions(void)
 /**************************************************************
   INPUT:   None
-  RETURNS: Nothing 
-  EFFECT:  Initialize option for use with SPASS: 
+  RETURNS: Nothing
+  EFFECT:  Initialize option for use with SPASS:
            declares all SPASS flags as command line opts.
   MEMORY:  Allocates space for declarations
 ***************************************************************/
@@ -699,7 +689,7 @@ static void opts_FreeParameterPair(LIST Pair)
 /**************************************************************
   INPUT  : An (id/string) pair
   RETURNS: Nothing
-  EFFECTS: Frees memory of list element and string 
+  EFFECTS: Frees memory of list element and string
 ***************************************************************/
 {
   string_StringFree(list_PairSecond(Pair));
@@ -711,7 +701,7 @@ static void opts_FreeDecl(OPTDECL* D)
 /**************************************************************
   INPUT:   An options declaration
   RETURNS: Nothing
-  EFFECTS: Frees memory of struct. 
+  EFFECTS: Frees memory of struct.
 ***************************************************************/
 {
   string_StringFree((char*)opts_DeclGetClName(D));
@@ -721,7 +711,7 @@ static void opts_FreeDecl(OPTDECL* D)
 void opts_Free(void)
 /**************************************************************
   INPUT:   None
-  RETURNS: Nothing 
+  RETURNS: Nothing
   EFFECT:  Free memory of module
 ***************************************************************/
 {
@@ -733,7 +723,7 @@ static void opts_PrintDeclarationList(LIST Scan)
 /**************************************************************
   INPUT:   A list with option declarations
   RETURNS: Nothing
-  EFFECTS: Prints the list 
+  EFFECTS: Prints the list
 ***************************************************************/
 {
   OPTDECL* Decl;
@@ -754,7 +744,7 @@ static __inline__ void opts_PrintDeclarations(void)
 /**************************************************************
   INPUT:   None
   RETURNS: Nothing
-  EFFECTS: Prints all currently declared options 
+  EFFECTS: Prints all currently declared options
 ***************************************************************/
 {
   opts_PrintDeclarationList(opts_DECLARATIONS);
@@ -764,7 +754,7 @@ static void opts_PrintParameters(void)
 /**************************************************************
   INPUT:   None
   RETURNS: Nothing
-  EFFECTS: Prints all values of options read so far 
+  EFFECTS: Prints all values of options read so far
 ***************************************************************/
 {
   LIST Scan;
@@ -782,20 +772,19 @@ static void opts_PrintParameters(void)
   }
 }
 
-
 void opts_PrintSPASSNames(void)
 /**************************************************************
-  INPUT:   None 
+  INPUT:   None
   RETURNS: Nothing
   EFFECT:  Prints all options in three rows
 ***************************************************************/
 {
   int i,j;
-  
-  for (i=0; i < flag_MAXFLAG; i=i+4) { 
+
+  for (i=0; i < flag_MAXFLAG; i=i+4) {
     for (j =0; j <=3; j++) {
       if (i+j < flag_MAXFLAG)
-	printf("%-18s ", flag_Name(i+j)); } 
+	printf("%-18s ", flag_Name(i+j)); }
     putchar('\n');
   }
 }
@@ -811,7 +800,7 @@ static OPTDECL* opts_DeclGetById(OPTID Id)
 
   ScanId = opts_IdFirst();
   Scan   = opts_DECLARATIONS;
-  
+
   while (!list_Empty(Scan)) {
     if (opts_IdEqual(Id, ScanId))
       return list_Car(Scan);
@@ -822,7 +811,6 @@ static OPTDECL* opts_DeclGetById(OPTID Id)
   return (OPTDECL*)NULL;
 }
 
-
 /* Currently unused */
 /*static*/ OPTDECL* opts_DeclGetByClName(const char* ClName)
 /**************************************************************
@@ -832,18 +820,17 @@ static OPTDECL* opts_DeclGetById(OPTID Id)
 ***************************************************************/
 {
   OPTID Id;
-  
+
   Id = opts_Id(ClName);
   if (opts_IdIsNull(Id))
     return NULL;
   return opts_DeclGetById(Id);
 }
 
-
 BOOL opts_Read(int argc, const char* argv[])
 /**************************************************************
-  INPUT:   Program parameter data 
-  RETURNS: TRUE iff options are correctly specified 
+  INPUT:   Program parameter data
+  RETURNS: TRUE iff options are correctly specified
   EFFECT:  Errors are commented
   MEMORY:  Builds up opts_PARAMETERS while reading
            options and their values.
@@ -858,32 +845,32 @@ BOOL opts_Read(int argc, const char* argv[])
   struct OPTION *LongOpts;
 
   Ok = TRUE;
-  
+
   ShortOpts = opts_TranslateShortOptDeclarations();
   LongOpts  = opts_TranslateLongOptDeclarations();
 
-  while (Ok && (c = opts_GetOptLongOnly(argc, argv, ShortOpts, 
+  while (Ok && (c = opts_GetOptLongOnly(argc, argv, ShortOpts,
 					LongOpts, &OptIndex)) != -1) {
-    /* 
+    /*
        for following eval of opts_GetOptLongOnly result see
        GNU getopt documentation. In short, opts_GetOptLongOnly
        returns a char if it has found that char as an option in
-       the command line, and this option is declared in opts_DECLARATIONS. 
+       the command line, and this option is declared in opts_DECLARATIONS.
        It returns 0 if it has found a declared long option.
-       
+
     */
-    if (c == '?') { 
-      /**** unknown option ****/ 
+    if (c == '?') {
+      /**** unknown option ****/
 
       /* This has already been commented by opts_GetOptLongOnly */
       return FALSE;
     } else if (c == 0) {
       /**** its a long option  ****/
-      
+
       OptName = LongOpts[OptIndex].name;
       OptId   = opts_Id(OptName);
       OptDecl = opts_DeclGetById(OptId);
-      
+
       if (opts_Arg == NULL) {
 	/* if argument required and no arg specified, error  */
 	if (opts_DeclHasReqArg(OptDecl)) {
@@ -892,36 +879,36 @@ BOOL opts_Read(int argc, const char* argv[])
 	  misc_FinishUserErrorReport();
 	  return FALSE;
 	}
-	
+
 	/* otherwise, set default value */
 	Ok = opts_AddParamCheck(OptId,opts_DEFAULTOPTARG);
-      } else  
+      } else
 	Ok = opts_AddParamCheck(OptId,opts_Arg);
     } else {
       /**** its a short option ****/
-      
+
       /* handle missing but required arguments. So far, this is left
 	 to opts_GetOptLongOnly */
-      if (c == ':') 
+      if (c == ':')
 	return FALSE;
-      
-      /* 
-	 
+
+      /*
+
 	 One further special case: if a short option has an optional
 	 argument, but this argument is a '--', then take the
 	 default argument value. '--' normally signifies: no further
 	 options and is not interpreted nor returned by getopt as
 	 an argument value of an option with argument. As we
 	 permit default values for options with args, we have to declare
-	 all options with args. Therefore, getopt takes 
-	 
-	 -o -- 
-	 
+	 all options with args. Therefore, getopt takes
+
+	 -o --
+
 	 '-o with arg --' if "o:" is the declaration. We interpret
 	 this as '-o with default value'.
-	 
+
       */
-      
+
       else {
 	OptId = opts_ShortOptId(c);
 	if (opts_IdIsNull(OptId)) {
@@ -930,7 +917,7 @@ BOOL opts_Read(int argc, const char* argv[])
 	  misc_FinishErrorReport();
 	}
 	OptDecl = opts_DeclGetById(OptId);
-	
+
 	if (opts_DeclHasReqArg(OptDecl)) {
 	  if (!opts_Arg) {
 	    misc_StartUserErrorReport();
@@ -942,37 +929,36 @@ BOOL opts_Read(int argc, const char* argv[])
 	    misc_UserErrorReport("\nerror: option %c has delimiter -- as argument.\n",c);
 	    misc_FinishUserErrorReport();
 	    Ok = FALSE;
-	  } else 
+	  } else
 	    Ok = opts_AddParamCheck(OptId,opts_Arg);
 	}
 	/* options with args */
 	else if (opts_DeclHasOptArg(OptDecl)) {
 	  /* if arg is present, check for endmarker */
 	  if (opts_Arg) {
-	    if (string_Equal(opts_Arg, opts_ENDMARKER)) 
+	    if (string_Equal(opts_Arg, opts_ENDMARKER))
 	      Ok = opts_AddParamCheck(OptId,opts_DEFAULTOPTARG);
-	    else 
+	    else
 	      Ok = opts_AddParamCheck(OptId,opts_Arg); }
-	  else 
+	  else
 	    Ok = opts_AddParamCheck(OptId,opts_DEFAULTOPTARG);
 	}
 	/* default for options without args */
-	else 
+	else
 	  Ok = opts_AddParamCheck(OptId,opts_DEFAULTOPTARG);
       }
     }
   }
-  
+
   string_StringFree(ShortOpts);
   opts_FreeLongOptsArray(LongOpts);
-  
+
   return Ok;
 }
 
-
 BOOL opts_ReadOptionsFromString(const char* Options)
 /**************************************************************
-  INPUT:   A string containing program parameter data 
+  INPUT:   A string containing program parameter data
   RETURNS: TRUE iff the string contains only valid options.
            The function returns FALSE if the string contains
 	   any substring that isn't a option or invalid option
@@ -1010,7 +996,6 @@ BOOL opts_ReadOptionsFromString(const char* Options)
   return Result;
 }
 
-
 BOOL opts_GetValueByName(const char* Name, const char** Value)
 /**************************************************************
   INPUT:   An option command line name, a string by ref.
@@ -1018,7 +1003,7 @@ BOOL opts_GetValueByName(const char* Name, const char** Value)
            in opts_PARAMETERS (as set by opts_Read()),
 	   and the assigned value of this option in <Value>.
 	   FALSE otherwise
-  EFFECTS: <*Value> is changed 
+  EFFECTS: <*Value> is changed
 ***************************************************************/
 {
   LIST Scan;
@@ -1035,20 +1020,20 @@ BOOL opts_GetValueByName(const char* Name, const char** Value)
       found = TRUE;
   }
 
-  if (found) 
-    (*Value) = list_PairSecond(Pair); 
+  if (found)
+    (*Value) = list_PairSecond(Pair);
 
   return found;
 }
 
-BOOL opts_GetValue(OPTID Id, const char** s) 
+BOOL opts_GetValue(OPTID Id, const char** s)
 /**************************************************************
   INPUT:   An option id, a string by reference
   RETURNS: TRUE if an option with this id exists
            in opts_PARAMETERS (as set by opts_Read()),
 	   and the assigned value of this option in <Value>.
 	   FALSE otherwise
-  EFFECTS: <s*> is changed 
+  EFFECTS: <s*> is changed
 ***************************************************************/
 {
   LIST Scan;
@@ -1065,51 +1050,48 @@ BOOL opts_GetValue(OPTID Id, const char** s)
       found = TRUE;
   }
 
-  if (found) 
+  if (found)
     (*s) = list_PairSecond(Pair);
 
   return found;
 }
 
-
 BOOL opts_GetIntValueByName(const char* Name, int* Val)
 /**************************************************************
   INPUT:   An options name, an integer by reference
-  RETURNS: TRUE 
+  RETURNS: TRUE
            if an option with <Name> exists
-           in opts_PARAMETERS (as set by opts_Read()) and 
+           in opts_PARAMETERS (as set by opts_Read()) and
 	   if its assigned value is an integer.
 	   The assigned value of this option is returned in <Val>.
-	   FALSE 
+	   FALSE
 	   otherwise
-  EFFECTS: <Val*> is changed 
+  EFFECTS: <Val*> is changed
 ***************************************************************/
 {
   const char* ValStr ;
 
-  if (!opts_GetValueByName(Name, &ValStr)) 
+  if (!opts_GetValueByName(Name, &ValStr))
     return FALSE;
-  
+
   return string_StringToInt(ValStr, FALSE, Val);
 }
 
-BOOL opts_GetIntValue(OPTID Id, int* i) 
+BOOL opts_GetIntValue(OPTID Id, int* i)
 /**************************************************************
   INPUT:   An options name, an integer by reference
-  RETURNS: TRUE 
+  RETURNS: TRUE
            if an option with <Id> exists
-           in opts_PARAMETERS (as set by opts_Read()) and 
+           in opts_PARAMETERS (as set by opts_Read()) and
 	   if its assigned value is an integer.
 	   T he assigned value of this option is returned in <*i>.
-	   FALSE 
+	   FALSE
            otherwise
-  EFFECTS: <*i> is changed 
+  EFFECTS: <*i> is changed
 ***************************************************************/
 {
   return opts_GetIntValueByName(opts_ClName(Id), i);
 }
-
-
 
 BOOL opts_IsSet(OPTID Id)
 /**************************************************************
@@ -1121,7 +1103,7 @@ BOOL opts_IsSet(OPTID Id)
   LIST Scan;
   LIST Pair;
   BOOL found;
-  
+
   found = FALSE;
 
   for (Scan = opts_PARAMETERS;
@@ -1133,7 +1115,6 @@ BOOL opts_IsSet(OPTID Id)
   return found;
 }
 
-
 /* Currently unused */
 /*static*/ BOOL opts_IsSetByName(const char* Name)
 /**************************************************************
@@ -1144,7 +1125,7 @@ BOOL opts_IsSet(OPTID Id)
   LIST Scan;
   LIST Pair;
   BOOL found;
-  
+
   found = FALSE;
 
   for (Scan = opts_PARAMETERS;
@@ -1189,7 +1170,7 @@ void opts_Transfer(FLAGSTORE Store)
   INPUT:   A flag store.
   RETURNS: Nothing
   EFFECT:  Transfer options from 'opts_PARAMETERS' list into SPASS
-           flags in <Store> 
+           flags in <Store>
   CAUTION: To connect SPASS flags and options, we assume that
            all flag names and command line names of all options
 	   are the same!
@@ -1209,39 +1190,37 @@ void opts_Transfer(FLAGSTORE Store)
     Id      = (int)list_PairFirst(Pair);
     ValStr  = (const char*)list_PairSecond(Pair);
     Name    = opts_ClName(Id);
-    
+
     ok = string_StringToInt(ValStr, FALSE, &IntValue);
     if (!ok) {
       misc_StartUserErrorReport();
       misc_UserErrorReport("\nerror: argument '%s' of option '%s' must be integer.\n",
 			   ValStr, Name);
       misc_FinishUserErrorReport();
-    } else { 
+    } else {
       flag_SetFlagValue(Store, flag_Id(Name), IntValue);
     }
     Scan = list_Cdr(Scan);
   }
 }
 
-
 static void opts_AddParam(OPTID Id, const char* ValueString)
 /**************************************************************
-  INPUT:   An option id and a string with its assigned value 
+  INPUT:   An option id and a string with its assigned value
   RETURNS: Nothing.
   EFFECT:  Add (Id, ValueString) tupel to 'opts_PARAMETERS' list
 ***************************************************************/
-{ 
+{
   LIST Pair;
   Pair = list_PairCreate((POINTER)Id, string_StringCopy(ValueString));
-  opts_PARAMETERS = list_Cons(Pair, opts_PARAMETERS); 
+  opts_PARAMETERS = list_Cons(Pair, opts_PARAMETERS);
 }
-
 
 static BOOL opts_AddParamCheck(OPTID Id, const char* ValueString)
 /**************************************************************
   INPUT:   An option id and a string
   RETURNS: TRUE iff option with <Id> has not been defined
-  EFFECTS: Adds (<Id>,<ValueString>) tupel to opts_PARAMETERS 
+  EFFECTS: Adds (<Id>,<ValueString>) tupel to opts_PARAMETERS
 ***************************************************************/
 {
   const char* Dummy;
@@ -1255,8 +1234,7 @@ static BOOL opts_AddParamCheck(OPTID Id, const char* ValueString)
   return TRUE;
 }
 
-
-int opts_Indicator(void) 
+int opts_Indicator(void)
 /**************************************************************
   INPUT:   None
   RETURNS: Integer variable indicating position of next argument
@@ -1264,7 +1242,6 @@ int opts_Indicator(void)
 {
   return opts_Ind;
 }
-
 
 static void opts_Exchange (const char *argv[])
 /**************************************************************
@@ -1297,7 +1274,7 @@ static void opts_Exchange (const char *argv[])
       /* Bottom segment is the short one.  */
       int len = middle - bottom;
       register int i;
-      
+
       /* Swap it with the top part of the top segment.  */
       for (i = 0; i < len; i++) {
 	tem = argv[bottom + i];
@@ -1311,7 +1288,7 @@ static void opts_Exchange (const char *argv[])
       /* Top segment is the short one.  */
       int len = top - middle;
       register int i;
-      
+
       /* Swap it with the bottom part of the bottom segment.  */
       for (i = 0; i < len; i++) {
 	tem = argv[bottom + i];
@@ -1322,13 +1299,12 @@ static void opts_Exchange (const char *argv[])
       bottom += len;
     }
   }
-  
+
   /* Update records for the slots the non-options now occupy.  */
 
   opts_FirstNonOpt += (opts_Ind - opts_LastNonOpt);
   opts_LastNonOpt = opts_Ind;
 }
-
 
 static const char *opts_GetOptInitialize (int argc, const char *const argv[],
 					  const char *optstring)
@@ -1365,9 +1341,9 @@ static const char *opts_GetOptInitialize (int argc, const char *const argv[],
     opts_Ordering = REQUIRE_ORDER;
   else
     opts_Ordering = PERMUTE;
-  
+
   opts_NonOptionFlagslen = 0;
-  
+
   return optstring;
 }
 
@@ -1383,7 +1359,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
            a value identifying a read option. See below.
   EFFECT:  Affects statics opts_Ind, opts_Arg, opts_Opt,
            opts_NextChar and argument array. See below.
-  MEMORY:  See below. 
+  MEMORY:  See below.
 ***************************************************************/
 /* Scan elements of ARGV (whose length is ARGC) for option characters
    given in OPTSTRING.
@@ -1448,60 +1424,59 @@ static int opts_GetOptInternal (int argc, const char* argv[],
     opts_Ind = 1;		/* Don't scan ARGV[0], the program name.  */
     opts_GetOptInitialized = 1;
   }
-  
+
   /* Test whether ARGV[opts_Ind] points to a non-option argument.
      Either it does not have option syntax, or there is an environment flag
      from the shell indicating it is not an option.  The later information
      is only used when the used in the GNU libc.  */
 
-
   if (opts_NextChar == NULL || *opts_NextChar == '\0') {
     /* Advance to the next ARGV-element.  */
-    
+
     /* Give OPTS_FIRSTNONOPT & LAST_NONOPT rational values if OPTS_IND has been
        moved back by the user (who may also have changed the arguments).  */
     if (opts_LastNonOpt > opts_Ind)
       opts_LastNonOpt = opts_Ind;
     if (opts_FirstNonOpt > opts_Ind)
       opts_FirstNonOpt = opts_Ind;
-    
+
     if (opts_Ordering == PERMUTE) {
       /* If we have just processed some options following some non-options,
 	 exchange them so that the options come first.  */
-      
+
       if (opts_FirstNonOpt != opts_LastNonOpt && opts_LastNonOpt != opts_Ind)
 	opts_Exchange(argv);
       else if (opts_LastNonOpt != opts_Ind)
 	opts_FirstNonOpt = opts_Ind;
-      
+
       /* Skip any additional non-options
 	 and extend the range of non-options previously skipped.  */
-      
+
       while (opts_Ind < argc &&  (argv[opts_Ind][0] != '-' || argv[opts_Ind][1] == '\0'))
 	opts_Ind++;
       opts_LastNonOpt = opts_Ind;
     }
-    
+
     /* The special ARGV-element `--' means premature end of options.
        Skip it like a null option,
        then exchange with previous non-options as if it were an option,
        then skip everything else like a non-option.  */
-    
+
     if (opts_Ind != argc && !strcmp(argv[opts_Ind], "--")) {
       opts_Ind++;
-      
+
       if (opts_FirstNonOpt != opts_LastNonOpt && opts_LastNonOpt != opts_Ind)
 	opts_Exchange(argv);
       else if (opts_FirstNonOpt == opts_LastNonOpt)
 	opts_FirstNonOpt = opts_Ind;
       opts_LastNonOpt = argc;
-      
+
       opts_Ind = argc;
     }
-    
+
     /* If we have done all the ARGV-elements, stop the scan
        and back over any non-options that we skipped and permuted.  */
-    
+
     if (opts_Ind == argc) {
       /* Set the next-arg-index to point at the non-options
 	 that we previously skipped, so the caller will digest them.  */
@@ -1509,39 +1484,39 @@ static int opts_GetOptInternal (int argc, const char* argv[],
 	opts_Ind = opts_FirstNonOpt;
       return -1;
     }
-    
+
     /* If we have come to a non-option and did not permute it,
        either stop the scan or describe it to the caller and pass it by.  */
-    
+
     if ( (argv[opts_Ind][0] != '-' || argv[opts_Ind][1] == '\0')) {
       if (opts_Ordering == REQUIRE_ORDER)
 	return -1;
       opts_Arg = argv[opts_Ind++];
       return 1;
     }
-    
+
     /* We have found another option-ARGV-element.
        Skip the initial punctuation.  */
-    
+
     opts_NextChar = (argv[opts_Ind] + 1
 		     + (longopts != NULL && argv[opts_Ind][1] == '-'));
   }
-  
+
   /* Decode the current option-ARGV-element.  */
-  
+
   /* Check whether the ARGV-element is a long option.
-     
+
      If long_only and the ARGV-element has the form "-f", where f is
      a valid short option, don't consider it an abbreviated form of
      a long option that starts with f.  Otherwise there would be no
      way to give the -f short option.
-     
+
      On the other hand, if there's a long option "fubar" and
      the ARGV-element is "-fu", do consider that an abbreviation of
      the long option, just like "--fu", and not "-f" with arg "u".
-     
+
      This distinction seems to be the most useful approach.  */
-  
+
   if (longopts != NULL
       && (argv[opts_Ind][1] == '-'
 	  || (long_only && (argv[opts_Ind][2] || !strchr(optstring, argv[opts_Ind][1]))))) {
@@ -1552,10 +1527,10 @@ static int opts_GetOptInternal (int argc, const char* argv[],
     int ambig = 0;
     int indfound = -1;
     int option_index;
-    
+
     for (nameend = opts_NextChar; *nameend && *nameend != '='; nameend++)
       /* Do nothing.  */ ;
-    
+
     /* Test all long options for either exact match
        or abbreviated matches.  */
     for (p = longopts, option_index = 0; p->name; p++, option_index++)
@@ -1577,7 +1552,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
 	  /* Second or later nonexact match found.  */
 	  ambig = 1;
       }
-    
+
     if (ambig && !exact) {
       if (opts_Err) {
 	misc_StartUserErrorReport();
@@ -1589,7 +1564,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
       opts_Opt = 0;
       return '?';
     }
-    
+
     if (pfound != NULL) {
       option_index = indfound;
       opts_Ind++;
@@ -1615,7 +1590,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
 	    }
 	  }
 	  opts_NextChar += strlen(opts_NextChar);
-	  
+
 	  opts_Opt = pfound->val;
 	  return '?';
 	}
@@ -1644,7 +1619,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
       }
       return pfound->val;
     }
-    
+
     /* Can't find it as a long option.  If this is not opts_GetOptLong_only,
        or the option starts with '--' or is not a valid short
        option, then it's an error.
@@ -1672,9 +1647,9 @@ static int opts_GetOptInternal (int argc, const char* argv[],
       return '?';
     }
   }
-  
+
   /* Look at and handle the next short option-character.  */
-  
+
   {
     char c = *opts_NextChar++;
     char *temp = strchr(optstring, c);
@@ -1709,7 +1684,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
       int ambig = 0;
       int indfound = 0;
       int option_index;
-      
+
       /* This is an option that requires an argument.  */
       if (*opts_NextChar != '\0') {
 	opts_Arg = opts_NextChar;
@@ -1735,13 +1710,13 @@ static int opts_GetOptInternal (int argc, const char* argv[],
 	/* We already incremented `opts_Ind' once;
 	   increment it again when taking next ARGV-elt as argument.  */
 	opts_Arg = argv[opts_Ind++];
-      
+
       /* opts_Arg is now the argument, see if it's in the
 	 table of longopts.  */
-      
+
       for (opts_NextChar = nameend = opts_Arg; *nameend && *nameend != '='; nameend++)
 	/* Do nothing.  */ ;
-      
+
       /* Test all long options for either exact match
 	 or abbreviated matches.  */
       for (p = longopts, option_index = 0; p->name; p++, option_index++)
@@ -1785,7 +1760,7 @@ static int opts_GetOptInternal (int argc, const char* argv[],
 	      misc_UserErrorReport("%s: option `-W %s' doesn't allow an argument\n", argv[0], pfound->name);
 	      misc_FinishUserErrorReport();
 	    }
-	    
+
 	    opts_NextChar += strlen(opts_NextChar);
 	    return '?';
 	  }
@@ -1858,7 +1833,6 @@ static int opts_GetOptInternal (int argc, const char* argv[],
   }
 }
 
-
 /* Like opts_GetOptLong, but '-' as well as '--' can indicate a long option.
    If an option that starts with '-' (not '--') doesn't match a long option,
    but does match a short option, it is parsed as a short option
@@ -1872,7 +1846,6 @@ static int opts_GetOptLongOnly(int argc, const char* argv[], const char *options
 {
   return opts_GetOptInternal (argc, argv, options, long_options, opt_index, 1);
 }
-
 
 static void opts_Dummy(void)
 /**************************************************************

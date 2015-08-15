@@ -286,4 +286,3 @@ void init_lexer(void)
     hashtable[h] = b;
   }
 }
-

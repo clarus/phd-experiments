@@ -215,13 +215,11 @@ int main(int argc, char *argv[])
         thisOpt = optList;
     }
 
-
     /* use stdin/out if no files are provided */
     if (fpIn == NULL)
     {
         fpIn = stdin;
     }
-
 
     if (fpOut == NULL)
     {
